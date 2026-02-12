@@ -143,25 +143,68 @@ def get_bundle(app_name: str, bundle_id: str, detail_level: str = "summary") -> 
 
     Args:
         app_name: Application folder name.
-        bundle_id: Bundle directory name (e.g. "AS_GSS_ConsensusReport_RECORD_-_Sign").
-                   Use search_bundles or get_app_overview to find available bundles.
-        detail_level: "summary" for structure only (fast, small, no code),
+        bundle_id: Bundle ID from search_bundles/get_app_overview (e.g. "AS_GSS_Complete_LPTA_Evaluation").
+                   Also accepts root_name with spaces — it will be resolved automatically.
+        detail_level: "summary" for metadata + object names + flow (small, fast),
+                      "structure" for full structure.json (no code),
                       "full" for structure + SAIL code merged together.
     """
     ds = _datasource()
-    structure = ds.read_json(app_name, f"bundles/{bundle_id}/structure.json")
+    resolved_id = _resolve_bundle_id(ds, app_name, bundle_id)
+
+    structure = ds.read_json(app_name, f"bundles/{resolved_id}/structure.json")
 
     if detail_level == "summary":
-        return structure
+        # Lightweight: metadata + entry_point + flow + object names only
+        summary: dict = {
+            "_metadata": structure.get("_metadata", {}),
+            "entry_point": structure.get("entry_point", {}),
+            "flow": structure.get("flow"),
+            "objects": [
+                {"name": o["name"], "type": o["type"], "description": o.get("description")}
+                for o in structure.get("objects", [])
+            ],
+        }
+        return summary
+
+    if detail_level == "structure":
+        return _truncate(structure)
 
     # Full: merge code into structure
-    code = ds.read_json(app_name, f"bundles/{bundle_id}/code.json")
+    code = ds.read_json(app_name, f"bundles/{resolved_id}/code.json")
     code_map = code.get("objects", {})
     for obj in structure.get("objects", []):
         uuid = obj.get("uuid")
         if uuid and uuid in code_map:
             obj["sail_code"] = code_map[uuid].get("sail_code")
     return _truncate(structure)
+
+
+def _resolve_bundle_id(ds: DataSource, app_name: str, bundle_id: str) -> str:
+    """Resolve a bundle_id that might be an id, root_name, or old-style path."""
+    # Try as-is first (the happy path)
+    if ds.file_exists(app_name, f"bundles/{bundle_id}/structure.json"):
+        return bundle_id
+
+    # Try stripping old-style path prefix and .json suffix
+    stripped = bundle_id
+    for prefix in ("actions/", "processes/", "pages/", "sites/", "web_apis/", "dashboards/"):
+        if stripped.startswith(prefix):
+            stripped = stripped[len(prefix):]
+    if stripped.endswith(".json"):
+        stripped = stripped[:-5]
+    if stripped != bundle_id and ds.file_exists(app_name, f"bundles/{stripped}/structure.json"):
+        return stripped
+
+    # Try matching by root_name from the overview
+    overview = ds.read_json(app_name, "app_overview.json")
+    bundle_id_lower = bundle_id.lower()
+    for b in overview.get("bundles", []):
+        if b.get("root_name", "").lower() == bundle_id_lower:
+            return b["id"]
+
+    # Give up — return original, will produce a clear FileNotFoundError
+    return bundle_id
 
 
 @mcp.tool()

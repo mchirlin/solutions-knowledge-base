@@ -1,0 +1,341 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GSS Document Deletion",
+    "parent_name": null,
+    "total_objects": 20
+  },
+  "entry_point": {
+    "complexity_score": 12.0,
+    "total_nodes": 7,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GSS Document Deletion",
+      "complexity_score": 12.0,
+      "total_nodes": 7,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Fetch Scheduled Documents"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Fetch Scheduled Documents",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Documents Available?"
+          ]
+        },
+        {
+          "name": "Delete Document",
+          "type": "Delete Document",
+          "next": [
+            "Update Entries"
+          ]
+        },
+        {
+          "name": "Update Delete Documents Record",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Fetch Scheduled Documents"
+          ]
+        },
+        {
+          "name": "Update Entries",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Update Delete Documents Record"
+          ]
+        },
+        {
+          "name": "Documents Available?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node (No)",
+            "Delete Document (Yes)"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290131",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+      "type": "Constant",
+      "description": "DATA_SUBSET - Returns a type of DataSubset when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "DATA_SUBSET",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_BL_fetchDocumentEntriesToDelete"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290157",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "description": "SINGLE_OBJECT - Returns a single type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "SINGLE_OBJECT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_QR_getDeletedDocuments"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73366",
+      "name": "AS_CO_TXT_GENERIC_SYSTEM_NAME",
+      "type": "Constant",
+      "description": "Generic \"System\" text constant for use in audit tables and similar areas where a specific username might not apply, such as through an integration",
+      "value": "System",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GSS Document Deletion"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec90-d194-8000-9dac-011c48011c48_13562047",
+      "name": "AS_GSS_REF_ID_SOURCE_APPLICATION_GSS",
+      "type": "Constant",
+      "description": "Value: 59",
+      "value": "59",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_fetchDocumentEntriesToDelete"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb5-bbc6-8000-9dba-011c48011c48_13899424",
+      "name": "AS_GSS_TOGGLE_DELETE_DOCUMENTS_NIGHTLY",
+      "type": "Constant",
+      "description": "The toggle to turn ON/OFF the document deletion functionality. \n\nWhen this toggle is in ON state, the documents scheduled for deletion in the Document Deletion table will be fetched and deleted from the environment.",
+      "value": null,
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "AS GSS Document Deletion"
+      ]
+    },
+    {
+      "uuid": "_a-0000e583-8ce5-8000-9bb7-011c48011c48_734490",
+      "name": "AS_CO_UT_castToMapList",
+      "type": "Expression Rule",
+      "description": "Casts the input to a map list",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GSS_UT_isBlank"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76433",
+      "name": "AS_CO_UT_indexPath",
+      "type": "Expression Rule",
+      "description": "Pass in a field (i.e. member[1].name) and this will index(index(index( for each field",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_isBlank"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_castToMapList",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_whereContains"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6c8-d132-8000-9bbe-011c48011c48_469266",
+      "name": "AS_CO_UT_queryRecord",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GSS_QR_getDeletedDocuments"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367",
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GSS_BL_fetchDocumentEntriesToDelete",
+        "AS_GSS_UT_isBlank"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_162769",
+      "name": "AS_CO_UT_typeCompare",
+      "type": "Expression Rule",
+      "description": "Returns true if the two input types match",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_whereContains"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_272151",
+      "name": "AS_CO_UT_whereContains",
+      "type": "Expression Rule",
+      "description": "Enhanced wherecontains() which avoids type-casting issues and properly handles for document and group types",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_typeCompare"
+      ],
+      "called_by": [
+        "AS_GSS_UT_isBlank"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb5-bbc6-8000-9dba-011c48011c48_13899521",
+      "name": "AS_GSS_BL_fetchDocumentEntriesToDelete",
+      "type": "Expression Rule",
+      "description": "The rule is used to fetch the document entries scheduled for deletion",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GSS_DeletedDocument_SYNCEDRECORD",
+        "AS_GSS_QR_getDeletedDocuments",
+        "AS_GSS_REF_ID_SOURCE_APPLICATION_GSS",
+        "AS_GSS_UT_checkIfGivenDocumentExists"
+      ],
+      "called_by": [
+        "AS GSS Document Deletion"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb5-bbc6-8000-9dba-011c48011c48_13899527",
+      "name": "AS_GSS_QR_getDeletedDocuments",
+      "type": "Expression Rule",
+      "description": "Generic query expression for Deleted document record data",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_DeletedDocument_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_BL_fetchDocumentEntriesToDelete"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb5-bbc6-8000-9dba-011c48011c48_13903654",
+      "name": "AS_GSS_UT_checkIfGivenDocumentExists",
+      "type": "Expression Rule",
+      "description": "The rule is used to check if the passed in document exists in the environment",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_fetchDocumentEntriesToDelete"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb72-c933-8000-9d28-011c48011c48_10457793",
+      "name": "AS_GSS_UT_checkIfNullOrZero",
+      "type": "Expression Rule",
+      "description": "Expression rule to check if the input value is either null or zero",
+      "parameters": [],
+      "calls": [
+        "AS_GSS_UT_isBlank"
+      ],
+      "called_by": [
+        "AS GSS Document Deletion"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb69-8eb8-8000-9d24-011c48011c48_10389864",
+      "name": "AS_GSS_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Returns true if the value is null, CDT with all null fields, an empty string, string with only spaces, list of null values or an empty list. Otherwise returns false.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_castToMapList",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_whereContains"
+      ],
+      "called_by": [
+        "AS_GSS_UT_checkIfNullOrZero"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb16-753f-8000-9d01-011c48011c48_9522362",
+      "name": "AS_GSS_UT_updateRecordsByModelRecord",
+      "type": "Expression Rule",
+      "description": "Given a model record, updates the provided records' fields to match those of the model record.  Nulls apply if the field exists in the model record.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GSS Document Deletion"
+      ]
+    },
+    {
+      "uuid": "0002ecb8-78de-8000-bc25-7f0000014e7a",
+      "name": "AS GSS Document Deletion",
+      "type": "Process Model",
+      "description": "This process model will query the Delete document table for the documents scheduled for the current day and deletes the entries in batches",
+      "calls": [
+        "AS_CO_TXT_GENERIC_SYSTEM_NAME",
+        "AS_GSS_BL_fetchDocumentEntriesToDelete",
+        "AS_GSS_DeletedDocument_SYNCEDRECORD",
+        "AS_GSS_TOGGLE_DELETE_DOCUMENTS_NIGHTLY",
+        "AS_GSS_UT_checkIfNullOrZero",
+        "AS_GSS_UT_updateRecordsByModelRecord"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "870ad284-5a83-4e8a-a3d4-1a300bb73550",
+      "name": "AS_GSS_DeletedDocument_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "Synced Record for Deleted Documents ",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "AS GSS Document Deletion",
+        "AS_GSS_BL_fetchDocumentEntriesToDelete",
+        "AS_GSS_QR_getDeletedDocuments"
+      ]
+    }
+  ]
+}

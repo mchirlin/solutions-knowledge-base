@@ -1,0 +1,51 @@
+{
+  "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_249941-tmg-am-am",
+  "name": "AS_GSS_TMG_BL_importTasksFromExcelFieldsList",
+  "type": "Expression Rule",
+  "description": "List of task fields to import from excel -- Includes the translated label and dot notation of the fields in the AS_GSS_TMG_R_TaskRef CDT",
+  "sail_code": "a!localVariables(\n  local!i18nData: rule!AS_GSS_CO_UT_loadBundleFromFolder(langISOCode: null),\n  #\"SYSTEM_SYSRULES_forEach\"(\n    items: {\n      {\n        bundleKey: \"lbl_TaskName\",\n        field: \"taskName\",\n        required: true\n      },\n      {\n        bundleKey: \"lbl_TaskCategory\",\n        field: \"taskCategory.categoryName\",\n        required: true\n      },\n      {\n        bundleKey: \"lbl_DefaultGroupAssignee\",\n        field: \"defaultGroupAssignee\",\n        required: true\n      },\n      {\n        bundleKey: \"lbl_TaskType\",\n        field: \"taskBehaviorType.behaviorDisplayName\",\n        required: true\n      },\n      {\n        bundleKey: \"lbl_DocumentType\",\n        field: \"docUploadContext.docTypeId.refLabel\",\n        required: false\n      },\n      {\n        bundleKey: \"lbl_DocumentTemplate\",\n        field: \"docUploadContext.docTemplate.documentName\",\n        required: false\n      }\n    },\n    expression: {\n      field: fv!item.field,\n      required: fv!item.required,\n      label:rule!AS_GAM_CO_I18N_UT_displayLabel(\n        bundle:  local!i18nData,\n        bundleKey: fv!item.bundleKey\n      )\n    }\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_TMG_UT_readExcelTasks",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_mapImportTasksToReferenceTasks_ReturnFieldValues",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_CPS_importReferenceTasksFileUpload",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_GRD_manageImportReferenceTasksGrid",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_mapImportTasksToReferenceTasks",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_VD_importReferenceTasks",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

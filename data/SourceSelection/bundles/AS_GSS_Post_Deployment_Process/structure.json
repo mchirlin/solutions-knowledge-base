@@ -1,0 +1,277 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GSS Post Deployment Process",
+    "parent_name": null,
+    "total_objects": 13
+  },
+  "entry_point": {
+    "complexity_score": 8.0,
+    "total_nodes": 5,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GSS Post Deployment Process",
+      "complexity_score": 8.0,
+      "total_nodes": 5,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Sync Evaluation Chief"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Sync Evaluation Chief",
+          "type": "SUBPROCESS",
+          "next": [
+            "Any customized process?"
+          ],
+          "subprocess": "AS GSS Sync Evaluation Chair Inclusion or Exclusion"
+        },
+        {
+          "name": "Any customized process?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node",
+            "Customized Process"
+          ]
+        },
+        {
+          "name": "Customized Process",
+          "type": "Start Process (v2)",
+          "next": [
+            "End Node"
+          ]
+        }
+      ]
+    },
+    "subprocesses": [
+      {
+        "name": "AS GSS Sync Evaluation Chair Inclusion or Exclusion",
+        "complexity_score": 11.0,
+        "total_nodes": 6,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Get groups to be updated"
+            ]
+          },
+          {
+            "name": "Get groups to be updated",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Is Toggle on/off?"
+            ]
+          },
+          {
+            "name": "Add Evaluation Chair",
+            "type": "Add Group Members",
+            "next": [
+              "End Node"
+            ]
+          },
+          {
+            "name": "Remove Evaluation Chair",
+            "type": "Remove Group Members",
+            "next": [
+              "End Node"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Is Toggle on/off?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Remove Evaluation Chair (Off)",
+              "Add Evaluation Chair (On)",
+              "End Node (No Groups)"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e5d4-2024-8000-9baf-011c48011c48_336091",
+      "name": "AS_FRM_BOOL_RULE_CUSTOMIZATION_1_0_ENABLED",
+      "type": "Constant",
+      "description": "Returns true if customizable rules using the 1.0 SDK is enabled",
+      "value": "true",
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "AS_FRM_determineRuntimeRule"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_943046",
+      "name": "AS_GSS_GRP_BUSINESS_ROLES",
+      "type": "Constant",
+      "description": "Value: AS GSS Business Roles",
+      "value": "AS GSS Business Roles",
+      "value_type": "http://www.appian.com/ae/types/2009:Group",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_groupsToBeupdatedForEvaluationChiefVisibility"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_953517",
+      "name": "AS_GSS_GRP_CONTRACTING_PERSONNEL",
+      "type": "Constant",
+      "description": "Value: AS GSS Contracting group (CO/CS/CM ) ",
+      "value": "AS GSS Contracting Personnel",
+      "value_type": "http://www.appian.com/ae/types/2009:Group",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_groupsToBeupdatedForEvaluationChiefVisibility"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_948688",
+      "name": "AS_GSS_GRP_EVALUATION_CHAIRS",
+      "type": "Constant",
+      "description": "Value: Evaluation Chairs Group",
+      "value": "Evaluation Chairs",
+      "value_type": "http://www.appian.com/ae/types/2009:Group",
+      "calls": [],
+      "called_by": [
+        "AS GSS Sync Evaluation Chair Inclusion or Exclusion",
+        "AS_GSS_groupsToBeupdatedForEvaluationChiefVisibility"
+      ]
+    },
+    {
+      "uuid": "_a-0000e36c-7599-8000-9ba2-011c48011c48_44966-tmg-am-am",
+      "name": "AS_GSS_TMG_GRP_TASK_RECIPIENTS",
+      "type": "Constant",
+      "description": "Value: AS GSS TMG Task Recipients Group",
+      "value": "AS GSS TMG Task Recipients Access",
+      "value_type": "http://www.appian.com/ae/types/2009:Group",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_groupsToBeupdatedForEvaluationChiefVisibility"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea82-c8e1-8000-9cb9-011c48011c48_7941275",
+      "name": "AS_GSS_TOGGLE_EVALUATION_CHIEF_VISIBILITY",
+      "type": "Constant",
+      "description": "Toggles whether or not evaluations have an evaluation chief.  Evaluation chiefs have contracting team level access in many parts of the application, so if you do not want any evaluators with elevated access, then this should be set to FALSE.\n\nNOTE: If this toggle is set to FALSE in your environment, you will not want to place any users in the Evaluation Chairs group, as this groups also has contracting personnel level access and based on this toggle it will add/remove the Evaluation Chair group in the daily nightly process. ",
+      "value": null,
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "AS GSS Sync Evaluation Chair Inclusion or Exclusion",
+        "AS_GSS_groupsToBeupdatedForEvaluationChiefVisibility"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GSS Post Deployment Process",
+        "AS_CO_UT_isNotBlank"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around AS_CO_UT_isBlank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS GSS Sync Evaluation Chair Inclusion or Exclusion"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5d4-2024-8000-9baf-011c48011c48_320878",
+      "name": "AS_FRM_determineRuntimeRule",
+      "type": "Expression Rule",
+      "description": "Returns the runtime rule for a default rule, uses plugin function `determineRuntimeRule()`",
+      "parameters": [],
+      "calls": [
+        "AS_FRM_BOOL_RULE_CUSTOMIZATION_1_0_ENABLED"
+      ],
+      "called_by": [
+        "AS_GSS_CustomPostDeploymentProcesses_wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb1f-ba4f-8000-9d06-011c48011c48_9563503",
+      "name": "AS_GSS_CustomPostDeploymentProcesses_wrapper",
+      "type": "Expression Rule",
+      "description": "This rule returns a process to run after the deployment",
+      "parameters": [],
+      "calls": [
+        "AS_FRM_determineRuntimeRule"
+      ],
+      "called_by": [
+        "AS GSS Post Deployment Process"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb16-753f-8000-9d01-011c48011c48_9545781",
+      "name": "AS_GSS_groupsToBeupdatedForEvaluationChiefVisibility",
+      "type": "Expression Rule",
+      "description": "Groups to be updated for removing /adding the Evaluation Chief based on the AS_GSS_TOGGLE_EVALUATION_CHIEF_VISIBILITY",
+      "parameters": [],
+      "calls": [
+        "AS_GSS_GRP_BUSINESS_ROLES",
+        "AS_GSS_GRP_CONTRACTING_PERSONNEL",
+        "AS_GSS_GRP_EVALUATION_CHAIRS",
+        "AS_GSS_TMG_GRP_TASK_RECIPIENTS",
+        "AS_GSS_TOGGLE_EVALUATION_CHIEF_VISIBILITY"
+      ],
+      "called_by": [
+        "AS GSS Sync Evaluation Chair Inclusion or Exclusion"
+      ]
+    },
+    {
+      "uuid": "0002eb21-00aa-8000-8d70-7f0000014e7a",
+      "name": "AS GSS Post Deployment Process",
+      "type": "Process Model",
+      "description": "Post deployment model which will be configured in deployment tab in GSS application",
+      "calls": [
+        "AS GSS Sync Evaluation Chair Inclusion or Exclusion",
+        "AS_CO_UT_isBlank",
+        "AS_GSS_CustomPostDeploymentProcesses_wrapper"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "0002eb1d-5491-8000-8d4f-7f0000014e7a",
+      "name": "AS GSS Sync Evaluation Chair Inclusion or Exclusion",
+      "type": "Process Model",
+      "description": "Process to include or exclude the Evaluation Chair",
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_GSS_GRP_EVALUATION_CHAIRS",
+        "AS_GSS_TOGGLE_EVALUATION_CHIEF_VISIBILITY",
+        "AS_GSS_groupsToBeupdatedForEvaluationChiefVisibility"
+      ],
+      "called_by": [
+        "AS GSS Post Deployment Process"
+      ]
+    }
+  ]
+}

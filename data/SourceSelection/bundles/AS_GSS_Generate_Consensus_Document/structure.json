@@ -1,0 +1,1346 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GSS Generate Consensus Document",
+    "parent_name": null,
+    "total_objects": 78
+  },
+  "entry_point": {
+    "complexity_score": 23.0,
+    "total_nodes": 12,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GSS Generate Consensus Document",
+      "complexity_score": 23.0,
+      "total_nodes": 12,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Consensus Responses null?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Get Visible Responses",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Build document gen & deactivate inputs"
+          ]
+        },
+        {
+          "name": "Construct Factor Document Mapping",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write to AS_GSS_FACTOR_DOCUMENT_MAPPING"
+          ]
+        },
+        {
+          "name": "Filter to Visible Responses",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Build document gen & deactivate inputs"
+          ]
+        },
+        {
+          "name": "Consensus Responses null?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Get Visible Responses (Yes)",
+            "Filter to Visible Responses (No)"
+          ]
+        },
+        {
+          "name": "Signature not required?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Create doc with signatures (No)",
+            "Create doc without signatures (Yes)"
+          ]
+        },
+        {
+          "name": "Build document gen & deactivate inputs",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Signature not required?"
+          ]
+        },
+        {
+          "name": "Write to AS_GSS_FACTOR_DOCUMENT_MAPPING",
+          "type": "Write to Data Store Entity",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Write to Evaluation_Document",
+          "type": "Write to Data Store Entity",
+          "next": [
+            "Construct Factor Document Mapping"
+          ]
+        },
+        {
+          "name": "Create doc with signatures",
+          "type": "MS Word 2007 Doc from Template",
+          "next": [
+            "Write to Evaluation_Document"
+          ]
+        },
+        {
+          "name": "Create doc without signatures",
+          "type": "MS Word 2007 Doc from Template",
+          "next": [
+            "Write to Evaluation_Document"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290131",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+      "type": "Constant",
+      "description": "DATA_SUBSET - Returns a type of DataSubset when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "DATA_SUBSET",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_QE_getEvaluationDocuments",
+        "AS_GSS_QE_getUser"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290163",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "description": "OBJECT_ARRAY - Returns an array type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "OBJECT_ARRAY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_QE_getConsensusReport",
+        "AS_GSS_QE_getConsensusResponses",
+        "AS_GSS_QE_getEvaluation",
+        "AS_GSS_QE_getEvaluationCriteria",
+        "AS_GSS_QE_getEvaluationFactorDocumentMapping",
+        "AS_GSS_QE_getEvaluationVendor",
+        "AS_GSS_QE_getRatings",
+        "AS_GSS_QE_getRefDataByTypes",
+        "AS_GSS_QE_getVisibleConsensusResponses",
+        "AS_GSS_QR_getEvaluation",
+        "AS_GSS_UT_createDynamicTableForSignature_ConsensusDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290157",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "description": "SINGLE_OBJECT - Returns a single type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "SINGLE_OBJECT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GSS Generate Consensus Document",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_BL_consensusDocumentDescription",
+        "AS_GSS_BL_isConsensusReportSignaturesRequired",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_QE_getEvaluationDocuments",
+        "AS_GSS_QE_getUser",
+        "AS_GSS_QR_getConsensusSignatures",
+        "AS_GSS_UT_constructDetailsForConsensusDocumentMapping",
+        "AS_GSS_UT_createDynamicTableForSignature_ConsensusDocument",
+        "AS_GSS_UT_filterVisibleConsensusResponses",
+        "AS_GSS_constructFactorDocumentMapping"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-9390-8000-9baa-011c48011c48_45483",
+      "name": "AS_GAM_GRP_CONTRACTING_OFFICER",
+      "type": "Constant",
+      "description": "Value: Contracting Officer group",
+      "value": "Contracting Officer",
+      "value_type": "http://www.appian.com/ae/types/2009:Group",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_returnNickName"
+      ]
+    },
+    {
+      "uuid": "_a-0000e438-ff39-8000-9ba8-011c48011c48_14717",
+      "name": "AS_GAM_TXT_SEPARATOR_SPACE",
+      "type": "Constant",
+      "description": "Value: space that can be used as a separator",
+      "value": " ",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GAM_UT_concatUserFirstNameLastName"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec62-ac34-8000-9d9a-011c48011c48_13151218",
+      "name": "AS_GSS_CO_NULL_REPLACEABLE_TEXT",
+      "type": "Constant",
+      "description": "Value:  -",
+      "value": "-",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_createDynamicTableForSignature_ConsensusDocument",
+        "AS_GSS_UT_returnNickName"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_940532",
+      "name": "AS_GSS_ENT_EVALUATION_DOCUMENT",
+      "type": "Constant",
+      "description": "Value: AS_GSS_EvaluationDocument",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS GSS Generate Consensus Document",
+        "AS_GSS_QE_getEvaluationDocuments"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_950297",
+      "name": "AS_GSS_ENT_EVALUATION_VENDOR",
+      "type": "Constant",
+      "description": "Value: AS_GSS_EvaluationVendor",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_QE_getEvaluationVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1383361",
+      "name": "AS_GSS_ENT_FACTOR_DOCUMENT_MAPPING",
+      "type": "Constant",
+      "description": "Value: AS_GSS_FactorDocumentMapping",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS GSS Generate Consensus Document",
+        "AS_GSS_QE_getEvaluationFactorDocumentMapping"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_955711",
+      "name": "AS_GSS_ENT_USER",
+      "type": "Constant",
+      "description": "Value: AS_GSS_User Data Store Entity",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_QE_getUser"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb16-753f-8000-9d01-011c48011c48_9518376",
+      "name": "AS_GSS_REF_ID_CONSENSUS_REPORT_STATUS_AWAITING_SIGNATURE",
+      "type": "Constant",
+      "description": "Value: 57\n",
+      "value": "57",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GSS Generate Consensus Document",
+        "AS_GSS_UT_createDynamicTableForSignature_ConsensusDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000e721-640b-8000-9ba8-011c48011c48_43175",
+      "name": "AS_GSS_REF_ID_CONSENSUS_REPORT_STATUS_COMPLETE",
+      "type": "Constant",
+      "description": "Value: 47\n",
+      "value": "47",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_createDynamicTableForSignature_ConsensusDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_947606",
+      "name": "AS_GSS_REF_ID_DOC_TYPE_CONSENSUS",
+      "type": "Constant",
+      "description": "Value: 27",
+      "value": "27",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_constructConsensusDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000e714-224b-8000-9ba5-011c48011c48_34577",
+      "name": "AS_GSS_REF_ID_RESPONSE_TYPE_DEFICIENCY",
+      "type": "Constant",
+      "description": "Value: 44",
+      "value": "44",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_sortConsensusResponsesForConsensusDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000e714-224b-8000-9ba5-011c48011c48_34563",
+      "name": "AS_GSS_REF_ID_RESPONSE_TYPE_STRENGTH",
+      "type": "Constant",
+      "description": "Value: 42",
+      "value": "42",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_sortConsensusResponsesForConsensusDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000e714-224b-8000-9ba5-011c48011c48_34570",
+      "name": "AS_GSS_REF_ID_RESPONSE_TYPE_WEAKNESS",
+      "type": "Constant",
+      "description": "Value: 43",
+      "value": "43",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_sortConsensusResponsesForConsensusDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec90-d194-8000-9dac-011c48011c48_13562047",
+      "name": "AS_GSS_REF_ID_SOURCE_APPLICATION_GSS",
+      "type": "Constant",
+      "description": "Value: 59",
+      "value": "59",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_constructConsensusDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_940960",
+      "name": "AS_GSS_TXT_INSERT_INFO",
+      "type": "Constant",
+      "description": "Value: {Insert Info}",
+      "value": "{Insert Info}",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_constructDetailsForConsensusDocumentMapping"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39070",
+      "name": "AS_CO_UT_booleanDefaultFalse",
+      "type": "Expression Rule",
+      "description": "Default a null value to false, otherwise returns the boolean value",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_captureMetadata",
+        "AS_CO_UT_not",
+        "AS_GSS_QE_getEvaluationDocuments"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_28158",
+      "name": "AS_CO_UT_captureMetadata",
+      "type": "Expression Rule",
+      "description": "Automatically sets the \"auditing\" fields on a CDT, including createdDatetime/createdBy/modifiedDatetime/modifiedBy/isActive/isDeleted",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_booleanDefaultFalse",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_updateCdtFields"
+      ],
+      "called_by": [
+        "AS_GSS_constructConsensusDocument",
+        "AS_GSS_constructFactorDocumentMapping"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_147388",
+      "name": "AS_CO_UT_documentProperty",
+      "type": "Expression Rule",
+      "description": "Friendly null handler for the document() function",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GSS_constructConsensusDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_268381",
+      "name": "AS_CO_UT_enumForCount",
+      "type": "Expression Rule",
+      "description": "Return an enumerator for the count of the input objects",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_returnCdtIndicesByMultipleFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75800",
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "description": "Filters a CDT by a matching a single value or list of values in a single field, if a list is passed, all matches are returned",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_returnCdtIndicesByField"
+      ],
+      "called_by": [
+        "AS GSS Generate Consensus Document",
+        "AS_GSS_BL_sortConsensusResponsesForConsensusDocument",
+        "AS_GSS_UT_createDynamicTableForSignature_ConsensusDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_81482",
+      "name": "AS_CO_UT_filterCdtByMultipleFields",
+      "type": "Expression Rule",
+      "description": "Filters a CDT by multiple fields and values for those fields (acts as an AND filter)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_returnCdtIndicesByMultipleFields"
+      ],
+      "called_by": [
+        "AS_GSS_UT_filterVisibleConsensusResponses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76433",
+      "name": "AS_CO_UT_indexPath",
+      "type": "Expression Rule",
+      "description": "Pass in a field (i.e. member[1].name) and this will index(index(index( for each field",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_returnCdtIndicesByField",
+        "AS_GSS_UT_createDynamicTableForResponses_ConsensusDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6a4-3c85-8000-9ba5-011c48011c48_45984",
+      "name": "AS_CO_UT_indexWhere",
+      "type": "Expression Rule",
+      "description": "Will find the index of a value in one array and return the value in a different array at that same index",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GSS_UT_createDynamicTableForSignature_ConsensusDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GSS Generate Consensus Document",
+        "AS_CO_UT_documentProperty",
+        "AS_CO_UT_enumForCount",
+        "AS_CO_UT_indexWhere",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_updateCdtFields",
+        "AS_CO_UT_whereContains",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GAM_UT_concatUserFirstNameLastName",
+        "AS_GSS_BL_consensusDocumentDescription",
+        "AS_GSS_UT_constructDetailsForConsensusDocumentMapping"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around AS_CO_UT_isBlank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_BL_isConsensusReportSignaturesRequired",
+        "AS_GSS_QE_getConsensusReport",
+        "AS_GSS_QE_getConsensusResponses",
+        "AS_GSS_QE_getEvaluation",
+        "AS_GSS_QE_getEvaluationCriteria",
+        "AS_GSS_QE_getEvaluationDocuments",
+        "AS_GSS_QE_getEvaluationFactorDocumentMapping",
+        "AS_GSS_QE_getEvaluationVendor",
+        "AS_GSS_QE_getUser",
+        "AS_GSS_QE_getVisibleConsensusResponses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75636",
+      "name": "AS_CO_UT_not",
+      "type": "Expression Rule",
+      "description": "Null handles for not -- null returns true (null acts like false)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_booleanDefaultFalse"
+      ],
+      "called_by": [
+        "AS_GSS_QE_getConsensusReport",
+        "AS_GSS_QE_getEvaluationCriteria",
+        "AS_GSS_QE_getEvaluationFactorDocumentMapping",
+        "AS_GSS_QE_getEvaluationVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157870",
+      "name": "AS_CO_UT_queryEntity",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GSS_QE_getConsensusReport",
+        "AS_GSS_QE_getConsensusResponses",
+        "AS_GSS_QE_getEvaluation",
+        "AS_GSS_QE_getEvaluationCriteria",
+        "AS_GSS_QE_getEvaluationDocuments",
+        "AS_GSS_QE_getEvaluationFactorDocumentMapping",
+        "AS_GSS_QE_getEvaluationVendor",
+        "AS_GSS_QE_getRatings",
+        "AS_GSS_QE_getRefDataByTypes",
+        "AS_GSS_QE_getUser"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6c8-d132-8000-9bbe-011c48011c48_469266",
+      "name": "AS_CO_UT_queryRecord",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_GSS_QR_getConsensusSignatures",
+        "AS_GSS_QR_getEvaluation",
+        "AS_GSS_QR_getMaskEvaluatorDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367",
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS GSS Generate Consensus Document",
+        "AS_GSS_QR_getConsensusSignatures"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73980",
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "description": "Returns nullableValue only if it is not null. Else returns replacementValue.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_captureMetadata",
+        "AS_CO_UT_queryEntity",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GSS_UT_createDynamicTableForResponses_ConsensusDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_269546",
+      "name": "AS_CO_UT_returnCdtIndicesByField",
+      "type": "Expression Rule",
+      "description": "Returns the indices of a CDT by a matching a single value or list of values in a single field, if a list is passed, all matches are returned",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_whereContains"
+      ],
+      "called_by": [
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_zINTERNAL_returnCdtIndicesByMultipleFields_handler"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75672",
+      "name": "AS_CO_UT_returnCdtIndicesByMultipleFields",
+      "type": "Expression Rule",
+      "description": "Returns the indices of a CDT by multiple fields and values for those fields (acts as an AND filter)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_enumForCount",
+        "AS_CO_UT_zINTERNAL_returnCdtIndicesByMultipleFields_handler"
+      ],
+      "called_by": [
+        "AS_CO_UT_filterCdtByMultipleFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_162769",
+      "name": "AS_CO_UT_typeCompare",
+      "type": "Expression Rule",
+      "description": "Returns true if the two input types match",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_whereContains"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_260165",
+      "name": "AS_CO_UT_updateCdtFields",
+      "type": "Expression Rule",
+      "description": "Updates one or more fields of a CDT, with an optional input for indices",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS GSS Generate Consensus Document",
+        "AS_CO_UT_captureMetadata"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_272151",
+      "name": "AS_CO_UT_whereContains",
+      "type": "Expression Rule",
+      "description": "Enhanced wherecontains() which avoids type-casting issues and properly handles for document and group types",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_typeCompare"
+      ],
+      "called_by": [
+        "AS_CO_UT_returnCdtIndicesByField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_270503",
+      "name": "AS_CO_UT_zINTERNAL_returnCdtIndicesByMultipleFields_handler",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_CO_UT_returnCdtIndicesByMultipleFields`",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_returnCdtIndicesByField"
+      ],
+      "called_by": [
+        "AS_CO_UT_returnCdtIndicesByMultipleFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53662",
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "description": "Displays a label by the `bundleKey` from passed in bundle data, optionally accepts arguments",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GSS_BL_consensusDocumentDescription",
+        "AS_GSS_UT_constructDetailsForConsensusDocumentMapping",
+        "AS_GSS_UT_createDynamicTableForSignature_ConsensusDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000e438-ff39-8000-9ba8-011c48011c48_14666",
+      "name": "AS_GAM_UT_concatUserFirstNameLastName",
+      "type": "Expression Rule",
+      "description": "Returns the Concatenated Format of First Name and Last Name with any separator",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_GAM_TXT_SEPARATOR_SPACE"
+      ],
+      "called_by": [
+        "AS_GSS_UT_constructDetailsForConsensusDocumentMapping",
+        "AS_GSS_UT_createDynamicTableForSignature_ConsensusDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea5d-dec5-8000-9ca9-011c48011c48_7288680",
+      "name": "AS_GSS_BL_consensusDocumentDescription",
+      "type": "Expression Rule",
+      "description": "Generates the description for the consensus document",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_isBlank",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GSS_CO_UT_loadBundleFromFolder",
+        "AS_GSS_QE_getConsensusReport",
+        "AS_GSS_QE_getEvaluationCriteria",
+        "AS_GSS_QE_getEvaluationVendor"
+      ],
+      "called_by": [
+        "AS GSS Generate Consensus Document"
+      ]
+    },
+    {
+      "uuid": "_a-0000e721-640b-8000-9ba8-011c48011c48_65777",
+      "name": "AS_GSS_BL_consensusDocumentName",
+      "type": "Expression Rule",
+      "description": "Rule to build the consensus document name",
+      "parameters": [],
+      "calls": [
+        "AS_GSS_CO_UT_loadBundleFromFolder"
+      ],
+      "called_by": [
+        "AS GSS Generate Consensus Document"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb7c-0389-8000-9d2c-011c48011c48_10533949",
+      "name": "AS_GSS_BL_constructFormattedLabelValuePairText_ConsensusDocument",
+      "type": "Expression Rule",
+      "description": "Returns OOXML code for the text format - [label]: [value]",
+      "parameters": [],
+      "calls": [
+        "AS_GSS_UT_returnOoxmlCompatibleText"
+      ],
+      "called_by": [
+        "AS_GSS_UT_createDynamicTableForConsensusDetails_ConsensusDocument",
+        "AS_GSS_UT_createTableCell",
+        "AS_GSS_UT_createTableRowWithDynamicColumns"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb28-f476-8000-9d09-011c48011c48_9633452",
+      "name": "AS_GSS_BL_isConsensusReportSignaturesRequired",
+      "type": "Expression Rule",
+      "description": "Rule to show or hide the signature related components",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_isNotBlank",
+        "AS_GSS_QE_getEvaluation"
+      ],
+      "called_by": [
+        "AS GSS Generate Consensus Document"
+      ]
+    },
+    {
+      "uuid": "1b4b9d86-c8be-4340-978c-c4871024d5fd",
+      "name": "AS_GSS_BL_sortConsensusResponsesForConsensusDocument",
+      "type": "Expression Rule",
+      "description": "Rule to sort the consensus responses for consensus document generation",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_filterCdtByField",
+        "AS_GSS_REF_ID_RESPONSE_TYPE_DEFICIENCY",
+        "AS_GSS_REF_ID_RESPONSE_TYPE_STRENGTH",
+        "AS_GSS_REF_ID_RESPONSE_TYPE_WEAKNESS"
+      ],
+      "called_by": [
+        "AS_GSS_UT_createDynamicTableForResponses_ConsensusDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb1f-ba4f-8000-9d06-011c48011c48_9613447",
+      "name": "AS_GSS_CO_UT_formatDateTimeTextWithTimezone",
+      "type": "Expression Rule",
+      "description": "Returns date and time with timezone in the given text format.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_createDynamicTableForSignature_ConsensusDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1319026",
+      "name": "AS_GSS_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "description": "Loads a property bundle file by name from a folder, returns a dictionary of the key-value pairs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_consensusDocumentDescription",
+        "AS_GSS_BL_consensusDocumentName",
+        "AS_GSS_UT_constructDetailsForConsensusDocumentMapping",
+        "AS_GSS_UT_createDynamicTableForResponses_ConsensusDocument",
+        "AS_GSS_UT_createDynamicTableForSignature_ConsensusDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000e714-224b-8000-9ba5-011c48011c48_35409",
+      "name": "AS_GSS_QE_getConsensusReport",
+      "type": "Expression Rule",
+      "description": "Returns consensus report details based on the given filter set",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_not",
+        "AS_CO_UT_queryEntity"
+      ],
+      "called_by": [
+        "AS_GSS_BL_consensusDocumentDescription",
+        "AS_GSS_UT_createDynamicTableForSignature_ConsensusDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000e721-640b-8000-9ba8-011c48011c48_48382",
+      "name": "AS_GSS_QE_getConsensusResponses",
+      "type": "Expression Rule",
+      "description": "Returns consensus responses based on the given filter set",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryEntity"
+      ],
+      "called_by": [
+        "AS_GSS_QE_getVisibleConsensusResponses",
+        "AS_GSS_UT_filterVisibleConsensusResponses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_940763",
+      "name": "AS_GSS_QE_getEvaluation",
+      "type": "Expression Rule",
+      "description": "Returns evaluation details based on the given filter set",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryEntity"
+      ],
+      "called_by": [
+        "AS_GSS_BL_isConsensusReportSignaturesRequired"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_950289",
+      "name": "AS_GSS_QE_getEvaluationCriteria",
+      "type": "Expression Rule",
+      "description": "Returns evaluation criteria details based on the given filter set",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_not",
+        "AS_CO_UT_queryEntity"
+      ],
+      "called_by": [
+        "AS_GSS_BL_consensusDocumentDescription",
+        "AS_GSS_UT_constructDetailsForConsensusDocumentMapping",
+        "AS_GSS_UT_createDynamicTableForSignature_ConsensusDocument",
+        "AS_GSS_constructFactorDocumentMapping"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_956560",
+      "name": "AS_GSS_QE_getEvaluationDocuments",
+      "type": "Expression Rule",
+      "description": "Returns evaluation documents based on the given filter set",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_booleanDefaultFalse",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryEntity",
+        "AS_GSS_ENT_EVALUATION_DOCUMENT"
+      ],
+      "called_by": [
+        "AS GSS Generate Consensus Document"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1390126",
+      "name": "AS_GSS_QE_getEvaluationFactorDocumentMapping",
+      "type": "Expression Rule",
+      "description": "Returns evaluation criteria & document mapping details based on the given filter set",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_not",
+        "AS_CO_UT_queryEntity",
+        "AS_GSS_ENT_FACTOR_DOCUMENT_MAPPING"
+      ],
+      "called_by": [
+        "AS GSS Generate Consensus Document"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_950323",
+      "name": "AS_GSS_QE_getEvaluationVendor",
+      "type": "Expression Rule",
+      "description": "Returns evaluation vendor details based on the given filter set",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_not",
+        "AS_CO_UT_queryEntity",
+        "AS_GSS_ENT_EVALUATION_VENDOR"
+      ],
+      "called_by": [
+        "AS_GSS_BL_consensusDocumentDescription",
+        "AS_GSS_UT_constructDetailsForConsensusDocumentMapping"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1029317",
+      "name": "AS_GSS_QE_getRatings",
+      "type": "Expression Rule",
+      "description": "Returns the transactional ratings",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_queryEntity"
+      ],
+      "called_by": [
+        "AS_GSS_UT_constructDetailsForConsensusDocumentMapping"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_935192",
+      "name": "AS_GSS_QE_getRefDataByTypes",
+      "type": "Expression Rule",
+      "description": "Returns a list of reference data by the type",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_queryEntity"
+      ],
+      "called_by": [
+        "AS_GSS_constructConsensusDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_955703",
+      "name": "AS_GSS_QE_getUser",
+      "type": "Expression Rule",
+      "description": "Returns user based on the given filter set.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryEntity",
+        "AS_GSS_ENT_USER"
+      ],
+      "called_by": [
+        "AS_GSS_UT_createDynamicTableForSignature_ConsensusDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea5d-dec5-8000-9ca9-011c48011c48_7288572",
+      "name": "AS_GSS_QE_getVisibleConsensusResponses",
+      "type": "Expression Rule",
+      "description": "Query to return only the consensus responses that should be visible on the consensus report",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_isNotBlank",
+        "AS_GSS_QE_getConsensusResponses"
+      ],
+      "called_by": [
+        "AS GSS Generate Consensus Document"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb16-753f-8000-9d01-011c48011c48_9499568",
+      "name": "AS_GSS_QR_getConsensusSignatures",
+      "type": "Expression Rule",
+      "description": "Generic query expression for consensus signature record data",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GSS_ConsensusSignature_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_UT_createDynamicTableForSignature_ConsensusDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb72-c933-8000-9d28-011c48011c48_10441691",
+      "name": "AS_GSS_QR_getEvaluation",
+      "type": "Expression Rule",
+      "description": "Returns evaluation synced record based on the given filter set",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_Evaluation_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_UT_createDynamicTableForSignature_ConsensusDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed12-1223-8000-9ddd-011c48011c48_14610901",
+      "name": "AS_GSS_QR_getMaskEvaluatorDetails",
+      "type": "Expression Rule",
+      "description": "Returns Mask Evaluator Details synced record based on the given filter set",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_MaskEvaluator_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_UT_createDynamicTableForSignature_ConsensusDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000e721-640b-8000-9ba8-011c48011c48_49628",
+      "name": "AS_GSS_UT_constructDetailsForConsensusDocumentMapping",
+      "type": "Expression Rule",
+      "description": "Consensus Document Details Mapping",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_isBlank",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GAM_UT_concatUserFirstNameLastName",
+        "AS_GSS_CO_UT_loadBundleFromFolder",
+        "AS_GSS_QE_getEvaluationCriteria",
+        "AS_GSS_QE_getEvaluationVendor",
+        "AS_GSS_QE_getRatings",
+        "AS_GSS_TXT_INSERT_INFO",
+        "AS_GSS_UT_createDynamicTableForConsensusDetails_ConsensusDocument",
+        "AS_GSS_UT_returnOoxmlCompatibleText"
+      ],
+      "called_by": [
+        "AS GSS Generate Consensus Document"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb7c-0389-8000-9d2c-011c48011c48_10533424",
+      "name": "AS_GSS_UT_createDynamicTableForConsensusDetails_ConsensusDocument",
+      "type": "Expression Rule",
+      "description": "Rule to get the OOXML code of consensus basic details table section for the consensus report document.",
+      "parameters": [],
+      "calls": [
+        "AS_GSS_BL_constructFormattedLabelValuePairText_ConsensusDocument",
+        "AS_GSS_UT_createTableRowWithDynamicColumns"
+      ],
+      "called_by": [
+        "AS_GSS_UT_constructDetailsForConsensusDocumentMapping"
+      ]
+    },
+    {
+      "uuid": "718a4c67-c1cd-48b7-9365-d276c36e8f1c",
+      "name": "AS_GSS_UT_createDynamicTableForResponses_ConsensusDocument",
+      "type": "Expression Rule",
+      "description": "Returns the OOXML Code of table for consensus responses in consensus document.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_replaceNull",
+        "AS_GSS_BL_sortConsensusResponsesForConsensusDocument",
+        "AS_GSS_CO_UT_loadBundleFromFolder",
+        "AS_GSS_UT_createDynamicTableHeaderRow",
+        "AS_GSS_UT_createTableRowWithDynamicColumns"
+      ],
+      "called_by": [
+        "AS GSS Generate Consensus Document"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb1f-ba4f-8000-9d06-011c48011c48_9612210",
+      "name": "AS_GSS_UT_createDynamicTableForSignature_ConsensusDocument",
+      "type": "Expression Rule",
+      "description": "Rule to get the OOXML code of signature table section for the consensus document.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_indexWhere",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GAM_UT_concatUserFirstNameLastName",
+        "AS_GSS_CO_NULL_REPLACEABLE_TEXT",
+        "AS_GSS_CO_UT_formatDateTimeTextWithTimezone",
+        "AS_GSS_CO_UT_loadBundleFromFolder",
+        "AS_GSS_ConsensusSignature_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_QE_getConsensusReport",
+        "AS_GSS_QE_getEvaluationCriteria",
+        "AS_GSS_QE_getUser",
+        "AS_GSS_QR_getConsensusSignatures",
+        "AS_GSS_QR_getEvaluation",
+        "AS_GSS_QR_getMaskEvaluatorDetails",
+        "AS_GSS_REF_ID_CONSENSUS_REPORT_STATUS_AWAITING_SIGNATURE",
+        "AS_GSS_REF_ID_CONSENSUS_REPORT_STATUS_COMPLETE",
+        "AS_GSS_UT_createDynamicTableHeaderRow",
+        "AS_GSS_UT_createTableRowWithDynamicColumns",
+        "AS_GSS_UT_returnNickName"
+      ],
+      "called_by": [
+        "AS GSS Generate Consensus Document"
+      ]
+    },
+    {
+      "uuid": "_a-0000e721-640b-8000-9ba8-011c48011c48_63286",
+      "name": "AS_GSS_UT_createDynamicTableHeaderRow",
+      "type": "Expression Rule",
+      "description": "Returns the OOXML code of table header row and creates columns dynamically based on ri!headers.",
+      "parameters": [],
+      "calls": [
+        "AS_GSS_UT_createTableCell"
+      ],
+      "called_by": [
+        "AS_GSS_UT_createDynamicTableForResponses_ConsensusDocument",
+        "AS_GSS_UT_createDynamicTableForSignature_ConsensusDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb7c-0389-8000-9d2c-011c48011c48_10552044",
+      "name": "AS_GSS_UT_createTableCell",
+      "type": "Expression Rule",
+      "description": "Rule to create the OOXML code for cells in table.",
+      "parameters": [],
+      "calls": [
+        "AS_GSS_BL_constructFormattedLabelValuePairText_ConsensusDocument",
+        "AS_GSS_UT_returnOoxmlCompatibleText"
+      ],
+      "called_by": [
+        "AS_GSS_UT_createDynamicTableHeaderRow",
+        "AS_GSS_UT_createTableRowWithDynamicColumns"
+      ]
+    },
+    {
+      "uuid": "e3b8727d-02a2-4ad8-868e-38b80ffcaa48",
+      "name": "AS_GSS_UT_createTableRowWithDynamicColumns",
+      "type": "Expression Rule",
+      "description": "Returns the OOXML code for table row with dynamic number of columns based on ri!cells.",
+      "parameters": [],
+      "calls": [
+        "AS_GSS_BL_constructFormattedLabelValuePairText_ConsensusDocument",
+        "AS_GSS_UT_createTableCell"
+      ],
+      "called_by": [
+        "AS_GSS_UT_createDynamicTableForConsensusDetails_ConsensusDocument",
+        "AS_GSS_UT_createDynamicTableForResponses_ConsensusDocument",
+        "AS_GSS_UT_createDynamicTableForSignature_ConsensusDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea5d-dec5-8000-9ca9-011c48011c48_7290214",
+      "name": "AS_GSS_UT_filterVisibleConsensusResponses",
+      "type": "Expression Rule",
+      "description": "Filters to the consensus responses that should be visible in report document",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_filterCdtByMultipleFields",
+        "AS_GSS_QE_getConsensusResponses"
+      ],
+      "called_by": [
+        "AS GSS Generate Consensus Document"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed18-63ad-8000-9de0-011c48011c48_14638612",
+      "name": "AS_GSS_UT_returnNickName",
+      "type": "Expression Rule",
+      "description": "Expression to return nickname for matching user",
+      "parameters": [],
+      "calls": [
+        "AS_GAM_GRP_CONTRACTING_OFFICER",
+        "AS_GSS_CO_NULL_REPLACEABLE_TEXT",
+        "AS_GSS_MaskEvaluator_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_UT_createDynamicTableForSignature_ConsensusDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb92-18ff-8000-9d35-011c48011c48_11083164",
+      "name": "AS_GSS_UT_returnOoxmlCompatibleText",
+      "type": "Expression Rule",
+      "description": "Returns text that can be used in an OOXML code.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_constructFormattedLabelValuePairText_ConsensusDocument",
+        "AS_GSS_UT_constructDetailsForConsensusDocumentMapping",
+        "AS_GSS_UT_createTableCell"
+      ]
+    },
+    {
+      "uuid": "d79765e3-fce4-4302-b504-c6afc7f20f74",
+      "name": "AS_GSS_constructConsensusDocument",
+      "type": "Expression Rule",
+      "description": "Constructs consensus document of AS_GSS_EvaluationDocument type CDT.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_captureMetadata",
+        "AS_CO_UT_documentProperty",
+        "AS_GSS_QE_getRefDataByTypes",
+        "AS_GSS_REF_ID_DOC_TYPE_CONSENSUS",
+        "AS_GSS_REF_ID_SOURCE_APPLICATION_GSS"
+      ],
+      "called_by": [
+        "AS GSS Generate Consensus Document"
+      ]
+    },
+    {
+      "uuid": "_a-0000e721-640b-8000-9ba8-011c48011c48_66260",
+      "name": "AS_GSS_constructFactorDocumentMapping",
+      "type": "Expression Rule",
+      "description": "Rule to construct Factor Document mapping details",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_captureMetadata",
+        "AS_GSS_QE_getEvaluationCriteria"
+      ],
+      "called_by": [
+        "AS GSS Generate Consensus Document"
+      ]
+    },
+    {
+      "uuid": "0002e734-6ed2-8000-fcb9-7f0000014e7a",
+      "name": "AS GSS Generate Consensus Document",
+      "type": "Process Model",
+      "description": "Process Model to generate consensus document",
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_updateCdtFields",
+        "AS_GSS_BL_consensusDocumentDescription",
+        "AS_GSS_BL_consensusDocumentName",
+        "AS_GSS_BL_isConsensusReportSignaturesRequired",
+        "AS_GSS_ENT_EVALUATION_DOCUMENT",
+        "AS_GSS_ENT_FACTOR_DOCUMENT_MAPPING",
+        "AS_GSS_QE_getEvaluationDocuments",
+        "AS_GSS_QE_getEvaluationFactorDocumentMapping",
+        "AS_GSS_QE_getVisibleConsensusResponses",
+        "AS_GSS_REF_ID_CONSENSUS_REPORT_STATUS_AWAITING_SIGNATURE",
+        "AS_GSS_UT_constructDetailsForConsensusDocumentMapping",
+        "AS_GSS_UT_createDynamicTableForResponses_ConsensusDocument",
+        "AS_GSS_UT_createDynamicTableForSignature_ConsensusDocument",
+        "AS_GSS_UT_filterVisibleConsensusResponses",
+        "AS_GSS_constructConsensusDocument",
+        "AS_GSS_constructFactorDocumentMapping"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "1c6eb50d-2b36-4f2e-8232-c9285a1cde00",
+      "name": "AS_GSS_ConsensusSignature_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "Used to track signatures on a consensus",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_QR_getConsensusSignatures",
+        "AS_GSS_UT_createDynamicTableForSignature_ConsensusDocument"
+      ]
+    },
+    {
+      "uuid": "e6bc8561-d3a6-4679-b7af-6e279910468e",
+      "name": "AS_GSS_Evaluation_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "NOTE: Solicitation Description and Evaluation Description are 5000 characters and will be trimmed in the synced record",
+      "actions": [
+        "createNewEvaluation",
+        "addVendor",
+        "UpdatePhases",
+        "AddPhases"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_GSS_MaskEvaluator_SYNCEDRECORD",
+        "AS_GSS_QR_getEvaluation"
+      ],
+      "called_by": [
+        "AS_GSS_MaskEvaluator_SYNCEDRECORD",
+        "AS_GSS_QR_getEvaluation",
+        "AS_GSS_UT_createDynamicTableForSignature_ConsensusDocument"
+      ]
+    },
+    {
+      "uuid": "2bb527e5-fc79-4b9e-bd9b-36711bdda736",
+      "name": "AS_GSS_MaskEvaluator_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "Synced record for mask evaluator details",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_GSS_Evaluation_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_QR_getMaskEvaluatorDetails",
+        "AS_GSS_UT_returnNickName"
+      ]
+    }
+  ]
+}

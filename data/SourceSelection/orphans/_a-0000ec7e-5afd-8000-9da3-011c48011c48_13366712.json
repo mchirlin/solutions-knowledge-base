@@ -1,0 +1,20 @@
+{
+  "uuid": "_a-0000ec7e-5afd-8000-9da3-011c48011c48_13366712",
+  "name": "AS_GSS_BL_assigneeFilterForRecordSummary",
+  "type": "Expression Rule",
+  "description": "Assignee filter for runtime record summary grid",
+  "sail_code": "/* This rule cannot have a test case */\na!localVariables(\n  local!bundle: rule!AS_GSS_CO_UT_loadBundleFromFolder(langISOCode: null),\n  local!filterValues: {\n    a!map(\n      label: \"All Assignees\",\n      key: \"ASSIGNEE_ALL\"\n    ),\n    a!map(\n      label: \"Assigned to me\",\n      key: \"ASSIGNEE_ME\"\n    ),\n    a!map(\n      label: \"Unassigned\",\n      key: \"UNASSIGNED\"\n    )\n  },\n  #\"SYSTEM_SYSRULES_recordFilterList\"(\n    name: \"Assignee\",\n    options: {\n      #\"SYSTEM_SYSRULES_recordFilterListOption\"(\n        id: 1,\n        name: local!filterValues[1].label,\n        filter: {\n          /*Adding filter for taskId to be not null because we need to get all data for a record*/\n          #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: recordType!AS_GSS_TMG_Task_SYNCEDRECORD.taskId,\n            operator: \"not null\",\n            \n          )\n        }\n      ),\n      #\"SYSTEM_SYSRULES_recordFilterListOption\"(\n        id: 2,\n        name: local!filterValues[2].label,\n        filter: {\n          #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: recordType!AS_GSS_TMG_Task_SYNCEDRECORD.userAssignee,\n            operator: \"=\",\n            value: ri!user\n          )\n        }\n      ),\n      #\"SYSTEM_SYSRULES_recordFilterListOption\"(\n        id: 3,\n        name: local!filterValues[3].label,\n        filter: {\n          #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: recordType!AS_GSS_TMG_Task_SYNCEDRECORD.userAssignee,\n            operator: \"is null\"\n          )\n        }\n      )\n    },\n    allowMultipleSelections: false,\n    defaultOption: \"All Assignees\"\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_Task_SYNCEDRECORD",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    }
+  ],
+  "called_by": []
+}

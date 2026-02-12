@@ -1,0 +1,2009 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GSS Complete LPTA Evaluation",
+    "parent_name": null,
+    "total_objects": 100
+  },
+  "entry_point": {
+    "complexity_score": 12.0,
+    "total_nodes": 7,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GSS Complete LPTA Evaluation",
+      "complexity_score": 12.0,
+      "total_nodes": 7,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Construct Data"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Complete LPTA Evaluation",
+          "type": "USER_TASK",
+          "next": [
+            "User Action"
+          ],
+          "interface": "AS_GSS_FM_evaluationTaskForLpta"
+        },
+        {
+          "name": "User Action",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Update Task and Metadata (Save/Submit)",
+            "End Node (Cancel)"
+          ]
+        },
+        {
+          "name": "Update Task and Metadata",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write Vendor, Task and related Records"
+          ]
+        },
+        {
+          "name": "Write Vendor, Task and related Records",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Construct Data",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Complete LPTA Evaluation"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290131",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+      "type": "Constant",
+      "description": "DATA_SUBSET - Returns a type of DataSubset when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "DATA_SUBSET",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_UT_updateEvalVendorRecordWithAllPriceBreakups",
+        "AS_GSS_UT_updateEvaluationRecordWithAllVendors"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290163",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "description": "OBJECT_ARRAY - Returns an array type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "OBJECT_ARRAY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_QR_getEvaluation",
+        "AS_GSS_UT_returnConsolidatedDocListForLPTAEvaluationTask"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290157",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "description": "SINGLE_OBJECT - Returns a single type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "SINGLE_OBJECT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GSS Complete LPTA Evaluation",
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_EvaluationDocument_SYNCEDRECORD",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_FM_evaluationTaskForLpta",
+        "AS_GSS_QR_getCriteria",
+        "AS_GSS_QR_getEvaluationDocuments",
+        "AS_GSS_QR_getFactorDocumentMapping",
+        "AS_GSS_UT_returnConsolidatedDocListForLPTAEvaluationTask"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73173",
+      "name": "AS_CO_ENUM_USER_ACTION_CANCEL",
+      "type": "Constant",
+      "description": "CANCEL.USER_ACTION - Value to use to drive process logic after a user performs a \"Cancel\" action",
+      "value": "CANCEL.USER_ACTION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BTN_buttonsForLPTAEvaluationTask"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73281",
+      "name": "AS_CO_ENUM_USER_ACTION_SAVE",
+      "type": "Constant",
+      "description": "SAVE.USER_ACTION - Value to use to drive process logic after a user performs a \"Save\" action",
+      "value": "SAVE.USER_ACTION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GSS Complete LPTA Evaluation",
+        "AS_GSS_BTN_buttonsForLPTAEvaluationTask",
+        "AS_GSS_UT_updateTaskInfoForCompleteLPTAEvaluation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73305",
+      "name": "AS_CO_ENUM_USER_ACTION_SUBMIT",
+      "type": "Constant",
+      "description": "SUBMIT.USER_ACTION - Value to use to drive process logic after a user performs a \"Submit\" action",
+      "value": "SUBMIT.USER_ACTION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GSS Complete LPTA Evaluation",
+        "AS_GSS_BTN_buttonsForLPTAEvaluationTask",
+        "AS_GSS_UT_updateTaskInfoForCompleteLPTAEvaluation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_31761",
+      "name": "AS_CO_I18N_TXT_ENGLISH_US_LOCALE",
+      "type": "Constant",
+      "description": "Value: en_US, The locale for English, United States",
+      "value": "en_US",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_I18N_UT_isUserLocaleEnglishUs"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec62-ac34-8000-9d9a-011c48011c48_13151218",
+      "name": "AS_GSS_CO_NULL_REPLACEABLE_TEXT",
+      "type": "Constant",
+      "description": "Value:  -",
+      "value": "-",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_SEC_priceBreakupInfoReadOnly",
+        "AS_GSS_UT_displayDocumentSize",
+        "AS_GSS_returnSectionMapForVendorInfo"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee1d-9c3f-8000-9e21-011c48011c48_16318240",
+      "name": "AS_GSS_DOCUMENTS_EMPTY_STATE_IMAGE",
+      "type": "Constant",
+      "description": "Constant reference to the AS GSS Documents Empty State Image document",
+      "value": "_a-0000ee1d-9c3f-8000-9e21-011c48011c48_16318234",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CPS_emptyStateForDocuments"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee0b-274d-8000-9e1b-011c48011c48_16190869",
+      "name": "AS_GSS_DOLLAR_ISO_CODE",
+      "type": "Constant",
+      "description": "Holds the dollar ISO code for currency: USD",
+      "value": "USD",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_SEC_priceBreakupInfoReadOnly"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed77-8e71-8000-9df8-011c48011c48_15350258",
+      "name": "AS_GSS_ENUM_TXT_PROPOSAL_DOC_DOWNLOAD_SOURCE_VM",
+      "type": "Constant",
+      "description": "Supporting constant for single click document download. It points to the proposal document download integration from VM.\nValue: PROPOSAL_DOCUMENT_DOWNLOAD_FROM_VM",
+      "value": "PROPOSAL_DOCUMENT_DOWNLOAD_FROM_VM",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CO_documentDownloadLink"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb7c-0389-8000-9d2c-011c48011c48_10563635",
+      "name": "AS_GSS_INT_QUERY_RECORD_MAX_BATCH_SIZE",
+      "type": "Constant",
+      "description": "Value : 5000",
+      "value": "5000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_updateEvalVendorRecordWithAllPriceBreakups",
+        "AS_GSS_UT_updateEvaluationRecordWithAllVendors"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee1d-9c3f-8000-9e21-011c48011c48_16299908",
+      "name": "AS_GSS_INT_VENDOR_DECISION_REASON_TEXT_SIZE",
+      "type": "Constant",
+      "description": "Holds the allowed text size for decision reason for vendor in LPTA evaluation form",
+      "value": "2000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BTN_buttonsForLPTAEvaluationTask",
+        "AS_GSS_SEC_vendorDecision"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_947620",
+      "name": "AS_GSS_REF_ID_DOC_TYPE_FACTOR",
+      "type": "Constant",
+      "description": "Value: 25",
+      "value": "25",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_returnConsolidatedDocListForLPTAEvaluationTask"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb28-f476-8000-9d09-011c48011c48_9700642",
+      "name": "AS_GSS_REF_ID_DOC_TYPE_REFERENCE",
+      "type": "Constant",
+      "description": "Value - 58",
+      "value": "58",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_returnConsolidatedDocListForLPTAEvaluationTask"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_947613",
+      "name": "AS_GSS_REF_ID_DOC_TYPE_VENDOR",
+      "type": "Constant",
+      "description": "Value: 24",
+      "value": "24",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_returnConsolidatedDocListForLPTAEvaluationTask"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1061416",
+      "name": "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE",
+      "type": "Constant",
+      "description": "Value: 3\n",
+      "value": "3",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_QR_getEvaluation",
+        "AS_GSS_UT_returnConsolidatedDocListForLPTAEvaluationTask"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed80-c90f-8000-9dfa-011c48011c48_15374610",
+      "name": "AS_GSS_REF_ID_SOURCE_APPLICATION_VM",
+      "type": "Constant",
+      "description": "Value: 63",
+      "value": "63",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CO_documentDownloadLink",
+        "AS_GSS_UT_displayDocumentName",
+        "AS_GSS_UT_displayDocumentSize"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee0b-274d-8000-9e1b-011c48011c48_16202184",
+      "name": "AS_GSS_REF_ID_VENDOR_DECISION_NOT_REVIEWED",
+      "type": "Constant",
+      "description": "Value : 70",
+      "value": "70",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_updateVendorDecisionForDeferredVendors"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee0b-274d-8000-9e1b-011c48011c48_16208987",
+      "name": "AS_GSS_REF_ID_VENDOR_DECISION_REJECT",
+      "type": "Constant",
+      "description": "Value : 69",
+      "value": "69",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BTN_buttonsForLPTAEvaluationTask",
+        "AS_GSS_SEC_vendorDecision",
+        "AS_GSS_SEC_vendorInfoReadOnly",
+        "AS_GSS_updatePagingConfigurationForLptaEvaluation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee0b-274d-8000-9e1b-011c48011c48_16208980",
+      "name": "AS_GSS_REF_ID_VENDOR_DECISION_SELECT",
+      "type": "Constant",
+      "description": "Value : 68",
+      "value": "68",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_SEC_vendorDecision",
+        "AS_GSS_updatePagingConfigurationForLptaEvaluation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee1d-9c3f-8000-9e21-011c48011c48_16296331",
+      "name": "AS_GSS_REF_ID_VENDOR_DECISION_UNDER_REVIEW",
+      "type": "Constant",
+      "description": "Value : 73",
+      "value": "73",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BTN_buttonsForLPTAEvaluationTask",
+        "AS_GSS_updatePagingConfigurationForLptaEvaluation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee0b-274d-8000-9e1b-011c48011c48_16202177",
+      "name": "AS_GSS_REF_TYPE_VENDOR_DECISION",
+      "type": "Constant",
+      "description": "Value: Vendor Decision",
+      "value": "Vendor Decision",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_SEC_vendorDecision"
+      ]
+    },
+    {
+      "uuid": "_a-0000e460-9d93-8000-9bc1-011c48011c48_602173-tmg-am-am",
+      "name": "AS_GSS_TMG_REF_ID_TASK_ACTION_COMPLETED",
+      "type": "Constant",
+      "description": "Value: 3",
+      "value": "3",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_updateTaskInfoForCompleteLPTAEvaluation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1053255",
+      "name": "AS_GSS_TMG_REF_ID_TASK_ACTION_UPDATED",
+      "type": "Constant",
+      "description": "Value: 7",
+      "value": "7",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_updateTaskInfoForCompleteLPTAEvaluation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e460-9d93-8000-9bc1-011c48011c48_603248-tmg-am-am",
+      "name": "AS_GSS_TMG_REF_ID_TASK_STATUS_COMPLETE",
+      "type": "Constant",
+      "description": "Value: 4",
+      "value": "4",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_updateTaskInfoForCompleteLPTAEvaluation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e460-9d93-8000-9bc1-011c48011c48_603242-tmg-am-am",
+      "name": "AS_GSS_TMG_REF_ID_TASK_STATUS_IN_PROGRESS",
+      "type": "Constant",
+      "description": "Value: 3",
+      "value": "3",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_updateTaskInfoForCompleteLPTAEvaluation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_81818",
+      "name": "AS_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "description": "Displays a label by the `bundleKey` from passed in bundle data, optionally accepts arguments",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GSS_CPS_emptyStateForDocuments",
+        "AS_GSS_SCT_displayDocumentsInSections",
+        "AS_GSS_UT_returnConsolidatedDocListForLPTAEvaluationTask"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76004",
+      "name": "AS_CO_I18N_UT_getUserLocale",
+      "type": "Expression Rule",
+      "description": "Gets the Appian user locale as defined in the user preferences, returns the default if the user is null",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_I18N_UT_isUserLocaleEnglishUs"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_31790",
+      "name": "AS_CO_I18N_UT_isUserLocaleEnglishUs",
+      "type": "Expression Rule",
+      "description": "Returns true if the user's locale is en_US, which is English, United States",
+      "parameters": [],
+      "calls": [
+        "AS_CO_I18N_TXT_ENGLISH_US_LOCALE",
+        "AS_CO_I18N_UT_getUserLocale"
+      ],
+      "called_by": [
+        "AS_CO_UT_formatDate",
+        "AS_CO_UT_formatDateTime"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39070",
+      "name": "AS_CO_UT_booleanDefaultFalse",
+      "type": "Expression Rule",
+      "description": "Default a null value to false, otherwise returns the boolean value",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_captureMetadataForRecords"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39082",
+      "name": "AS_CO_UT_booleanDefaultTrue",
+      "type": "Expression Rule",
+      "description": "Default a null value to true, otherwise returns the boolean value",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GAM_CP_documentDownloadLink",
+        "AS_GSS_UT_captureMetadataForRecords"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157603",
+      "name": "AS_CO_UT_cast",
+      "type": "Expression Rule",
+      "description": "Casts a variable to the type of either the input `type`, or the typeof of the input `typeof`, and properly handles for null inputs",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_UT_getChoiceValue",
+        "AS_GSS_UT_updateEvalVendorRecordWithAllPriceBreakups",
+        "AS_GSS_UT_updateEvaluationRecordWithAllVendors"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_81749",
+      "name": "AS_CO_UT_checkIfUserExists",
+      "type": "Expression Rule",
+      "description": "Returns true if the user exists",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_displayUser"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6cd-618a-8000-9bd9-011c48011c48_1688557",
+      "name": "AS_CO_UT_checkIsNullOrEmpty",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is null/empty. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BTN_buttonsForLPTAEvaluationTask",
+        "AS_GSS_QR_getEvalVendorPriceBreakup",
+        "AS_GSS_SCT_displayDocumentsInSections",
+        "AS_GSS_SEC_priceBreakupInfoReadOnly",
+        "AS_GSS_UT_captureMetadataForRecords",
+        "AS_GSS_UT_getChoiceValue",
+        "AS_GSS_UT_returnConsolidatedDocListForLPTAEvaluationTask",
+        "AS_GSS_UT_updateVendorDecisionForDeferredVendors",
+        "AS_GSS_updatePagingConfigurationForLptaEvaluation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73556",
+      "name": "AS_CO_UT_createDocumentDownloadLinkLabel",
+      "type": "Expression Rule",
+      "description": "Formats a label text to include a string and a downward pointing arrow, representing a download field. For use with Document Download Links. Returns a text string.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GAM_CP_documentDownloadLink"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73726",
+      "name": "AS_CO_UT_displayGroupOrUser",
+      "type": "Expression Rule",
+      "description": "Returns a formatted user name or group name.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_displayUser",
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GSS_UT_updateTaskInfoForCompleteLPTAEvaluation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73660",
+      "name": "AS_CO_UT_displayUser",
+      "type": "Expression Rule",
+      "description": "Returns a display name for a user in the format of \"firstName lastName\". Null-safe.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_checkIfUserExists"
+      ],
+      "called_by": [
+        "AS_CO_UT_displayGroupOrUser",
+        "AS_GSS_UT_updateTaskInfoForCompleteLPTAEvaluation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e70f-2824-8000-9c01-011c48011c48_2537617",
+      "name": "AS_CO_UT_filterRecordByFieldValues",
+      "type": "Expression Rule",
+      "description": "Returns any record that contains any of the provided values in the field",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_returnConsolidatedDocListForLPTAEvaluationTask"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_31679",
+      "name": "AS_CO_UT_formatDate",
+      "type": "Expression Rule",
+      "description": "Formats a date for read-only text display. Note, do not use this rule to format date times, only dates. Returns text.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_I18N_UT_isUserLocaleEnglishUs",
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GSS_returnSectionMapForVendorInfo"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_74227",
+      "name": "AS_CO_UT_formatDateTime",
+      "type": "Expression Rule",
+      "description": "Formats a date time for read-only text display using the loggedInUser's timezone. Note, do not use this rule to format dates, only date times. Returns text.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_I18N_UT_isUserLocaleEnglishUs",
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GSS_returnSectionMapForVendorInfo"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_100254",
+      "name": "AS_CO_UT_getSiteUrl",
+      "type": "Expression Rule",
+      "description": "Returns the URL of the site, terminating in /suite/",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_formatDocumentSingleClickDownloadLink"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6a4-3c85-8000-9ba5-011c48011c48_45984",
+      "name": "AS_CO_UT_indexWhere",
+      "type": "Expression Rule",
+      "description": "Will find the index of a value in one array and return the value in a different array at that same index",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GSS_UT_updateEvalVendorRecordWithAllPriceBreakups"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_I18N_UT_displayLabel",
+        "AS_CO_UT_displayGroupOrUser",
+        "AS_CO_UT_formatDate",
+        "AS_CO_UT_formatDateTime",
+        "AS_CO_UT_indexWhere",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_whereContains",
+        "AS_GAM_CO_I18N_UT_displayLabel"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around AS_CO_UT_isBlank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_checkIfUserExists",
+        "AS_CO_UT_queryRecord",
+        "AS_GAM_CP_documentDownloadLink",
+        "AS_GSS_SEC_vendorInfoReadOnly"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6c8-d132-8000-9bbe-011c48011c48_469266",
+      "name": "AS_CO_UT_queryRecord",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_GSS_QR_getCriteria",
+        "AS_GSS_QR_getEvalVendorPriceBreakup",
+        "AS_GSS_QR_getEvaluation",
+        "AS_GSS_QR_getEvaluationDocuments",
+        "AS_GSS_QR_getEvaluationVendors",
+        "AS_GSS_QR_getFactorDocumentMapping"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367",
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GSS_QR_getCriteria",
+        "AS_GSS_UT_updateEvaluationRecordWithAllVendors",
+        "AS_GSS_returnSectionMapForVendorInfo"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73980",
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "description": "Returns nullableValue only if it is not null. Else returns replacementValue.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_I18N_UT_displayLabel",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GSS_BrandingValueByKey",
+        "AS_GSS_FM_evaluationTaskForLpta",
+        "AS_GSS_UT_captureMetadataForRecords",
+        "AS_GSS_UT_updateTaskInfoForCompleteLPTAEvaluation",
+        "AS_GSS_updatePagingConfigurationForLptaEvaluation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_162769",
+      "name": "AS_CO_UT_typeCompare",
+      "type": "Expression Rule",
+      "description": "Returns true if the two input types match",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_whereContains"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_272151",
+      "name": "AS_CO_UT_whereContains",
+      "type": "Expression Rule",
+      "description": "Enhanced wherecontains() which avoids type-casting issues and properly handles for document and group types",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_typeCompare"
+      ],
+      "called_by": [
+        "AS_GSS_updatePagingConfigurationForLptaEvaluation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53662",
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "description": "Displays a label by the `bundleKey` from passed in bundle data, optionally accepts arguments",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GSS_SEC_vendorDecision",
+        "AS_GSS_SEC_vendorInfoReadOnly"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee1d-9c3f-8000-9e21-011c48011c48_16310782",
+      "name": "AS_GSS_BL_doesInputExceedsAllowedMaxLength",
+      "type": "Expression Rule",
+      "description": "Rule to validate if input length exceeds the max characters allowed",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BTN_buttonsForLPTAEvaluationTask"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1369557",
+      "name": "AS_GSS_BrandingValueByKey",
+      "type": "Expression Rule",
+      "description": "Returns a GSS branding value by key",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GSS_CPS_emptyStateForDocuments",
+        "AS_GSS_FM_evaluationTaskForLpta",
+        "AS_GSS_SCT_displayDocumentsInSections",
+        "AS_GSS_SEC_priceBreakupForLPTAEvaluationTask",
+        "AS_GSS_SEC_priceBreakupInfoReadOnly",
+        "AS_GSS_SEC_vendorDecision",
+        "AS_GSS_SEC_vendorInfoReadOnly"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1319026",
+      "name": "AS_GSS_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "description": "Loads a property bundle file by name from a folder, returns a dictionary of the key-value pairs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CPS_lptaEvaluationTaskContentsPerVendor",
+        "AS_GSS_FM_evaluationTaskForLpta",
+        "AS_GSS_SCT_displayDocumentsInSections",
+        "AS_GSS_SEC_priceBreakupInfoReadOnly",
+        "AS_GSS_SEC_vendorDecision",
+        "AS_GSS_UT_displayDocumentName",
+        "AS_GSS_UT_displayVmDocumentName",
+        "AS_GSS_UT_returnConsolidatedDocListForLPTAEvaluationTask"
+      ]
+    },
+    {
+      "uuid": "_a-0001ed6e-54f1-8000-9df6-011c48011c48_15245604",
+      "name": "AS_GSS_EnableOrDisableStateAndLocalGovernment_wrapper",
+      "type": "Expression Rule",
+      "description": "This rule returns a boolean which represents whether or not State and Local is enabled ",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_FM_evaluationTaskForLpta"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea13-fcbd-8000-9c86-011c48011c48_6430545",
+      "name": "AS_GSS_QR_getCriteria",
+      "type": "Expression Rule",
+      "description": "Generic query expression for criteria (aka factor) record data",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GSS_Criteria_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_UT_returnConsolidatedDocListForLPTAEvaluationTask"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee01-ec73-8000-9e19-011c48011c48_16154842",
+      "name": "AS_GSS_QR_getEvalVendorPriceBreakup",
+      "type": "Expression Rule",
+      "description": "Returns evaluation vendors price breakup synced record based on the given filter set",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_VendorPriceBreakup_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_UT_updateEvalVendorRecordWithAllPriceBreakups"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb72-c933-8000-9d28-011c48011c48_10441691",
+      "name": "AS_GSS_QR_getEvaluation",
+      "type": "Expression Rule",
+      "description": "Returns evaluation synced record based on the given filter set",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE"
+      ],
+      "called_by": [
+        "AS GSS Complete LPTA Evaluation",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_FM_evaluationTaskForLpta",
+        "AS_GSS_UT_returnConsolidatedDocListForLPTAEvaluationTask"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9763230",
+      "name": "AS_GSS_QR_getEvaluationDocuments",
+      "type": "Expression Rule",
+      "description": "Generic query expression for evaluation document record data",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_EvaluationDocument_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_EvaluationDocument_SYNCEDRECORD",
+        "AS_GSS_UT_returnConsolidatedDocListForLPTAEvaluationTask"
+      ]
+    },
+    {
+      "uuid": "_a-0000ece3-e0bc-8000-9dcb-011c48011c48_14341848",
+      "name": "AS_GSS_QR_getEvaluationVendors",
+      "type": "Expression Rule",
+      "description": "Returns evaluation vendors synced record based on the given filter set",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_UT_updateEvaluationRecordWithAllVendors"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb5-bbc6-8000-9dba-011c48011c48_13905251",
+      "name": "AS_GSS_QR_getFactorDocumentMapping",
+      "type": "Expression Rule",
+      "description": "Generic query expression for factor document mapping record data",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_FactorDocumentMapping_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_UT_returnConsolidatedDocListForLPTAEvaluationTask"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed49-6a91-8000-9dee-011c48011c48_14963659",
+      "name": "AS_GSS_UTIL_processDocumentName",
+      "type": "Expression Rule",
+      "description": "Rule to extract document name and extension from files uploaded",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_findDocumentNameAndExtensionById"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee15-bcab-8000-9e1f-011c48011c48_16259862",
+      "name": "AS_GSS_UT_captureMetaDataForTask",
+      "type": "Expression Rule",
+      "description": "Rule to set meta data on task data",
+      "parameters": [],
+      "calls": [
+        "AS_GSS_TMG_Task_SYNCEDRECORD",
+        "AS_GSS_UT_captureMetadataForRecords",
+        "AS_GSS_UT_updateRecordsByModelRecord"
+      ],
+      "called_by": [
+        "AS_GSS_UT_updateTaskInfoForCompleteLPTAEvaluation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecda-a664-8000-9dc8-011c48011c48_14318496",
+      "name": "AS_GSS_UT_captureMetadataForRecords",
+      "type": "Expression Rule",
+      "description": "The rule is used to capture metadata for records",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_booleanDefaultFalse",
+        "AS_CO_UT_booleanDefaultTrue",
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_CO_UT_replaceNull",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_UT_updateRecordsByModelRecord"
+      ],
+      "called_by": [
+        "AS_GSS_UT_captureMetaDataForTask"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed8a-02db-8000-9dfc-011c48011c48_15471296",
+      "name": "AS_GSS_UT_displayDocumentName",
+      "type": "Expression Rule",
+      "description": "The rule to display document names based on the source of the document",
+      "parameters": [],
+      "calls": [
+        "AS_GSS_CO_UT_loadBundleFromFolder",
+        "AS_GSS_REF_ID_SOURCE_APPLICATION_VM",
+        "AS_GSS_UT_displayVmDocumentName",
+        "AS_GSS_UT_findDocumentNameAndExtensionById"
+      ],
+      "called_by": [
+        "AS_GSS_SCT_displayDocumentsInSections"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9762969",
+      "name": "AS_GSS_UT_displayDocumentSize",
+      "type": "Expression Rule",
+      "description": "Given a document, displays the doc size in the appropriate units",
+      "parameters": [],
+      "calls": [
+        "AS_GSS_CO_NULL_REPLACEABLE_TEXT",
+        "AS_GSS_REF_ID_SOURCE_APPLICATION_VM"
+      ],
+      "called_by": [
+        "AS_GSS_SCT_displayDocumentsInSections"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed80-c90f-8000-9dfa-011c48011c48_15398040",
+      "name": "AS_GSS_UT_displayVmDocumentName",
+      "type": "Expression Rule",
+      "description": "The rule to format and display names of documents received through VM integration",
+      "parameters": [],
+      "calls": [
+        "AS_GSS_CO_UT_loadBundleFromFolder"
+      ],
+      "called_by": [
+        "AS_GSS_UT_displayDocumentName"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed49-6a91-8000-9dee-011c48011c48_14946487",
+      "name": "AS_GSS_UT_findDocumentNameAndExtensionById",
+      "type": "Expression Rule",
+      "description": "Expression to extract document name based on Id",
+      "parameters": [],
+      "calls": [
+        "AS_GSS_UTIL_processDocumentName"
+      ],
+      "called_by": [
+        "AS_GSS_UT_displayDocumentName"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed77-8e71-8000-9df8-011c48011c48_15353698",
+      "name": "AS_GSS_UT_formatDocumentSingleClickDownloadLink",
+      "type": "Expression Rule",
+      "description": "rule to give the url to be called as safe link to achieve single click download of a document from external source",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_getSiteUrl"
+      ],
+      "called_by": [
+        "AS_GSS_CP_singleClickDocumentDownloadLinkFromExternalSource"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee1d-9c3f-8000-9e21-011c48011c48_16296500",
+      "name": "AS_GSS_UT_getChoiceValue",
+      "type": "Expression Rule",
+      "description": "The rule is used to return choice value based on conditions",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_checkIsNullOrEmpty"
+      ],
+      "called_by": [
+        "AS_GSS_SEC_vendorDecision"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee0b-274d-8000-9e1b-011c48011c48_16207961",
+      "name": "AS_GSS_UT_returnConsolidatedDocListForLPTAEvaluationTask",
+      "type": "Expression Rule",
+      "description": "The rule is used to return the consolidated document list to be displayed in LPTA evaluation task",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_I18N_UT_displayLabel",
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_CO_UT_filterRecordByFieldValues",
+        "AS_GSS_CO_UT_loadBundleFromFolder",
+        "AS_GSS_Criteria_SYNCEDRECORD",
+        "AS_GSS_EvaluationDocument_SYNCEDRECORD",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_FactorDocumentMapping_SYNCEDRECORD",
+        "AS_GSS_QR_getCriteria",
+        "AS_GSS_QR_getEvaluation",
+        "AS_GSS_QR_getEvaluationDocuments",
+        "AS_GSS_QR_getFactorDocumentMapping",
+        "AS_GSS_REF_ID_DOC_TYPE_FACTOR",
+        "AS_GSS_REF_ID_DOC_TYPE_REFERENCE",
+        "AS_GSS_REF_ID_DOC_TYPE_VENDOR",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE"
+      ],
+      "called_by": [
+        "AS_GSS_FM_evaluationTaskForLpta"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee01-ec73-8000-9e19-011c48011c48_16154834",
+      "name": "AS_GSS_UT_updateEvalVendorRecordWithAllPriceBreakups",
+      "type": "Expression Rule",
+      "description": "The rule is used to update the eval vendor record with all of its related price breakup records. Use this rule where the number of related records could go more than 100.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_indexWhere",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_INT_QUERY_RECORD_MAX_BATCH_SIZE",
+        "AS_GSS_QR_getEvalVendorPriceBreakup",
+        "AS_GSS_UT_updateRecordsByModelRecord",
+        "AS_GSS_VendorPriceBreakup_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_UT_updateEvaluationRecordWithAllVendors"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed93-2faa-8000-9dfe-011c48011c48_15561921",
+      "name": "AS_GSS_UT_updateEvaluationRecordWithAllVendors",
+      "type": "Expression Rule",
+      "description": "The rule is used to update the evaluation record with all of its related vendor records. Use this rule where the number of related records could go more than 100.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_INT_QUERY_RECORD_MAX_BATCH_SIZE",
+        "AS_GSS_QR_getEvaluationVendors",
+        "AS_GSS_UT_updateEvalVendorRecordWithAllPriceBreakups",
+        "AS_GSS_UT_updateRecordsByModelRecord"
+      ],
+      "called_by": [
+        "AS GSS Complete LPTA Evaluation",
+        "AS_GSS_FM_evaluationTaskForLpta"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb16-753f-8000-9d01-011c48011c48_9522362",
+      "name": "AS_GSS_UT_updateRecordsByModelRecord",
+      "type": "Expression Rule",
+      "description": "Given a model record, updates the provided records' fields to match those of the model record.  Nulls apply if the field exists in the model record.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_captureMetaDataForTask",
+        "AS_GSS_UT_captureMetadataForRecords",
+        "AS_GSS_UT_updateEvalVendorRecordWithAllPriceBreakups",
+        "AS_GSS_UT_updateEvaluationRecordWithAllVendors",
+        "AS_GSS_UT_updateTaskInfoForCompleteLPTAEvaluation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee15-bcab-8000-9e1f-011c48011c48_16259801",
+      "name": "AS_GSS_UT_updateTaskInfoForCompleteLPTAEvaluation",
+      "type": "Expression Rule",
+      "description": "The rule is used to update task info for complete LPTA evaluation task",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_USER_ACTION_SAVE",
+        "AS_CO_ENUM_USER_ACTION_SUBMIT",
+        "AS_CO_UT_displayGroupOrUser",
+        "AS_CO_UT_displayUser",
+        "AS_CO_UT_replaceNull",
+        "AS_GSS_TMG_REF_ID_TASK_ACTION_COMPLETED",
+        "AS_GSS_TMG_REF_ID_TASK_ACTION_UPDATED",
+        "AS_GSS_TMG_REF_ID_TASK_STATUS_COMPLETE",
+        "AS_GSS_TMG_REF_ID_TASK_STATUS_IN_PROGRESS",
+        "AS_GSS_TMG_Task_Action_Audit_SYNCEDRECORD",
+        "AS_GSS_TMG_Task_SYNCEDRECORD",
+        "AS_GSS_UT_captureMetaDataForTask",
+        "AS_GSS_UT_updateRecordsByModelRecord"
+      ],
+      "called_by": [
+        "AS GSS Complete LPTA Evaluation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee15-bcab-8000-9e1f-011c48011c48_16262422",
+      "name": "AS_GSS_UT_updateVendorDecisionForDeferredVendors",
+      "type": "Expression Rule",
+      "description": "The rule is used to update the vendor decision for the deferred vendors.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_REF_ID_VENDOR_DECISION_NOT_REVIEWED"
+      ],
+      "called_by": [
+        "AS_GSS_BTN_buttonsForLPTAEvaluationTask"
+      ]
+    },
+    {
+      "uuid": "0709d61d-eb42-4c52-be28-2529b497e16f",
+      "name": "AS_GSS_returnSectionMapForVendorInfo",
+      "type": "Expression Rule",
+      "description": "Returns map for displaying vendor Info",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_formatDate",
+        "AS_CO_UT_formatDateTime",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GSS_CO_NULL_REPLACEABLE_TEXT",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_SEC_vendorInfoReadOnly"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee0b-274d-8000-9e1b-011c48011c48_16202340",
+      "name": "AS_GSS_updatePagingConfigurationForLptaEvaluation",
+      "type": "Expression Rule",
+      "description": "The rule is used to initialise paging configurations for LPTA complete evaluation form",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_whereContains",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_REF_ID_VENDOR_DECISION_REJECT",
+        "AS_GSS_REF_ID_VENDOR_DECISION_SELECT",
+        "AS_GSS_REF_ID_VENDOR_DECISION_UNDER_REVIEW"
+      ],
+      "called_by": [
+        "AS_GSS_BTN_buttonsForLPTAEvaluationTask",
+        "AS_GSS_FM_evaluationTaskForLpta"
+      ]
+    },
+    {
+      "uuid": "_a-0000e4ea-0367-8000-9ba7-011c48011c48_119410",
+      "name": "AS_GAM_CP_documentDownloadLink",
+      "type": "Interface",
+      "description": "Generic document download link component that handles read-only logic dynamically. ",
+      "parameters": [
+        {
+          "name": "document",
+          "type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+          "raw_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 2
+        }
+      ],
+      "calls": [
+        "AS_CO_UT_booleanDefaultTrue",
+        "AS_CO_UT_createDocumentDownloadLinkLabel",
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_GSS_CO_documentDownloadLink"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee0b-274d-8000-9e1b-011c48011c48_16207486",
+      "name": "AS_GSS_BTN_buttonsForLPTAEvaluationTask",
+      "type": "Interface",
+      "description": "The interface for the buttons configuration of LPTA evaluation task",
+      "parameters": [
+        {
+          "name": "pageConfig",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "currentEvaluationvendor",
+          "type": "urn:com:appian:recordtype:datatype:b6081510-0d11-4d51-8eba-966610b168db",
+          "raw_type": "urn:com:appian:recordtype:datatype:b6081510-0d11-4d51-8eba-966610b168db",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        },
+        {
+          "name": "allEvaluationVendors",
+          "type": "urn:com:appian:recordtype:datatype:b6081510-0d11-4d51-8eba-966610b168db?list",
+          "raw_type": "urn:com:appian:recordtype:datatype:b6081510-0d11-4d51-8eba-966610b168db?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 2
+        },
+        {
+          "name": "buttonAction",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 3
+        },
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "display_order": 4
+        }
+      ],
+      "calls": [
+        "AS_CO_ENUM_USER_ACTION_CANCEL",
+        "AS_CO_ENUM_USER_ACTION_SAVE",
+        "AS_CO_ENUM_USER_ACTION_SUBMIT",
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_GSS_BL_doesInputExceedsAllowedMaxLength",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_INT_VENDOR_DECISION_REASON_TEXT_SIZE",
+        "AS_GSS_REF_ID_VENDOR_DECISION_REJECT",
+        "AS_GSS_REF_ID_VENDOR_DECISION_UNDER_REVIEW",
+        "AS_GSS_UT_updateVendorDecisionForDeferredVendors",
+        "AS_GSS_updatePagingConfigurationForLptaEvaluation"
+      ],
+      "called_by": [
+        "AS_GSS_FM_evaluationTaskForLpta"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed8a-02db-8000-9dfc-011c48011c48_15448264",
+      "name": "AS_GSS_CO_documentDownloadLink",
+      "type": "Interface",
+      "description": "Document download link interface which displays links based on the source of the document",
+      "parameters": [
+        {
+          "name": "document",
+          "type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+          "raw_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "sourceApplicationId",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AS_GAM_CP_documentDownloadLink",
+        "AS_GSS_CP_singleClickDocumentDownloadLinkFromExternalSource",
+        "AS_GSS_ENUM_TXT_PROPOSAL_DOC_DOWNLOAD_SOURCE_VM",
+        "AS_GSS_REF_ID_SOURCE_APPLICATION_VM"
+      ],
+      "called_by": [
+        "AS_GSS_SCT_displayDocumentsInSections"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee1d-9c3f-8000-9e21-011c48011c48_16319659",
+      "name": "AS_GSS_CPS_emptyStateForDocuments",
+      "type": "Interface",
+      "description": "The interface for the empty state of documents section",
+      "parameters": [
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        }
+      ],
+      "calls": [
+        "AS_CO_I18N_UT_displayLabel",
+        "AS_GSS_BrandingValueByKey",
+        "AS_GSS_DOCUMENTS_EMPTY_STATE_IMAGE"
+      ],
+      "called_by": [
+        "AS_GSS_SCT_displayDocumentsInSections"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee0b-274d-8000-9e1b-011c48011c48_16202268",
+      "name": "AS_GSS_CPS_lptaEvaluationTaskContentsPerVendor",
+      "type": "Interface",
+      "description": "The interface to display the form contents of LPTA evaluation task for one vendor at a time.",
+      "parameters": [
+        {
+          "name": "evaluationVendor",
+          "type": "urn:com:appian:recordtype:datatype:b6081510-0d11-4d51-8eba-966610b168db",
+          "raw_type": "urn:com:appian:recordtype:datatype:b6081510-0d11-4d51-8eba-966610b168db",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        },
+        {
+          "name": "isSLGToggleOn",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 2
+        },
+        {
+          "name": "pageConfig",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "display_order": 3
+        },
+        {
+          "name": "consolidatedDocs",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "display_order": 4
+        }
+      ],
+      "calls": [
+        "AS_GSS_CO_UT_loadBundleFromFolder",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_SCT_displayDocumentsInSections",
+        "AS_GSS_SEC_priceBreakupForLPTAEvaluationTask",
+        "AS_GSS_SEC_vendorDecision",
+        "AS_GSS_SEC_vendorInfoReadOnly",
+        "AS_GSS_VendorPriceBreakup_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_FM_evaluationTaskForLpta"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed77-8e71-8000-9df8-011c48011c48_15353868",
+      "name": "AS_GSS_CP_singleClickDocumentDownloadLinkFromExternalSource",
+      "type": "Interface",
+      "description": "safelink that enables single click of a document from external source",
+      "parameters": [
+        {
+          "name": "source",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "appianDocId",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AS_GSS_UT_formatDocumentSingleClickDownloadLink"
+      ],
+      "called_by": [
+        "AS_GSS_CO_documentDownloadLink"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee0b-274d-8000-9e1b-011c48011c48_16202257",
+      "name": "AS_GSS_FM_evaluationTaskForLpta",
+      "type": "Interface",
+      "description": "The form for the complete evaluation task for LPTA evaluations",
+      "parameters": [
+        {
+          "name": "allEvaluationVendors",
+          "type": "urn:com:appian:recordtype:datatype:b6081510-0d11-4d51-8eba-966610b168db?list",
+          "raw_type": "urn:com:appian:recordtype:datatype:b6081510-0d11-4d51-8eba-966610b168db?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "isSLGToggleOn",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        },
+        {
+          "name": "buttonAction",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 2
+        },
+        {
+          "name": "evaluation",
+          "type": "urn:com:appian:recordtype:datatype:e6bc8561-d3a6-4679-b7af-6e279910468e",
+          "raw_type": "urn:com:appian:recordtype:datatype:e6bc8561-d3a6-4679-b7af-6e279910468e",
+          "required": false,
+          "default_value": null,
+          "display_order": 3
+        }
+      ],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_replaceNull",
+        "AS_GSS_BTN_buttonsForLPTAEvaluationTask",
+        "AS_GSS_BrandingValueByKey",
+        "AS_GSS_CO_UT_loadBundleFromFolder",
+        "AS_GSS_CPS_lptaEvaluationTaskContentsPerVendor",
+        "AS_GSS_EnableOrDisableStateAndLocalGovernment_wrapper",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_QR_getEvaluation",
+        "AS_GSS_UT_returnConsolidatedDocListForLPTAEvaluationTask",
+        "AS_GSS_UT_updateEvaluationRecordWithAllVendors",
+        "AS_GSS_updatePagingConfigurationForLptaEvaluation"
+      ],
+      "called_by": [
+        "AS GSS Complete LPTA Evaluation"
+      ]
+    },
+    {
+      "uuid": "_a-0000edc1-5343-8000-9e09-011c48011c48_15806635",
+      "name": "AS_GSS_SCT_displayDocumentsInSections",
+      "type": "Interface",
+      "description": "The interface to display the document information in individual sections. This is used in task forms to display documents in a consolidated view. ",
+      "parameters": [
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "consolidatedDocs",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AS_CO_I18N_UT_displayLabel",
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_GSS_BrandingValueByKey",
+        "AS_GSS_CO_UT_loadBundleFromFolder",
+        "AS_GSS_CO_documentDownloadLink",
+        "AS_GSS_CPS_emptyStateForDocuments",
+        "AS_GSS_EvaluationDocument_SYNCEDRECORD",
+        "AS_GSS_UT_displayDocumentName",
+        "AS_GSS_UT_displayDocumentSize"
+      ],
+      "called_by": [
+        "AS_GSS_CPS_lptaEvaluationTaskContentsPerVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee0b-274d-8000-9e1b-011c48011c48_16207984",
+      "name": "AS_GSS_SEC_priceBreakupForLPTAEvaluationTask",
+      "type": "Interface",
+      "description": "The section for the price breakup information in LPTA evaluation task",
+      "parameters": [
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "evaluationVendor",
+          "type": "urn:com:appian:recordtype:datatype:b6081510-0d11-4d51-8eba-966610b168db",
+          "raw_type": "urn:com:appian:recordtype:datatype:b6081510-0d11-4d51-8eba-966610b168db",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AS_GSS_BrandingValueByKey",
+        "AS_GSS_SEC_priceBreakupInfoReadOnly"
+      ],
+      "called_by": [
+        "AS_GSS_CPS_lptaEvaluationTaskContentsPerVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee0b-274d-8000-9e1b-011c48011c48_16188410",
+      "name": "AS_GSS_SEC_priceBreakupInfoReadOnly",
+      "type": "Interface",
+      "description": "The read only section for the vendor price breakup information",
+      "parameters": [
+        {
+          "name": "evaluationVendor",
+          "type": "urn:com:appian:recordtype:datatype:b6081510-0d11-4d51-8eba-966610b168db",
+          "raw_type": "urn:com:appian:recordtype:datatype:b6081510-0d11-4d51-8eba-966610b168db",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_GSS_BrandingValueByKey",
+        "AS_GSS_CO_NULL_REPLACEABLE_TEXT",
+        "AS_GSS_CO_UT_loadBundleFromFolder",
+        "AS_GSS_DOLLAR_ISO_CODE",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_VendorPriceBreakup_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_SEC_priceBreakupForLPTAEvaluationTask"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee0b-274d-8000-9e1b-011c48011c48_16202163",
+      "name": "AS_GSS_SEC_vendorDecision",
+      "type": "Interface",
+      "description": "The interface for the vendor decision contents in the LPTA Evaluation task",
+      "parameters": [
+        {
+          "name": "evaluationVendor",
+          "type": "urn:com:appian:recordtype:datatype:b6081510-0d11-4d51-8eba-966610b168db",
+          "raw_type": "urn:com:appian:recordtype:datatype:b6081510-0d11-4d51-8eba-966610b168db",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "pageConfig",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        },
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "display_order": 2
+        }
+      ],
+      "calls": [
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GSS_BrandingValueByKey",
+        "AS_GSS_CO_UT_loadBundleFromFolder",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_INT_VENDOR_DECISION_REASON_TEXT_SIZE",
+        "AS_GSS_REF_ID_VENDOR_DECISION_REJECT",
+        "AS_GSS_REF_ID_VENDOR_DECISION_SELECT",
+        "AS_GSS_REF_TYPE_VENDOR_DECISION",
+        "AS_GSS_R_Data_SYNCEDRECORD",
+        "AS_GSS_UT_getChoiceValue"
+      ],
+      "called_by": [
+        "AS_GSS_CPS_lptaEvaluationTaskContentsPerVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee0b-274d-8000-9e1b-011c48011c48_16189426",
+      "name": "AS_GSS_SEC_vendorInfoReadOnly",
+      "type": "Interface",
+      "description": "The read only section for the vendor accenture information",
+      "parameters": [
+        {
+          "name": "evaluationVendor",
+          "type": "urn:com:appian:recordtype:datatype:b6081510-0d11-4d51-8eba-966610b168db",
+          "raw_type": "urn:com:appian:recordtype:datatype:b6081510-0d11-4d51-8eba-966610b168db",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        },
+        {
+          "name": "isSLGToggleOn",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 2
+        },
+        {
+          "name": "pageConfig",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "display_order": 3
+        }
+      ],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GSS_BrandingValueByKey",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_REF_ID_VENDOR_DECISION_REJECT",
+        "AS_GSS_returnSectionMapForVendorInfo"
+      ],
+      "called_by": [
+        "AS_GSS_CPS_lptaEvaluationTaskContentsPerVendor"
+      ]
+    },
+    {
+      "uuid": "0002ee16-344a-8000-d519-7f0000014e7a",
+      "name": "AS GSS Complete LPTA Evaluation",
+      "type": "Process Model",
+      "description": "Process for Complete LPTA Evaluation task",
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_ENUM_USER_ACTION_SAVE",
+        "AS_CO_ENUM_USER_ACTION_SUBMIT",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_FM_evaluationTaskForLpta",
+        "AS_GSS_QR_getEvaluation",
+        "AS_GSS_TMG_Task_SYNCEDRECORD",
+        "AS_GSS_UT_updateEvaluationRecordWithAllVendors",
+        "AS_GSS_UT_updateTaskInfoForCompleteLPTAEvaluation"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "11dcc745-3c81-49f9-9cb2-6427680e4b41",
+      "name": "AS_GSS_Criteria_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "Synced Record for Evaluation Criteria",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_R_Data_SYNCEDRECORD",
+        "AS_GSS_TMG_Task_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_EvaluationDocument_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_FactorDocumentMapping_SYNCEDRECORD",
+        "AS_GSS_QR_getCriteria",
+        "AS_GSS_TMG_Task_SYNCEDRECORD",
+        "AS_GSS_UT_returnConsolidatedDocListForLPTAEvaluationTask"
+      ]
+    },
+    {
+      "uuid": "9c497e08-f4c6-4fbd-bf14-5638dc226230",
+      "name": "AS_GSS_EvaluationDocument_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": null,
+      "actions": [
+        "delete"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_GSS_Criteria_SYNCEDRECORD",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_FactorDocumentMapping_SYNCEDRECORD",
+        "AS_GSS_QR_getEvaluationDocuments",
+        "AS_GSS_R_Data_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_FactorDocumentMapping_SYNCEDRECORD",
+        "AS_GSS_QR_getEvaluationDocuments",
+        "AS_GSS_SCT_displayDocumentsInSections",
+        "AS_GSS_TMG_Task_SYNCEDRECORD",
+        "AS_GSS_UT_returnConsolidatedDocListForLPTAEvaluationTask"
+      ]
+    },
+    {
+      "uuid": "b6081510-0d11-4d51-8eba-966610b168db",
+      "name": "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "Synced record for evaluation vendors",
+      "actions": [
+        "updateVendor",
+        "deleteVendor",
+        "updateVendorDetails",
+        "viewBreakdown",
+        "viewVendorDecision"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_GSS_EvaluationDocument_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_QR_getCriteria",
+        "AS_GSS_QR_getEvaluation",
+        "AS_GSS_R_Data_SYNCEDRECORD",
+        "AS_GSS_TMG_Task_SYNCEDRECORD",
+        "AS_GSS_UT_updateEvalVendorRecordWithAllPriceBreakups",
+        "AS_GSS_VendorPriceBreakup_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS GSS Complete LPTA Evaluation",
+        "AS_GSS_BTN_buttonsForLPTAEvaluationTask",
+        "AS_GSS_CPS_lptaEvaluationTaskContentsPerVendor",
+        "AS_GSS_EvaluationDocument_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_FM_evaluationTaskForLpta",
+        "AS_GSS_QR_getEvaluationVendors",
+        "AS_GSS_SEC_priceBreakupInfoReadOnly",
+        "AS_GSS_SEC_vendorDecision",
+        "AS_GSS_SEC_vendorInfoReadOnly",
+        "AS_GSS_TMG_Task_SYNCEDRECORD",
+        "AS_GSS_UT_returnConsolidatedDocListForLPTAEvaluationTask",
+        "AS_GSS_UT_updateEvalVendorRecordWithAllPriceBreakups",
+        "AS_GSS_UT_updateEvaluationRecordWithAllVendors",
+        "AS_GSS_UT_updateVendorDecisionForDeferredVendors",
+        "AS_GSS_VendorPriceBreakup_SYNCEDRECORD",
+        "AS_GSS_returnSectionMapForVendorInfo",
+        "AS_GSS_updatePagingConfigurationForLptaEvaluation"
+      ]
+    },
+    {
+      "uuid": "e6bc8561-d3a6-4679-b7af-6e279910468e",
+      "name": "AS_GSS_Evaluation_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "NOTE: Solicitation Description and Evaluation Description are 5000 characters and will be trimmed in the synced record",
+      "actions": [
+        "createNewEvaluation",
+        "addVendor",
+        "UpdatePhases",
+        "AddPhases"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_GSS_Criteria_SYNCEDRECORD",
+        "AS_GSS_EvaluationDocument_SYNCEDRECORD",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_QR_getEvaluation",
+        "AS_GSS_R_Data_SYNCEDRECORD",
+        "AS_GSS_TMG_Task_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS GSS Complete LPTA Evaluation",
+        "AS_GSS_Criteria_SYNCEDRECORD",
+        "AS_GSS_EvaluationDocument_SYNCEDRECORD",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_FM_evaluationTaskForLpta",
+        "AS_GSS_QR_getEvaluation",
+        "AS_GSS_R_Data_SYNCEDRECORD",
+        "AS_GSS_TMG_Task_SYNCEDRECORD",
+        "AS_GSS_UT_captureMetadataForRecords",
+        "AS_GSS_UT_returnConsolidatedDocListForLPTAEvaluationTask",
+        "AS_GSS_UT_updateEvaluationRecordWithAllVendors"
+      ]
+    },
+    {
+      "uuid": "acd503e1-00a5-4fd0-bb5d-2171574b7575",
+      "name": "AS_GSS_FactorDocumentMapping_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "SYNCED Record for AS_GSS_FCTR_DCUMENT_MAPPING",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_GSS_Criteria_SYNCEDRECORD",
+        "AS_GSS_EvaluationDocument_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_EvaluationDocument_SYNCEDRECORD",
+        "AS_GSS_QR_getFactorDocumentMapping",
+        "AS_GSS_UT_returnConsolidatedDocListForLPTAEvaluationTask"
+      ]
+    },
+    {
+      "uuid": "c34b12a0-4ae7-4d21-adb9-09320118b98e",
+      "name": "AS_GSS_R_Data_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "Synced record for Reference Data",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_GSS_Evaluation_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_Criteria_SYNCEDRECORD",
+        "AS_GSS_EvaluationDocument_SYNCEDRECORD",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_SEC_vendorDecision",
+        "AS_GSS_VendorPriceBreakup_SYNCEDRECORD"
+      ]
+    },
+    {
+      "uuid": "712906a0-71cd-4d4e-b4ad-e1ca3db23acb",
+      "name": "AS_GSS_TMG_Task_Action_Audit_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "The record type for the table: AS_GSS_TMG_TSK_ACTION_AUDIT",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_GSS_TMG_Task_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_TMG_Task_SYNCEDRECORD",
+        "AS_GSS_UT_updateTaskInfoForCompleteLPTAEvaluation"
+      ]
+    },
+    {
+      "uuid": "9a04b944-b726-41f5-9b37-8ec71b6cc370",
+      "name": "AS_GSS_TMG_Task_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "Synced record for Tasks",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_GSS_Criteria_SYNCEDRECORD",
+        "AS_GSS_EvaluationDocument_SYNCEDRECORD",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_TMG_Task_Action_Audit_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS GSS Complete LPTA Evaluation",
+        "AS_GSS_Criteria_SYNCEDRECORD",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_TMG_Task_Action_Audit_SYNCEDRECORD",
+        "AS_GSS_UT_captureMetaDataForTask",
+        "AS_GSS_UT_updateTaskInfoForCompleteLPTAEvaluation"
+      ]
+    },
+    {
+      "uuid": "e29f01c8-20bf-4220-8797-7fe0041be362",
+      "name": "AS_GSS_VendorPriceBreakup_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "Synced record for pricing line item information for Vendors",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_R_Data_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_CPS_lptaEvaluationTaskContentsPerVendor",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_QR_getEvalVendorPriceBreakup",
+        "AS_GSS_SEC_priceBreakupInfoReadOnly",
+        "AS_GSS_UT_updateEvalVendorRecordWithAllPriceBreakups"
+      ]
+    }
+  ]
+}

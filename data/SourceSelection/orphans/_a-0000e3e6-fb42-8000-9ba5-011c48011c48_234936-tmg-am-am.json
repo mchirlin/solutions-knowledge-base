@@ -1,0 +1,86 @@
+{
+  "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_234936-tmg-am-am",
+  "name": "AS_GSS_TMG_UT_mapImportTasksToReferenceTasks",
+  "type": "Expression Rule",
+  "description": "Returns an array of AS_GSS_TMG_R_TaskRef from the import file",
+  "sail_code": "rule!AS_CO_UT_cast(\n  type: 'type!{urn:com:appian:types:AS:GSS:TMG}AS_GSS_TMG_R_TaskRef?list',\n  value: #\"SYSTEM_SYSRULES_forEach\"(\n    items: ri!taskImportData.data,\n    expression: a!localVariables(\n      local!refTaskFieldValues: rule!AS_GSS_TMG_UT_mapImportTasksToReferenceTasks_ReturnFieldValues(\n        importedTaskDictionary: fv!item,\n        excelColumns: ri!excelColumns\n      ),\n      local!taskType: rule!AS_CO_UT_cast(\n        type: 'type!{urn:com:appian:types:AS:GSS:TMG}AS_GSS_TMG_R_TaskBehaviorType',\n        value: displayvalue(\n          local!refTaskFieldValues.taskBehaviorType.behaviorDisplayName,\n          #\"SYSTEM_SYSRULES_forEach\"(\n            items: ri!taskTypes,\n            expression: rule!AS_CO_UT_displayRefDataLabelSingle(\n              singleData: fv!item,\n              labelField: \"behaviorDisplayName\",\n              i18nData: ri!i18nData\n            )\n          ),\n          ri!taskTypes,\n          null\n        )\n      ),\n      local!documentType: rule!AS_CO_UT_cast(\n        type: 'type!{urn:com:appian:types:AS:GSS}AS_GSS_R_Data',\n        value: displayvalue(\n          local!refTaskFieldValues.docUploadContext.docTypeId.refLabel,\n          #\"SYSTEM_SYSRULES_forEach\"(\n            items: ri!documentTypes,\n            expression: rule!AS_CO_UT_displayRefDataLabelSingle(\n              singleData: fv!item,\n              labelField: \"refLabel\",\n              i18nData: ri!i18nData\n            )\n          ),\n          ri!documentTypes,\n          null\n        )\n      ),\n      local!documentTemplate: rule!AS_CO_UT_cast(\n        type: 'type!{urn:com:appian:types:AS:GSS}AS_GSS_R_DocumentTemplate',\n        value: displayvalue(\n          local!refTaskFieldValues.docUploadContext.docTemplate.documentName,\n          #\"SYSTEM_SYSRULES_forEach\"(\n            items: ri!documentTemplates,\n            expression: rule!AS_CO_UT_displayRefDataLabelSingle(\n              singleData: fv!item,\n              labelField: \"documentName\",\n              i18nData: ri!i18nData\n            )\n          ),\n          ri!documentTemplates,\n          null\n        )\n      ),\n      'type!{urn:com:appian:types:AS:GSS:TMG}AS_GSS_TMG_R_TaskRef'(\n        taskRefId: null,\n        taskName: local!refTaskFieldValues.taskName,\n        taskBehaviorType: local!taskType,\n        taskCategory: displayvalue(\n          local!refTaskFieldValues.taskCategory.categoryName,\n          ri!taskCategories.categoryName,\n          ri!taskCategories,\n          null\n        ),\n        defaultGroupAssignee: rule!AS_CO_UT_groupsByName(\n          groupName: local!refTaskFieldValues.defaultGroupAssignee\n        ),\n        docUploadContext: if(\n          contains(\n            {\n              cons!AS_GSS_TMG_ENUM_TASK_BEHAVIOR_SUBTYPE_CODE_DOCUMENT_UPLOAD,\n              cons!AS_GSS_TMG_ENUM_TASK_BEHAVIOR_SUBTYPE_CODE_DOCUMENT_WITH_TEMPLATE\n            },\n            local!taskType.behaviorSubtypeCode\n          ),\n          'type!{urn:com:appian:types:AS:GSS:TMG}AS_GSS_TMG_R_TaskRef_DocUploadContext'(\n            taskRefDocUploadContextId: null,\n            docTypeId: local!documentType,\n            docTemplate: if(\n              local!taskType.behaviorSubtypeCode <> cons!AS_GSS_TMG_ENUM_TASK_BEHAVIOR_SUBTYPE_CODE_DOCUMENT_WITH_TEMPLATE,\n              null,\n              local!documentTemplate\n            )\n          ),\n          {}\n        )\n      )\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_cast",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_mapImportTasksToReferenceTasks_ReturnFieldValues",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_displayRefDataLabelSingle",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_groupsByName",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_ENUM_TASK_BEHAVIOR_SUBTYPE_CODE_DOCUMENT_UPLOAD",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_ENUM_TASK_BEHAVIOR_SUBTYPE_CODE_DOCUMENT_WITH_TEMPLATE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_readExcelTasks",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_BL_importTasksFromExcelFieldsList",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_DOC_SAMPLE_TASK_IMPORT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_QE_getTaskBehaviorTypes",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_INT_QUERY_MAX_BATCH_SIZE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_QE_getTaskCategories",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_TMG_CPS_importReferenceTasksFileUpload",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

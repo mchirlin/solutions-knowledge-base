@@ -1,0 +1,306 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GSS TMG Update Task Details for Initiation",
+    "parent_name": null,
+    "total_objects": 14
+  },
+  "entry_point": {
+    "complexity_score": 14.0,
+    "total_nodes": 8,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GSS TMG Update Task Details for Initiation",
+      "complexity_score": 14.0,
+      "total_nodes": 8,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Update Current Task Status"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Automated Tasks to Start?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Start Automated Tasks",
+            "End Node"
+          ]
+        },
+        {
+          "name": "Write Current Task Status",
+          "type": "Write to Data Store Entity",
+          "next": [
+            "Create Audit Task"
+          ]
+        },
+        {
+          "name": "Update Current Task Status",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write Current Task Status"
+          ]
+        },
+        {
+          "name": "Get Automated Tasks",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Automated Tasks to Start?"
+          ]
+        },
+        {
+          "name": "Start Automated Tasks",
+          "type": "Start Process (v2)",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Create Audit Task",
+          "type": "SUBPROCESS",
+          "next": [
+            "Get Automated Tasks"
+          ],
+          "subprocess": "AS GSS TMG Task Action Audit"
+        }
+      ]
+    },
+    "subprocesses": [
+      {
+        "name": "AS GSS TMG Task Action Audit",
+        "complexity_score": 8.0,
+        "total_nodes": 5,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "data?"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "data?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "End Node",
+              "Create Task Action Audit CDTs"
+            ]
+          },
+          {
+            "name": "Write to Task Action Audit",
+            "type": "Write to Data Store Entity",
+            "next": [
+              "End Node"
+            ]
+          },
+          {
+            "name": "Create Task Action Audit CDTs",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Write to Task Action Audit"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e393-fbf1-8000-9ba2-011c48011c48_100868-tmg-am-am",
+      "name": "AS_GSS_TMG_ENT_TASK",
+      "type": "Constant",
+      "description": "Value: AS_GSS_TMG_Task",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS GSS TMG Update Task Details for Initiation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_37385-tmg-am-am",
+      "name": "AS_GSS_TMG_ENT_TASK_ACTION_AUDIT",
+      "type": "Constant",
+      "description": "Value: AS_GSS_TMG_TaskActionAudit",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS GSS TMG Task Action Audit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e393-fbf1-8000-9ba2-011c48011c48_99629-tmg-am-am",
+      "name": "AS_GSS_TMG_ENUM_TASK_BEHAVIOR_TYPE_CODE_AUTOMATED",
+      "type": "Constant",
+      "description": "AUTOMATED - Tasks of this behavior type are completed automatically by Appian processes",
+      "value": "AUTOMATED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GSS TMG Update Task Details for Initiation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_185019-tmg-am-am",
+      "name": "AS_GSS_TMG_PM_START_AUTOMATED_TASK",
+      "type": "Constant",
+      "description": "Value: AS GSS TMG Start Automated Task",
+      "value": "AS GSS TMG Start Automated Task",
+      "value_type": "http://www.appian.com/ae/types/2009:ProcessModel",
+      "calls": [],
+      "called_by": [
+        "AS GSS TMG Update Task Details for Initiation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e460-9d93-8000-9bc1-011c48011c48_602185-tmg-am-am",
+      "name": "AS_GSS_TMG_REF_ID_TASK_ACTION_ASSIGNED",
+      "type": "Constant",
+      "description": "Value: 5",
+      "value": "5",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GSS TMG Update Task Details for Initiation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e460-9d93-8000-9bc1-011c48011c48_603236-tmg-am-am",
+      "name": "AS_GSS_TMG_REF_ID_TASK_STATUS_ASSIGNED",
+      "type": "Constant",
+      "description": "Value: 2",
+      "value": "2",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_TMG_UT_initiateTasks"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_28158",
+      "name": "AS_CO_UT_captureMetadata",
+      "type": "Expression Rule",
+      "description": "Automatically sets the \"auditing\" fields on a CDT, including createdDatetime/createdBy/modifiedDatetime/modifiedBy/isActive/isDeleted",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_updateCdtFields"
+      ],
+      "called_by": [
+        "AS_GSS_TMG_UT_initiateTasks"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75800",
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "description": "Filters a CDT by a matching a single value or list of values in a single field, if a list is passed, all matches are returned",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GSS TMG Update Task Details for Initiation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GSS TMG Task Action Audit",
+        "AS GSS TMG Update Task Details for Initiation",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_updateCdtFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73980",
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "description": "Returns nullableValue only if it is not null. Else returns replacementValue.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS GSS TMG Task Action Audit",
+        "AS_CO_UT_captureMetadata"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_260165",
+      "name": "AS_CO_UT_updateCdtFields",
+      "type": "Expression Rule",
+      "description": "Updates one or more fields of a CDT, with an optional input for indices",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_captureMetadata",
+        "AS_GSS_TMG_UT_initiateTasks"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_194721-tmg-am-am",
+      "name": "AS_GSS_TMG_UT_initiateTasks",
+      "type": "Expression Rule",
+      "description": "Accepts a list of tasks and configures the fields for initiation, also updating \"modifiedBy\" metadata",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_captureMetadata",
+        "AS_CO_UT_updateCdtFields",
+        "AS_GSS_TMG_REF_ID_TASK_STATUS_ASSIGNED"
+      ],
+      "called_by": [
+        "AS GSS TMG Update Task Details for Initiation"
+      ]
+    },
+    {
+      "uuid": "0002e2d7-0c89-8000-f92f-7f0000014e7a-tmg-am-am",
+      "name": "AS GSS TMG Task Action Audit",
+      "type": "Process Model",
+      "description": "Sub-process to track task action audits",
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull",
+        "AS_GSS_TMG_ENT_TASK_ACTION_AUDIT"
+      ],
+      "called_by": [
+        "AS GSS TMG Update Task Details for Initiation"
+      ]
+    },
+    {
+      "uuid": "0002e3f6-76db-8000-fa93-7f0000014e7a-tmg-am-am",
+      "name": "AS GSS TMG Update Task Details for Initiation",
+      "type": "Process Model",
+      "description": "Process for updating task details for initiation - Used for Tasks Reopening/ Initiation",
+      "calls": [
+        "AS GSS TMG Task Action Audit",
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_isBlank",
+        "AS_GSS_TMG_ENT_TASK",
+        "AS_GSS_TMG_ENUM_TASK_BEHAVIOR_TYPE_CODE_AUTOMATED",
+        "AS_GSS_TMG_PM_START_AUTOMATED_TASK",
+        "AS_GSS_TMG_REF_ID_TASK_ACTION_ASSIGNED",
+        "AS_GSS_TMG_UT_initiateTasks"
+      ],
+      "called_by": []
+    }
+  ]
+}

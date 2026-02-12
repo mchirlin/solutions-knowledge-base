@@ -1,0 +1,71 @@
+{
+  "uuid": "_a-0000ed2d-b9af-8000-9de8-011c48011c48_14806722",
+  "name": "AS_GSS_mapDataFromSAMGovToRefVendorRecord",
+  "type": "Expression Rule",
+  "description": "Get data from Integrations and map it to AS_GSS_Ref_Vendor_SYNCEDRECORD ",
+  "sail_code": "a!localVariables(\n  /* Integration to get vendor details*/\n  local!vendorData: if(\n    and(\n      rule!AS_CO_UT_isBlank(ri!cage),\n      rule!AS_CO_UT_isBlank(ri!uniqueEntityId)\n    ),\n    null,\n    rule!AS_GAM_GetVendorDetailsFromSAMGov(\n      cage: ri!cage,\n      uniqueEntityId: ri!uniqueEntityId\n    )\n  ),\n  /* Constructing a dictionary to map based on the data returned*/\n  if(\n    or(\n      rule!AS_CO_UT_isBlank(local!vendorData.result),\n      rule!AS_CO_UT_isBlank(\n        rule!AS_GSS_UT_deepIndex(\n          item: local!vendorData,\n          indexArray: { \"result\", \"body\", \"entityData\" }\n        )\n      )\n    ),\n    /*   If no data is retrieved from Integration*/\n    a!map(\n      data: null,\n      error: if(\n        rule!AS_CO_UT_isBlank(local!vendorData.error),\n        cons!AS_GSS_TXT_NO_RESULTS_FOUND_FROM_SAM_GOV,\n        local!vendorData.error\n      )\n    ),\n    /*   When data is retrieved */\n    a!map(\n      data: #\"SYSTEM_SYSRULES_forEach\"(\n        items: local!vendorData.result.body.entityData,\n        expression: /* Updating the vendor fields with data from the integration. */\n        recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD(\n          recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.vendorRefId: ri!refVendor[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.vendorRefId],\n          recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.legalName: rule!AS_CO_UT_indexPath(\n            cdt: fv!item,\n            field: \"entityRegistration.legalBusinessName\"\n          ),\n          recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.businessName: rule!AS_CO_UT_indexPath(\n            cdt: fv!item,\n            field: \"entityRegistration.dbaName\"\n          ),\n          recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.refVendorBusinessTypes: rule!AS_GSS_populateBusinessTypeFromSAMGovForRefVendorRecord(\n            businessTypes: rule!AS_CO_UT_indexPath(\n              cdt: fv!item,\n              field: \"coreData.businessTypes.businessTypeList.businessTypeCode\"\n            )\n          ),\n          recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.vendorAddressLine1: rule!AS_CO_UT_indexPath(\n            cdt: fv!item,\n            field: {\n              \"coreData.physicalAddress.addressLine1\"\n            }\n          ),\n          recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.vendorAddressLine2: null,\n          recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.vendorCity: rule!AS_CO_UT_indexPath(\n            cdt: fv!item,\n            field: { \"coreData.physicalAddress.city\" }\n          ),\n          recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.state: rule!AS_GSS_populateStateFromSAMGovForRefVendorRecord(\n            stateCode: rule!AS_CO_UT_indexPath(\n              cdt: fv!item,\n              field: {\n                \"coreData.physicalAddress.stateOrProvinceCode\"\n              }\n            )\n          ),\n          recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.country: rule!AS_GSS_populateCountryFromSAMGovForRefVendorRecord(\n            countryCode: rule!AS_CO_UT_indexPath(\n              cdt: fv!item,\n              field: { \"coreData.physicalAddress.countryCode\" }\n            )\n          ),\n          recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.vendorZipCode: rule!AS_CO_UT_indexPath(\n            cdt: fv!item,\n            field: { \"coreData.physicalAddress.zipCode\" }\n          ),\n          recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.vendorZipCodeExt: rule!AS_CO_UT_indexPath(\n            cdt: fv!item,\n            field: {\n              \"coreData.physicalAddress.zipCodePlus4\"\n            }\n          ),\n          recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.vendorForeignPostalCode: rule!AS_CO_UT_indexPath(\n            cdt: fv!item,\n            field: { \"coreData.physicalAddress.countryCode\" }\n          ),\n          recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.cageCode: rule!AS_CO_UT_indexPath(\n            cdt: fv!item,\n            field: \"entityRegistration.cageCode\"\n          ),\n          recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.status: rule!AS_CO_UT_indexPath(\n            cdt: fv!item,\n            field: \"entityRegistration.ueiStatus\"\n          ),\n          recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.expirationDate: rule!AS_CO_UT_indexPath(\n            cdt: fv!item,\n            field: \"entityRegistration.registrationExpirationDate\"\n          ),\n          recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.isActive: true(),\n          recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.sourceApplicationId: cons!AS_GSS_REF_ID_SOURCE_APPLICATION_GSS,\n          recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.uniqueEntityId: rule!AS_CO_UT_indexPath(\n            cdt: fv!item,\n            field: \"entityRegistration.ueiSAM\"\n          ),\n          recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.federalIdentifier: concat(\n            rule!AS_CO_UT_replaceNull(\n              nullableValue: upper(\n                stripwith(\n                  rule!AS_CO_UT_indexPath(\n                    cdt: fv!item,\n                    field: \"entityRegistration.legalBusinessName\"\n                  ),\n                  \" \"\n                )\n              ),\n              replacementValue: \"N/A\"\n            ),\n            \"|\",\n            rule!AS_CO_UT_replaceNull(\n              nullableValue: upper(\n                rule!AS_CO_UT_indexPath(\n                  cdt: fv!item,\n                  field: \"entityRegistration.ueiSAM\"\n                )\n              ),\n              replacementValue: \"N/A\"\n            ),\n            \"|\",\n            rule!AS_CO_UT_replaceNull(\n              nullableValue: upper(\n                rule!AS_CO_UT_indexPath(\n                  cdt: fv!item,\n                  field: \"entityRegistration.cageCode\"\n                )\n              ),\n              replacementValue: \"N/A\"\n            )\n          )\n        )\n      ),\n      error: null\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_GetVendorDetailsFromSAMGov",
+      "type": "Integration",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_UT_deepIndex",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_indexPath",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_populateBusinessTypeFromSAMGovForRefVendorRecord",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_populateStateFromSAMGovForRefVendorRecord",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_populateCountryFromSAMGovForRefVendorRecord",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TXT_NO_RESULTS_FOUND_FROM_SAM_GOV",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_REF_ID_SOURCE_APPLICATION_GSS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_Ref_Vendor_SYNCEDRECORD",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_CPS_searchVendors",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

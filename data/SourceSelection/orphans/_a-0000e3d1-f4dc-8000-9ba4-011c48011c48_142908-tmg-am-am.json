@@ -1,0 +1,76 @@
+{
+  "uuid": "_a-0000e3d1-f4dc-8000-9ba4-011c48011c48_142908-tmg-am-am",
+  "name": "AS_GSS_TMG_CPS_manageReferenceTemplateProperties",
+  "type": "Interface",
+  "description": "Managing the properties of a reference templates like name, description and mapping\n\nDocumentation is available for this design object.",
+  "sail_code": "a!localVariables(\n  local!isDuplicateTemplateName: rule!AS_GSS_TMG_UT_isDuplicateTemplateName(\n    selectedTemplate: ri!selectedTemplate,\n    /*triggerRefresh: ri!triggerRefresh,*/\n    refTemplates: rule!AS_GSS_TMG_QE_getTemplate(\n      templateName: ri!selectedTemplate.templateName,\n      returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY,\n      templateTypeId: cons!AS_GSS_REF_ID_TEMPLATE_TYPE_CONTRACTING,\n      triggerRefresh: ri!triggerRefresh\n    ),\n  ),\n  {\n    #\"SYSTEM_SYSRULES_columnsLayout\"(\n      columns: {\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: {\n            rule!AS_CO_INP_textField(\n              label: \"Approach Name\",\n              required: true,\n              value: ri!selectedTemplate.templateName,\n              saveInto: a!save(\n                ri!selectedTemplate.templateName,\n                save!value\n              ),\n              readOnly: ri!readOnly,\n              validations: {\n                rule!AS_CO_VD_textValidation(\n                  value: ri!selectedTemplate.templateName,\n                  maxLength: cons!AS_CO_ENUM_TEXT_LENGTH_MEDIUM\n                ),\n                rule!AS_CO_UT_validation(\n                  validation: \"You cannot have two approaches with the same name\",\n                  validateWhen: local!isDuplicateTemplateName\n                )\n              }\n            )\n          },\n          width: \"MEDIUM_PLUS\"\n        ),\n        #\"SYSTEM_SYSRULES_columnLayout\"(contents: {}, width: \"WIDE_PLUS\")\n      }\n    ),\n    #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n      items: {\n        #\"SYSTEM_SYSRULES_sideBySideItem\"(\n          item: rule!AS_CO_INP_paragraphField(\n            label: \"Description\",\n            value: ri!selectedTemplate.templateDesc,\n            saveInto: a!save(\n              ri!selectedTemplate.templateDesc,\n              save!value\n            ),\n            readOnly: ri!readOnly,\n            height: \"SHORT\",\n            validations: {\n              rule!AS_CO_VD_textValidation(\n                value: ri!selectedTemplate.templateDesc,\n                maxLength: cons!AS_CO_ENUM_TEXT_LENGTH_LONG\n              )\n            }\n          ),\n          width: \"2X\"\n        ),\n        #\"SYSTEM_SYSRULES_sideBySideItem\"(width: \"MINIMIZE\")\n      }\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_TMG_UT_isDuplicateTemplateName",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_QE_getTemplate",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_INP_textField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_VD_textValidation",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_validation",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_INP_paragraphField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_REF_ID_TEMPLATE_TYPE_CONTRACTING",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_TEXT_LENGTH_MEDIUM",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_TEXT_LENGTH_LONG",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_loadBundleByNames",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_TMG_CPS_manageReferenceTemplate",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

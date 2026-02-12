@@ -1,0 +1,31 @@
+{
+  "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_41232",
+  "name": "AS_CO_UT_displayValueMultiple",
+  "type": "Expression Rule",
+  "description": "For each item in the values list, executes displayValue.  Allows setting the default to either the first or last value of the replacement list, or a custom value.",
+  "sail_code": "if(\n  and(\n    rule!AS_CO_UT_booleanDefaultFalse(ri!firstIsDefault),\n    rule!AS_CO_UT_booleanDefaultFalse(ri!lastIsDefault)\n  ),\n  fn!error(\n    \"firstIsDefault and lastIsDefault cannot both be true\"\n  ),\n  if(\n    and(\n      or(ri!firstIsDefault, ri!lastIsDefault),\n      rule!AS_CO_UT_isNotBlank(ri!customDefaults)\n    ),\n    fn!error(\n      \"customDefault will never be used and should not be passed when either firstIsDefault or lastIsDefault is true\"\n    ),\n    #\"SYSTEM_SYSRULES_forEach\"(\n      items: ri!values,\n      expression: rule!AS_CO_UT_displayValue(\n        value: fv!item,\n        inArray: ri!inArray,\n        replacement: ri!replacement,\n        firstIsDefault: ri!firstIsDefault,\n        lastIsDefault: ri!lastIsDefault,\n        customDefault: index(ri!customDefaults, fv!index, null)\n      )\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_booleanDefaultFalse",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_displayValue",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_CO_UT_captureMetadata",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "uuid": "_a-0000e3c8-6861-8000-9ba2-011c48011c48_124392-tmg-am-am",
+  "name": "AS_GSS_TMG_UT_isDuplicateTaskReferenceName",
+  "type": "Expression Rule",
+  "description": "Returns a list of booleans that is the same length of the list of reference tasks provided.  If a reference task in ri!taskRefs has the same name as a different reference task (i.e. one without the same taskRefId) found in the database, returns true at its position in the list, otherwise false.",
+  "sail_code": "if(\n  rule!AS_CO_UT_isBlank(ri!taskRefs),\n  toboolean({}),\n  rule!AS_CO_UT_isBlank(ri!taskRefs.taskName),\n  repeat(length(ri!taskRefs), false),\n  a!localVariables(\n    local!existingRefTasksWithTheseNames: rule!AS_GSS_TMG_QE_getTaskRefs(\n      returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY,\n      taskName: ri!taskRefs.taskName,\n      configurationLevelCode: ri!configurationLevelCode\n    ),\n    #\"SYSTEM_SYSRULES_forEach\"(\n      items: ri!taskRefs,\n      expression: and(\n        length(\n          rule!AS_CO_UT_rejectCdtByField(\n            cdt: local!existingRefTasksWithTheseNames,\n            field: \"taskRefId\",\n            value: fv!item.taskRefId\n          )\n        ) > 0,\n        if(\n          contains(\n            lower(\n              local!existingRefTasksWithTheseNames.taskName\n            ),\n            lower(fv!item.taskName)\n          ),\n          true,\n          false\n        )\n      )\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_QE_getTaskRefs",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_rejectCdtByField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_TMG_CPS_referenceTaskContents",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_GRD_manageImportReferenceTasksGrid",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_VD_importReferenceTasks",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

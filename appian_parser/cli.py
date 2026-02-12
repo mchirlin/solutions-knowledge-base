@@ -9,13 +9,46 @@ from appian_parser.package_reader import PackageReader
 from appian_parser.type_detector import TypeDetector
 from appian_parser.parser_registry import ParserRegistry
 from appian_parser.diff_hash import DiffHashService
-from appian_parser.output.json_dumper import JSONDumper, ParsedObject, ParseError, DumpOptions, DumpResult
-from appian_parser.output.manifest_builder import ManifestBuilder
+from appian_parser.domain.models import ParsedObject, ParseError, DumpOptions, DumpResult
+from appian_parser.output.json_dumper import JSONDumper
 from appian_parser.resolution.reference_resolver import ReferenceResolver
 from appian_parser.resolution.label_bundle_resolver import LabelBundleResolver
 from appian_parser.dependencies.analyzer import DependencyAnalyzer
-from appian_parser.output.bundle_builder import BundleBuilder
-from appian_parser.output.bundle_summarizer import BundleSummarizer
+from appian_parser.output.bundle_coordinator import BundleCoordinator
+from appian_parser.output.search_index_builder import SearchIndexBuilder
+from appian_parser.output.app_overview_builder import AppOverviewBuilder
+from appian_parser.output.object_dependency_writer import ObjectDependencyWriter
+from appian_parser.output.orphan_writer import OrphanWriter
+
+
+def _build_dependency_summary(dependencies: list) -> dict:
+    """Build dependency summary stats from raw dependency list."""
+    by_type: dict[str, int] = {}
+    inbound: dict[str, int] = {}
+    outbound: dict[str, int] = {}
+    target_info: dict[str, dict] = {}
+    source_info: dict[str, dict] = {}
+
+    for d in dependencies:
+        by_type[d.dependency_type] = by_type.get(d.dependency_type, 0) + 1
+        inbound[d.target_uuid] = inbound.get(d.target_uuid, 0) + 1
+        outbound[d.source_uuid] = outbound.get(d.source_uuid, 0) + 1
+        target_info[d.target_uuid] = {'name': d.target_name, 'type': d.target_type}
+        source_info[d.source_uuid] = {'name': d.source_name, 'type': d.source_type}
+
+    most_depended = sorted(inbound.items(), key=lambda x: -x[1])[:20]
+    most_deps = sorted(outbound.items(), key=lambda x: -x[1])[:20]
+
+    return {
+        'total': len(dependencies),
+        'by_type': dict(sorted(by_type.items())),
+        'most_depended_on': [
+            {**target_info[uuid], 'inbound_count': count} for uuid, count in most_depended
+        ],
+        'most_dependencies': [
+            {**source_info[uuid], 'outbound_count': count} for uuid, count in most_deps
+        ],
+    }
 
 
 def dump_package(zip_path: str, output_dir: str, options: DumpOptions) -> DumpResult:
@@ -75,26 +108,66 @@ def dump_package(zip_path: str, output_dir: str, options: DumpOptions) -> DumpRe
 
         duration = time.time() - start_time
 
-        # Build manifest
-        manifest = ManifestBuilder.build(
-            zip_filename=contents.zip_filename,
-            parsed_objects=parsed_objects,
-            errors=errors,
-            parse_duration=duration,
-            total_xml_files=len(contents.xml_files),
-            total_files_in_zip=contents.total_files,
-        )
+        # Build package info (replaces ManifestBuilder)
+        by_type: dict[str, int] = {}
+        for obj in parsed_objects:
+            by_type[obj.object_type] = by_type.get(obj.object_type, 0) + 1
 
-        # Write output
-        dumper = JSONDumper(output_dir, pretty=options.pretty)
-        dumper.write_manifest(manifest)
-        dumper.write_dependencies(dependencies)
-        dumper.write_errors(errors)
+        package_info = {
+            'filename': contents.zip_filename,
+            'total_files_in_zip': contents.total_files,
+            'total_xml_files': len(contents.xml_files),
+            'total_parsed_objects': len(parsed_objects),
+            'total_errors': len(errors),
+            'parse_duration_seconds': round(duration, 2),
+        }
+        object_counts = dict(sorted(by_type.items()))
 
-        # Generate documentation bundles per entry point
+        # Build bundles and get assignment map
+        bundle_assignments: dict[str, list[str]] = {}
         if options.include_dependencies and dependencies:
-            bundle_builder = BundleBuilder()
-            bundle_builder.build_and_write(parsed_objects, dependencies, manifest, output_dir)
+            coordinator = BundleCoordinator(pretty=options.pretty)
+            bundle_assignments = coordinator.build_all(parsed_objects, dependencies, output_dir)
+            bundle_entries = coordinator.get_index_entries()
+        else:
+            bundle_entries = []
+
+        bundled_uuids = set(bundle_assignments.keys())
+
+        # Build search index (all objects)
+        search_builder = SearchIndexBuilder()
+        search_index = search_builder.build(parsed_objects, dependencies, bundle_assignments)
+        search_builder.write(search_index, output_dir, pretty=options.pretty)
+
+        # Build dependency summary
+        dep_summary = _build_dependency_summary(dependencies) if dependencies else {
+            'total': 0, 'by_type': {}, 'most_depended_on': [], 'most_dependencies': [],
+        }
+
+        # Build app overview
+        coverage = {
+            'total_objects': len(parsed_objects),
+            'bundled': len(bundled_uuids),
+            'orphaned': len(parsed_objects) - len(bundled_uuids),
+        }
+        overview_builder = AppOverviewBuilder()
+        overview = overview_builder.build(package_info, object_counts, bundle_entries, dep_summary, coverage)
+        overview_builder.write(overview, output_dir, pretty=options.pretty)
+
+        # Write per-object dependency files
+        if dependencies:
+            dep_writer = ObjectDependencyWriter()
+            dep_writer.write_all(parsed_objects, dependencies, bundle_assignments, output_dir, pretty=options.pretty)
+
+        # Write orphan files
+        orphans = [obj for obj in parsed_objects if obj.uuid not in bundled_uuids]
+        if orphans:
+            orphan_writer = OrphanWriter()
+            orphan_writer.write_all(orphans, dependencies, output_dir, pretty=options.pretty)
+
+        # Write errors
+        dumper = JSONDumper(output_dir, pretty=options.pretty)
+        dumper.write_errors(errors)
 
         return DumpResult(
             total_files=len(contents.xml_files),
@@ -122,10 +195,6 @@ def main():
     # types command
     subparsers.add_parser('types', help='List supported object types')
 
-    # summarize command
-    sum_parser = subparsers.add_parser('summarize', help='Generate one business summary file per bundle type')
-    sum_parser.add_argument('output', help='Output directory (must contain bundles/)')
-
     args = parser.parse_args()
 
     if args.command == 'dump':
@@ -150,16 +219,6 @@ def main():
         registry = ParserRegistry()
         for t in sorted(registry.get_supported_types()):
             print(f"  {t}")
-
-    elif args.command == 'summarize':
-        bundles_dir = os.path.join(args.output, 'bundles')
-        if not os.path.isdir(bundles_dir):
-            print(f"Error: {bundles_dir} not found. Run 'dump' first.", file=sys.stderr)
-            sys.exit(1)
-        summarizer = BundleSummarizer()
-        summaries_dir = summarizer.summarize(args.output)
-        count = len([f for f in os.listdir(summaries_dir) if f.endswith('.md')])
-        print(f"Done! Wrote {count} summary file(s) to {summaries_dir}")
 
     else:
         parser.print_help()

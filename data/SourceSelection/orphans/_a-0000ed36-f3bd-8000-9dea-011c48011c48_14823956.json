@@ -1,0 +1,75 @@
+{
+  "uuid": "_a-0000ed36-f3bd-8000-9dea-011c48011c48_14823956",
+  "name": "AS_GSS_CPS_searchVendors",
+  "type": "Interface",
+  "description": "Interface to search vendors  based on input",
+  "sail_code": "a!localVariables(\n  local!searchTerm,\n  {\n    #\"SYSTEM_SYSRULES_headingField\"(\n      text: \"Search Vendors\",\n      size: \"SMALL\",\n      headingTag: \"H2\",\n      fontWeight: \"BOLD\"\n    ),\n    #\"SYSTEM_SYSRULES_columnsLayout\"(\n      columns: {\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: rule!AS_CO_INP_textField(\n            label: \"Search Vendors\",\n            instructions: \"Search by UEI or CAGE\",\n            labelPosition: \"COLLAPSED\",\n            value: local!searchTerm,\n            validations: rule!AS_GSS_VD_enteredVendorDataValidationMessage(\n              searchTerm: local!searchTerm,\n              cage: upper(\n                if(\n                  len(local!searchTerm) = cons!AS_GAM_ENUM_TEXT_LENGTH_FOR_CAGE,\n                  local!searchTerm,\n                  null\n                )\n              ),\n              uniqueEntityId: upper(\n                if(\n                  len(local!searchTerm) = cons!AS_GAM_ENUM_TEXT_LENGTH_FOR_UEI,\n                  local!searchTerm,\n                  null\n                )\n              ),\n              bundle:ri!bundle\n            ),\n            saveInto: {\n              local!searchTerm,\n              a!save(ri!cage, null),\n              a!save(ri!uniqueEntityId, null)\n            }\n          ),\n          width: \"MEDIUM\"\n        ),\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: #\"SYSTEM_SYSRULES_ButtonArrayLayout\"(\n            buttons: #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n              label: if(\n                cons!AS_GSS_TOGGLE_AUTOMATION_TESTING_ENABLED,\n                \"Search\",\n                \"\"\n              ),\n              accessibilityText: \"Search\",\n              icon: \"search\",\n              value: true(),\n              saveInto: {\n                ri!searchAction,\n                a!save(ri!searchTerm, local!searchTerm),\n                a!save(ri!returnedVendors, null),\n                a!match(\n                  value: local!searchTerm,\n                  whenTrue: len(local!searchTerm) = cons!AS_GAM_ENUM_TEXT_LENGTH_FOR_CAGE,\n                  then: {\n                    a!save(ri!cage, local!searchTerm),\n                    a!save(ri!uniqueEntityId, null)\n                  },\n                  whenTrue: len(local!searchTerm) = cons!AS_GAM_ENUM_TEXT_LENGTH_FOR_UEI,\n                  then: {\n                    a!save(ri!uniqueEntityId, local!searchTerm),\n                    a!save(ri!cage, null)\n                  },\n                  default: {\n                    a!save(ri!cage, null),\n                    a!save(ri!uniqueEntityId, null)\n                  }\n                ),\n                a!localVariables(\n                  /*Calls the Integrations*/\n                  local!apiDataVendors: rule!AS_GSS_mapDataFromSAMGovToRefVendorRecord(\n                    cage: upper(\n                      if(\n                        len(local!searchTerm) = cons!AS_GAM_ENUM_TEXT_LENGTH_FOR_CAGE,\n                        local!searchTerm,\n                        null\n                      )\n                    ),\n                    uniqueEntityId: upper(\n                      if(\n                        len(local!searchTerm) = cons!AS_GAM_ENUM_TEXT_LENGTH_FOR_UEI,\n                        local!searchTerm,\n                        null\n                      )\n                    )\n                  ),\n                  /*Check against vendor records*/\n                  local!refDataVendors: rule!AS_GSS_QR_getReferenceVendors(\n                    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY,\n                    logicalExpression: #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n                      operator: \"OR\",\n                      filters: {\n                        #\"SYSTEM_SYSRULES_queryFilter\"(\n                          field: recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.formattedCageCode,\n                          operator: \"=\",\n                          value: upper(local!searchTerm)\n                        ),\n                        #\"SYSTEM_SYSRULES_queryFilter\"(\n                          field: recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.formattedUniqueEntityId,\n                          operator: \"=\",\n                          value: upper(local!searchTerm)\n                        )\n                      }\n                    )\n                  ),\n                  {\n                    a!save(\n                      ri!returnedVendors,\n                      rule!AS_GSS_UT_finalizedApiAndRefVendorsRecordList(\n                        refVendors: local!refDataVendors,\n                        apiVendors: local!apiDataVendors.data\n                      )\n                    ),\n                    a!save(\n                      ri!errorMessage,\n                      local!apiDataVendors.error\n                    )\n                  }\n                )\n              },\n              size: \"SMALL\",\n              color: \"SECONDARY\",\n              disabled: or(\n                rule!AS_CO_UT_isBlank(value: local!searchTerm),\n                rule!AS_CO_UT_isNotBlank(\n                  input: rule!AS_GSS_VD_enteredVendorDataValidationMessage(\n                    searchTerm: local!searchTerm,\n                    cage: upper(\n                      if(\n                        len(local!searchTerm) = cons!AS_GAM_ENUM_TEXT_LENGTH_FOR_CAGE,\n                        local!searchTerm,\n                        null\n                      )\n                    ),\n                    uniqueEntityId: upper(\n                      if(\n                        len(local!searchTerm) = cons!AS_GAM_ENUM_TEXT_LENGTH_FOR_UEI,\n                        local!searchTerm,\n                        null\n                      )\n                    ),\n                    bundle: ri!bundle\n                  )\n                )\n              )\n            ),\n            align: \"START\",\n            marginBelow: \"NONE\"\n          )\n        )\n      },\n      alignVertical: \"TOP\",\n      marginBelow: \"NONE\",\n      spacing: \"DENSE\"\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "AS_CO_INP_textField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_VD_enteredVendorDataValidationMessage",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_mapDataFromSAMGovToRefVendorRecord",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_QR_getReferenceVendors",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_UT_finalizedApiAndRefVendorsRecordList",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_ENUM_TEXT_LENGTH_FOR_CAGE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GAM_ENUM_TEXT_LENGTH_FOR_UEI",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TOGGLE_AUTOMATION_TESTING_ENABLED",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_Ref_Vendor_SYNCEDRECORD",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "AS_GSS_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

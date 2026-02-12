@@ -1,0 +1,144 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GSS Nightly Process Wrapper",
+    "parent_name": null,
+    "total_objects": 6
+  },
+  "entry_point": {
+    "complexity_score": 12.0,
+    "total_nodes": 7,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GSS Nightly Process Wrapper",
+      "complexity_score": 12.0,
+      "total_nodes": 7,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Due and overdue Email process"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Due and overdue Email process",
+          "type": "Start Process (v2)",
+          "next": [
+            "Sync Evaluation Chair"
+          ]
+        },
+        {
+          "name": "Sync Evaluation Chair",
+          "type": "Start Process (v2)",
+          "next": [
+            "Documents Deletion"
+          ]
+        },
+        {
+          "name": "Any customized process?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Customized Process",
+            "End Node"
+          ]
+        },
+        {
+          "name": "Customized Process",
+          "type": "Start Process (v2)",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Documents Deletion",
+          "type": "Start Process (v2)",
+          "next": [
+            "Any customized process?"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e5d4-2024-8000-9baf-011c48011c48_336091",
+      "name": "AS_FRM_BOOL_RULE_CUSTOMIZATION_1_0_ENABLED",
+      "type": "Constant",
+      "description": "Returns true if customizable rules using the 1.0 SDK is enabled",
+      "value": "true",
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "AS_FRM_determineRuntimeRule"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb5-bbc6-8000-9dba-011c48011c48_13907346",
+      "name": "AS_GSS_PM_DOCUMENT_DELETION",
+      "type": "Constant",
+      "description": "Process model: AS GSS Nightly Document Deletion",
+      "value": "AS GSS Document Deletion",
+      "value_type": "http://www.appian.com/ae/types/2009:ProcessModel",
+      "calls": [],
+      "called_by": [
+        "AS GSS Nightly Process Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GSS Nightly Process Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5d4-2024-8000-9baf-011c48011c48_320878",
+      "name": "AS_FRM_determineRuntimeRule",
+      "type": "Expression Rule",
+      "description": "Returns the runtime rule for a default rule, uses plugin function `determineRuntimeRule()`",
+      "parameters": [],
+      "calls": [
+        "AS_FRM_BOOL_RULE_CUSTOMIZATION_1_0_ENABLED"
+      ],
+      "called_by": [
+        "AS_GSS_CustomNightlyProcesses_wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb1f-ba4f-8000-9d06-011c48011c48_9565968",
+      "name": "AS_GSS_CustomNightlyProcesses_wrapper",
+      "type": "Expression Rule",
+      "description": "This rule returns a customized nightly process model to run daily",
+      "parameters": [],
+      "calls": [
+        "AS_FRM_determineRuntimeRule"
+      ],
+      "called_by": [
+        "AS GSS Nightly Process Wrapper"
+      ]
+    },
+    {
+      "uuid": "0002eb21-2e9b-8000-8d8c-7f0000014e7a",
+      "name": "AS GSS Nightly Process Wrapper",
+      "type": "Process Model",
+      "description": "Wrapper process model that contains all the nightly process models",
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_GSS_CustomNightlyProcesses_wrapper",
+        "AS_GSS_PM_DOCUMENT_DELETION"
+      ],
+      "called_by": []
+    }
+  ]
+}

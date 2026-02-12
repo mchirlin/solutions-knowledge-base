@@ -1,0 +1,31 @@
+{
+  "uuid": "_a-0000ed9c-6a3c-8000-9e00-011c48011c48_15617377",
+  "name": "AS_GSS_UT_finalizedApiAndRefVendorsRecordListForStateAndLocal",
+  "type": "Expression Rule",
+  "description": "Compares vendors returned from ref record and Vm for State and local",
+  "sail_code": "rule!AS_GSS_QR_getReferenceVendors(\n  returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY,\n  logicalExpression: #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n    operator: \"OR\",\n    filters: {\n      #\"SYSTEM_SYSRULES_queryFilter\"(\n        field: recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.fein,\n        operator: \"includes\",\n        value: tostring(ri!searchTerm)\n      ),\n      #\"SYSTEM_SYSRULES_queryFilter\"(\n        field: recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.tin,\n        operator: \"includes\",\n        value: tostring(ri!searchTerm)\n      ),\n      #\"SYSTEM_SYSRULES_queryFilter\"(\n        field: recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.formattedLegalName,\n        operator: \"includes\",\n        value: tostring(upper(ri!searchTerm))\n      ),\n      #\"SYSTEM_SYSRULES_queryFilter\"(\n        field: recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.legalName,\n        operator: \"includes\",\n        value: tostring(ri!searchTerm)\n      )\n    }\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_QR_getReferenceVendors",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_Ref_Vendor_SYNCEDRECORD",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_CPS_searchVendorsForStateAndLocal",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

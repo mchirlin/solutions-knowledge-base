@@ -1,0 +1,31 @@
+{
+  "uuid": "_a-0000ec9a-0c70-8000-9daf-011c48011c48_13611191",
+  "name": "AS_GSS_CO_DSP_primaryRecordListField",
+  "type": "Expression Rule",
+  "description": "Standard display for a primary record-list field, uses a larger size and strong rich text",
+  "sail_code": "if(\n  a!defaultValue(ri!returnLinkComponent, false),\n  rule!AS_CO_UT_recordLink(\n    recordType: ri!recordType,\n    recordId: ri!recordIdentifier,\n    linkStyle: \"STANDALONE\",\n    newTab: ri!newTab,\n    siteWebAddressIdentifier: ri!siteWebAddressIdentifier,\n    showWhen: ri!showLink,\n    sitepage: ri!sitePage\n  ),\n  #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n    text: {\n      #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n        text: { #\"SYSTEM_SYSRULES_richTextIcon\"(icon: ri!icon), \" \" },\n        showWhen: rule!AS_CO_UT_isNotBlank(ri!icon)\n      ),\n      ri!recordTitle,\n      \n    },\n    link: if(\n      ri!newTab,\n      rule!AS_CO_UT_recordLink(\n        recordType: ri!recordType,\n        recordId: ri!recordIdentifier,\n        linkStyle: \"STANDALONE\",\n        newTab: ri!newTab,\n        siteWebAddressIdentifier: ri!siteWebAddressIdentifier,\n        showWhen: ri!showLink,\n        sitepage: ri!sitePage\n      ),\n      #\"SYSTEM_SYSRULES_recordLink\"(\n        recordtype: ri!recordType,\n        identifier: ri!recordIdentifier\n      )\n    ),\n    linkStyle: \"STANDALONE\",\n    size: rule!AS_CO_UT_replaceNull(\n      nullableValue: ri!size,\n      replacementValue: \"STANDARD\"\n    ),\n    style: rule!AS_CO_UT_replaceNull(\n      nullableValue: ri!style,\n      replacementValue: \"STRONG\"\n    ),\n    showWhen: ri!showWhen\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_recordLink",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_CRD_relatedEvaluationDetails",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

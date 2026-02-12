@@ -1,0 +1,35 @@
+{
+  "uuid": "c993facf-ee9a-40e5-857f-2688c58b0839-tmg-am-am",
+  "name": "AS_GSS_TMG_UT_createTaskActionAuditCdts",
+  "type": "Expression Rule",
+  "description": "Builds the audit CDTs for use in process",
+  "sail_code": "cast(\n  'type!{urn:com:appian:types:AS:GSS:TMG}AS_GSS_TMG_TaskActionAudit?list',\n  #\"SYSTEM_SYSRULES_forEach\"(\n    items: ri!tasks,\n    expression: {\n      if(\n        rule!AS_CO_UT_isBlank(\n          ri!startTime\n        ),\n        {},\n        'type!{urn:com:appian:types:AS:GSS:TMG}AS_GSS_TMG_TaskActionAudit'(\n          task: fv!item,\n          review: fv!item.review,\n          username: ri!initiator,\n          timestamp: ri!startTime,\n          taskAction: 'type!{urn:com:appian:types:AS:GSS:TMG}AS_GSS_TMG_R_TaskAction'(\n            taskActionId: cons!AS_GSS_TMG_REF_ID_TASK_ACTION_ACCEPTED\n          ),\n          assignedTo: null\n        )\n      ),\n      'type!{urn:com:appian:types:AS:GSS:TMG}AS_GSS_TMG_TaskActionAudit'(\n        task: fv!item,\n        review: fv!item.review,\n        username: ri!initiator,\n        timestamp: now(),\n        taskAction: 'type!{urn:com:appian:types:AS:GSS:TMG}AS_GSS_TMG_R_TaskAction'(\n          taskActionId: ri!taskActionId\n        ),\n        assignedTo: rule!AS_CO_UT_replaceNull(\n          nullableValue: rule!AS_CO_UT_displayUser(user: fv!item.userAssignee),\n          replacementValue: rule!AS_CO_UT_displayGroupOrUser(groupOrUser: fv!item.groupAssignee)\n        )\n      )\n    }\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_displayUser",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_displayGroupOrUser",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_REF_ID_TASK_ACTION_ACCEPTED",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

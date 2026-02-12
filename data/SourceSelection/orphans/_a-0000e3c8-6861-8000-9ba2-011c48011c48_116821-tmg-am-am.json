@@ -1,0 +1,96 @@
+{
+  "uuid": "_a-0000e3c8-6861-8000-9ba2-011c48011c48_116821-tmg-am-am",
+  "name": "AS_GSS_TMG_CPS_referenceTaskContents",
+  "type": "Interface",
+  "description": "Allows user to configure a reference task",
+  "sail_code": "a!localVariables(\n  local!taskBehaviorTypes: rule!AS_GSS_TMG_QE_getTaskBehaviorTypes(\n    /*Excludes system level tasks*/\n    configurationLevelCode: cons!AS_GSS_TMG_ENUM_TASK_CONFIGURATION_LEVEL_CODE_TEMPLATE\n  ),\n  local!taskCategories: rule!AS_GSS_TMG_QE_getTaskCategories(\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY\n  ),\n  /*Check to see if there is a different reference task with the same name in the DB*/\n  local!isDuplicateTaskRefName: a!refreshVariable(\n    value: rule!AS_GSS_TMG_UT_isDuplicateTaskReferenceName(\n      taskRefs: ri!taskRef,\n      configurationLevelCode: cons!AS_GSS_TMG_ENUM_TASK_CONFIGURATION_LEVEL_CODE_AD_HOC\n    ),\n    /*Don't want to update every time anything changes, just the name*/\n    refreshOnReferencedVarChange: false,\n    refreshOnVarChange: ri!taskRef.taskName\n  ),\n  {\n    #\"SYSTEM_SYSRULES_columnsLayout\"(\n      columns: {\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: {\n            rule!AS_CO_INP_textField(\n              label: \"Task Name\",\n              required: true,\n              value: ri!taskRef.taskName,\n              validations: {\n                rule!AS_CO_VD_textValidation(\n                  value: ri!taskRef.taskName,\n                  maxLength: cons!AS_CO_ENUM_TEXT_LENGTH_MEDIUM\n                ),\n                if(\n                  local!isDuplicateTaskRefName,\n                  \"You cannot have two tasks with the same name\",\n                  \"\"\n                )\n              },\n              saveInto: a!save(\n                target: ri!taskRef.taskName,\n                value: save!value\n              ),\n              labelPosition: \"ABOVE\"\n            )\n          },\n          width: \"NARROW\"\n        ),\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: {\n            rule!AS_CO_CP_dropdownField(\n              label: \"Task Phase\",\n              labelPosition: \"ABOVE\",\n              required: true,\n              choiceLabels: local!taskCategories.categoryName,\n              choiceValues: local!taskCategories,\n              value: ri!taskRef.taskCategory,\n              saveInto: ri!taskRef.taskCategory\n            )\n          },\n          width: \"NARROW\"\n        ),\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: {\n            rule!AS_CO_CP_pickerFieldGroups(\n              label: \"Assigned Group\",\n              labelPosition: \"ABOVE\",\n              maxSelections: 1,\n              groupFilter: cons!AS_GSS_TMG_GRP_TASK_RECIPIENTS,\n              value: ri!taskRef.defaultGroupAssignee,\n              saveInto: ri!taskRef.defaultGroupAssignee,\n              required: true\n            )\n          },\n          width: \"NARROW\"\n        )\n      }\n    ),\n    #\"SYSTEM_SYSRULES_columnsLayout\"(\n      columns: rule!AS_GSS_TMG_CP_taskRefTaskTypeColumns(\n        i18nData: ri!i18nData,\n        taskRef: ri!taskRef,\n        taskBehaviorTypes: local!taskBehaviorTypes\n      )\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_TMG_QE_getTaskBehaviorTypes",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_QE_getTaskCategories",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_isDuplicateTaskReferenceName",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_INP_textField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_VD_textValidation",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CP_dropdownField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CP_pickerFieldGroups",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_CP_taskRefTaskTypeColumns",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_ENUM_TASK_CONFIGURATION_LEVEL_CODE_TEMPLATE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_ENUM_TASK_CONFIGURATION_LEVEL_CODE_AD_HOC",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_TEXT_LENGTH_MEDIUM",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_GRP_TASK_RECIPIENTS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_loadBundleByNames",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_QE_getTaskRefs",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_TMG_CP_manageReferenceTask",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "uuid": "_a-0000e3c8-6861-8000-9ba2-011c48011c48_126730-tmg-am-am",
+  "name": "AS_GSS_TMG_GRD_manageReferenceTemplateCategoryGrid",
+  "type": "Interface",
+  "description": "grid to display tasks for each category",
+  "sail_code": "a!localVariables(\n  /*Return the indices of the tasks that pertain to this category*/\n  local!taskIndicesForCategory: rule!AS_CO_UT_returnCdtIndicesByField(\n    cdt: ri!selectedTemplate.templateTasks,\n    field: \"taskRef.taskCategory.categoryName\",\n    value: ri!taskCategory.categoryName\n  ),\n  local!refData: rule!AS_GSS_QE_getRefDataByTypes(\n    refTypes: cons!AS_GSS_REF_TYPE_ITEM_DURATION_UNIT\n  ),\n  #\"SYSTEM_SYSRULES_gridLayout\"(\n    emptyGridMessage: \"No tasks available\",\n    headerCells: {\n      #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(label: \"\"),\n      #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(\n        label: \"Task Name\"\n      ),\n      #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(\n        label: \"Task Type\"\n      ),\n      #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(\n        label: \"Description\"\n      ),\n      #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(\n        label: \"Precedents\",\n        helpTooltip: \"Tasks without precedents will be kicked off upon submission\"\n      ),\n      #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(\n        label: \"Assigned Group\" & \" * \"\n      ),\n      #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(\n        label: \"Days from Start\" & \" * \",\n        helpTooltip: \"The number of days from when the approach is selected that this task should start. This will be used with the duration to calculate the due date.\"\n      ),\n      #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(\n        label: \"Duration\" & \" * \"\n      ),\n      #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(\n        label: \"Duration Unit\" & \" * \"\n      ),\n      #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(label: \"\")\n    },\n    columnConfigs: {\n      #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(width: \"ICON\"),\n      #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(weight: 1),\n      #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(weight: 1),\n      /*Make description and precedents fields larger*/\n      #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(weight: 2),\n      #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(weight: 2),\n      #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(weight: 1),\n      #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(weight: 1),\n      #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(weight: 1),\n      #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(weight: 1),\n      #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(width: \"ICON\")\n    },\n    rows: {\n      #\"SYSTEM_SYSRULES_forEach\"(\n        items: if(\n          rule!AS_CO_UT_isBlank(local!taskIndicesForCategory),\n          {},\n          ri!selectedTemplate.templateTasks[local!taskIndicesForCategory]\n        ),\n        expression: {\n          #\"SYSTEM_SYSRULES_gridRowLayout\"(\n            contents: {\n              /*index*/\n              rule!AS_CO_CP_integerField(\n                readOnly: true,\n                value: fv!index,\n                align: \"CENTER\"\n              ),\n              /*name*/\n              rule!AS_CO_INP_textField(\n                required: true,\n                readOnly: true,\n                value: fv!item.taskRef.taskName\n              ),\n              /*type*/\n              rule!AS_CO_INP_textField(\n                required: true,\n                readOnly: true,\n                value: rule!AS_CO_UT_displayRefDataLabelSingle(\n                  singleData: fv!item.taskRef.taskBehaviorType,\n                  labelField: \"behaviorDisplayName\",\n                  i18nData: ri!i18nData\n                )\n              ),\n              /*description*/\n              rule!AS_CO_INP_textField(\n                value: fv!item.taskDesc,\n                validations: rule!AS_CO_VD_textValidation(\n                  value: fv!item.taskDesc,\n                  maxLength: cons!AS_CO_ENUM_TEXT_LENGTH_LONG\n                ),\n                saveInto: fv!item.taskDesc\n              ),\n              /*precedents*/\n              a!localVariables(\n                local!precTaskOptions: a!refreshVariable(\n                  value: rule!AS_CO_UT_rejectCdtByField(\n                    cdt: ri!selectedTemplate.templateTasks.taskRef,\n                    field: \"taskRefId\",\n                    value: fv!item.taskRef.taskRefId\n                  ),\n                  refreshOnVarChange: ri!selectedTemplate\n                ),\n                {\n                  rule!AS_CO_CP_multipleDropdownField(\n                    placeholderLabel: \"Select Precedents\",\n                    choiceLabels: local!precTaskOptions.taskName,\n                    choiceValues: local!precTaskOptions.taskRefId,\n                    value: a!flatten(fv!item.templateTaskPrecedents).taskRefId_precedent,\n                    saveInto: {\n                      a!save(\n                        fv!item.templateTaskPrecedents,\n                        #\"SYSTEM_SYSRULES_forEach\"(\n                          items: save!value,\n                          expression: 'type!{urn:com:appian:types:AS:GSS:TMG}AS_GSS_TMG_R_TemplateTask_Precedent'(taskRefId_precedent: fv!item)\n                        )\n                      )\n                    },\n                    disabled: rule!AS_CO_UT_isBlank(local!precTaskOptions)\n                  )\n                }\n              ),\n              /*default assignee*/\n              rule!AS_CO_CP_pickerFieldGroups(\n                required: true,\n                maxSelections: 1,\n                groupFilter:cons!AS_GSS_TMG_GRP_TASK_RECIPIENTS,\n                value: fv!item.groupAssignee,\n                saveInto: fv!item.groupAssignee\n              ),\n              /*Days From Start*/\n              rule!AS_CO_CP_integerField(\n                required: true,\n                value: fv!item.noOfDaysFromStart,\n                saveInto: fv!item.noOfDaysFromStart,\n                validations: rule!AS_CO_VD_numberValidation(\n                  value: fv!item.noOfDaysFromStart,\n                  minSize: 1,\n                  minSizeMessage: \"Please enter a value greater than 0\",\n                  maxSize: cons!AS_GSS_TMG_TEXT_LENGTH_FOR_DAYS_FROM_START,\n                  maxSizeMessage: \"Please enter a value less than or equal to\" & \" \" & cons!AS_GSS_TMG_TEXT_LENGTH_FOR_DAYS_FROM_START\n                )\n              ),\n              /*Duration*/\n              rule!AS_CO_CP_integerField(\n                required: true,\n                value: fv!item.duration,\n                saveInto: fv!item.duration,\n                placeholder: \"Enter duration\",\n                validations: rule!AS_CO_VD_numberValidation(\n                  value: fv!item.duration,\n                  minSize: 1,\n                  minSizeMessage: \"Please enter a duration value greater than 0\",\n                  maxSize: 1000,\n                  maxSizeMessage: \"Please enter a duration value less than or equal to 1000\"\n                )\n              ),\n              /*Duration Unit*/\n              rule!AS_CO_CP_dropdownField(\n                required: true,\n                choiceLabels: local!refData.refLabel,\n                choiceValues: local!refData.refDataId,\n                value: fv!item.durationUnit.refDataId,\n                saveInto: fv!item.durationUnit.refDataId,\n                placeholderLabel: \"Select a unit\"\n              ),\n              /*remove task*/\n              rule!AS_CO_DSP_removeIcon(\n                caption: \"Remove Task\",\n                /*remove task as precedent for other tasks, then remove task from template*/\n                saveInto: rule!AS_GSS_TMG_UT_removeTaskFromTemplateSaves(\n                  selectedTemplate: ri!selectedTemplate,\n                  taskRefIdToRemove: fv!item.taskRef.taskRefId\n                ),\n                removalType: cons!AS_CO_ENUM_REMOVAL_ICON_TYPE_CLEAR\n              )\n            }\n          )\n        }\n      )\n    }\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_returnCdtIndicesByField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_QE_getRefDataByTypes",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CP_integerField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_INP_textField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_displayRefDataLabelSingle",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_VD_textValidation",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_rejectCdtByField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CP_multipleDropdownField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CP_pickerFieldGroups",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_VD_numberValidation",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CP_dropdownField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_DSP_removeIcon",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_removeTaskFromTemplateSaves",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_REF_TYPE_ITEM_DURATION_UNIT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_TEXT_LENGTH_LONG",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_GRP_TASK_RECIPIENTS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_TEXT_LENGTH_FOR_DAYS_FROM_START",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_REMOVAL_ICON_TYPE_CLEAR",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_loadBundleByNames",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_QE_getTaskCategories",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_TMG_CPS_manageReferenceTemplateCategory",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9793492",
+  "name": "AS_GSS_UT_handleEvaluationDocumentsOnSubmit",
+  "type": "Expression Rule",
+  "description": "Expression rule to identify the list of reference documents to be updated for an evaluation",
+  "sail_code": "a!localVariables(\n  local!appianDocIdsToDelete: difference(\n    tointeger(\n      rule!AS_CO_UT_indexPath(\n        cdt: ri!originalReferenceDocs,\n        field: \"appianDocId\"\n      )\n    ),\n    tointeger(\n      rule!AS_CO_UT_indexPath(\n        cdt: ri!referenceDocs,\n        field: \"appianDocId\"\n      )\n    )\n  ),\n  local!updatedOriginalReferenceDocs: rule!AS_CO_UT_updateCdtFields(\n    cdt: rule!AS_CO_UT_filterCdtByField(\n      cdt: ri!originalReferenceDocs,\n      field: \"appianDocId\",\n      value: local!appianDocIdsToDelete\n    ),\n    fields: \"isDeleted\",\n    newValues: true()\n  ),\n  local!updatedReferenceDocs: #\"SYSTEM_SYSRULES_forEach\"(\n    items: ri!referenceDocs,\n    expression: if(\n      contains(\n        tointeger(\n          rule!AS_CO_UT_indexPath(\n            cdt: ri!originalReferenceDocs,\n            field: \"appianDocId\"\n          )\n        ),\n        tointeger(fv!item.appianDocId)\n      ),\n      fv!item,\n      rule!AS_CO_UT_updateCdtFields(\n        cdt: fv!item,\n        fields: { \"documentName\", \"fileType\", \"docType\" },\n        newValues: {\n          document(fv!item.appianDocId, \"name\"),\n          document(fv!item.appianDocId, \"extension\"),\n          rule!AS_GSS_QE_getRefDataByTypes(\n            refDataIds: cons!AS_GSS_REF_ID_DOC_TYPE_REFERENCE\n          )\n        }\n      )\n    )\n  ),\n  union(\n    local!updatedOriginalReferenceDocs,\n    local!updatedReferenceDocs\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_indexPath",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_updateCdtFields",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_QE_getRefDataByTypes",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_REF_ID_DOC_TYPE_REFERENCE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

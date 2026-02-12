@@ -1,0 +1,35 @@
+{
+  "uuid": "_a-0000e447-91f4-8000-9bc0-011c48011c48_555175-tmg-am-am",
+  "name": "AS_GSS_TMG_UT_disableMarkNotNeeded",
+  "type": "Expression Rule",
+  "description": "additional disabled condition for the \"Mark not needed\" button on the runtime task grid",
+  "sail_code": "/*Disable MARK NOT NEEDED when the Selected TAsk is Not AD HOC and CHECKLIST SET UP (CO groups)*/\nor(\n  #\"SYSTEM_SYSRULES_forEach\"(\n    items: ri!tasks,\n    expression: and(\n      fv!item.taskBehaviorType.configurationLevelCode <> cons!AS_GSS_TMG_ENUM_TASK_CONFIGURATION_LEVEL_CODE_AD_HOC,\n      if(\n        fv!item.taskCategory.categoryName <> cons!AS_GSS_TMG_ENUM_TASK_CATEGORY_CHECKLIST_SETUP,\n        true,\n        not(ri!isContractingPersonnel)\n      )\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_TMG_ENUM_TASK_CONFIGURATION_LEVEL_CODE_AD_HOC",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_ENUM_TASK_CATEGORY_CHECKLIST_SETUP",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_QE_getRuntimeTask",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_ENUM_TASK_CONFIGURATION_LEVEL_CODE_SYSTEM",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

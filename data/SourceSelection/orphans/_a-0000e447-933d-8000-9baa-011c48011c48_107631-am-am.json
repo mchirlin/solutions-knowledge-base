@@ -1,0 +1,25 @@
+{
+  "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_107631-am-am",
+  "name": "AS_GSS_TMG_UI_taskGrid_colDueDate",
+  "type": "Expression Rule",
+  "description": "Contains the column for the task due date",
+  "sail_code": "/*This rule cannot have test cases as it returns a grid column*/\n#\"SYSTEM_SYSRULES_gridColumn\"(\n  width: \"2X\",\n  label: \"Due\",\n  sortfield: \"dueDate\",\n  value: if(\n    rule!AS_CO_UT_isBlank(fv!row.dueDate),\n    \"-\",\n    if(\n      cons!AS_GSS_TMG_BOL_BUSINESS_DAYS_ONLY,\n      /*Business days*/\n      a!localVariables(\n        /*Extracting date from dueDate of type dateTime*/\n        local!dueDate: todate(fv!row.dueDate),\n        /*Getting today based on user's timezone*/\n        local!today: rule!AS_CO_UT_returnTodayBasedOnInput(username: loggedInUser()),\n        /*calculating the end date diff from today*/\n        local!workingDays: calworkdays(local!today, local!dueDate),\n        #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n          value: #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n            text: {\n              if(\n                local!workingDays < 0,\n                #\"SYSTEM_SYSRULES_richTextIcon\"(\n                  icon: \"exclamation-circle\",\n                  color: \"NEGATIVE\",\n                  altText: \"Over due\"\n                ),\n                {}\n              ),\n              if(\n                local!workingDays < 0,\n                \" \" & local!workingDays,\n                \" \" & local!workingDays - 1\n              ) & \"d\"\n            },\n            color: if(local!workingDays < 0, \"NEGATIVE\", null)\n          )\n        )\n      ),\n      /*Not Business days*/\n      a!localVariables(\n        /*Extracting date from dueDate of type dateTime*/\n        local!dueDate: todate(fv!row.dueDate),\n        /*Getting today based on user's timezone*/\n        local!today: rule!AS_CO_UT_returnTodayBasedOnInput(username: loggedInUser()),\n        /*calculating the end date diff from today*/\n        local!endDateDifference: tointeger(local!dueDate - local!today),\n        /*checking if alreadt expired*/\n        local!expired: local!dueDate < local!today,\n        #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n          value: #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n            text: {\n              if(\n                local!expired,\n                #\"SYSTEM_SYSRULES_richTextIcon\"(\n                  icon: \"exclamation-circle\",\n                  color: \"NEGATIVE\",\n                  altText: \"Over due\"\n                ),\n                {}\n              ),\n              if(\n                local!expired,\n                \" \" & local!endDateDifference & \"d\",\n                or(\n                  local!endDateDifference = 1,\n                  local!endDateDifference = 0\n                ),\n                \" \" & local!endDateDifference & \"d\",\n                and(\n                  local!endDateDifference > 0,\n                  local!dueDate > local!today\n                ),\n                \" \" & local!endDateDifference & \"d\",\n                null\n              )\n            },\n            color: if(local!expired, \"NEGATIVE\", null)\n          )\n        )\n      )\n    )\n  ),\n  align: \"END\"\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_returnTodayBasedOnInput",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_BOL_BUSINESS_DAYS_ONLY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

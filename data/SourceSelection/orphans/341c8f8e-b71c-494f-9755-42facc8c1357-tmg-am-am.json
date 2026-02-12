@@ -1,0 +1,55 @@
+{
+  "uuid": "341c8f8e-b71c-494f-9755-42facc8c1357-tmg-am-am",
+  "name": "AS_GSS_TMG_UT_returnTasksToBeStarted",
+  "type": "Expression Rule",
+  "description": "Tasks in a completed task and returns new tasks to kick-off based on precedents",
+  "sail_code": "/*\nFor the example in the comments, pretend Tasks A & B are precedents for Task C, and Task A was just completed\n*/\na!localVariables(\n  /*First retrieve all task IDs for which the current task was a precedent*/\n  /*e.g. Retrieve the ID of Task C, since Task A was just completed*/\n  local!taskIdsToPossiblyStart: rule!AS_GSS_TMG_QE_getPrecedingTasks(\n    taskId_precedent: ri!currentTask.taskId\n  ).taskId,\n  /*Early exit if the current task was not a precedent to anything*/\n  if(\n    rule!AS_CO_UT_isBlank(\n      local!taskIdsToPossiblyStart\n    ),\n    {},\n    a!localVariables(\n      /*Then retrieve the actual task objects for which the current task was a precedent and are in queued status*/\n      /*e.g. Retrieve the Task C object, since Task A was just completed*/\n      local!tasksToPossiblyStart: rule!AS_GSS_TMG_QE_getRuntimeTask(\n        taskId: local!taskIdsToPossiblyStart,\n        taskStatusIds: cons!AS_GSS_TMG_REF_ID_TASK_STATUS_QUEUED,\n        returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY\n      ),\n      if(\n        rule!AS_CO_UT_isBlank(\n          local!tasksToPossiblyStart\n        ),\n        {},\n        a!localVariables(\n          /*Then retrieve the task objects of all preceding tasks for the possible tasks to start*/\n          /*e.g. Retrieve the Task B object, since Task B was also a precedent to Task C*/\n          local!precedentTasksOfThePossibleTasksToStart: rule!AS_GSS_TMG_QE_getRuntimeTask(\n            taskId: tointeger(\n              #\"SYSTEM_SYSRULES_forEach\"(\n                items: local!tasksToPossiblyStart,\n                expression: fv!item.taskPrecedents.taskId_precedent\n              )\n            ),\n            returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY\n          ),\n          /*Then loop over each task to possibly start, and only return it if all of its precedents are completed*/\n          /*e.g. We're checking that Task B is also completed, since it's a precedent of Task C*/\n          local!tasksToStart: a!flatten(\n            #\"SYSTEM_SYSRULES_forEach\"(\n              items: local!tasksToPossiblyStart,\n              expression: a!localVariables(\n                /*Gather the tasks which we need to check are complete for this specific task*/\n                /*e.g. This would return Task B, since we are checking if we can start Task C*/\n                local!tasksToEnsureAreComplete: rule!AS_CO_UT_filterCdtByField(\n                  cdt: local!precedentTasksOfThePossibleTasksToStart,\n                  field: \"taskId\",\n                  value: fv!item.taskPrecedents.taskId_precedent\n                ),\n                /*Returns true if all precedents are Completed/Not Needed/Cancelled*/\n                /*e.g. This would return True if Task B is Completed*/\n                local!allPrecedentsAreComplete: and(\n                  #\"SYSTEM_SYSRULES_forEach\"(\n                    items: local!tasksToEnsureAreComplete,\n                    expression: contains(\n                      {\n                        cons!AS_GSS_TMG_REF_ID_TASK_STATUS_COMPLETE,\n                        cons!AS_GSS_TMG_REF_ID_TASK_STATUS_NOT_NEEDED,\n                        cons!AS_GSS_TMG_REF_ID_TASK_STATUS_CANCELLED\n                      },\n                      fv!item.taskStatus.taskStatusId\n                    )\n                  )\n                ),\n                /*Return the task object if it is ready to be started*/\n                /*e.g. This will return Task C if Task B is completed, otherwise it will return nothing*/\n                if(\n                  local!allPrecedentsAreComplete,\n                  fv!item,\n                  {}\n                )\n              )\n            )\n          ),\n          /*Finally, set the tasks to start as assigned*/\n          /*e.g. This would set Task C to assigned*/\n          #\"8c731acd-3941-41e1-b06f-452fd89ab48b-tmg-am-am\"(\n            tasks: local!tasksToStart\n          )\n        )\n      )\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_TMG_QE_getPrecedingTasks",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_QE_getRuntimeTask",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_REF_ID_TASK_STATUS_QUEUED",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_REF_ID_TASK_STATUS_COMPLETE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_REF_ID_TASK_STATUS_NOT_NEEDED",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_REF_ID_TASK_STATUS_CANCELLED",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

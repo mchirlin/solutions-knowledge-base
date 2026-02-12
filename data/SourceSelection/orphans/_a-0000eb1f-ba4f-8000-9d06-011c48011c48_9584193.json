@@ -1,0 +1,15 @@
+{
+  "uuid": "_a-0000eb1f-ba4f-8000-9d06-011c48011c48_9584193",
+  "name": "AS_GSS_CO_UT_urlForRecord",
+  "type": "Expression Rule",
+  "description": "Returns the url for a record for use in a safe link and can access any record view by passing the related stub.",
+  "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Text',\n  if(\n    or(\n      isnull(ri!recordType),\n      isnull(ri!recordId)\n    ),\n    \"\",\n    with(\n      local!tempoUrl: concat(\n        rule!AS_CO_UT_getSiteUrl(),\n        \"tempo/records/item/\",\n        #\"SYSTEM_SYSRULES_recordLink\"(\n          recordType: ri!recordType,\n          identifier: ri!recordId\n        ).'@attributes'.'@anyAttribute'.'_recordRef',\n        \"/view/\",\n        a!defaultValue(\n          value: ri!recordViewStub,\n          default: \"summary\"\n        )\n      ),\n      if(\n        isnull(ri!siteWebAddressIdentifier),\n        /*tempo safe link*/\n        local!tempoUrl,\n        if(\n          isnull(ri!recordId),\n          /* Link to the record list view. Navigates user to tempo */\n          local!tempoUrl,\n          /* Link to the record dashboard */\n          substitute(\n            local!tempoUrl,\n            \"/tempo/records/item\",\n            concat(\n              \"/sites/\",\n              ri!siteWebAddressIdentifier,\n              if(\n                isnull(ri!sitePage),\n                \"\",\n                concat(\"/page/\", ri!sitePage)\n              ),\n              \"/record\"\n            )\n          )\n        )\n      )\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_getSiteUrl",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

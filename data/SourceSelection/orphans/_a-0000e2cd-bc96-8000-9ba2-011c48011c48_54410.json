@@ -1,0 +1,51 @@
+{
+  "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_54410",
+  "name": "AS_CO_CPS_cardsAsSelection",
+  "type": "Interface",
+  "description": "Cards arranged in a grid that function as selection, similar to buttons as selection",
+  "sail_code": "a!localVariables(\n  local!cardLayouts: a!refreshVariable(\n    value: #\"SYSTEM_SYSRULES_forEach\"(\n      items: ri!choiceValues,\n      expression: a!localVariables(\n        local!isSelected: rule!AS_CO_UT_compare(ri!value, ri!choiceValues[fv!index]),\n        local!hasIcon: rule!AS_CO_UT_isNotBlank(index(ri!choiceIcons, fv!index, null)),\n        local!hasLabel: rule!AS_CO_UT_isNotBlank(index(ri!choiceLabels, fv!index, null)),\n        local!hasInstructions: rule!AS_CO_UT_isNotBlank(\n          index(ri!choiceInstructions, fv!index, null)\n        ),\n        #\"SYSTEM_SYSRULES_cardLayout\"(\n          style: if(\n            local!isSelected,\n            \"ACCENT\",\n            if(ri!disabled, \"STANDARD\", \"NONE\")\n          ),\n          accessibilityText: rule!AS_CO_UT_displayCommonObjectBundleLabel(\n            bundleKey: if(\n              local!isSelected,\n              \"AS.CO.CommonObjects.acs_CardAsSelectionSelected\",\n              \"AS.CO.CommonObjects.acs_CardAsSelectionUnselected\"\n            )\n          ),\n          marginBelow: \"STANDARD\",\n          showborder: if(local!isSelected, false, true),\n          height: \"AUTO\",\n          link: #\"SYSTEM_SYSRULES_dynamicLink\"(\n            value: if(\n              local!isSelected,\n              null,\n              ri!choiceValues[fv!index]\n            ),\n            saveInto: ri!saveInto,\n            showWhen: rule!AS_CO_UT_not(ri!disabled)\n          ),\n          contents: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n            labelPosition: \"COLLAPSED\",\n            align: \"CENTER\",\n            value: {\n              #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                text: cons!AS_CO_TXT_CARRIAGE_RETURN,\n                size: \"SMALL\"\n              ),\n              #\"SYSTEM_SYSRULES_richTextIcon\"(\n                icon: if(\n                  local!isSelected,\n                  rule!AS_CO_UT_replaceNull(\n                    nullableValue: ri!iconWhenSelected,\n                    replacementValue: ri!choiceIcons[fv!index]\n                  ),\n                  ri!choiceIcons[fv!index]\n                ),\n                showWhen: local!hasIcon,\n                size: \"LARGE\",\n                color: \"ACCENT\"\n              ),\n              #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                text: {\n                  cons!AS_CO_TXT_CARRIAGE_RETURN,\n                  cons!AS_CO_TXT_CARRIAGE_RETURN\n                },\n                showWhen: and(local!hasIcon, local!hasLabel)\n              ),\n              #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                text: {\n                  #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                    text: ri!choiceLabels[fv!index],\n                    showWhen: local!hasLabel,\n                    size: \"MEDIUM\"\n                  ),\n                  #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                    text: {\n                      cons!AS_CO_TXT_CARRIAGE_RETURN,\n                      ri!choiceInstructions[fv!index]\n                    },\n                    showWhen: local!hasInstructions,\n                    size: \"SMALL\"\n                  ),\n                  #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                    text: {\n                      cons!AS_CO_TXT_CARRIAGE_RETURN,\n                      cons!AS_CO_TXT_CARRIAGE_RETURN\n                    },\n                    size: \"SMALL\"\n                  ),\n\n                },\n                color: \"STANDARD\"\n              )\n            }\n          )\n        )\n      )\n    ),\n    refreshAlways: true\n  ),\n  rule!AS_CO_UT_zINTERNAL_cardsToGridStyleLayout_handler(\n    cardLayouts: local!cardLayouts,\n    maxPerRow: ri!maxPerRow,\n    align: rule!AS_CO_UT_replaceNull(\n      nullableValue: ri!align,\n      replacementValue: \"CENTER\"\n    ),\n    columnWidth: rule!AS_CO_UT_replaceNull(\n      nullableValue: ri!columnWidth,\n      replacementValue: \"NARROW\"\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_compare",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_displayCommonObjectBundleLabel",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_not",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_zINTERNAL_cardsToGridStyleLayout_handler",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_TXT_CARRIAGE_RETURN",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_TMG_CPS_provideDecisionForReviewTask",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

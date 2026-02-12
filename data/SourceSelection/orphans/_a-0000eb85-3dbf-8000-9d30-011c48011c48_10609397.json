@@ -1,0 +1,55 @@
+{
+  "uuid": "_a-0000eb85-3dbf-8000-9d30-011c48011c48_10609397",
+  "name": "zzzDEPRECATED_AS_GSS_SAVES_executeConsensusAIIntegration_CombineResponses",
+  "type": "Expression Rule",
+  "description": "DEPRECATED IN GSS 2.6 - This rule handles evaluating the consensus AI responses combination and storing the results in the DB.  If the toggle is off, returns an empty list.",
+  "sail_code": "/*No test cases added, as this rule returns reaction tree*/\na!localVariables(\n  local!httpResponseForResponses,\n  local!httpResponseForJustifications,\n  local!formattedText: rule!AS_GSS_BL_formatConsensusResponses_ToCombineResponsesByAI(\n    consensusResponses: ri!selectedConsensusResponses\n  ),\n  {\n    a!save(\n      local!httpResponseForResponses,\n      rule!AS_GSS_INT_summarize_ConsensusResponsesOrFinalComment(\n        responseFormattedText: local!formattedText.responsesFormatted,\n        prompt: cons!AS_GSS_COMBINE_CONSENSUS_RESPONSES_PROMPT\n      )\n    ),\n    a!save(\n      local!httpResponseForJustifications,\n      rule!AS_GSS_INT_summarize_ConsensusResponsesOrFinalComment(\n        responseFormattedText: local!formattedText.justificationFormatted,\n        prompt: cons!AS_GSS_COMBINE_CONSENSUS_JUSTIFICATIONS_PROMPT,\n        assistantText: index(\n          rule!AS_GSS_UT_deepIndex(\n            item: local!httpResponseForResponses,\n            indexArray: { \"result\", \"Response\", \"Chat Completions\" }\n          ),\n          1,\n          null\n        )\n      )\n    ),\n    if(\n      and(\n        toboolean(local!httpResponseForResponses.success),\n        toboolean(\n          local!httpResponseForJustifications.success\n        )\n      ),\n      {\n        a!save(\n          ri!combinedConsensusResponse,\n          #\"urn:appian:function:v1:a:update\"(\n            ri!combinedConsensusResponse,\n            {\n              \"response\",\n              \"justification\",\n              \"isOriginallyGeneratedByAi\"\n            },\n            {\n              index(\n                rule!AS_GSS_UT_deepIndex(\n                  item: local!httpResponseForResponses,\n                  indexArray: { \"result\", \"Response\", \"Chat Completions\" }\n                ),\n                1,\n                null\n              ),\n              index(\n                rule!AS_GSS_UT_deepIndex(\n                  item: local!httpResponseForJustifications,\n                  indexArray: { \"result\", \"Response\", \"Chat Completions\" }\n                ),\n                1,\n                null\n              ),\n              true()\n            }\n          )\n        ),\n        rule!AS_GSS_MTR_SAVE_combinedConsensusResponsesUsingConsensusAI()\n      },\n      {}\n    ),\n    #\"SYSTEM_SYSRULES_writeToDataStoreEntity\"(\n      dataStoreEntity: cons!AS_GSS_ENT_CONSENSUS_RESP_AI_SUMMARY,\n      valueToStore: #\"SYSTEM_SYSRULES_forEach\"(\n        {\n          local!httpResponseForResponses,\n          local!httpResponseForJustifications\n        },\n        'type!{urn:com:appian:types:AS:GSS}AS_GSS_ConsensusResponseAiSummary'(\n          consensusId: index(\n            rule!AS_CO_UT_rejectNullValuesFromArray(\n              array: ri!selectedConsensusResponses.consensusId\n            ),\n            1,\n            null\n          ),\n          prompt: if(\n            fv!isFirst,\n            local!formattedText.responsesFormatted,\n            local!formattedText.justificationFormatted\n          ),\n          response: if(\n            a!isNullOrEmpty(fv!item.result),\n            null,\n            #\"SYSTEM_SYSRULES_toJson_v1\"(fv!item.result)\n          ),\n          errorInfo: if(\n            a!isNullOrEmpty(index(fv!item, \"error\", null)),\n            null,\n            #\"SYSTEM_SYSRULES_toJson_v1\"(\n              value: rule!AS_CO_UT_castToDictionary(value: index(fv!item, \"error\", null))\n            )\n          ),\n          isSuccess: fv!item.success,\n          createdBy: loggedInUser(),\n          createdDateTime: now()\n        )\n      ),\n      onSuccess: a!save(\n        ri!consensusResponseAiIntegrationResults,\n        fv!storedValues\n      )\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_BL_formatConsensusResponses_ToCombineResponsesByAI",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_INT_summarize_ConsensusResponsesOrFinalComment",
+      "type": "Integration",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_UT_deepIndex",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_MTR_SAVE_combinedConsensusResponsesUsingConsensusAI",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_castToDictionary",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_COMBINE_CONSENSUS_RESPONSES_PROMPT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_COMBINE_CONSENSUS_JUSTIFICATIONS_PROMPT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_ENT_CONSENSUS_RESP_AI_SUMMARY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

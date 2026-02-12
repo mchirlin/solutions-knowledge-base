@@ -1,0 +1,477 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GSS Update Vendor Action to VM",
+    "parent_name": null,
+    "total_objects": 29
+  },
+  "entry_point": {
+    "complexity_score": 13.0,
+    "total_nodes": 7,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GSS Update Vendor Action to VM",
+      "complexity_score": 13.0,
+      "total_nodes": 7,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Is Req Info Available?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Join",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Notify VM",
+          "type": "Call Integration",
+          "next": [
+            "Is Integration Success?"
+          ]
+        },
+        {
+          "name": "Is Req Info Available?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Notify VM (Yes)",
+            "End Node (No)"
+          ]
+        },
+        {
+          "name": "Send Alert Email",
+          "type": "Start Process (v2)",
+          "next": [
+            "Join"
+          ]
+        },
+        {
+          "name": "Is Integration Success?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Join (Yes)",
+            "Send Alert Email (No)"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_43371",
+      "name": "AS_CO_INT_GROUP_QUERY_MAX_BATCH_SIZE",
+      "type": "Constant",
+      "description": "Value: 10000 - The maximum size to pass to all group queries to avoid accidentally querying too much data",
+      "value": "10000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_returnMembersOfAllGroups"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5d4-2024-8000-9baf-011c48011c48_336091",
+      "name": "AS_FRM_BOOL_RULE_CUSTOMIZATION_1_0_ENABLED",
+      "type": "Constant",
+      "description": "Returns true if customizable rules using the 1.0 SDK is enabled",
+      "value": "true",
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "AS_FRM_determineRuntimeRule"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed77-8e71-8000-9df8-011c48011c48_15307958",
+      "name": "AS_GSS_BOL_VENDOR_MANAGEMENT_INTEGRATION_TOGGLE",
+      "type": "Constant",
+      "description": "Toggle to enable Vendor Management Integration in GSS. This is used to enable Add vendor feature from VM to GSS. Default value will be false.",
+      "value": "false",
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "AS GSS Update Vendor Action to VM"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed93-2faa-8000-9dfe-011c48011c48_15537365",
+      "name": "AS_GSS_ENUM_VENDOR_ACTION_ADDED",
+      "type": "Constant",
+      "description": "Value : 1 (This will indicate a vendor added in an evaluation to VM)",
+      "value": "1",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_constructVendorActionDetailsForVM"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed93-2faa-8000-9dfe-011c48011c48_15537371",
+      "name": "AS_GSS_ENUM_VENDOR_ACTION_DELETED",
+      "type": "Constant",
+      "description": "Value : 2 (This will indicate a vendor removed from an evaluation to VM)",
+      "value": "2",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_constructVendorActionDetailsForVM"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_939307",
+      "name": "AS_GSS_GRP_ALERTS",
+      "type": "Constant",
+      "description": "Value: AS GSS Designer Alerts Group",
+      "value": "AS GSS Designer Alerts Group",
+      "value_type": "http://www.appian.com/ae/types/2009:Group",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_constructEmailContentForIntegrationFailure"
+      ]
+    },
+    {
+      "uuid": "_a-0000e721-640b-8000-9ba8-011c48011c48_74420",
+      "name": "AS_GSS_PM_SEND_EMAIL",
+      "type": "Constant",
+      "description": "PM: AS GSS Send Email",
+      "value": "AS GSS Send Email",
+      "value_type": "http://www.appian.com/ae/types/2009:ProcessModel",
+      "calls": [],
+      "called_by": [
+        "AS GSS Update Vendor Action to VM"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_279147",
+      "name": "AS_CO_UT_castToDictionary",
+      "type": "Expression Rule",
+      "description": "Casts the input to dictionary, either a list or a non-list depending on the input",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GSS_BL_constructVendorActionDetailsForVM"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6cd-618a-8000-9bd9-011c48011c48_1688557",
+      "name": "AS_CO_UT_checkIsNullOrEmpty",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is null/empty. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GSS Update Vendor Action to VM",
+        "AS_GSS_BL_constructVendorActionDetailsForVM"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73758",
+      "name": "AS_CO_UT_distinct",
+      "type": "Expression Rule",
+      "description": "Returns the distinct values from a list.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_returnMembersOfAllGroups"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_100254",
+      "name": "AS_CO_UT_getSiteUrl",
+      "type": "Expression Rule",
+      "description": "Returns the URL of the site, terminating in /suite/",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_emailBodyForIntegrationFailure"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_castToDictionary",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_returnMembersOfAllGroups",
+        "AS_GAM_CO_I18N_UT_displayLabel"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around AS_CO_UT_isBlank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_returnUserFirstName"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367",
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GSS_BL_constructEmailContentForIntegrationFailure",
+        "AS_GSS_BL_constructVendorActionDetailsForVM"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_43413",
+      "name": "AS_CO_UT_returnMembersOfAllGroups",
+      "type": "Expression Rule",
+      "description": "Returns all unique members who are members of ALL of the input groups, the members must be in each of the groups",
+      "parameters": [],
+      "calls": [
+        "AS_CO_INT_GROUP_QUERY_MAX_BATCH_SIZE",
+        "AS_CO_UT_distinct",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_zINTERNAL_returnMembersOfAllGroups_intersectionHandler"
+      ],
+      "called_by": [
+        "AS_GSS_BL_constructEmailContentForIntegrationFailure"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6a4-3c85-8000-9ba5-011c48011c48_44806",
+      "name": "AS_CO_UT_returnUserFirstName",
+      "type": "Expression Rule",
+      "description": "Rule to return the user's first name",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_GSS_UT_sendEmailProcessParameters"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_43466",
+      "name": "AS_CO_UT_zINTERNAL_returnMembersOfAllGroups_intersectionHandler",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_CO_UT_returnMembersOfAllGroups`",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_returnMembersOfAllGroups"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5d4-2024-8000-9baf-011c48011c48_320878",
+      "name": "AS_FRM_determineRuntimeRule",
+      "type": "Expression Rule",
+      "description": "Returns the runtime rule for a default rule, uses plugin function `determineRuntimeRule()`",
+      "parameters": [],
+      "calls": [
+        "AS_FRM_BOOL_RULE_CUSTOMIZATION_1_0_ENABLED"
+      ],
+      "called_by": [
+        "AS_GSS_UT_FontDetailsForEmailTemplate_wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53662",
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "description": "Displays a label by the `bundleKey` from passed in bundle data, optionally accepts arguments",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GSS_UT_sendEmailProcessParameters"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed93-2faa-8000-9dfe-011c48011c48_15537508",
+      "name": "AS_GSS_BL_constructEmailContentForIntegrationFailure",
+      "type": "Expression Rule",
+      "description": "Returns constructed email body content to notify Admins on integration failures",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_returnMembersOfAllGroups",
+        "AS_GSS_CO_UT_loadBundleFromFolder",
+        "AS_GSS_GRP_ALERTS",
+        "AS_GSS_UT_emailBodyForIntegrationFailure",
+        "AS_GSS_UT_emailSubjectForIntegrationFailure",
+        "AS_GSS_UT_sendEmailProcessParameters"
+      ],
+      "called_by": [
+        "AS GSS Update Vendor Action to VM"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed93-2faa-8000-9dfe-011c48011c48_15537184",
+      "name": "AS_GSS_BL_constructVendorActionDetailsForVM",
+      "type": "Expression Rule",
+      "description": "The rule to construct data when a vendor gets added to an evaluation.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_castToDictionary",
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GSS_ENUM_VENDOR_ACTION_ADDED",
+        "AS_GSS_ENUM_VENDOR_ACTION_DELETED",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS GSS Update Vendor Action to VM"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1319026",
+      "name": "AS_GSS_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "description": "Loads a property bundle file by name from a folder, returns a dictionary of the key-value pairs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_constructEmailContentForIntegrationFailure",
+        "AS_GSS_UT_sendEmailProcessParameters"
+      ]
+    },
+    {
+      "uuid": "_a-0000e752-5ddb-8000-9be7-011c48011c48_1980712",
+      "name": "AS_GSS_UT_FontDetailsForEmailTemplate_wrapper",
+      "type": "Expression Rule",
+      "description": "This rule returns the Emails Font Details for all the mails",
+      "parameters": [],
+      "calls": [
+        "AS_FRM_determineRuntimeRule"
+      ],
+      "called_by": [
+        "AS_GSS_UT_sendEmailProcessParameters"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed93-2faa-8000-9dfe-011c48011c48_15537493",
+      "name": "AS_GSS_UT_emailBodyForIntegrationFailure",
+      "type": "Expression Rule",
+      "description": "Email body to be sent to admin users on integration failure",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_getSiteUrl"
+      ],
+      "called_by": [
+        "AS_GSS_BL_constructEmailContentForIntegrationFailure"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed93-2faa-8000-9dfe-011c48011c48_15537477",
+      "name": "AS_GSS_UT_emailSubjectForIntegrationFailure",
+      "type": "Expression Rule",
+      "description": "Construct email subject for integration failure to be sent to admin group",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_constructEmailContentForIntegrationFailure"
+      ]
+    },
+    {
+      "uuid": "_a-0000e721-640b-8000-9ba8-011c48011c48_74268",
+      "name": "AS_GSS_UT_sendEmailProcessParameters",
+      "type": "Expression Rule",
+      "description": "Rule having the process parameters for send email process in GSS",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_returnUserFirstName",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GSS_CO_UT_loadBundleFromFolder",
+        "AS_GSS_UT_FontDetailsForEmailTemplate_wrapper"
+      ],
+      "called_by": [
+        "AS_GSS_BL_constructEmailContentForIntegrationFailure"
+      ]
+    },
+    {
+      "uuid": "0002ed96-24ce-8000-cdcd-7f0000014e7a",
+      "name": "AS GSS Update Vendor Action to VM",
+      "type": "Process Model",
+      "description": "The process model to post vendor addition/deletion in an evaluation to VM",
+      "calls": [
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_GSS_BL_constructEmailContentForIntegrationFailure",
+        "AS_GSS_BL_constructVendorActionDetailsForVM",
+        "AS_GSS_BOL_VENDOR_MANAGEMENT_INTEGRATION_TOGGLE",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_PM_SEND_EMAIL"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "b6081510-0d11-4d51-8eba-966610b168db",
+      "name": "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "Synced record for evaluation vendors",
+      "actions": [
+        "updateVendor",
+        "deleteVendor",
+        "updateVendorDetails",
+        "viewBreakdown",
+        "viewVendorDecision"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_GSS_Evaluation_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS GSS Update Vendor Action to VM",
+        "AS_GSS_BL_constructVendorActionDetailsForVM",
+        "AS_GSS_Evaluation_SYNCEDRECORD"
+      ]
+    },
+    {
+      "uuid": "e6bc8561-d3a6-4679-b7af-6e279910468e",
+      "name": "AS_GSS_Evaluation_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "NOTE: Solicitation Description and Evaluation Description are 5000 characters and will be trimmed in the synced record",
+      "actions": [
+        "createNewEvaluation",
+        "addVendor",
+        "UpdatePhases",
+        "AddPhases"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_BL_constructVendorActionDetailsForVM",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD"
+      ]
+    }
+  ]
+}

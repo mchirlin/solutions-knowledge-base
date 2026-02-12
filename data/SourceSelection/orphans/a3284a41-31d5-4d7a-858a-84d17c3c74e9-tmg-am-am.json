@@ -1,0 +1,25 @@
+{
+  "uuid": "a3284a41-31d5-4d7a-858a-84d17c3c74e9-tmg-am-am",
+  "name": "AS_GSS_TMG_QE_getTemplateAudits",
+  "type": "Expression Rule",
+  "description": "query for template audit",
+  "sail_code": "rule!AS_CO_UT_queryEntity(\n  entity: cons!AS_GSS_TMG_ENT_A_R_TEMPLATE,\n  entityType: 'type!{urn:com:appian:types:AS:GSS:TMG}AS_GSS_TMG_A_R_Template',\n  returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET,\n  triggerRefresh: ri!triggerRefresh,\n  filters: {\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: \"templateId\",\n      operator: \"=\",\n      value: ri!templateId\n    )\n  },\n/*\n  Because we are flatting the nested structure, \n  we have to always start at index 1 to ensure we have the results,\n  and then rely on todatasubset() to actually cast the results\n  \n  e.g. If batchsize is 3, and we are on page 2, and the data is:\n  {\n    {\n      parent: {\n        {\n          child: {},\n          child: {},\n          child: {},\n          child: {},\n        }\n      },\n      parent: {\n        {\n          child: {},\n          child: {},\n        }\n      }\n    }\n  }\n  Then we would still to return parent 1, because child 4 is part of parent 1, \n  and starting above index 1 would exclude parent 1\n*/\n  pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n    startIndex: 1,\n    batchSize: ri!pagingInfo.startIndex + ri!pagingInfo.batchSize,\n    sort: ri!pagingInfo.sort\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_queryEntity",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_ENT_A_R_TEMPLATE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

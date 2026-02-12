@@ -1,0 +1,40 @@
+{
+  "uuid": "8c731acd-3941-41e1-b06f-452fd89ab48b-tmg-am-am",
+  "name": "AS_GSS_TMG_UT_markTasksAsAssigned",
+  "type": "Expression Rule",
+  "description": "changes the status to open/assigned and updates the audit fields. if indicies is null, will update all",
+  "sail_code": "if(\n  rule!AS_CO_UT_isBlank(ri!tasks),\n  {},\n  #\"SYSTEM_SYSRULES_forEach\"(\n    items: ri!tasks,\n    expression: rule!AS_CO_UT_updateCdtFields(\n      cdt: fv!item,\n      fields: {\n        \"taskStatus.taskStatusId\",\n        \"modifiedBy\",\n        \"modifiedDatetime\",\n        \"availableDatetime\",\n        \"dueDate\"\n      },\n      newValues: {\n        cons!AS_GSS_TMG_REF_ID_TASK_STATUS_ASSIGNED,\n        cons!AS_CO_TXT_GENERIC_SYSTEM_NAME,\n        now(),\n        now(),\n        rule!AS_GSS_TMG_UT_calculateDuedateForTasksWithPrecedents(task: fv!item)\n      }\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_updateCdtFields",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_calculateDuedateForTasksWithPrecedents",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_REF_ID_TASK_STATUS_ASSIGNED",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_TXT_GENERIC_SYSTEM_NAME",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_TASK_REF_ID_REVIEW_DOCUMENT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

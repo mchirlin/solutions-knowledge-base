@@ -1,0 +1,15 @@
+{
+  "uuid": "_a-0000ee1d-9c3f-8000-9e21-011c48011c48_16318919",
+  "name": "AS_GSS_transformEvaluationFieldAudits",
+  "type": "Expression Rule",
+  "description": "The Record Data Source for the AS_GSS_Evaluation_Status_History_SYNCEDRECORD Record Type",
+  "sail_code": "a!localVariables(\n  local!batchSize: 2000,\n  local!queryResult: #\"SYSTEM_SYSRULES_queryRecordType_v2\"(\n    recordType: recordType!AS_GSS_Evaluation_Field_Audit_SYNCEDRECORD,\n    fields: {\n      recordType!AS_GSS_Evaluation_Field_Audit_SYNCEDRECORD.evaluationAudit\n    },\n    pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n      startIndex: 1 + (ri!batchNumber - 1) * local!batchSize,\n      batchSize: local!batchSize\n    )\n  ).data,\n  #\"SYSTEM_SYSRULES_forEach\"(\n    items: local!queryResult,\n    expression: a!map(\n      evaluationAuditFieldId: fv!item[recordType!AS_GSS_Evaluation_Field_Audit_SYNCEDRECORD.evaluationAuditFieldId],\n      evaluationId: fv!item[recordType!AS_GSS_Evaluation_Field_Audit_SYNCEDRECORD.evaluationAudit.evaluationId],\n      evaluationAuditId: fv!item[recordType!AS_GSS_Evaluation_Field_Audit_SYNCEDRECORD.evaluationAudit.evaluationAuditId],\n      fieldName: fv!item[recordType!AS_GSS_Evaluation_Field_Audit_SYNCEDRECORD.fieldName],\n      timestamp: fv!item[recordType!AS_GSS_Evaluation_Field_Audit_SYNCEDRECORD.evaluationAudit.timestamp],\n      oldValue: tointeger(\n        fv!item[recordType!AS_GSS_Evaluation_Field_Audit_SYNCEDRECORD.oldValue]\n      ),\n      newValue: tointeger(\n        fv!item[recordType!AS_GSS_Evaluation_Field_Audit_SYNCEDRECORD.newValue]\n      ),\n      user: fv!item[recordType!AS_GSS_Evaluation_Field_Audit_SYNCEDRECORD.evaluationAudit.username]\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_Evaluation_Field_Audit_SYNCEDRECORD",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    }
+  ],
+  "called_by": []
+}

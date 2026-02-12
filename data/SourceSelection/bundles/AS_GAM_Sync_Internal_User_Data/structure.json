@@ -1,0 +1,345 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GAM Sync Internal User Data",
+    "parent_name": null,
+    "total_objects": 17
+  },
+  "entry_point": {
+    "complexity_score": 22.0,
+    "total_nodes": 11,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GAM Sync Internal User Data",
+      "complexity_score": 22.0,
+      "total_nodes": 11,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "EntityMap and Group provided?"
+          ]
+        },
+        {
+          "name": "Increment Loop",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Limit reached?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Increment Loop",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Limit reached?"
+          ]
+        },
+        {
+          "name": "Limit reached?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Add active users",
+            "Get inactive users and total count"
+          ]
+        },
+        {
+          "name": "Get active user loop total",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Increment Loop"
+          ]
+        },
+        {
+          "name": "EntityMap and Group provided?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Get active user loop total",
+            "End Node"
+          ]
+        },
+        {
+          "name": "Limit reached?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Add inactive users",
+            "End Node"
+          ]
+        },
+        {
+          "name": "Get inactive users and total count",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Increment Loop"
+          ]
+        },
+        {
+          "name": "Add inactive users",
+          "type": "Start Process (v2)",
+          "next": [
+            "Increment Loop"
+          ]
+        },
+        {
+          "name": "Add active users",
+          "type": "Start Process (v2)",
+          "next": [
+            "Increment Loop"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290131",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+      "type": "Constant",
+      "description": "DATA_SUBSET - Returns a type of DataSubset when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "DATA_SUBSET",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_GAM_UT_getAllDeactivatedAppianUsers"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_225990",
+      "name": "AS_CO_INT_QUERY_MAX_BATCH_SIZE",
+      "type": "Constant",
+      "description": "Value: 1000 - The maximum size to pass to all queries to avoid accidentally querying too much data",
+      "value": "1000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_GAM_UT_getAllDeactivatedAppianUsers"
+      ]
+    },
+    {
+      "uuid": "_a-0000e583-8ce5-8000-9bb7-011c48011c48_887654",
+      "name": "AS_GAM_GRP_ALL_BUSINESS_USERS",
+      "type": "Constant",
+      "description": "Value: AS GAM All Business Users",
+      "value": "AS GAM All Business Users",
+      "value_type": "http://www.appian.com/ae/types/2009:Group",
+      "calls": [],
+      "called_by": [
+        "AS_GAM_UT_GetNumOfLoopsForSync",
+        "AS_GAM_UT_GetNumOfUsersForGroup"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1020799",
+      "name": "AS_GAM_INT_USER_SYNC_MNI_BATCH_SIZE",
+      "type": "Constant",
+      "description": "Value: 100 - This is used to only kick off 100 child processes at a time, which should be easier on the engines than kicking off 1,000 at once.",
+      "value": "100",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GAM Sync Internal User Data",
+        "AS_GAM_UT_GetNumOfLoopsForSync",
+        "AS_GAM_UT_GetUsersForSyncProcess"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1020743",
+      "name": "AS_GAM_INT_USER_SYNC_USERNAME_BATCH_SIZE",
+      "type": "Constant",
+      "description": "Constant for number user in a child process to be ran: 25",
+      "value": "25",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GAM Sync Internal User Data",
+        "AS_GAM_UT_GetNumOfLoopsForSync",
+        "AS_GAM_UT_GetUsersForSyncProcess"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1020880",
+      "name": "AS_GAM_PM_ADD_USERS",
+      "type": "Constant",
+      "description": "Value: AS GAM Add User to User Table",
+      "value": "AS GAM Add User to User Table",
+      "value_type": "http://www.appian.com/ae/types/2009:ProcessModel",
+      "calls": [],
+      "called_by": [
+        "AS GAM Sync Internal User Data"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GAM_UT_ArrayLength",
+        "AS_GAM_UT_GetNumOfUsersForGroup",
+        "AS_GAM_UT_getAllDeactivatedAppianUsers"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around AS_CO_UT_isBlank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS GAM Sync Internal User Data",
+        "AS_CO_UT_queryEntity"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157870",
+      "name": "AS_CO_UT_queryEntity",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_INT_QUERY_MAX_BATCH_SIZE",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_GAM_QE_getUser"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367",
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GAM_UT_getAllDeactivatedAppianUsers"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1034442",
+      "name": "AS_GAM_QE_getUser",
+      "type": "Expression Rule",
+      "description": "Returns user CDT based on the entity, entityType, and given filter set.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_queryEntity"
+      ],
+      "called_by": [
+        "AS_GAM_UT_getAllDeactivatedAppianUsers"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1021202",
+      "name": "AS_GAM_UT_ArrayLength",
+      "type": "Expression Rule",
+      "description": "Gives length of an array based on input of array",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS GAM Sync Internal User Data"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1020638",
+      "name": "AS_GAM_UT_GetNumOfLoopsForSync",
+      "type": "Expression Rule",
+      "description": "Taking an input of a number of users for syncing, determine loops",
+      "parameters": [],
+      "calls": [
+        "AS_GAM_GRP_ALL_BUSINESS_USERS",
+        "AS_GAM_INT_USER_SYNC_MNI_BATCH_SIZE",
+        "AS_GAM_INT_USER_SYNC_USERNAME_BATCH_SIZE"
+      ],
+      "called_by": [
+        "AS GAM Sync Internal User Data"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1012177",
+      "name": "AS_GAM_UT_GetNumOfUsersForGroup",
+      "type": "Expression Rule",
+      "description": "Taking an input of a group, return total count of that group",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_GAM_GRP_ALL_BUSINESS_USERS"
+      ],
+      "called_by": [
+        "AS GAM Sync Internal User Data"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1020929",
+      "name": "AS_GAM_UT_GetUsersForSyncProcess",
+      "type": "Expression Rule",
+      "description": "Gets the users needed for syncing",
+      "parameters": [],
+      "calls": [
+        "AS_GAM_INT_USER_SYNC_MNI_BATCH_SIZE",
+        "AS_GAM_INT_USER_SYNC_USERNAME_BATCH_SIZE",
+        "AS_GAM_UT_getAllDeactivatedAppianUsers"
+      ],
+      "called_by": [
+        "AS GAM Sync Internal User Data"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1020935",
+      "name": "AS_GAM_UT_getAllDeactivatedAppianUsers",
+      "type": "Expression Rule",
+      "description": "Gets all of the deactivated users in Appian",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_INT_QUERY_MAX_BATCH_SIZE",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GAM_QE_getUser"
+      ],
+      "called_by": [
+        "AS GAM Sync Internal User Data",
+        "AS_GAM_UT_GetUsersForSyncProcess"
+      ]
+    },
+    {
+      "uuid": "000ae5f6-3f4e-8000-0f94-7f0000014e7a",
+      "name": "AS GAM Sync Internal User Data",
+      "type": "Process Model",
+      "description": "A nightly sync that will sync Appian users to provided user table",
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_GAM_INT_USER_SYNC_MNI_BATCH_SIZE",
+        "AS_GAM_INT_USER_SYNC_USERNAME_BATCH_SIZE",
+        "AS_GAM_PM_ADD_USERS",
+        "AS_GAM_UT_ArrayLength",
+        "AS_GAM_UT_GetNumOfLoopsForSync",
+        "AS_GAM_UT_GetNumOfUsersForGroup",
+        "AS_GAM_UT_GetUsersForSyncProcess",
+        "AS_GAM_UT_getAllDeactivatedAppianUsers"
+      ],
+      "called_by": []
+    }
+  ]
+}

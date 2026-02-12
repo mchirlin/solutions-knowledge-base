@@ -1,0 +1,55 @@
+{
+  "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_236006-tmg-am-am",
+  "name": "AS_GSS_TMG_UT_createTaskAssigneeFieldLogicalExpression",
+  "type": "Expression Rule",
+  "description": "Returns a logical expression for the filter against the assignee fields of a task (userAssignee & groupAssignee)",
+  "sail_code": "a!localVariables(\n  local!username: rule!AS_CO_UT_replaceNull(\n    nullableValue: ri!username,\n    replacementValue: loggedInUser()\n  ),\n  local!isUserManager: rule!AS_GSS_TMG_UT_isUserManager(username: local!username),\n  rule!AS_CO_UT_displayValue(\n    value: ri!assigneeTypeFilter,\n    inArray: rule!AS_GSS_TMG_CONS_ASSIGNEE_TYPE_FILTERS().value,\n    replacement: {\n      /* All -- only filter if we are applying some type of group filter */\n      if(\n        ri!applyGroupFilter,\n        #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n          operator: \"OR\",\n          logicalExpressions: {\n            #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n              operator: \"AND\",\n              filters: {\n                #\"SYSTEM_SYSRULES_queryFilter\"(\n                  field: \"groupAssignee\",\n                  operator: \"in\",\n                  value: rule!AS_GSS_TMG_UT_returnUserGroupsForTaskFilters(username: local!username)\n                ),\n                /*Only restrict to unassigned if they are not a manager*/\n                #\"SYSTEM_SYSRULES_queryFilter\"(\n                  field: \"userAssignee\",\n                  operator: \"=\",\n                  value: \" \",\n                  applyWhen: not(local!isUserManager)\n                )\n              }\n            ),\n            #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n              operator: \"AND\",\n              filters: #\"SYSTEM_SYSRULES_queryFilter\"(\n                field: \"userAssignee\",\n                operator: \"=\",\n                value: local!username\n              )\n            )\n          }\n        ),\n        null\n      ),\n      /* Assigned to me */\n      #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n        operator: \"AND\",\n        filters: {\n          #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: \"userAssignee\",\n            operator: \"=\",\n            value: local!username\n          )\n        }\n      ),\n      /* Unassigned */\n      #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n        operator: \"AND\",\n        filters: {\n          #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: \"groupAssignee\",\n            operator: \"in\",\n            value: rule!AS_GSS_TMG_UT_returnUserGroupsForTaskFilters(username: local!username),\n            applyWhen: ri!applyGroupFilter\n          ),\n          #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: \"userAssignee\",\n            operator: \"=\",\n            value: \" \"\n          )\n        }\n      )\n    },\n    customDefault: /*User assignee filter*/\n    if(\n      rule!AS_CO_UT_isNotBlank(ri!assigneeTypeFilter),\n      #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n        operator: \"AND\",\n        filters: #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: \"userAssignee\",\n          operator: \"=\",\n          value: ri!assigneeTypeFilter\n        )\n      ),\n      {}\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_isUserManager",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_displayValue",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_CONS_ASSIGNEE_TYPE_FILTERS",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_returnUserGroupsForTaskFilters",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_ENUM_ASSIGNEE_TYPE_FILTER_ALL",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_ENUM_ASSIGNEE_TYPE_FILTER_LOGGED_IN_USER",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_ENUM_ASSIGNEE_TYPE_FILTER_UNASSIGNED",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

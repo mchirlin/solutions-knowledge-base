@@ -1,0 +1,46 @@
+{
+  "uuid": "_a-0000ed36-f3bd-8000-9dea-011c48011c48_14826790",
+  "name": "AS_GSS_UT_finalizedApiAndRefVendorsRecordList",
+  "type": "Expression Rule",
+  "description": "Compares vendors returned from SAM.gov and referenced records",
+  "sail_code": "if(\n  rule!AS_CO_UT_checkIsNullOrEmpty(\n    value: index(\n      ri!refVendors,\n      recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.legalName,\n      null\n    )\n  ),\n  rule!AS_CO_UT_rejectNullValuesFromArray(array: ri!apiVendors),\n  rule!AS_CO_UT_rejectNullValuesFromArray(\n    array: a!flatten(\n      {\n        ri!refVendors,\n        if(\n          rule!AS_CO_UT_checkIsNullOrEmpty(\n            value: index(\n              ri!apiVendors,\n              recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.legalName,\n              null\n            )\n          ),\n          {},\n          remove(\n            ri!apiVendors,\n            rule!AS_CO_UT_whereContains(\n              values: ri!refVendors[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.federalIdentifier],\n              array: ri!apiVendors[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.federalIdentifier]\n            )\n          )\n        )\n      }\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_checkIsNullOrEmpty",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_whereContains",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_Ref_Vendor_SYNCEDRECORD",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "AS_GSS_QR_getReferenceVendors",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_CPS_searchVendors",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

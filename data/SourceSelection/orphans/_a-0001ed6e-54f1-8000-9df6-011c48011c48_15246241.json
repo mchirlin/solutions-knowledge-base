@@ -1,0 +1,35 @@
+{
+  "uuid": "_a-0001ed6e-54f1-8000-9df6-011c48011c48_15246241",
+  "name": "AS_GSS_CPS_searchVendorsForStateAndLocal",
+  "type": "Interface",
+  "description": "Interface to search vendor for state and local government based on inputs",
+  "sail_code": "a!localVariables(\n  local!searchTerm,\n  {\n    #\"SYSTEM_SYSRULES_headingField\"(\n      text: \"Search Vendors\",\n      size: \"SMALL\",\n      headingTag: \"H2\",\n      fontWeight: \"BOLD\"\n    ),\n    #\"SYSTEM_SYSRULES_columnsLayout\"(\n      columns: {\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: rule!AS_CO_INP_textField(\n            label: \"Search Vendors\",\n            instructions: \"Search by Name, TIN or FEIN\",\n            labelPosition: \"COLLAPSED\",\n            value: local!searchTerm,\n            saveInto: { local!searchTerm }\n          ),\n          width: \"MEDIUM\"\n        ),\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: #\"SYSTEM_SYSRULES_ButtonArrayLayout\"(\n            buttons: #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n              label: if(\n                cons!AS_GSS_TOGGLE_AUTOMATION_TESTING_ENABLED,\n                \"Search\",\n                \"\"\n              ),\n              icon: \"search\",\n              accessibilityText: \"Search\",\n              value: true(),\n              saveInto: {\n                ri!searchAction,\n                a!save(ri!searchTerm, local!searchTerm),\n                a!save(ri!returnedVendors, null),\n                a!save(\n                  ri!returnedVendors,\n                  rule!AS_GSS_UT_finalizedApiAndRefVendorsRecordListForStateAndLocal(searchTerm: local!searchTerm)\n                )\n              },\n              size: \"SMALL\",\n              color: \"SECONDARY\",\n              disabled: rule!AS_CO_UT_isBlank(value: local!searchTerm)\n            ),\n            align: \"START\",\n            marginBelow: \"NONE\"\n          )\n        )\n      },\n      alignVertical: \"TOP\",\n      marginBelow: \"NONE\",\n      spacing: \"DENSE\"\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "AS_CO_INP_textField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_UT_finalizedApiAndRefVendorsRecordListForStateAndLocal",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TOGGLE_AUTOMATION_TESTING_ENABLED",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

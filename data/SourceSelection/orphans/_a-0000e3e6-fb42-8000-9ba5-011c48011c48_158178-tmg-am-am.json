@@ -1,0 +1,81 @@
+{
+  "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_158178-tmg-am-am",
+  "name": "AS_GSS_TMG_CPS_manageReferenceTemplateAddTaskToCategory",
+  "type": "Interface",
+  "description": "Search and add reference tasks in a selected category to a template",
+  "sail_code": "a!localVariables(\n  local!searchText: rule!AS_CO_UT_initializeBlankLocalVariable(\n    type: 'type!{http://www.appian.com/ae/types/2009}Text'\n  ),\n  {\n    #\"SYSTEM_SYSRULES_columnsLayout\"(\n      columns: {\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: {\n            rule!AS_CO_DSP_displayHeader(\n              headerText: rule!AS_GAM_CO_I18N_UT_displayLabel(\n                bundle: ri!i18nData,\n                bundleKey: \"lbl_SelectTasks\",\n                arguments: ri!addingTaskCategory.categoryName\n              ),\n              headerLevel: ri!headerLevel\n            ),\n            #\"SYSTEM_SYSRULES_ButtonArrayLayout\"(\n              buttons: {\n                rule!AS_CO_BTN_toolbarButton(\n                  label: \"Add Custom Task\",\n                  saveInto: {\n                    a!save(\n                      ri!newCustomTask.taskCategory,\n                      ri!addingTaskCategory\n                    )\n                  },\n                  icon: \"PLUS\"\n                )\n              },\n              showWhen: ri!showAddCustomTaskBtn,\n              align: \"START\"\n            )\n          }\n        ),\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: rule!AS_CO_CP_searchField(\n            value: local!searchText,\n            saveInto: local!searchText,\n            placeholder: rule!AS_GSS_TMG_pickerPlaceholder(\n              i18nData: ri!i18nData,\n              bundleKey: \"lbl_Tasks\"\n            )\n          ),\n          width: \"MEDIUM\"\n        )\n      },\n      alignVertical: if(ri!showAddCustomTaskBtn, \"BOTTOM\", null),\n      marginBelow: \"STANDARD\"\n    ),\n    rule!AS_GSS_TMG_GRD_referenceTaskGrid(\n      searchText: local!searchText,\n      allowLinkSelection: false,\n      selectedTaskRefs: ri!selectedTaskRefs,\n      i18nData: ri!i18nData,\n      allowCheckboxSelection: true,\n      taskCategoryFilter: ri!addingTaskCategory,\n      taskRefIdsToHide: ri!taskRefIdsToHide,\n      triggerRefresh: ri!triggerRefresh,\n      configurationLevelCode: cons!AS_GSS_TMG_ENUM_TASK_CONFIGURATION_LEVEL_CODE_TEMPLATE\n    ),\n    rule!AS_CO_CPS_cancelSaveButtons(\n      cancelAccessibilityText: \"Press Enter to cancel changes\",\n      confirmAccessibilityText: \"Press Enter to add items to process\",\n      confirmLabel: \"Add Tasks\",\n      cancelLabel: \"Cancel\",\n      confirmSaveInto: {\n        ri!addTaskSaves,\n        rule!AS_CO_UT_saveNull(valueToNull: ri!addingTaskCategory),\n        rule!AS_CO_UT_saveNull(valueToNull: ri!selectedTaskRefs)\n      },\n      cancelSaveInto: {\n        rule!AS_CO_UT_saveNull(valueToNull: ri!addingTaskCategory),\n        rule!AS_CO_UT_saveNull(valueToNull: ri!selectedTaskRefs)\n      },\n      includeDivider: true\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_initializeBlankLocalVariable",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_DSP_displayHeader",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_BTN_toolbarButton",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CP_searchField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_pickerPlaceholder",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_GRD_referenceTaskGrid",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CPS_cancelSaveButtons",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_saveNull",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_ENUM_TASK_CONFIGURATION_LEVEL_CODE_TEMPLATE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_QE_getTaskCategories",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_HEADER_LEVEL_ONE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_TMG_CPS_manageReferenceTemplate",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

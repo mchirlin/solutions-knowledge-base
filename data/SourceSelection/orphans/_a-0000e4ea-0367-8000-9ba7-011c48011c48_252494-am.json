@@ -1,0 +1,36 @@
+{
+  "uuid": "_a-0000e4ea-0367-8000-9ba7-011c48011c48_252494-am",
+  "name": "AS_GSS_TMG_UT_defaultFilterForTasksInHomePage",
+  "type": "Expression Rule",
+  "description": "Returns a logical expression for the filter against the assignee fields of a task for Home page",
+  "sail_code": "a!localVariables(\n  local!loggedInUser: loggedInUser(),\n  local!criterias: rule!AS_GSS_QE_getEvaluationCriteria(\n    additionalFilters: {\n      #\"SYSTEM_SYSRULES_queryFilter\"(\n        field: \"evaluation.evaluationId\",\n        operator: \"=\",\n        value: ri!evaluationId\n      ),\n      #\"SYSTEM_SYSRULES_queryFilter\"(\n        field: \"isActive\",\n        operator: \"=\",\n        value: true\n      )\n    },\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY\n  ),\n  local!evaluation: rule!AS_GSS_QE_getEvaluation(\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT,\n    evaluationId: ri!evaluationId\n  ),\n  /* To check if the user is CO/ EC to show all tasks */\n  local!isShowAllTasks: or(\n    local!loggedInUser = local!evaluation.contractingOfficer.username,\n    local!loggedInUser = local!evaluation.contractingSpecialist.username,\n    local!loggedInUser = local!evaluation.evaluationChief.username\n  ),\n  /* To check if the user is FC / Evaluator member and a chair of any factor  */\n  local!isFactorChair: and(\n    contains(\n      local!criterias.criteriaChair.username,\n      tostring(local!loggedInUser)\n    )\n  ),\n  #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n    operator: \"OR\",\n    logicalExpressions: {\n      /* All users should see the tasks assigned to them */\n      #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n        operator: \"AND\",\n        filters: {\n          #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: \"userAssignee\",\n            operator: \"=\",\n            value: local!loggedInUser\n          )\n        }\n      ),\n      if(\n        local!isShowAllTasks,\n        /* If CO/EC, then show all tasks assigned to them (previous QLE) and all tasks associated to the evaluation (additional QLE) */\n        #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n          operator: \"AND\",\n          filters: {\n            #\"SYSTEM_SYSRULES_queryFilter\"(\n              field: \"evaluation.evaluationId\",\n              operator: \"=\",\n              value: ri!evaluationId\n            )\n          }\n        ),\n        if(\n          local!isFactorChair,\n          /* If FC, then show all tasks assigned to them (previous QLE) and all tasks associated to the criteria they're assigned to (additional QLE) */\n          #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n            operator: \"AND\",\n            filters: {\n              #\"SYSTEM_SYSRULES_queryFilter\"(\n                field: \"criteria.criteriaChair.username\",\n                operator: \"=\",\n                value: local!loggedInUser\n              )\n            }\n          ),\n          /* Else they're an evaluator, and should only see the tasks assigned to them (previous QLE) */\n          {}\n        )\n      )\n    }\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_QE_getEvaluationCriteria",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_QE_getEvaluation",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_SBS_checklistHomeToolbar",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

@@ -1,0 +1,248 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GSS Move Word Doc To Sharepoint and Get Document Link",
+    "parent_name": null,
+    "total_objects": 10
+  },
+  "entry_point": {
+    "complexity_score": 20.0,
+    "total_nodes": 10,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GSS Move Word Doc To Sharepoint and Get Document Link",
+      "complexity_score": 20.0,
+      "total_nodes": 10,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Integration ON?"
+          ]
+        },
+        {
+          "name": "Terminate",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Integration ON?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Terminate (Integration OFF)",
+            "Create folder in SharePoint (Yes & Folder Null)",
+            "Upload Doc to Sharepoint (Yes & Folder not null)"
+          ]
+        },
+        {
+          "name": "Skip Write to task?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Write to Task (No)",
+            "Terminate"
+          ]
+        },
+        {
+          "name": "Set evaluation",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Update evaluation"
+          ]
+        },
+        {
+          "name": "Write to Task",
+          "type": "Write to Data Store Entity",
+          "next": [
+            "Terminate"
+          ]
+        },
+        {
+          "name": "Update evaluation",
+          "type": "Write to Data Store Entity",
+          "next": [
+            "Upload Doc to Sharepoint"
+          ]
+        },
+        {
+          "name": "Create folder in SharePoint",
+          "type": "SUBPROCESS",
+          "next": [
+            "Set evaluation"
+          ],
+          "subprocess": "AS GAM Create Folder in SharePoint"
+        },
+        {
+          "name": "Get document link from Sharepoint",
+          "type": "Call Integration",
+          "next": [
+            "Skip Write to task?"
+          ]
+        },
+        {
+          "name": "Upload Doc to Sharepoint",
+          "type": "Call Integration",
+          "next": [
+            "Get document link from Sharepoint"
+          ]
+        }
+      ]
+    },
+    "subprocesses": [
+      {
+        "name": "AS GAM Create Folder in SharePoint",
+        "complexity_score": 3.0,
+        "total_nodes": 3,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Call Integration"
+            ]
+          },
+          {
+            "name": "Terminate",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Call Integration",
+            "type": "Call Integration",
+            "next": [
+              "Terminate"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e49f-7b90-8000-9bac-011c48011c48_192834",
+      "name": "AS_GAM_BOL_OFFICE_365",
+      "type": "Constant",
+      "description": "Boolean constant for Turning ON / OFF  Office 365 Integration",
+      "value": null,
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "AS GSS Move Word Doc To Sharepoint and Get Document Link"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_940138",
+      "name": "AS_GSS_ENT_EVALUATION",
+      "type": "Constant",
+      "description": "Value: AS_GSS_Evaluation",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS GSS Move Word Doc To Sharepoint and Get Document Link"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_942267",
+      "name": "AS_GSS_SHAREPOINT_FOLDER_ID",
+      "type": "Constant",
+      "description": "Main folder id for all the evaluation documents in Sharepoint Site.\n",
+      "value": null,
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GSS Move Word Doc To Sharepoint and Get Document Link"
+      ]
+    },
+    {
+      "uuid": "_a-0000e393-fbf1-8000-9ba2-011c48011c48_100868-tmg-am-am",
+      "name": "AS_GSS_TMG_ENT_TASK",
+      "type": "Constant",
+      "description": "Value: AS_GSS_TMG_Task",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS GSS Move Word Doc To Sharepoint and Get Document Link"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GSS Move Word Doc To Sharepoint and Get Document Link",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_updateCdtFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around AS_CO_UT_isBlank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS GSS Move Word Doc To Sharepoint and Get Document Link"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_260165",
+      "name": "AS_CO_UT_updateCdtFields",
+      "type": "Expression Rule",
+      "description": "Updates one or more fields of a CDT, with an optional input for indices",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS GSS Move Word Doc To Sharepoint and Get Document Link"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_940968",
+      "name": "AS_GSS_UT_sharepointFolderName",
+      "type": "Expression Rule",
+      "description": "Returns the evaluation folder name in sharepoint",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GSS Move Word Doc To Sharepoint and Get Document Link"
+      ]
+    },
+    {
+      "uuid": "0002e4ad-3dbb-8000-0046-7f0000014e7a",
+      "name": "AS GAM Create Folder in SharePoint",
+      "type": "Process Model",
+      "description": "Process model to create folder in SharePoint",
+      "calls": [],
+      "called_by": [
+        "AS GSS Move Word Doc To Sharepoint and Get Document Link"
+      ]
+    },
+    {
+      "uuid": "000be5ce-8854-8000-0b33-7f0000014e7a",
+      "name": "AS GSS Move Word Doc To Sharepoint and Get Document Link",
+      "type": "Process Model",
+      "description": "Process model to upload document to SharePoint and get document link.",
+      "calls": [
+        "AS GAM Create Folder in SharePoint",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_updateCdtFields",
+        "AS_GAM_BOL_OFFICE_365",
+        "AS_GSS_ENT_EVALUATION",
+        "AS_GSS_SHAREPOINT_FOLDER_ID",
+        "AS_GSS_TMG_ENT_TASK",
+        "AS_GSS_UT_sharepointFolderName"
+      ],
+      "called_by": []
+    }
+  ]
+}

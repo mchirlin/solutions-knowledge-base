@@ -1,0 +1,61 @@
+{
+  "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_263542-tmg-am-am",
+  "name": "AS_GSS_TMG_DSP_displayAuditModificationForTemplate",
+  "type": "Expression Rule",
+  "description": "Returns formatting for modification field on audit grid",
+  "sail_code": "a!localVariables(\n  local!itemName: if(\n    rule!AS_CO_UT_isBlank(ri!templateTaskRef.taskRef.taskName),\n    index(\n      ri!taskRefData,\n      wherecontains(\n        tointeger(\n          rule!AS_CO_UT_filterCdtByField(\n            cdt: rule!AS_GSS_TMG_QE_getTemplateTaskAudits(\n              sort: #\"SYSTEM_SYSRULES_sortInfo\"(\n                field: \"templateTaskAuditId\",\n                ascending: false\n              ),\n              templateTaskId: ri!itemId,\n              returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT\n            ).simpleFieldChanges,\n            field: \"fieldName\",\n            value: \"taskRef.taskRefId\"\n          ).oldValue\n        ),\n        tointeger(index(ri!taskRefData, \"taskRefId\", null))\n      ),\n      null\n    ).taskName,\n    ri!templateTaskRef.taskRef.taskName\n  ),\n  local!itemSuffix: {\n    \" \",\n    rule!AS_GAM_CO_I18N_UT_displayLabel(\n      bundle: ri!i18nData,\n      bundleKey: if(\n        ri!templateAuditEntry.actionCode = cons!AS_ADT_ENUM_AUDIT_ACTION_CODE_ADD,\n        \"txt_ToItem\",\n        \"txt_OfItem\"\n      )\n    ),\n    \" \"\n  },\n  choose(\n    rule!AS_CO_UT_chooseWherecontainsHelper(\n      value: ri!fieldName,\n      inArray: rule!AS_GSS_TMG_CONS_templateAuditFields()\n    ),\n    /*Note: the order should be similar to AS_GSS_TMG_CONS_templateAuditFields*/\n    /*Default*/\n    {},\n    /*Template Name*/\n    {\n      #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n        text: \"the approach name\"\n      ),\n      \" \",\n      #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n        text: ri!template.templateName,\n        style: \"STRONG\"\n      )\n    },\n    /*Template Description*/\n    {\n      #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n        text: \"the approach description\"\n      ),\n      if(\n        ri!templateAuditEntry.actionCode = cons!AS_ADT_ENUM_AUDIT_ACTION_CODE_ADD,\n        \" to the process \",\n        \" of the process \"\n      ),\n      #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n        text: ri!template.templateName,\n        style: \"STRONG\"\n      )\n    },\n    /*Group Assignee*/\n    {\n      #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n        text: \"group assignee\"\n      ),\n      local!itemSuffix,\n      #\"SYSTEM_SYSRULES_richTextItem_v1\"(text: local!itemName, style: \"STRONG\")\n    },\n    /*Task Description*/\n    {\n      #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n        text: \"the task description\"\n      ),\n      local!itemSuffix,\n      #\"SYSTEM_SYSRULES_richTextItem_v1\"(text: local!itemName, style: \"STRONG\")\n    },\n    /*Task*/\n    {\n      #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n        text: rule!AS_GAM_CO_I18N_UT_displayLabel(\n          bundle: ri!i18nData,\n          bundleKey: if(\n            rule!AS_CO_UT_isBlank(value: local!itemName),\n            \"txt_AnItem\",\n            \"txt_Item\"\n          )\n        ) & \" \"\n      ),\n      #\"SYSTEM_SYSRULES_richTextItem_v1\"(text: local!itemName, style: \"STRONG\")\n    },\n    /*Task ref id Precedent - for processes*/\n    {\n      #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n        text: \"precedent\" & \" \"\n      ),\n      #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n        text: rule!AS_CO_UT_filterCdtByField(\n          cdt: ri!taskRefData,\n          field: \"taskRefId\",\n          value: if(\n            ri!templateAuditEntry.actionCode = cons!AS_ADT_ENUM_AUDIT_ACTION_CODE_DELETE,\n            ri!oldValue,\n            ri!newValue\n          )\n        ).taskName,\n        style: \"STRONG\"\n      ),\n      local!itemSuffix,\n      #\"SYSTEM_SYSRULES_richTextItem_v1\"(text: local!itemName, style: \"STRONG\")\n    },\n    /*Group id  Precedent - will be null for process tasks*/\n    {},\n    /*Duration*/\n    {\n      #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n        text: \"duration\"\n      ),\n      local!itemSuffix,\n      #\"SYSTEM_SYSRULES_richTextItem_v1\"(text: local!itemName, style: \"STRONG\")\n    },\n    /*Duration unit*/\n    {\n      #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n        text: \"duration unit\"\n      ),\n      local!itemSuffix,\n      #\"SYSTEM_SYSRULES_richTextItem_v1\"(text: local!itemName, style: \"STRONG\")\n    },\n    /*No of days*/\n    {\n      #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n        text: \"days from start\"\n      ),\n      local!itemSuffix,\n      #\"SYSTEM_SYSRULES_richTextItem_v1\"(text: local!itemName, style: \"STRONG\")\n    }\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_QE_getTemplateTaskAudits",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_chooseWherecontainsHelper",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_CONS_templateAuditFields",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_ADD",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_DELETE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_TMG_DSP_modificationCommentForTemplateAudit",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

@@ -1,0 +1,161 @@
+{
+  "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_240219-tmg-am-am",
+  "name": "AS_GSS_TMG_GRD_manageImportReferenceTasksGrid",
+  "type": "Interface",
+  "description": "Interface to manage tasks added by Import",
+  "sail_code": "a!localVariables(\n  local!headerLabels: rule!AS_GSS_TMG_BL_importTasksFromExcelFieldsList().label,\n  local!taskBehaviorTypes: rule!AS_GSS_TMG_QE_getTaskBehaviorTypes(\n    /*Excludes system and process setup tasks*/\n    configurationLevelCode: cons!AS_GSS_TMG_ENUM_TASK_CONFIGURATION_LEVEL_CODE_TEMPLATE\n  ),\n  local!formValidations: a!refreshVariable(\n    value: rule!AS_GSS_TMG_VD_importReferenceTasks(\n      i18nData: ri!i18nData,\n      tasksToAdd: ri!allImportedTasks,\n      taskTypes: local!taskBehaviorTypes\n    ),\n    refreshAlways: true\n  ),\n  /*Check all duplicates at once to minimize querying*/\n  local!duplicateTaskNameInDatabase: rule!AS_GSS_TMG_UT_isDuplicateTaskReferenceName(\n    taskRefs: ri!allImportedTasks,\n    configurationLevelCode: cons!AS_GSS_TMG_ENUM_TASK_CONFIGURATION_LEVEL_CODE_AD_HOC\n  ),\n  {\n    #\"SYSTEM_SYSRULES_gridLayout\"(\n      headerCells: {\n        #\"SYSTEM_SYSRULES_forEach\"(\n          items: local!headerLabels,\n          expression: #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(\n            label: fv!item\n          )\n        ),\n        #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(\n          label: \"\"\n        )\n      },\n      columnConfigs: {\n        #\"SYSTEM_SYSRULES_forEach\"(\n          items: local!headerLabels,\n          expression: #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(\n            width: \"DISTRIBUTE\"\n          )\n        ),\n        #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(\n          width: \"ICON\"\n        )\n      },\n      emptyGridMessage: \"No tasks available\",\n      rows: #\"SYSTEM_SYSRULES_forEach\"(\n        items: ri!allImportedTasks,\n        expression: #\"SYSTEM_SYSRULES_gridRowLayout\"(\n          contents: {\n            rule!AS_CO_INP_textField(\n              required: true,\n              readOnly: rule!AS_CO_UT_isNotBlank(\n                fv!item.taskRefId\n              ),\n              value: fv!item.taskName,\n              saveInto: fv!item.taskName,\n              validations: {\n                rule!AS_CO_VD_textValidation(\n                  value: fv!item.taskName,\n                  maxLength: 50\n                ),\n                if(\n                  or(\n                    local!duplicateTaskNameInDatabase[fv!index],\n                    rule!AS_CO_UT_checkIfDuplicateExistsInArrayByIndex(\n                      array: ri!allImportedTasks.taskName,\n                      index: fv!index,\n                      caseSensitive: false\n                    )\n                  ),\n                  \"You cannot have two tasks with the same name\",\n                  \"\"\n                )\n              }\n            ),\n            rule!AS_CO_CP_dropdownField(\n              required: true,\n              readOnly: rule!AS_CO_UT_isNotBlank(\n                fv!item.taskRefId\n              ),\n              choiceLabels: ri!taskCategories.categoryName,\n              choiceValues: ri!taskCategories,\n              value: fv!item.taskCategory,\n              saveInto: fv!item.taskCategory,\n              placeholderLabel: \"Select a phase\"\n            ),\n            rule!AS_CO_CP_pickerFieldGroups(\n              maxSelections: 1,\n              readOnly: rule!AS_CO_UT_isNotBlank(\n                fv!item.taskRefId\n              ),\n              groupFilter: cons!AS_GSS_TMG_GRP_TASK_RECIPIENTS,\n              value: fv!item.defaultGroupAssignee,\n              saveInto: fv!item.defaultGroupAssignee,\n              required: true,\n              placeholder: \"Search a group\"\n            ),\n            rule!AS_CO_CP_dropdownField(\n              required: true,\n              readOnly: rule!AS_CO_UT_isNotBlank(\n                fv!item.taskRefId\n              ),\n              choiceLabels: #\"SYSTEM_SYSRULES_forEach\"(\n                items: local!taskBehaviorTypes,\n                expression: rule!AS_CO_UT_displayRefDataLabelSingle(\n                  singleData: fv!item,\n                  labelField: \"behaviorDisplayName\",\n                  i18nData: ri!i18nData\n                )\n              ),\n              choiceValues: local!taskBehaviorTypes,\n              value: fv!item.taskBehaviorType,\n              saveInto: {\n                fv!item.taskBehaviorType,\n                a!save(\n                  target: fv!item.docUploadContext,\n                  value: null\n                )\n              },\n              placeholderLabel: \"Select a task type\"\n            ),\n            rule!AS_GSS_CP_refDataField(\n              refData: ri!documentTypes,\n              refType: cons!AS_GSS_REF_TYPE_DOCUMENT_TYPE,\n              required: or(\n                fv!item.taskBehaviorType.behaviorSubtypeCode = cons!AS_GSS_TMG_ENUM_TASK_BEHAVIOR_SUBTYPE_CODE_DOCUMENT_WITH_TEMPLATE,\n                fv!item.taskBehaviorType.behaviorSubtypeCode = cons!AS_GSS_TMG_ENUM_TASK_BEHAVIOR_SUBTYPE_CODE_DOCUMENT_UPLOAD\n              ),\n              value: fv!item.docUploadContext.docTypeId,\n              saveInto: fv!item.docUploadContext.docTypeId,\n              placeholderLabel: \"Select a document type\",\n              readOnly: rule!AS_CO_UT_isNotBlank(\n                fv!item.taskRefId\n              ),\n              disabled: not(or(\n                fv!item.taskBehaviorType.behaviorSubtypeCode = cons!AS_GSS_TMG_ENUM_TASK_BEHAVIOR_SUBTYPE_CODE_DOCUMENT_WITH_TEMPLATE,\n                fv!item.taskBehaviorType.behaviorSubtypeCode = cons!AS_GSS_TMG_ENUM_TASK_BEHAVIOR_SUBTYPE_CODE_DOCUMENT_UPLOAD\n              ))\n            ),\n            rule!AS_CO_CP_dropdownField(\n              label: \"Document Template\",\n              labelPosition: \"ABOVE\",\n              required: fv!item.taskBehaviorType.behaviorSubtypeCode = cons!AS_GSS_TMG_ENUM_TASK_BEHAVIOR_SUBTYPE_CODE_DOCUMENT_WITH_TEMPLATE,\n              choiceLabels: ri!documentTemplates.documentName,\n              choiceValues: ri!documentTemplates,\n              value: fv!item.docUploadContext.docTemplate,\n              saveInto: fv!item.docUploadContext.docTemplate,\n              placeholderLabel: \"Select a document template\",\n              readOnly: rule!AS_CO_UT_isNotBlank(\n                fv!item.taskRefId\n              ),\n              disabled: not(fv!item.taskBehaviorType.behaviorSubtypeCode = cons!AS_GSS_TMG_ENUM_TASK_BEHAVIOR_SUBTYPE_CODE_DOCUMENT_WITH_TEMPLATE)\n            ),\n            rule!AS_CO_DSP_removeIcon(\n              caption: \"Remove Task\",\n              saveInto: a!save(\n                ri!allImportedTasks,\n                remove(\n                  ri!allImportedTasks,\n                  fv!index\n                )\n              )\n            )\n          }\n        )\n      )\n    ),\n    #\"SYSTEM_SYSRULES_sectionLayout_v1\"(\n      validations: rule!AS_CO_UT_displayFormValidations(\n        validationMessages: local!formValidations\n      ),\n      marginBelow: \"NONE\"\n    ),\n    rule!AS_GSS_TMG_BTN_manageImportReferenceTasksGridButtons(\n      i18nData: ri!i18nData,\n      allImportedTasks: ri!allImportedTasks,\n      selectedSubAction: ri!selectedSubAction,\n      importStep: ri!importStep,\n      taskImportDocument: ri!taskImportDocument,\n      selectedTemplate: ri!selectedTemplate\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_TMG_BL_importTasksFromExcelFieldsList",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_QE_getTaskBehaviorTypes",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_VD_importReferenceTasks",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_isDuplicateTaskReferenceName",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_INP_textField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_VD_textValidation",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_checkIfDuplicateExistsInArrayByIndex",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CP_dropdownField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CP_pickerFieldGroups",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_displayRefDataLabelSingle",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_CP_refDataField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_DSP_removeIcon",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_displayFormValidations",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_BTN_manageImportReferenceTasksGridButtons",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_ENUM_TASK_CONFIGURATION_LEVEL_CODE_TEMPLATE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_ENUM_TASK_CONFIGURATION_LEVEL_CODE_AD_HOC",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_GRP_TASK_RECIPIENTS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_REF_TYPE_DOCUMENT_TYPE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_ENUM_TASK_BEHAVIOR_SUBTYPE_CODE_DOCUMENT_WITH_TEMPLATE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_ENUM_TASK_BEHAVIOR_SUBTYPE_CODE_DOCUMENT_UPLOAD",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_loadBundleByNames",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_QE_getTaskRefs",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_QE_getTaskCategories",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_QE_getRefDataByTypes",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_BL_documentTypesToExcludeFromSelectionOnUpload",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_QE_getRefDocumentTemplate",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_TMG_FM_importReferenceTasks",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

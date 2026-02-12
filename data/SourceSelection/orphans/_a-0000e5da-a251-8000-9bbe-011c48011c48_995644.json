@@ -1,0 +1,45 @@
+{
+  "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_995644",
+  "name": "AS_GSS_CDT_initializeEvaluationPhaseForWizard",
+  "type": "Expression Rule",
+  "description": "Construct AS_GSS_EvaluationPhase for the Wizard.",
+  "sail_code": "a!localVariables(\n  local!phases: rule!AS_GSS_TMG_QE_getTaskCategories(\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY,\n    includeNotActive: false()\n  ),\n  local!constructCategories: rule!AS_CO_UT_rejectNullValuesFromArray(\n    array: #\"SYSTEM_SYSRULES_forEach\"(\n      items: local!phases,\n      expression: if(\n        not(\n          contains(\n            tointeger(\n              rule!AS_CO_UT_filterCdtByField(\n                cdt: ri!evaluationPhases,\n                field: \"isActive\",\n                value: true\n              ).refPhase.taskCategoryId\n            ),\n            fv!item.taskCategoryId\n          )\n        ),\n        /*Constructing phase dictionary for new categories*/\n        rule!AS_CO_UT_cast(\n          type: 'type!{urn:com:appian:types:AS:GSS}AS_GSS_EvaluationPhase',\n          value: {\n            refPhase: 'type!{urn:com:appian:types:AS:GSS:TMG}AS_GSS_TMG_R_TaskCategory'(\n              taskCategoryId: index(fv!item, \"taskCategoryId\", {}),\n              categoryName: index(fv!item, \"categoryName\", {})\n            ),\n            duration: null,\n            durationUnit: rule!AS_CO_UT_castToDictionary(value: { refDataId: null }),\n            startDate: null,\n            endDate: null\n          }\n        ),\n        /*Retaining phases of existing categories*/\n        null\n      )\n    )\n  ),\n  rule!AS_CO_UT_rejectNullValuesFromArray(\n    array: union(\n      rule!AS_CO_UT_cast(\n        type: 'type!{urn:com:appian:types:AS:GSS}AS_GSS_EvaluationPhase?list',\n        value: ri!evaluationPhases\n      ),\n      rule!AS_CO_UT_cast(\n        type: 'type!{urn:com:appian:types:AS:GSS}AS_GSS_EvaluationPhase?list',\n        value: local!constructCategories\n      )\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_TMG_QE_getTaskCategories",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_cast",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_castToDictionary",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_QE_getEvaluationPhases",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

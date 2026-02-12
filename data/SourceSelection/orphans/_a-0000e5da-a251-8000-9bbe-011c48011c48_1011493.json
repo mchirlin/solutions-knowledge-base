@@ -1,0 +1,30 @@
+{
+  "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1011493",
+  "name": "AS_GSS_UI_dueDateExpirationText",
+  "type": "Expression Rule",
+  "description": "Rich Text Item to display the expiration Text of Due Date",
+  "sail_code": "if(\n  rule!AS_CO_UT_isBlank(ri!dueDate),\n  \"\",\n  if(\n    cons!AS_GSS_BOL_BUSINESS_DAYS_ONLY,\n    a!localVariables(\n      /*Getting today based on user's timezone*/\n      local!today: rule!AS_CO_UT_returnTodayBasedOnInput(username: loggedInUser()),\n      /*calculating the due date diff from today*/\n      local!dueDateDifference: tointeger(\n        calworkdays(todate(local!today), ri!dueDate)\n      ),\n      /*Checking if the due date is in past (expired) and active*/\n      local!expired: todate(ri!dueDate) < local!today,\n      /*calculating the expired duration from today*/\n      local!expiredDuration: if(\n        local!expired,\n        tointeger(\n          calworkdays(todate(ri!dueDate), local!today)\n        ),\n        \"\"\n      ),\n      /*checking if expiring in 1/0 days from today*/\n      /*Including - 1 for calculation when only business days are considered ( this is because calworkdays() returns the no of days including today*/\n      local!dueSoon: or(\n        local!dueDateDifference - 1 = 1,\n        local!dueDateDifference - 1 = 0\n      ),\n      /*checking if expiring more than due soon from today*/\n      local!expiresinMoreThanDueSoon: tointeger(\n        calworkdays(local!today, todate(ri!dueDate))\n      ),\n      {\n        #\"SYSTEM_SYSRULES_richTextIcon\"(\n          icon: \"clock-o\",\n          size: \"SMALL\",\n          color: if(\n            local!expired,\n            \"NEGATIVE\",\n            if(local!dueSoon, \"#FFC13E\", \"\")\n          ),\n          showWhen: rule!AS_CO_UT_isNotBlank(todate(ri!dueDate))\n        ),\n        #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n          text: if(\n            rule!AS_CO_UT_isBlank(todate(ri!dueDate)),\n            \"\",\n            if(\n              local!expired,\n              /*Including - 1 for expired duration calculation when only business days are considered ( this is because calworkdays() returns the no of days including today*/\n              \" Expired \" & local!expiredDuration - 1 & \" days ago\",\n              /*Including - 1 for expired duration calculation when only business days are considered ( this is because calworkdays() returns the no of days including today*/\n              \" Expires in \" & local!expiresinMoreThanDueSoon - 1 & \" days\"\n            )\n          ),\n          color: if(\n            rule!AS_CO_UT_isBlank(todate(ri!dueDate)),\n            \"\",\n            local!expired,\n            \"NEGATIVE\",\n            \"\"\n          )\n        )\n      }\n    ),\n    a!localVariables(\n      /*Getting today based on user's timezone*/\n      local!today: rule!AS_CO_UT_returnTodayBasedOnInput(username: loggedInUser()),\n      /*calculating the due date diff from today*/\n      local!dueDateDifference: tointeger(todate(ri!dueDate) - local!today),\n      /*Checking if the due date is in past (expired)*/\n      local!expired: todate(ri!dueDate) < local!today,\n      /*calculating the expired duration from today*/\n      local!expiredDuration: tointeger(local!today - todate(ri!dueDate)),\n      /*checking if expiring in 1 / 0 from today*/\n      local!dueSoon: or(\n        local!dueDateDifference = 0,\n        local!dueDateDifference = 1\n      ),\n      /*checking if expiring more than due soon from today*/\n      local!expiresinMoreThanDueSoon: tointeger(todate(ri!dueDate) - local!today),\n      {\n        #\"SYSTEM_SYSRULES_richTextIcon\"(\n          icon: \"clock-o\",\n          size: \"SMALL\",\n          color: if(\n            local!expired,\n            \"NEGATIVE\",\n            if(local!dueSoon, \"#FFC13E\", {})\n          ),\n          showWhen: rule!AS_CO_UT_isNotBlank(todate(ri!dueDate))\n        ),\n        #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n          text: if(\n            rule!AS_CO_UT_isBlank(todate(ri!dueDate)),\n            {},\n            if(\n              local!expired,\n              \" Expired \" & local!expiredDuration & \" days ago\",\n              \" Expires in \" & local!expiresinMoreThanDueSoon & \" days\"\n            )\n          ),\n          color: if(\n            rule!AS_CO_UT_isBlank(todate(ri!dueDate)),\n            {},\n            local!expired,\n            \"NEGATIVE\",\n            {}\n          )\n        )\n      }\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_returnTodayBasedOnInput",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_BOL_BUSINESS_DAYS_ONLY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

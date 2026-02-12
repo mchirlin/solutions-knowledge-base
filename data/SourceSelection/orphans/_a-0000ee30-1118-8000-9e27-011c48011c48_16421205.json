@@ -1,0 +1,46 @@
+{
+  "uuid": "_a-0000ee30-1118-8000-9e27-011c48011c48_16421205",
+  "name": "AS_GSS_DRM_BL_mapVendorDataForDataReconciliation",
+  "type": "Expression Rule",
+  "description": "Rule to construct ref vendor to reconcile in JSON format",
+  "sail_code": "a!localVariables(\n  local!isStateOrLocal: rule!AS_GSS_EnableOrDisableStateAndLocalGovernment_wrapper(),\n  #\"SYSTEM_SYSRULES_toJson_v1\"(\n    #\"SYSTEM_SYSRULES_forEach\"(\n      items: ri!vendorDataToBeReconciled,\n      expression: if(\n        local!isStateOrLocal,\n        a!map(\n          legalName: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.legalName],\n          TIN: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.tin],\n          FEIN: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.fein],\n          doingBusinessAs: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.businessName],\n          businessType: #\"SYSTEM_SYSRULES_forEach\"(\n            items: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.refVendorBusinessTypes],\n            expression: a!map(\n              code: fv!item[recordType!AS_GSS_Ref_VendorBusinessType_SYNCEDRECORD.typeCode]\n            )\n          ),\n          addressLine1: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.vendorAddressLine1],\n          addressLine2: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.vendorAddressLine2],\n          city: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.vendorCity],\n          state: if(\n            rule!AS_CO_UT_isBlank(\n              fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.state.stateCode]\n            ),\n            null,\n            a!map(\n              stateCode: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.state.stateCode]\n            )\n          ),\n          country: if(\n            rule!AS_CO_UT_isBlank(\n              fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.country.countryCode]\n            ),\n            null,\n            a!map(\n              samGovCode: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.country.samGovCode],\n              countryCode: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.country.countryCode]\n            )\n          ),\n          zipCode: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.vendorZipCode],\n          zipCodeExt: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.vendorZipCodeExt],\n          foreignPostal: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.vendorForeignPostalCode],\n          expirationDate: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.expirationDate],\n          appianStatus: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.isActive]\n        ),\n        a!map(\n          legalName: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.legalName],\n          UEI: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.uniqueEntityId],\n          cage: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.cageCode],\n          samGovStatus: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.isActiveInSAM],\n          doingBusinessAs: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.businessName],\n          businessType: #\"SYSTEM_SYSRULES_forEach\"(\n            items: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.refVendorBusinessTypes],\n            expression: a!map(\n              code: fv!item[recordType!AS_GSS_Ref_VendorBusinessType_SYNCEDRECORD.typeCode]\n            )\n          ),\n          addressLine1: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.vendorAddressLine1],\n          addressLine2: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.vendorAddressLine2],\n          city: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.vendorCity],\n          state: if(\n            rule!AS_CO_UT_isBlank(\n              fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.state.stateCode]\n            ),\n            null,\n            a!map(\n              stateCode: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.state.stateCode]\n            )\n          ),\n          country: if(\n            or(\n              rule!AS_CO_UT_isBlank(\n                fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.country.countryCode]\n              ),\n              rule!AS_CO_UT_isBlank(\n                fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.country.samGovCode]\n              )\n            ),\n            null,\n            a!map(\n              samGovCode: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.country.samGovCode],\n              countryCode: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.country.countryCode]\n            )\n          ),\n          zipCode: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.vendorZipCode],\n          zipCodeExt: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.vendorZipCodeExt],\n          foreignPostal: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.vendorForeignPostalCode],\n          expirationDate: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.expirationDate],\n          appianStatus: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.isActive]\n        )\n      )\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_EnableOrDisableStateAndLocalGovernment_wrapper",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_Ref_Vendor_SYNCEDRECORD",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "AS_GSS_Ref_VendorBusinessType_SYNCEDRECORD",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "AS_CO_UT_queryRecord",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_DRM_INT_POST_DataReconciliation",
+      "type": "Integration",
+      "dep_type": "CALLS"
+    }
+  ]
+}

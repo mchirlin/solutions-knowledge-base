@@ -1,0 +1,31 @@
+{
+  "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_282524",
+  "name": "AS_CO_UI_userImageAndDisplayNameGridColumns",
+  "type": "Expression Rule",
+  "description": "Returns two grid columns, the first containing a user's image and the second containing their name.  Should only be used in gridFields with a borderStyle of LIGHT",
+  "sail_code": "{\n  #\"SYSTEM_SYSRULES_gridColumn\"(\n    label: ri!label,\n    value: rule!AS_CO_DSP_userImageDisplayField(\n      user: fv!row[ri!usernameField]\n    ),\n    align: \"CENTER\",\n    width: rule!AS_CO_UT_replaceNull(nullableValue: ri!width,replacementValue: \"NARROW\"),\n    sortField: if(\n      ri!allowSorting = false,\n      null,\n      ri!usernameField\n    )\n  ),\n  #\"SYSTEM_SYSRULES_gridColumn\"(\n    value: rule!AS_CO_UT_displayUser(\n      user: fv!row[ri!usernameField]\n    ),\n    sortField: null,\n    width: \"MEDIUM\"\n  )\n}",
+  "calls": [
+    {
+      "name": "AS_CO_DSP_userImageDisplayField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_displayUser",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_TMG_GRD_templateChangesAudit",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

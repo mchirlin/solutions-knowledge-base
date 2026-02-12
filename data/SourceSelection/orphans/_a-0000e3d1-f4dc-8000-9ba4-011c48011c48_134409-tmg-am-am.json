@@ -1,0 +1,91 @@
+{
+  "uuid": "_a-0000e3d1-f4dc-8000-9ba4-011c48011c48_134409-tmg-am-am",
+  "name": "AS_GSS_TMG_CPS_manageTaskCategory",
+  "type": "Interface",
+  "description": "Used to update Task Categories in the IO Settings site",
+  "sail_code": "a!localVariables(\n  /* Used to track if we are creating a new task or editing an existing one\n  If there is an ID populated, this must be a preexisting task that is being edited/viewed */\n  local!isExistingTaskCategory: rule!AS_CO_UT_isNotBlank(ri!selectedTaskCategory.taskCategoryId),\n  {\n    rule!AS_CO_DSP_displayHeader(\n      headerText: rule!AS_GAM_CO_I18N_UT_displayLabel(\n        bundle: ri!i18nData,\n        bundleKey: if(\n          local!isExistingTaskCategory,\n          \"lbl_EditCategory\",\n          \"lbl_AddCategory\"\n        )\n      )\n    ),\n    rule!AS_GSS_TMG_CP_warnCard(\n      showWhen: local!isExistingTaskCategory,\n      label: \"Edits to this phase will be reflected on all tasks that reference it\"\n    ),\n    rule!AS_GSS_TMG_CP_taskCategoryContents(\n      i18nData: ri!i18nData,\n      taskCategory: ri!selectedTaskCategory\n    ),\n    rule!AS_CO_CPS_cancelSaveButtons(\n      confirmLabel: rule!AS_GAM_CO_I18N_UT_displayLabel(\n        bundle: ri!i18nData,\n        bundleKey: if(\n          local!isExistingTaskCategory,\n          \"btn_SaveChanges\",\n          \"btn_AddCategory\"\n        )\n      ),\n      cancelLabel: \"Cancel\",\n      confirmSaveInto: {\n        rule!AS_ADT_UT_startAuditProcess(\n          newObjects: ri!selectedTaskCategory,\n          objectType: 'type!{urn:com:appian:types:AS:GSS:TMG}AS_GSS_TMG_R_TaskCategory',\n          objectDse: cons!AS_GSS_TMG_ENT_R_TASK_CATEGORY,\n          auditDse: cons!AS_GSS_TMG_ENT_A_R_TASK_CATEGORY,\n          auditConfig: rule!AS_GSS_TMG_ADT_BL_auditConfig_R_TaskCategory()\n        ),\n        rule!AS_CO_UT_triggerRefresh(triggerRefresh: ri!triggerRefresh),\n        rule!AS_CO_UT_saveNull(valueToNull: ri!selectedTaskCategory)\n      },\n      cancelSaveInto: {\n        rule!AS_CO_UT_saveNull(valueToNull: ri!selectedTaskCategory)\n      },\n      includeDivider: true\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_DSP_displayHeader",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_CP_warnCard",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_CP_taskCategoryContents",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CPS_cancelSaveButtons",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_ADT_UT_startAuditProcess",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_ADT_BL_auditConfig_R_TaskCategory",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_triggerRefresh",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_saveNull",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_ENT_R_TASK_CATEGORY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_ENT_A_R_TASK_CATEGORY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_QE_getTaskRefs",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_TMG_CPS_viewOrManageTaskCategoriesSettings",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

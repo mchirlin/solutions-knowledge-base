@@ -1,0 +1,41 @@
+{
+  "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_260609-tmg-am-am",
+  "name": "AS_GSS_TMG_GRD_templateChangesAudit",
+  "type": "Interface",
+  "description": "Grid to display the template changes audit history",
+  "sail_code": "{\n  #\"SYSTEM_SYSRULES_gridField_v1\"(\n    labelPosition: \"COLLAPSED\",\n    data: a!localVariables(\n      local!auditTemplates: a!refreshVariable(\n        value: #\"a3284a41-31d5-4d7a-858a-84d17c3c74e9-tmg-am-am\"(\n          pagingInfo: fv!pagingInfo,\n          templateId: ri!selectedTemplate.templateId,\n          triggerRefresh:ri!triggerRefresh\n        ).data,\n        refreshOnReferencedVarChange: true\n      ),\n      local!templateAuditDataForGrid: a!refreshVariable(\n        value: a!flatten(\n          #\"SYSTEM_SYSRULES_forEach\"(\n            items: local!auditTemplates,\n            expression: #\"c26cc0cb-4d83-474e-81f3-2e5daa662025-tmg-am-am\"(auditTemplate: fv!item)\n          )\n        ),\n        refreshOnReferencedVarChange: true\n      ),\n      todatasubset(\n        local!templateAuditDataForGrid,\n        fv!pagingInfo\n      )\n    ),\n    columns: {\n      rule!AS_CO_UI_userImageAndDisplayNameGridColumns(\n        usernameField: \"username\",\n        label: \"User\",\n        allowSorting: false\n      ),\n      /*Modification*/\n      #\"SYSTEM_SYSRULES_gridColumn\"(\n        label: \"Modification\",\n        value: rule!AS_GSS_TMG_DSP_modificationCommentForTemplateAudit(\n          i18nData: ri!i18nData,\n          templateAuditEntry: fv!row,\n          selectedTemplate: ri!selectedTemplate,\n          taskRefData: ri!taskRefData\n        ),\n        width: \"WIDE\"\n      ),\n      /*Time*/\n      #\"SYSTEM_SYSRULES_gridColumn\"(\n        label: \"Time\",\n        value: rule!AS_CO_UT_formatDateTime(datetime: fv!row.timestamp),\n        sortField: \"timestamp\",\n        align: \"END\"\n      )\n    },\n    borderStyle: \"LIGHT\",\n    shadeAlternateRows: true,\n    initialSorts: #\"SYSTEM_SYSRULES_sortInfo\"(field: \"timestamp\", ascending: false),\n    pageSize: cons!AS_CO_ENUM_PAGE_SIZE_LARGE\n  )\n}",
+  "calls": [
+    {
+      "name": "AS_CO_UI_userImageAndDisplayNameGridColumns",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_DSP_modificationCommentForTemplateAudit",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_formatDateTime",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_PAGE_SIZE_LARGE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_loadBundleByNames",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_TMG_CPS_viewTemplateHistory",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

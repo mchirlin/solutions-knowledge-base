@@ -1,0 +1,32 @@
+{
+  "_metadata": {
+    "bundle_id": "AS_GSS_Send_Email"
+  },
+  "objects": {
+    "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_100254": {
+      "name": "AS_CO_UT_getSiteUrl",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Text',\n  extract(linktodocument(0, \"doc\"), \"\"\"\", \"doc/\")\n)"
+    },
+    "_a-0000e74f-57e8-8000-9be4-011c48011c48_1964349": {
+      "name": "AS_GSS_UT_displayEmailSenderName",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!i18nData: rule!AS_GSS_CO_UT_loadBundleFromFolder(langISOCode: null),\n  \"Source Selection\"\n)"
+    },
+    "0004e74e-d505-8000-fd79-7f0000014e7a": {
+      "name": "AS GSS Send Email",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n=rule!AS_GSS_UT_createNoReplyEmailSender()\n\n// Input: ?\n=pv!sendTo\n\n// Input: ?\n=pv!subject\n\n// Input: ?\n=rule!AS_GSS_UT_displayEmailSenderName()\n\n// Input: ?\n=pv!fontFamily\n\n// Input: ?\n=pv!closing\n\n// Input: ?\n=pv!closingSender\n\n// Input: ?\n=pv!greeting\n\n// Input: ?\n=pv!content\n\n// Input: ?\n=pv!backgroundColor\n\n// Input: ?\n=pv!fontSize\n\n// Input: ?\n=pv!fontColor"
+    },
+    "_a-0000e74f-57e8-8000-9be4-011c48011c48_1964391": {
+      "name": "AS_GSS_UT_createNoReplyEmailSender",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!siteUrl: rule!AS_CO_UT_getSiteUrl(),\n  local!substringStartIndex: search(\"//\", local!siteUrl) + 2,\n  local!substringNumChars: search(\"/suite\", local!siteUrl) - local!substringStartIndex,\n  local!subdomainAndDomain: mid(\n    local!siteUrl,\n    local!substringStartIndex,\n    local!substringNumChars\n  ),\n  concat(\"no-reply@\", local!subdomainAndDomain)\n)"
+    },
+    "_a-0000e643-f7f1-8000-9bca-011c48011c48_1319026": {
+      "name": "AS_GSS_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "sail_code": "with(\n  local!lang: \"en_US\",\n  /* below is deprecated for now, uncomment to support multi-language display */\n  /*if(*/\n  /*isnull(ri!langISOCode),*/\n  /*userlocale(loggedInUser()),*/\n  /*ri!langISOCode*/\n  /*),*/\n  local!bundleName: /*rule!AS_GCM_determineValueBySolutionFlavor(\n    options: cons!AS_GCM_TXT_VALID_SOLUTION_FLAVORS\n  )*/\"AS.GSS.General\",\n  /*local!bundleName*/\n  local!output: loadbundlepropertiesfile(\n    cons!AS_GSS_FLD_PROPERTIES_FILES,\n    local!lang,\n    local!bundleName\n  )[local!bundleName],\n  local!output\n)"
+    }
+  }
+}

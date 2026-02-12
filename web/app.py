@@ -11,7 +11,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from appian_parser.cli import dump_package
-from appian_parser.output.json_dumper import DumpOptions
+from appian_parser.domain.models import DumpOptions
 
 app = Flask(__name__, static_folder='static')
 
@@ -79,15 +79,15 @@ def list_jobs():
     jobs = []
     for d in sorted(UPLOAD_FOLDER.iterdir(), key=lambda x: int(x.name) if x.name.isdigit() else 0, reverse=True):
         if d.is_dir() and d.name.isdigit():
-            manifest_path = d / 'output' / 'manifest.json'
+            manifest_path = d / 'output' / 'app_overview.json'
             if manifest_path.exists():
                 with open(manifest_path) as f:
-                    manifest = json.load(f)
+                    overview = json.load(f)
                 jobs.append({
                     'job_id': int(d.name),
-                    'filename': manifest.get('package_info', {}).get('filename', 'Unknown'),
-                    'objects_parsed': manifest.get('package_info', {}).get('total_parsed_objects', 0),
-                    'parsed_at': manifest.get('_metadata', {}).get('generated_at', ''),
+                    'filename': overview.get('package_info', {}).get('filename', 'Unknown'),
+                    'objects_parsed': overview.get('package_info', {}).get('total_parsed_objects', 0),
+                    'parsed_at': overview.get('_metadata', {}).get('generated_at', ''),
                 })
     return jsonify(jobs)
 

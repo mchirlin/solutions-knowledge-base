@@ -1,0 +1,70 @@
+{
+  "uuid": "7febf8cd-c9bc-4b4f-9aca-ae1409c1c638",
+  "name": "AS_GSS_GRD_VendorRecordList",
+  "type": "Interface",
+  "description": "The interface for the Vendor record list information",
+  "sail_code": "a!localVariables(\n  local!bundle: rule!AS_GSS_CO_UT_loadBundleFromFolder(langISOCode: null()),\n  local!isStateOrLocal: rule!AS_GSS_EnableOrDisableStateAndLocalGovernment_wrapper(),\n  rule!AS_GSS_HCL_vendorsPage(\n    header: rule!AS_GSS_CPS_vendorsPageHeader(showWhen: true()),\n    contents: {\n      #\"SYSTEM_SYSRULES_gridField_v3\"(\n        label: \"Vendors\",\n        rowHeader: 1,\n        borderStyle: \"STANDARD\",\n        labelPosition: \"COLLAPSED\",\n        data: recordType!AS_GSS_Vendor_RECORD,\n        columns: {\n          #\"SYSTEM_SYSRULES_gridColumn\"(\n            label: \"\",\n            sortField: recordType!AS_GSS_Vendor_RECORD.isActive,\n            value: rule!AS_GSS_UT_recordGridColumn_isActive(\n              isActive: fv!row[recordType!AS_GSS_Vendor_RECORD.isActive]\n            ),\n            align: \"CENTER\",\n            width: \"ICON\"\n          ),\n          #\"SYSTEM_SYSRULES_gridColumn\"(\n            label: \"Name\",\n            sortField: recordType!AS_GSS_Vendor_RECORD.legalName,\n            value: rule!AS_GSS_UT_recordGridColumn_vendorName(\n              recordTitle: fv!row[recordType!AS_GSS_Vendor_RECORD.legalName],\n              recordIdentifier: fv!identifier\n            ),\n            width: \"MEDIUM\"\n          ),\n          #\"SYSTEM_SYSRULES_gridColumn\"(\n            label: \"UEI\",\n            sortField: recordType!AS_GSS_Vendor_RECORD.uniqueEntityId,\n            helpTooltip: \"Unique Entity Identifier\",\n            value: if(\n              rule!AS_CO_UT_isBlank(\n                fv!row[recordType!AS_GSS_Vendor_RECORD.uniqueEntityId]\n              ),\n              \"-\",\n              fv!row[recordType!AS_GSS_Vendor_RECORD.uniqueEntityId]\n            ),\n            width: \"AUTO\",\n            showWhen: not(local!isStateOrLocal)\n          ),\n          #\"SYSTEM_SYSRULES_gridColumn\"(\n            label: \"CAGE\",\n            sortField: recordType!AS_GSS_Vendor_RECORD.cageCode,\n            helpTooltip: \"Commercial and Government Entity Code\",\n            value: if(\n              rule!AS_CO_UT_isBlank(\n                fv!row[recordType!AS_GSS_Vendor_RECORD.cageCode]\n              ),\n              \"-\",\n              fv!row[recordType!AS_GSS_Vendor_RECORD.cageCode]\n            ),\n            width: \"NARROW\",\n            showWhen: not(local!isStateOrLocal)\n          ),\n          #\"SYSTEM_SYSRULES_gridColumn\"(\n            label: \"TIN\",\n            sortField: recordType!AS_GSS_Vendor_RECORD.tin,\n            helpTooltip: \"Taxpayer Identification Number\",\n            value: if(\n              rule!AS_CO_UT_isBlank(\n                fv!row[recordType!AS_GSS_Vendor_RECORD.tin]\n              ),\n              \"-\",\n              fv!row[recordType!AS_GSS_Vendor_RECORD.tin]\n            ),\n            width: \"AUTO\",\n            showWhen: local!isStateOrLocal\n          ),\n          #\"SYSTEM_SYSRULES_gridColumn\"(\n            label: \"FEIN\",\n            sortField: recordType!AS_GSS_Vendor_RECORD.fein,\n            helpTooltip: \"Federal Employer Identification Number\",\n            value: if(\n              rule!AS_CO_UT_isBlank(\n                fv!row[recordType!AS_GSS_Vendor_RECORD.fein]\n              ),\n              \"-\",\n              fv!row[recordType!AS_GSS_Vendor_RECORD.fein]\n            ),\n            width: \"AUTO\",\n            showWhen: local!isStateOrLocal\n          ),\n          #\"SYSTEM_SYSRULES_gridColumn\"(\n            label: \"Status\",\n            sortField: recordType!AS_GSS_Vendor_RECORD.status,\n            value: rule!AS_CO_UT_replaceNull(\n              nullableValue: fv!row[recordType!AS_GSS_Vendor_RECORD.status],\n              replacementValue: \"-\"\n            ),\n            width: \"NARROW\",\n            showWhen: not(local!isStateOrLocal)\n          ),\n          #\"SYSTEM_SYSRULES_gridColumn\"(\n            label: \"Business Type\",\n            value: rule!AS_GSS_UT_recordGridColumn_businessType(\n              businessType: fv!row[recordType!AS_GSS_Vendor_RECORD.businessType],\n              businessTypeRecord: {}\n            ),\n            width: \"MEDIUM_PLUS\"\n          ),\n          #\"SYSTEM_SYSRULES_gridColumn\"(\n            label: \"Address\",\n            value: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n              value: if(\n                rule!AS_CO_UT_isBlank(\n                  fv!row[recordType!AS_GSS_Vendor_RECORD.vendorAddressLine1]\n                ),\n                \"-\",\n                rule!AS_GAM_UT_displayAddressAsEnvelope(\n                  addressLine1: fv!row[recordType!AS_GSS_Vendor_RECORD.vendorAddressLine1],\n                  addressLine2: fv!row[recordType!AS_GSS_Vendor_RECORD.vendorAddressLine2],\n                  state: fv!row[recordType!AS_GSS_Vendor_RECORD.vendorState.stateName],\n                  city: fv!row[recordType!AS_GSS_Vendor_RECORD.vendorCity],\n                  zipCode: fv!row[recordType!AS_GSS_Vendor_RECORD.vendorZipCode],\n                  zipCodeExt: fv!row[recordType!AS_GSS_Vendor_RECORD.vendorZipCodeExt],\n                  foreignPostalCode: fv!row[recordType!AS_GSS_Vendor_RECORD.vendorForeignPostalCode],\n                  country: fv!row[recordType!AS_GSS_Vendor_RECORD.vendorCountry.countryName],\n                  countryId: fv!row[recordType!AS_GSS_Vendor_RECORD.vendorCountry.countryId]\n                )\n              )\n            ),\n            width: \"NARROW_PLUS\"\n          ),\n          #\"SYSTEM_SYSRULES_gridColumn\"(\n            label: \"Expiration Date\",\n            sortField: recordType!AS_GSS_Vendor_RECORD.expirationDate,\n            value: rule!AS_CO_UT_replaceNull(\n              nullableValue: fv!row[recordType!AS_GSS_Vendor_RECORD.expirationDate],\n              replacementValue: \"-\"\n            ),\n            align: \"END\",\n            width: \"NARROW_PLUS\",\n            showWhen: not(local!isStateOrLocal)\n          )\n        },\n        validations: {},\n        pageSize: cons!AS_CO_ENUM_PAGE_SIZE_MEDIUM_LARGE,\n        refreshAfter: \"RECORD_ACTION\",\n        showSearchBox: true,\n        showRefreshButton: true,\n        showExportButton: true(),\n        shadeAlternateRows: true()\n      )\n    }\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_EnableOrDisableStateAndLocalGovernment_wrapper",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_HCL_vendorsPage",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_CPS_vendorsPageHeader",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_UT_recordGridColumn_isActive",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_UT_recordGridColumn_vendorName",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_UT_recordGridColumn_businessType",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_UT_displayAddressAsEnvelope",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_PAGE_SIZE_MEDIUM_LARGE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_Vendor_RECORD",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    }
+  ],
+  "called_by": []
+}

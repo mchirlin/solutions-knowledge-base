@@ -1,0 +1,76 @@
+{
+  "uuid": "_a-0000e3c8-6861-8000-9ba2-011c48011c48_119662-tmg-am-am",
+  "name": "AS_GSS_TMG_CPS_viewReferenceTasks",
+  "type": "Interface",
+  "description": "Reuseable interface for displaying/searching for reference tasks.",
+  "sail_code": "a!localVariables(\n  local!searchText: rule!AS_CO_UT_initializeBlankLocalVariable(\n    type: 'type!{http://www.appian.com/ae/types/2009}Text'\n  ),\n  local!taskCategories: rule!AS_GSS_TMG_QE_getTaskCategories(\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY\n  ),\n  local!taskCategoryFilter: rule!AS_CO_UT_initializeBlankLocalVariable(\n    type: 'type!{urn:com:appian:types:AS:GSS:TMG}AS_GSS_TMG_R_TaskCategory?list'\n  ),\n  {\n    #\"SYSTEM_SYSRULES_columnsLayout\"(\n      columns: {\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: {\n            rule!AS_CO_DSP_displayHeader(\n              headerText: \"Tasks\"\n            )\n          }\n        )\n      }\n    ),\n    #\"SYSTEM_SYSRULES_columnsLayout\"(\n      columns: {\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: {\n            #\"SYSTEM_SYSRULES_ButtonArrayLayout\"(\n              buttons: {\n                #\"SYSTEM_SYSRULES_forEach\"(\n                  items: ri!subActionOptions,\n                  expression: rule!AS_CO_BTN_toolbarButton(\n                    accessibilityText: if(\n                      fv!index = 1,\n                      \"Press enter to add item\",\n                      \"Press enter to import item\"\n                    ),\n                    label: fv!item,\n                    saveInto: {\n                      a!save(ri!selectedSubAction, fv!index + 1)\n                    },\n                    icon: if(fv!index = 1, \"PLUS\", \"file-excel-o\")\n                  )\n                )\n              },\n              showWhen: ri!allowManageTaskRefs,\n              align: \"START\"\n            )\n          }\n        ),\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: {\n            rule!AS_CO_CP_multipleDropdownField(\n              labelPosition: \"COLLAPSED\",\n              choiceLabels: local!taskCategories.categoryName,\n              choiceValues: local!taskCategories,\n              placeholderLabel: rule!AS_GSS_TMG_UI_dropdownPlaceholder_filters(\n                i18nData: ri!i18nData,\n                bundleKey: \"plc_Categories\"\n              ),\n              value: local!taskCategoryFilter,\n              saveInto: local!taskCategoryFilter\n            )\n          },\n          width: \"MEDIUM\"\n        ),\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: {\n            rule!AS_CO_CP_searchField(\n              accessibilityText: \"Press Enter to search process items\",\n              value: local!searchText,\n              saveInto: local!searchText,\n              placeholder: rule!AS_GSS_TMG_pickerPlaceholder(\n                i18nData: ri!i18nData,\n                bundleKey: \"lbl_Tasks\"\n              )\n            )\n          },\n          width: \"MEDIUM\"\n        )\n      },\n      marginBelow: \"NONE\"\n    ),\n    rule!AS_GSS_TMG_GRD_referenceTaskGrid(\n      allowLinkSelection: ri!allowManageTaskRefs,\n      selectedTaskRefs: ri!selectedTaskRef,\n      i18nData: ri!i18nData,\n      allowCheckboxSelection: false,\n      taskCategoryFilter: local!taskCategoryFilter,\n      triggerRefresh: ri!triggerRefresh,\n      searchText: local!searchText,\n      additionalLinkSelectionSaves: {\n        a!save(\n          ri!selectedSubAction,\n          /*Manage tasks interface*/\n          2\n        )\n      },\n      configurationLevelCode: cons!AS_GSS_TMG_ENUM_TASK_CONFIGURATION_LEVEL_CODE_AD_HOC\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_initializeBlankLocalVariable",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_QE_getTaskCategories",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_DSP_displayHeader",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_BTN_toolbarButton",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CP_multipleDropdownField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_UI_dropdownPlaceholder_filters",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CP_searchField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_pickerPlaceholder",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_GRD_referenceTaskGrid",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_ENUM_TASK_CONFIGURATION_LEVEL_CODE_AD_HOC",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_loadBundleByNames",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_TMG_CPS_viewOrManageReferenceTaskSettings",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1078016",
+  "name": "AS_GSS_UT_evaluationVendorCancelReconciliation",
+  "type": "Expression Rule",
+  "description": "Figure out the correct data in regards to evaluation vendors",
+  "sail_code": "if(\n  /*if both the base and new vendors are blank, no vendors before so no vendors after*/\n  and(\n    rule!AS_CO_UT_isBlank(rule!AS_CO_UT_replaceNull(nullableValue: ri!baseEvaluationVendors, replacementValue:\"\")),\n    rule!AS_CO_UT_isBlank(rule!AS_CO_UT_replaceNull(nullableValue: ri!updatedEvaluationVendors,replacementValue: \"\"))\n  ),\n  {},\n  a!flatten(\n    if(\n      rule!AS_CO_UT_isBlank(ri!baseEvaluationVendors),\n      /*If there were no vendors before the cancel, there should be none after*/\n      #\"SYSTEM_SYSRULES_forEach\"(\n        items: ri!updatedEvaluationVendors,\n        expression: rule!AS_CO_UT_updateCdtFields(\n          cdt: fv!item,\n          fields: \"isActive\",\n          newValues: false\n        )\n      ),\n      if(\n        rule!AS_CO_UT_isBlank(ri!updatedEvaluationVendors),\n        /*if there were vendors before the cancel, they should be reactivated*/\n        #\"SYSTEM_SYSRULES_forEach\"(\n          items: ri!baseEvaluationVendors,\n          expression: rule!AS_CO_UT_updateCdtFields(\n            cdt: fv!item,\n            fields: \"isActive\",\n            newValues: true\n          )\n        ),\n        a!localVariables(\n          /*Get list of vendor Ids*/\n          local!distinctVendorIds: union(ri!baseEvaluationVendors.vendorId,ri!updatedEvaluationVendors.vendorId),\n          #\"SYSTEM_SYSRULES_forEach\"(\n            items: local!distinctVendorIds,\n            expression: a!localVariables(\n              /*Get the original eval vendor data*/\n              local!baseVendor: rule!AS_CO_UT_filterCdtByField(\n                cdt: ri!baseEvaluationVendors,\n                field: \"vendorId\",\n                value: fv!item\n              ),\n              /*Get the updated eval vendor data*/\n              local!incomingVendor: rule!AS_CO_UT_filterCdtByField(\n                cdt: ri!updatedEvaluationVendors,\n                field: \"vendorId\",\n                value: fv!item\n              ),\n              if(\n                /*If no original vendor, soft delete newest vendor*/\n                rule!AS_CO_UT_isBlank(local!baseVendor),\n                rule!AS_CO_UT_updateCdtFields(\n                  cdt: local!incomingVendor,\n                  fields: {\"isActive\"},\n                  newValues: {false}\n                ),\n                /*Default, take the base/original values since they will be active and have unchanged submission date*/\n                local!baseVendor\n              )\n            )\n          )\n        )\n      )\n    )\n  )\n )",
+  "calls": [
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_updateCdtFields",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

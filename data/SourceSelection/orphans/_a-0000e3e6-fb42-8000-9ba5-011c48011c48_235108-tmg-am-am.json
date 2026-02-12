@@ -1,0 +1,146 @@
+{
+  "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_235108-tmg-am-am",
+  "name": "AS_GSS_TMG_CPS_importReferenceTasksFileUpload",
+  "type": "Interface",
+  "description": "UI for updating templates - Interface to upload an import file",
+  "sail_code": "a!localVariables(\n  local!numTasksToDisplay: 2,\n  /*Return the possible task fields which we are mapping to*/\n  local!taskFields: rule!AS_GSS_TMG_BL_importTasksFromExcelFieldsList(),\n  /*Parse the task import data from the Excel document*/\n  local!taskImportData: rule!AS_GSS_TMG_UT_readExcelTasks(\n    excelDocument: ri!taskImportDocument,\n    numberOfColumns: count(local!taskFields)\n  ),\n  /*Return an array of headers from Excel with their matching task field*/\n  local!excelColumns: #\"SYSTEM_SYSRULES_forEach\"(\n    items: local!taskImportData.headers,\n    expression: {\n      excelHeader: fv!item,\n      taskField: index(\n        rule!AS_CO_UT_filterCdtByField(\n          cdt: local!taskFields,\n          field: \"label\",\n          value: fv!item\n        ),\n        1,\n        null\n      )\n    }\n  ),\n  /*The document isn't blank and the parsing returned a valid value*/\n  local!fileSuccessfullyUploaded: and(\n    rule!AS_CO_UT_isNotBlank(ri!taskImportDocument),\n    rule!AS_CO_UT_isNotBlank(local!taskImportData)\n  ),\n  local!importedRefTasks: rule!AS_GSS_TMG_UT_mapImportTasksToReferenceTasks(\n    taskImportData: local!taskImportData,\n    excelColumns: local!excelColumns,\n    taskTypes: ri!taskTypes,\n    taskCategories: ri!taskCategories,\n    i18nData: ri!i18nData,\n    documentTypes: ri!documentTypes,\n    documentTemplates: ri!documentTemplates\n  ),\n  local!existingTaskRefs: rule!AS_GSS_TMG_QE_getTaskRefs(\n    taskName: local!importedRefTasks.taskName,\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY,\n    configurationLevelCode: cons!AS_GSS_TMG_ENUM_TASK_CONFIGURATION_LEVEL_CODE_AD_HOC\n  ),\n  local!refTasksToAdd: a!refreshVariable(\n    value: rule!AS_CO_UT_joinListsByField(\n      listOne: local!importedRefTasks,\n      listTwo: local!existingTaskRefs,\n      field: \"taskName\"\n    ),\n    refreshOnVarChange: { local!importedRefTasks.taskName }\n  ),\n  local!showWarningMesage: count(local!existingTaskRefs) > 0,\n  {\n    #\"SYSTEM_SYSRULES_columnsLayout\"(\n      columns: {\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: {\n            /*File upload field*/\n            rule!AS_CO_CP_fileUploadField(\n              accessibility: \"Press Enter to upload file\",\n              label: \"Excel File\",\n              instructions: rule!AS_GSS_TXT_documentUploadInstructions(\n                bundle: ri!i18nData,\n                showAllowedFileTypes: false(),\n                showMaxDocumentLimit: true(),\n                maxDocumentsAllowed: 1,\n                initialInstructions: if(\n                  local!fileSuccessfullyUploaded,\n                  null,\n                  rule!AS_GAM_CO_I18N_UT_displayLabel(\n                    bundle: ri!i18nData,\n                    bundleKey: \"ins_TaskImportExcelHeaders\",\n                    arguments: rule!AS_CO_UT_separateListItemsInSentence(\n                      list: #\"SYSTEM_SYSRULES_forEach\"(\n                        items: local!taskFields.label,\n                        expression: rule!AS_CO_UT_wrapTextInQuotes(text: fv!item)\n                      ),\n                      finalSeparator: \"and\"\n                    )\n                  )\n                )\n              ),\n              target: cons!AS_GSS_TMG_FLD_SETTINGS_IMPORT_FILES,\n              maxSelections: 1,\n              value: ri!taskImportDocument,\n              saveInto: { ri!taskImportDocument }\n            ),\n            /*Sample Import File*/\n            #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n              labelPosition: \"COLLAPSED\",\n              value: {\n                #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                  text: \"Sample Import Excel File\",\n                  link: rule!AS_GAM_CP_documentDownloadLink(\n                    document: cons!AS_GSS_TMG_DOC_SAMPLE_TASK_IMPORT\n                  ),\n                  linkStyle: \"STANDALONE\"\n                )\n              },\n              showWhen: rule!AS_CO_UT_not(local!fileSuccessfullyUploaded)\n            )\n          }\n        ),\n        #\"SYSTEM_SYSRULES_columnLayout\"()\n      }\n    ),\n    #\"SYSTEM_SYSRULES_sectionLayout_v1\"(\n      contents: {\n        #\"SYSTEM_SYSRULES_gridLayout\"(\n          headerCells: {\n            #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(\n              label: \"Excel Column\"\n            ),\n            #\"SYSTEM_SYSRULES_forEach\"(\n              items: enumerate(local!numTasksToDisplay),\n              expression: #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(\n                label: rule!AS_GAM_CO_I18N_UT_displayLabel(\n                  bundle: ri!i18nData,\n                  bundleKey: \"lbl_Row\",\n                  arguments: {\n                    fv!index,\n                    count(a!flatten(local!taskImportData.data))\n                  }\n                )\n              )\n            ),\n            #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(\n              label: rule!AS_GAM_CO_I18N_UT_displayLabel(\n                bundle: ri!i18nData,\n                bundleKey: \"lbl_RowMore\",\n                arguments: max(\n                  0,\n                  count(a!flatten(local!taskImportData.data)) - local!numTasksToDisplay\n                )\n              )\n            ),\n            #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(\n              label: \"Map Columns to Task Fields\"\n            )\n          },\n          columnConfigs: {\n            #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(weight: 10),\n            #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(weight: 10),\n            #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(weight: 10),\n            #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(weight: 5),\n            #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(weight: 10)\n          },\n          rows: #\"SYSTEM_SYSRULES_forEach\"(\n            items: local!excelColumns,\n            expression: #\"SYSTEM_SYSRULES_gridRowLayout\"(\n              contents: {\n                #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                  label: \"Column\",\n                  value: #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                    text: fv!item.excelHeader,\n                    style: \"STRONG\"\n                  )\n                ),\n                a!localVariables(\n                  local!excelHeader: fv!item.excelHeader,\n                  #\"SYSTEM_SYSRULES_forEach\"(\n                    items: enumerate(local!numTasksToDisplay),\n                    expression: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                      label: \"Row\",\n                      value: #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                        text: index(\n                          local!taskImportData.data[local!excelHeader],\n                          fv!index,\n                          null\n                        ),\n                        style: \"EMPHASIS\"\n                      )\n                    )\n                  )\n                ),\n                #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                  value: #\"SYSTEM_SYSRULES_richTextIcon\"(icon: \"arrow-right\"),\n                  align: \"RIGHT\"\n                ),\n                rule!AS_CO_CP_dropdownField(\n                  label: \"Field\",\n                  required: true(),\n                  choiceLabels: local!taskFields.label,\n                  choiceValues: local!taskFields,\n                  placeholderLabel: rule!AS_GSS_TMG_UI_dropdownPlaceholder_formInputs(\n                    i18nData: ri!i18nData,\n                    bundleKey: \"lbl_TaskField\"\n                  ),\n                  value: fv!item.taskField,\n                  validations: if(\n                    rule!AS_CO_UT_checkIfDuplicateExistsInArrayByIndex(\n                      array: local!excelColumns.taskField,\n                      index: fv!index\n                    ),\n                    \"You cannot map multiple columns to the same task field\",\n                    null\n                  ),\n                  saveInto: fv!item.taskField\n                )\n              }\n            )\n          ),\n          showWhen: local!fileSuccessfullyUploaded\n        ),\n        rule!AS_CO_DSP_warningBanner(\n          showWhen: and(\n            local!showWarningMesage,\n            local!fileSuccessfullyUploaded\n          ),\n          label: rule!AS_GAM_CO_I18N_UT_displayLabel(\n            bundle: ri!i18nData,\n            bundleKey: \"ins_SkippedTasksThatAreAlreadyInTheSystem\",\n            arguments: count(local!existingTaskRefs)\n          ),\n          secondaryLabel: \"\",\n          acknowledgementSaveInto: { a!save(local!showWarningMesage, false) }\n        )\n      },\n      showWhen: rule!AS_CO_UT_isNotBlank(ri!taskImportDocument),\n      validations: #\"SYSTEM_SYSRULES_validationMessage\"(\n        message: \"Error parsing the file, please ensure you've uploaded a .xlsx Excel file type and check the format against the Sample Import Excel File\",\n        validateAfter: \"REFRESH\",\n        showWhen: rule!AS_CO_UT_not(local!fileSuccessfullyUploaded)\n      )\n    ),\n    #\"SYSTEM_SYSRULES_ButtonLayout\"(\n      primaryButtons: #\"SYSTEM_SYSRULES_ButtonWidget\"(\n        accessibilityText: \"Press Enter to go to next step\",\n        label: \"Next\",\n        saveInto: {\n          a!save(ri!importStep, ri!importStep + 1),\n          a!save(\n            ri!allImportedTasks,\n            local!refTasksToAdd\n          )\n        },\n        size: \"SMALL\",\n        disabled: rule!AS_CO_UT_not(local!fileSuccessfullyUploaded),\n        validate: true()\n      ),\n      secondaryButtons: #\"SYSTEM_SYSRULES_ButtonWidget\"(\n        accessibilityText: \"Press Enter to go to previous step\",\n        label: \"Back\",\n        saveInto: {\n          rule!AS_CO_UT_saveNull(ri!allImportedTasks),\n          rule!AS_CO_UT_saveNull(ri!taskImportDocument),\n          a!save(ri!selectedSubAction, 1)\n        },\n        size: \"SMALL\"\n      )\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_TMG_BL_importTasksFromExcelFieldsList",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_readExcelTasks",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_mapImportTasksToReferenceTasks",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_QE_getTaskRefs",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_joinListsByField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CP_fileUploadField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TXT_documentUploadInstructions",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_separateListItemsInSentence",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_wrapTextInQuotes",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_CP_documentDownloadLink",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_not",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CP_dropdownField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_UI_dropdownPlaceholder_formInputs",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_checkIfDuplicateExistsInArrayByIndex",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_DSP_warningBanner",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_saveNull",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_ENUM_TASK_CONFIGURATION_LEVEL_CODE_AD_HOC",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_FLD_SETTINGS_IMPORT_FILES",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_DOC_SAMPLE_TASK_IMPORT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_QE_getTaskBehaviorTypes",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_QE_getTaskCategories",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_TMG_FM_importReferenceTasks",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

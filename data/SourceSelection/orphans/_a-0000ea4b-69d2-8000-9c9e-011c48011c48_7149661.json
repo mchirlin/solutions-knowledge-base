@@ -1,0 +1,30 @@
+{
+  "uuid": "_a-0000ea4b-69d2-8000-9c9e-011c48011c48_7149661",
+  "name": "AS_GSS_QE_getEvaluationResponsesWithSelection",
+  "type": "Expression Rule",
+  "description": "Query entity to get evaluation responses with selection",
+  "sail_code": "rule!AS_GAM_UT_queryEntityWithSelection(\n  entity: cons!AS_GSS_ENT_EVALUATION_RESPONSES,\n  entityType: 'type!{urn:com:appian:types:AS:GSS}AS_GSS_Evaluation_Responses',\n  returnType: ri!returnType,\n  executeWhen: and(\n    ri!executeWhen,\n    or(\n      any(\n        rule!AS_CO_UT_isNotBlank(_),\n        {\n          ri!additionalFilters,\n          ri!logicalExpression,\n          ri!responseId\n        }\n      ),\n      rule!AS_CO_UT_isNotBlank(ri!additionalFilters),\n      \n    )\n  ),\n  /* To ensure proper null checks, we'll force all queryFilter values to not be null */\n  logicalExpression: ri!logicalExpression,\n  pagingInfo: ri!pagingInfo,\n  triggerRefresh: ri!triggerRefresh,\n  filters: {\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: \"isActive\",\n      operator: \"=\",\n      value: true\n    ),\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: \"responseId\",\n      operator: \"in\",\n      value: ri!responseId\n    ),\n    ri!additionalFilters\n  },\n  selectionColumns: ri!selectionColumns\n)",
+  "calls": [
+    {
+      "name": "AS_GAM_UT_queryEntityWithSelection",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_ENT_EVALUATION_RESPONSES",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

@@ -1,0 +1,45 @@
+{
+  "uuid": "_a-0000e3c8-6861-8000-9ba2-011c48011c48_123813-tmg-am-am",
+  "name": "AS_GSS_TMG_CPS_viewOrManageReferenceTemplateSettings",
+  "type": "Interface",
+  "description": "Display and search for templates",
+  "sail_code": "a!localVariables(\n  local!i18nData: rule!AS_GSS_CO_UT_loadBundleFromFolder(langISOCode: null),\n  local!searchText: rule!AS_CO_UT_initializeBlankLocalVariable(\n    type: 'type!{http://www.appian.com/ae/types/2009}Text'\n  ),\n  local!selectedTemplate: rule!AS_CO_UT_initializeBlankLocalVariable(\n    type: 'type!{urn:com:appian:types:AS:GSS:TMG}AS_GSS_TMG_R_Template'\n  ),\n  local!triggerRefresh: rule!AS_CO_UT_initializeBlankLocalVariable(\n    type: rule!AS_CO_TYPE_Datetime()\n  ),\n  local!showHistory: false,\n  if(\n    rule!AS_CO_UT_isBlank(\n      local!selectedTemplate\n    ),\n    rule!AS_GSS_TMG_CPS_viewReferenceTemplates(\n      triggerRefresh: local!triggerRefresh,\n      selectedTemplate: local!selectedTemplate,\n      i18nData: local!i18nData,\n      searchText: local!searchText,\n      showHistory: local!showHistory\n    ),\n    if(\n      local!showHistory,\n      rule!AS_GSS_TMG_CPS_viewTemplateHistory(\n        i18nData: local!i18nData,\n        selectedTemplate: local!selectedTemplate,\n        showHistory: local!showHistory,\n        subHeaderBundleKey: \"lbl_TemplateHistory\",\n        backBundleKey: \"lbl_BackToTemplates\",\n        triggerRefresh: local!triggerRefresh\n      ),\n      rule!AS_GSS_TMG_CPS_manageReferenceTemplate(\n        i18nData: local!i18nData,\n        selectedTemplate: local!selectedTemplate,\n        triggerRefresh: local!triggerRefresh\n      )\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_initializeBlankLocalVariable",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_TYPE_Datetime",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_CPS_viewReferenceTemplates",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_CPS_viewTemplateHistory",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_CPS_manageReferenceTemplate",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

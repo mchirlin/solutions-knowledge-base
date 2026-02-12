@@ -1,0 +1,631 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "AS_GSS_Vendor_RECORD - Sync with SAM Gov",
+    "parent_name": "AS_GSS_Vendor_RECORD",
+    "total_objects": 38
+  },
+  "entry_point": {
+    "action_type": "RECORD_ACTION",
+    "record_type": "AS_GSS_Vendor_RECORD",
+    "target_process": "AS GSS Sync Vendor From SAM.GOV",
+    "form_interface": null,
+    "expressions": {
+      "TITLE": "\"Sync with SAM Gov\"",
+      "DESCRIPTION": "\"Sync with SAM Gov\"",
+      "VISIBILITY": "=rule!AS_GSS_BL_getRelatedActionVisibilityToSyncWithSamGov(\n  refVendor: rule!AS_GSS_QE_getRefVendorDetails(\n    vendorRefId: rv!record[recordType!AS_GSS_Vendor_RECORD.vendorRefId],\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT\n  ) /* AS_GSS_R_Vendor */\n)",
+      "CONTEXT": "{\n  refVendor: rule!AS_GSS_QE_getRefVendorDetails(\n    vendorRefId: rv!record[recordType!AS_GSS_Vendor_RECORD.vendorRefId],\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT\n  ) /* AS_GSS_R_Vendor */\n}"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GSS Sync Vendor From SAM.GOV",
+      "complexity_score": 12.0,
+      "total_nodes": 7,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Get Data From SAM.GOV"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Update Vendor Address Details",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write to Ref Vendor"
+          ]
+        },
+        {
+          "name": "Write to Ref Vendor",
+          "type": "Write to Data Store Entity",
+          "next": [
+            "Confirmation Page"
+          ]
+        },
+        {
+          "name": "Data found in sam.gov?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Update Vendor Address Details (Yes)",
+            "Confirmation Page (No)"
+          ]
+        },
+        {
+          "name": "Confirmation Page",
+          "type": "USER_TASK",
+          "next": [
+            "End Node"
+          ],
+          "interface": "AS_GSS_CPS_confirmationPageForVendorManualSync"
+        },
+        {
+          "name": "Get Data From SAM.GOV",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Data found in sam.gov?"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_939151",
+      "name": "AS GAM CS Search API for SAM gov",
+      "type": "Connected System",
+      "description": "Connected System for SAM - Search API",
+      "system_type": null,
+      "base_url": "https://api.sam.gov/entity-information/v2/entities",
+      "calls": [],
+      "called_by": [
+        "AS_GAM_GetVendorDetailsFromSAMGov"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290163",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "description": "OBJECT_ARRAY - Returns an array type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "OBJECT_ARRAY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_GSS_QE_getRefBusinessType",
+        "AS_GSS_QE_getRefCountry",
+        "AS_GSS_QE_getRefState",
+        "AS_GSS_QE_getRefVendorDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290157",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "description": "SINGLE_OBJECT - Returns a single type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "SINGLE_OBJECT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryEntity"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73173",
+      "name": "AS_CO_ENUM_USER_ACTION_CANCEL",
+      "type": "Constant",
+      "description": "CANCEL.USER_ACTION - Value to use to drive process logic after a user performs a \"Cancel\" action",
+      "value": "CANCEL.USER_ACTION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CPS_confirmationPageForVendorManualSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e438-ff39-8000-9ba8-011c48011c48_22379",
+      "name": "AS_GAM_REF_ID_COUNTRY_UNITED_STATES",
+      "type": "Constant",
+      "description": "Value: 231",
+      "value": "231",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_updateRefVendorDetailsAndCaptureMetadata"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_951929",
+      "name": "AS_GSS_ENT_R_BUSINESS_TYPE",
+      "type": "Constant",
+      "description": "AS_GSS_R_BusinessType Data Store Entity",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_QE_getRefBusinessType"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_951792",
+      "name": "AS_GSS_ENT_R_COUNTRY",
+      "type": "Constant",
+      "description": "AS_GSS_R_Country Data Store Entity",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_QE_getRefCountry"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_951799",
+      "name": "AS_GSS_ENT_R_STATE",
+      "type": "Constant",
+      "description": "AS_GSS_R_State Data Store Entity",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_QE_getRefState"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_942558",
+      "name": "AS_GSS_ENT_R_VENDOR",
+      "type": "Constant",
+      "description": "Value: AS_GSS_R_Vendor",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS GSS Sync Vendor From SAM.GOV",
+        "AS_GSS_QE_getRefVendorDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec90-d194-8000-9dac-011c48011c48_13562047",
+      "name": "AS_GSS_REF_ID_SOURCE_APPLICATION_GSS",
+      "type": "Constant",
+      "description": "Value: 59",
+      "value": "59",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CDT_mapDataFromSAMGovToRefVendor",
+        "AS_GSS_UT_updateRefVendorDetailsAndCaptureMetadata"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1007605",
+      "name": "AS_GSS_TXT_NO_DATA_RETURNED_FROM_SAM_GOV",
+      "type": "Constant",
+      "description": "Value: Sync was successful, but no data returned",
+      "value": "Sync was successful, but no data returned",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CDT_mapDataFromSAMGovToRefVendor",
+        "AS_GSS_CPS_confirmationPageForVendorManualSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_28158",
+      "name": "AS_CO_UT_captureMetadata",
+      "type": "Expression Rule",
+      "description": "Automatically sets the \"auditing\" fields on a CDT, including createdDatetime/createdBy/modifiedDatetime/modifiedBy/isActive/isDeleted",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_updateCdtFields"
+      ],
+      "called_by": [
+        "AS_GSS_UT_updateRefVendorDetailsAndCaptureMetadata"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157603",
+      "name": "AS_CO_UT_cast",
+      "type": "Expression Rule",
+      "description": "Casts a variable to the type of either the input `type`, or the typeof of the input `typeof`, and properly handles for null inputs",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_GSS_CDT_mapDataFromSAMGovToRefVendor",
+        "AS_GSS_populateBusinessTypeFromSAMGovForVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76433",
+      "name": "AS_CO_UT_indexPath",
+      "type": "Expression Rule",
+      "description": "Pass in a field (i.e. member[1].name) and this will index(index(index( for each field",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CDT_mapDataFromSAMGovToRefVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GSS Sync Vendor From SAM.GOV",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_updateCdtFields",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GSS_CDT_mapDataFromSAMGovToRefVendor",
+        "AS_GSS_CPS_confirmationPageForVendorManualSync",
+        "AS_GSS_populateBusinessTypeFromSAMGovForVendor",
+        "AS_GSS_populateCountryFromSAMGovForVendor",
+        "AS_GSS_populateStateFromSAMGovForVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around AS_CO_UT_isBlank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_queryEntity",
+        "AS_GSS_populateBusinessTypeFromSAMGovForVendor",
+        "AS_GSS_populateCountryFromSAMGovForVendor",
+        "AS_GSS_populateStateFromSAMGovForVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157870",
+      "name": "AS_CO_UT_queryEntity",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_GSS_QE_getRefBusinessType",
+        "AS_GSS_QE_getRefCountry",
+        "AS_GSS_QE_getRefState",
+        "AS_GSS_QE_getRefVendorDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_260165",
+      "name": "AS_CO_UT_updateCdtFields",
+      "type": "Expression Rule",
+      "description": "Updates one or more fields of a CDT, with an optional input for indices",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_captureMetadata",
+        "AS_GSS_UT_updateRefVendorDetailsAndCaptureMetadata"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_269170",
+      "name": "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+      "type": "Expression Rule",
+      "description": "Allows passing field-value pairs to handle for use cases where you have to set newValues as arrays",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GSS_CDT_mapDataFromSAMGovToRefVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53662",
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "description": "Displays a label by the `bundleKey` from passed in bundle data, optionally accepts arguments",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GSS_UT_displayDynamicLabel"
+      ]
+    },
+    {
+      "uuid": "_a-0000e7f8-737a-8000-9bf7-011c48011c48_2450519",
+      "name": "AS_GSS_BL_getRelatedActionVisibilityToSyncWithSamGov",
+      "type": "Expression Rule",
+      "description": "The rule returns the visibility for \"Sync With Sam.Gov\" related action in GSS",
+      "parameters": [],
+      "calls": [
+        "AS_GSS_EnableOrDisableStateAndLocalGovernment_wrapper"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_947439",
+      "name": "AS_GSS_CDT_mapDataFromSAMGovToRefVendor",
+      "type": "Expression Rule",
+      "description": "Get data from Integrations and map it to AS_GSS_R_Vendor ",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+        "AS_GAM_GetVendorDetailsFromSAMGov",
+        "AS_GSS_REF_ID_SOURCE_APPLICATION_GSS",
+        "AS_GSS_TXT_NO_DATA_RETURNED_FROM_SAM_GOV",
+        "AS_GSS_UT_deepIndex",
+        "AS_GSS_populateBusinessTypeFromSAMGovForVendor",
+        "AS_GSS_populateCountryFromSAMGovForVendor",
+        "AS_GSS_populateStateFromSAMGovForVendor"
+      ],
+      "called_by": [
+        "AS GSS Sync Vendor From SAM.GOV"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1319026",
+      "name": "AS_GSS_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "description": "Loads a property bundle file by name from a folder, returns a dictionary of the key-value pairs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CPS_confirmationPageForVendorManualSync",
+        "AS_GSS_UT_displayDynamicLabel"
+      ]
+    },
+    {
+      "uuid": "_a-0001ed6e-54f1-8000-9df6-011c48011c48_15245604",
+      "name": "AS_GSS_EnableOrDisableStateAndLocalGovernment_wrapper",
+      "type": "Expression Rule",
+      "description": "This rule returns a boolean which represents whether or not State and Local is enabled ",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_getRelatedActionVisibilityToSyncWithSamGov"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_951936",
+      "name": "AS_GSS_QE_getRefBusinessType",
+      "type": "Expression Rule",
+      "description": "Returns a list of business type from the reference table for GSS",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_queryEntity",
+        "AS_GSS_ENT_R_BUSINESS_TYPE"
+      ],
+      "called_by": [
+        "AS_GSS_populateBusinessTypeFromSAMGovForVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_949401",
+      "name": "AS_GSS_QE_getRefCountry",
+      "type": "Expression Rule",
+      "description": "Returns a list of countries from the reference table for GSS",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_queryEntity",
+        "AS_GSS_ENT_R_COUNTRY"
+      ],
+      "called_by": [
+        "AS_GSS_populateCountryFromSAMGovForVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_951865",
+      "name": "AS_GSS_QE_getRefState",
+      "type": "Expression Rule",
+      "description": "Returns a list of states from the reference table for GSS",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_queryEntity",
+        "AS_GSS_ENT_R_STATE"
+      ],
+      "called_by": [
+        "AS_GSS_populateStateFromSAMGovForVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_942524",
+      "name": "AS_GSS_QE_getRefVendorDetails",
+      "type": "Expression Rule",
+      "description": "Returns ref vendor details based on the filter set applied",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_queryEntity",
+        "AS_GSS_ENT_R_VENDOR"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "_a-0000eb16-753f-8000-9d01-011c48011c48_9518400",
+      "name": "AS_GSS_UT_deepIndex",
+      "type": "Expression Rule",
+      "description": "Rule to get the index value. It supports indexing nested CDT values.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CDT_mapDataFromSAMGovToRefVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_939732",
+      "name": "AS_GSS_UT_displayDynamicLabel",
+      "type": "Expression Rule",
+      "description": "Displays a label for the input key based on the properties file for GSS",
+      "parameters": [],
+      "calls": [
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GSS_CO_UT_loadBundleFromFolder"
+      ],
+      "called_by": [
+        "AS_GSS_CPS_confirmationPageForVendorManualSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1106819",
+      "name": "AS_GSS_UT_getSamGovRateLimitMessage",
+      "type": "Expression Rule",
+      "description": "Returns the message that there's a Sam.gov rate limit and the user should retry ",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CPS_confirmationPageForVendorManualSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_943957",
+      "name": "AS_GSS_UT_updateRefVendorDetailsAndCaptureMetadata",
+      "type": "Expression Rule",
+      "description": "Updates the CDT fields for AS_GSS_R_Vendor and captures metadata",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_captureMetadata",
+        "AS_CO_UT_updateCdtFields",
+        "AS_GAM_REF_ID_COUNTRY_UNITED_STATES",
+        "AS_GSS_REF_ID_SOURCE_APPLICATION_GSS"
+      ],
+      "called_by": [
+        "AS GSS Sync Vendor From SAM.GOV"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_951921",
+      "name": "AS_GSS_populateBusinessTypeFromSAMGovForVendor",
+      "type": "Expression Rule",
+      "description": "Gets the Business Type from SAM Gov and populate the value for Vendor as AS_GSS_R_BusinessType CDT",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_GSS_QE_getRefBusinessType"
+      ],
+      "called_by": [
+        "AS_GSS_CDT_mapDataFromSAMGovToRefVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_949393",
+      "name": "AS_GSS_populateCountryFromSAMGovForVendor",
+      "type": "Expression Rule",
+      "description": "Gets the Country Code  from SAM GOV and populate the value for Vendor as AS_GSS_R_Country CDT",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_GSS_QE_getRefCountry"
+      ],
+      "called_by": [
+        "AS_GSS_CDT_mapDataFromSAMGovToRefVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_951880",
+      "name": "AS_GSS_populateStateFromSAMGovForVendor",
+      "type": "Expression Rule",
+      "description": "Gets the State Code from SAM Gov and populate the value for Vendor as AS_GSS_R_State CDT",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_GSS_QE_getRefState"
+      ],
+      "called_by": [
+        "AS_GSS_CDT_mapDataFromSAMGovToRefVendor"
+      ]
+    },
+    {
+      "uuid": "39a7fd6a-4f15-4efd-8ddd-92a8831d15f3",
+      "name": "AS_GAM_GetVendorDetailsFromSAMGov",
+      "type": "Integration",
+      "description": "Integration to Get Vendor Details",
+      "connected_system": "AS GAM CS Search API for SAM gov",
+      "http_method": "GET",
+      "calls": [
+        "AS GAM CS Search API for SAM gov"
+      ],
+      "called_by": [
+        "AS_GSS_CDT_mapDataFromSAMGovToRefVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1007269",
+      "name": "AS_GSS_CPS_confirmationPageForVendorManualSync",
+      "type": "Interface",
+      "description": "Manual Sync For Vendor Data from SAM.Gov",
+      "parameters": [
+        {
+          "name": "errorMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "userAction",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AS_CO_ENUM_USER_ACTION_CANCEL",
+        "AS_CO_UT_isBlank",
+        "AS_GSS_CO_UT_loadBundleFromFolder",
+        "AS_GSS_TXT_NO_DATA_RETURNED_FROM_SAM_GOV",
+        "AS_GSS_UT_displayDynamicLabel",
+        "AS_GSS_UT_getSamGovRateLimitMessage"
+      ],
+      "called_by": [
+        "AS GSS Sync Vendor From SAM.GOV"
+      ]
+    },
+    {
+      "uuid": "000ae5f4-3da4-8000-0f58-7f0000014e7a",
+      "name": "AS GSS Sync Vendor From SAM.GOV",
+      "type": "Process Model",
+      "description": "Sync Vendor From SAM.GOV",
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_GSS_CDT_mapDataFromSAMGovToRefVendor",
+        "AS_GSS_CPS_confirmationPageForVendorManualSync",
+        "AS_GSS_ENT_R_VENDOR",
+        "AS_GSS_UT_updateRefVendorDetailsAndCaptureMetadata"
+      ],
+      "called_by": []
+    }
+  ]
+}

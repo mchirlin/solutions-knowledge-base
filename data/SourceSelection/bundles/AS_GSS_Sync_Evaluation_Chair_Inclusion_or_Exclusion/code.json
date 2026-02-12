@@ -1,0 +1,22 @@
+{
+  "_metadata": {
+    "bundle_id": "AS_GSS_Sync_Evaluation_Chair_Inclusion_or_Exclusion"
+  },
+  "objects": {
+    "0002eb1d-5491-8000-8d4f-7f0000014e7a": {
+      "name": "AS GSS Sync Evaluation Chair Inclusion or Exclusion",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n=rule!AS_GSS_groupsToBeupdatedForEvaluationChiefVisibility()\n\n// Input: ?\n=cons!AS_GSS_GRP_EVALUATION_CHAIRS\n\n// Input: ?\n=pv!groups[tp!instanceindex]\n\n// Input: ?\n=cons!AS_GSS_GRP_EVALUATION_CHAIRS\n\n// Input: ?\n=pv!groups[tp!instanceindex]"
+    },
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782": {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Boolean',\n  not(rule!AS_CO_UT_isBlank(ri!input))\n)"
+    },
+    "_a-0000eb16-753f-8000-9d01-011c48011c48_9545781": {
+      "name": "AS_GSS_groupsToBeupdatedForEvaluationChiefVisibility",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!groups: {\n    cons!AS_GSS_GRP_BUSINESS_ROLES,\n    cons!AS_GSS_GRP_CONTRACTING_PERSONNEL,\n    cons!AS_GSS_TMG_GRP_TASK_RECIPIENTS\n  },\n  local!isEvaluationChiefExists: #\"SYSTEM_SYSRULES_forEach\"(\n    local!groups,\n    contains(\n      togroup(\n        a!groupMembers(\n          group: fv!item,\n          direct: true,\n          memberType: \"GROUP\"\n        ).data\n      ),\n      cons!AS_GSS_GRP_EVALUATION_CHAIRS\n    )\n  ),\n  if(\n    cons!AS_GSS_TOGGLE_EVALUATION_CHIEF_VISIBILITY,\n    /*Returns the groups that doesn't contain Evaluation Chair to add when the toggle is on */\n    index(\n      local!groups,\n      where(not(local!isEvaluationChiefExists)),\n      null\n    ),\n    /*Returns the groups that contains Evaluation Chair to remove when the toggle is off*/\n    index(\n      local!groups,\n      where(local!isEvaluationChiefExists),\n      null\n    )\n  )\n)"
+    }
+  }
+}

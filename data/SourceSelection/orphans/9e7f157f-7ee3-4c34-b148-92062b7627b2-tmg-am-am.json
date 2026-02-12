@@ -1,0 +1,65 @@
+{
+  "uuid": "9e7f157f-7ee3-4c34-b148-92062b7627b2-tmg-am-am",
+  "name": "AS_GSS_TMG_CPS_provideDecisionForReviewTask",
+  "type": "Interface",
+  "description": "Used to provide comments and decision for the review tasks",
+  "sail_code": "{\n  rule!AS_CO_CPS_cardsAsSelection(\n    choiceIcons: ri!refData.refIcon,\n    choiceLabels: ri!refData.refLabel,\n    choiceValues: ri!refData.refDataId,\n    value: ri!task.review.decision.refDataId,\n    saveInto: ri!task.review.decision.refDataId\n  ),\n  #\"SYSTEM_SYSRULES_columnsLayout\"(\n    columns: {\n      #\"SYSTEM_SYSRULES_columnLayout\"(),\n      #\"SYSTEM_SYSRULES_columnLayout\"(\n        width: \"MEDIUM_PLUS\",\n        contents: {\n          rule!AS_CO_INP_paragraphField(\n            label: \"Comment\",\n            instructions: rule!AS_CO_UT_instructionForCharactersEntered(\n              value: ri!task.review.comment,\n              maxCharacters: cons!AS_CO_ENUM_TEXT_LENGTH_LONG\n            ),\n            required: if(\n              contains(\n                {\n                  cons!AS_GSS_REF_ID_REVIEW_TYPE_REJECT,\n                  cons!AS_GSS_REF_ID_REVIEW_TYPE_REQUEST_CHANGES\n                },\n                ri!task.review.decision.refDataId\n              ),\n              true,\n              false\n            ),\n            value: ri!task.review.comment,\n            validations: rule!AS_CO_VD_textValidation(\n              value: ri!task.review.comment,\n              maxLength: cons!AS_CO_ENUM_TEXT_LENGTH_LONG,\n              maxLengthMessage: rule!AS_GAM_CO_I18N_UT_displayLabel(\n                bundle: ri!i18nData,\n                bundleKey: \"vld_Comments\",\n                arguments: cons!AS_CO_ENUM_TEXT_LENGTH_LONG\n              )\n            ),\n            saveInto: ri!task.review.comment,\n            height: \"SHORT\"\n          )\n        }\n      ),\n      #\"SYSTEM_SYSRULES_columnLayout\"()\n    }\n  )\n}",
+  "calls": [
+    {
+      "name": "AS_CO_CPS_cardsAsSelection",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_INP_paragraphField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_instructionForCharactersEntered",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_VD_textValidation",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_TEXT_LENGTH_LONG",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_REF_ID_REVIEW_TYPE_REJECT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_REF_ID_REVIEW_TYPE_REQUEST_CHANGES",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_loadBundleByNames",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_QE_getRefDataByTypes",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_REF_TYPE_REVIEW_TYPE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

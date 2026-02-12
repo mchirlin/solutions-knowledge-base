@@ -1,0 +1,40 @@
+{
+  "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_192696-tmg-am-am",
+  "name": "AS_GSS_TMG_UI_taskGrid_colTaskName",
+  "type": "Expression Rule",
+  "description": "Contains the column Tasks name for the tasks grid\n\nDocumentation is available for this design object.",
+  "sail_code": "/*This rule cannot have test cases as it returns a grid column*/\n{\n  #\"SYSTEM_SYSRULES_gridColumn\"(\n    label: \"Task Name\",\n    sortfield: \"taskName\",\n    value: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n      value: {\n        #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n          text: fv!row.taskName,\n          link: #\"SYSTEM_SYSRULES_startProcessLink\"(\n            processModel: rule!AS_GSS_TMG_UT_taskProcessAsLink(\n              subTypeCode: fv!row.taskBehaviorType.behaviorSubtypeCode\n            ),\n            processParameters: { task: fv!row },\n            showWhen: if(\n              or(\n                ri!disableLinks,\n                rule!AS_GSS_TMG_UT_disableTaskActions(tasks: fv!row)\n              ),\n              false,\n              rule!AS_GSS_TMG_UT_checkIfTaskHasUiForm(task: fv!row)\n            )\n          ),\n          linkStyle: \"STANDALONE\",\n          style: \"STRONG\"\n        ),\n        char(10),\n        if(\n          rule!AS_CO_UT_isBlank(fv!row.dueDate),\n          {},\n          a!localVariables(\n            /*Extracting date from dueDate of type dateTime*/\n            local!dueDate: todate(fv!row.dueDate),\n            /*Getting today based on user's timezone*/\n            local!today: rule!AS_CO_UT_returnTodayBasedOnInput(username: loggedInUser()),\n            /*non-businesss days local variables*/\n            /*calculating the end date diff from today*/\n            local!endDateDifference: tointeger(local!dueDate - local!today),\n            /*checking if alreadt expired*/\n            local!expired: local!dueDate < local!today,\n            /*checking if diff is 1 or 0 for duesoon status*/\n            local!nonBusinessDueSoon: or(\n              local!endDateDifference = 1,\n              local!endDateDifference = 0\n            ),\n            /*business days local variables*/\n            /*calculating the end date diff from today*/\n            local!businessWorkingDays: calworkdays(local!today, local!dueDate),\n            /*checking if diff is 1 or 0 for duesoon status*/\n            local!businessDueSoon: or(\n              local!businessWorkingDays - 1 = 0,\n              local!businessWorkingDays - 1 = 1\n            ),\n            if(\n              cons!AS_GSS_TMG_BOL_BUSINESS_DAYS_ONLY,\n              /*Business days*/\n              {\n                #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                  text: {\n                    #\"SYSTEM_SYSRULES_richTextIcon\"(\n                      icon: if(\n                        local!businessWorkingDays < 0,\n                        \"exclamation-circle\",\n                        local!businessDueSoon,\n                        \"clock-o\",\n                        local!businessWorkingDays > 0,\n                        \"circle-o\",\n                        null\n                      ),\n                      color: if(\n                        local!businessWorkingDays < 0,\n                        \"NEGATIVE\",\n                        local!businessDueSoon,\n                        \"#FFC13E\",\n                        local!businessWorkingDays > 0,\n                        \"SECONDARY\",\n                        null\n                      ),\n                      altText: if(\n                        local!businessWorkingDays < 0,\n                        \"Over due\",\n                        local!businessDueSoon,\n                        \"Due soon\",\n                        local!businessWorkingDays > 0,\n                        \"Pending\",\n                        null\n                      )\n                    ),\n                    if(\n                      local!businessWorkingDays < 0,\n                      \" OVERDUE\",\n                      local!businessDueSoon,\n                      \" Due soon\",\n                      local!businessWorkingDays > 0,\n                      \" Pending\",\n                      null\n                    )\n                  },\n                  color: if(\n                    local!businessWorkingDays < 0,\n                    \"NEGATIVE\",\n                    null\n                  )\n                )\n              },\n              /*Non Business days*/\n              {\n                #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                  text: {\n                    #\"SYSTEM_SYSRULES_richTextIcon\"(\n                      icon: if(\n                        local!expired,\n                        \"exclamation-circle\",\n                        local!nonBusinessDueSoon,\n                        \"clock-o\",\n                        and(\n                          local!endDateDifference > 0,\n                          local!dueDate > local!today\n                        ),\n                        \"circle-o\",\n                        null\n                      ),\n                      color: if(\n                        local!expired,\n                        \"NEGATIVE\",\n                        local!nonBusinessDueSoon,\n                        \"#FFC13E\",\n                        and(\n                         local!dueDate > local!today\n                        ),\n                        \"SECONDARY\",\n                        null\n                      ),\n                      altText: if(\n                        local!expired,\n                        \"Over due\",\n                        local!nonBusinessDueSoon,\n                        \"Due soon\",\n                        and(\n                          local!endDateDifference > 0,\n                          todate(local!dueDate) > local!today\n                        ),\n                        \"Pending\",\n                        null\n                      )\n                    ),\n                    if(\n                      local!expired,\n                      \" OVERDUE\",\n                      local!nonBusinessDueSoon,\n                      \" Due soon\",\n                      and(\n                        local!endDateDifference > 0,\n                        todate(local!dueDate) > local!today\n                      ),\n                      \" Pending\",\n                      null\n                    )\n                  },\n                  color: if(local!expired, \"NEGATIVE\", null)\n                )\n              }\n            )\n          )\n        )\n      }\n    ),\n    width: \"3X\"\n  )\n}",
+  "calls": [
+    {
+      "name": "AS_GSS_TMG_UT_taskProcessAsLink",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_disableTaskActions",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_checkIfTaskHasUiForm",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_returnTodayBasedOnInput",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_BOL_BUSINESS_DAYS_ONLY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

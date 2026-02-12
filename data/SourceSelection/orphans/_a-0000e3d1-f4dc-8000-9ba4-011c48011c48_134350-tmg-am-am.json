@@ -1,0 +1,61 @@
+{
+  "uuid": "_a-0000e3d1-f4dc-8000-9ba4-011c48011c48_134350-tmg-am-am",
+  "name": "AS_GSS_TMG_CPS_viewTaskCategories",
+  "type": "Interface",
+  "description": "Reuseable interface for displaying/searching for task categories.",
+  "sail_code": "a!localVariables(\n  local!deletionFailedCategoryName: rule!AS_CO_UT_initializeBlankLocalVariable(\n    type: 'type!{http://www.appian.com/ae/types/2009}Text'\n  ),\n  {\n    #\"SYSTEM_SYSRULES_columnsLayout\"(\n      columns: {\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: {\n            rule!AS_CO_DSP_displayHeader(\n              headerText: \"Phases\"\n            )\n          }\n        )\n      }\n    ),\n    #\"SYSTEM_SYSRULES_columnsLayout\"(\n      columns: {\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: {\n            #\"SYSTEM_SYSRULES_ButtonArrayLayout\"(\n              buttons: {\n                rule!AS_CO_BTN_toolbarButton(\n                  label: \"Add Phase\",\n                  saveInto: {\n                    a!save(\n                      target: ri!selectedTaskCategory,\n                      value: 'type!{urn:com:appian:types:AS:GSS:TMG}AS_GSS_TMG_R_TaskCategory'()\n                    ),\n                    rule!AS_CO_UT_saveNull(local!deletionFailedCategoryName)\n                  },\n                  icon: \"PLUS\"\n                )\n              },\n              align: \"START\"\n            )\n          }\n        ),\n\n      },\n      marginBelow: \"NONE\"\n    ),\n    rule!AS_CO_DSP_errorBanner(\n      showWhen: rule!AS_CO_UT_isNotBlank(local!deletionFailedCategoryName),\n      label: rule!AS_GAM_CO_I18N_UT_displayLabel(\n        bundle: ri!i18nData,\n        bundleKey: \"ins_UnableToRemoveCategory\",\n        arguments: local!deletionFailedCategoryName\n      ),\n      secondaryLabel: rule!AS_GAM_CO_I18N_UT_displayLabel(\n        bundle: ri!i18nData,\n        bundleKey: \"lbl_AllTasksMustBeRemoved\",\n        arguments: local!deletionFailedCategoryName\n      ),\n      acknowledgementSaveInto: rule!AS_CO_UT_saveNull(\n        valueToNull: local!deletionFailedCategoryName\n      )\n    ),\n    rule!AS_GSS_TMG_GRD_taskCategoriesGrid(\n      i18nData: ri!i18nData,\n      selectedTaskCategory: ri!selectedTaskCategory,\n      triggerRefresh: ri!triggerRefresh,\n      deletionFailedCategoryName: local!deletionFailedCategoryName\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_initializeBlankLocalVariable",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_DSP_displayHeader",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_BTN_toolbarButton",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_saveNull",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_DSP_errorBanner",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_GRD_taskCategoriesGrid",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_TMG_CPS_viewOrManageTaskCategoriesSettings",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

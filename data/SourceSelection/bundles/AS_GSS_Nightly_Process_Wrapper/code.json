@@ -1,0 +1,27 @@
+{
+  "_metadata": {
+    "bundle_id": "AS_GSS_Nightly_Process_Wrapper"
+  },
+  "objects": {
+    "_a-0000eb1f-ba4f-8000-9d06-011c48011c48_9565968": {
+      "name": "AS_GSS_CustomNightlyProcesses_wrapper",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  /*Determine whether to execute the _default or _custom rule*/\n  local!runtimeRule: a!refreshVariable(\n    value: rule!AS_FRM_determineRuntimeRule(\n      defaultRuleReference: rule!AS_GSS_CustomNightlyProcesses_v1_default\n    ),\n    refreshAlways: true\n  ),\n  local!runtimeRule()\n)"
+    },
+    "_a-0000e5d4-2024-8000-9baf-011c48011c48_320878": {
+      "name": "AS_FRM_determineRuntimeRule",
+      "type": "Expression Rule",
+      "sail_code": "if( \n  cons!AS_FRM_BOOL_RULE_CUSTOMIZATION_1_0_ENABLED,\n  \n  determineruntimerule(ri!defaultRuleReference),\n  \n  ri!defaultRuleReference\n)"
+    },
+    "0002eb21-2e9b-8000-8d8c-7f0000014e7a": {
+      "name": "AS GSS Nightly Process Wrapper",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n= rule!AS_GSS_CustomNightlyProcesses_wrapper()\n\n// Input: ?\n=cons!AS_GSS_PM_DOCUMENT_DELETION"
+    },
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536": {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  length(a!flatten(ri!value)) = 0\n)"
+    }
+  }
+}

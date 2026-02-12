@@ -1,0 +1,295 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GSS Combine Responses Using AI",
+    "parent_name": null,
+    "total_objects": 10
+  },
+  "entry_point": {
+    "complexity_score": 14.0,
+    "total_nodes": 8,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GSS Combine Responses Using AI",
+      "complexity_score": 14.0,
+      "total_nodes": 8,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Call AI Summarizer For Responses"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Write to AI Integration Log",
+          "type": "Write to Data Store Entity",
+          "next": [
+            "Are responses summarized?"
+          ]
+        },
+        {
+          "name": "Are responses summarized?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Call AI Summarizer For Justifications (Yes)",
+            "End Node (No)"
+          ]
+        },
+        {
+          "name": "Write to AI Integration Log",
+          "type": "Write to Data Store Entity",
+          "next": [
+            "Capture Metric (Only For Success)"
+          ]
+        },
+        {
+          "name": "Call AI Summarizer For Responses",
+          "type": "SUBPROCESS",
+          "next": [
+            "Write to AI Integration Log"
+          ],
+          "subprocess": "AS GSS Summarize With AI"
+        },
+        {
+          "name": "Call AI Summarizer For Justifications",
+          "type": "SUBPROCESS",
+          "next": [
+            "Write to AI Integration Log"
+          ],
+          "subprocess": "AS GSS Summarize With AI"
+        },
+        {
+          "name": "Capture Metric (Only For Success)",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        }
+      ]
+    },
+    "subprocesses": [
+      {
+        "name": "AS GSS Summarize With Azure OpenAI",
+        "complexity_score": 3.0,
+        "total_nodes": 3,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Call Azure Open AI Chat Completion"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Call Azure Open AI Chat Completion",
+            "type": "Call Integration",
+            "next": [
+              "End Node"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AS GSS Summarize With Native AI",
+        "complexity_score": 3.0,
+        "total_nodes": 3,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Execute Generative AI Skill"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Execute Generative AI Skill",
+            "type": "Execute Generative AI Skill",
+            "next": [
+              "End Node"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AS GSS Summarize With AI",
+        "complexity_score": 8.0,
+        "total_nodes": 5,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Which AI?"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Call Azure Summarizer",
+            "type": "SUBPROCESS",
+            "next": [
+              "End Node"
+            ],
+            "subprocess": "AS GSS Summarize With Azure OpenAI"
+          },
+          {
+            "name": "Call Appian AI Summarizer",
+            "type": "SUBPROCESS",
+            "next": [
+              "End Node"
+            ],
+            "subprocess": "AS GSS Summarize With Native AI"
+          },
+          {
+            "name": "Which AI?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Call Azure Summarizer (Azure)",
+              "Call Appian AI Summarizer"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000eb85-3dbf-8000-9d30-011c48011c48_10609387",
+      "name": "AS_GSS_COMBINE_CONSENSUS_JUSTIFICATIONS_PROMPT",
+      "type": "Constant",
+      "description": "Prompt to combine the consensus justifications by AI",
+      "value": "You are an experienced contracting user for the government. The following are a list of justifications given by evaluators during a government acquisition consensus process. Based on this context, give a summarized justification in one short well structured paragraph. Do not reference the justifications directly.",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GSS Combine Responses Using AI"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb85-3dbf-8000-9d30-011c48011c48_10609260",
+      "name": "AS_GSS_COMBINE_CONSENSUS_RESPONSES_PROMPT",
+      "type": "Constant",
+      "description": "Prompt text for combining the consensus responses by AI",
+      "value": "You are an experienced contracting user for the government. The following are a list of responses given by evaluators during a government acquisition consensus process. Based on this context, give a summarized response in one short well structured paragraph. Do not reference the responses directly.",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GSS Combine Responses Using AI"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb85-3dbf-8000-9d30-011c48011c48_10625460",
+      "name": "AS_GSS_ENT_CONSENSUS_RESP_AI_SUMMARY",
+      "type": "Constant",
+      "description": "Entity constant for AS_GSS_ConsensusResponseAiSummary",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS GSS Combine Responses Using AI"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb85-3dbf-8000-9d30-011c48011c48_11001634",
+      "name": "AS_GSS_MTR_SAVE_combinedConsensusResponsesUsingConsensusAI",
+      "type": "Expression Rule",
+      "description": "Application metrics to track combined consensus responses using consensus AI",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GSS Combine Responses Using AI"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee83-219b-8000-9e3e-011c48011c48_16983438",
+      "name": "AS_GSS_MTR_SAVE_combinedConsensusResponsesUsingConsensusNativeAI",
+      "type": "Expression Rule",
+      "description": "Application metrics to track combined consensus responses using consensus Native AI",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GSS Combine Responses Using AI"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb16-753f-8000-9d01-011c48011c48_9518400",
+      "name": "AS_GSS_UT_deepIndex",
+      "type": "Expression Rule",
+      "description": "Rule to get the index value. It supports indexing nested CDT values.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GSS Combine Responses Using AI",
+        "AS GSS Summarize With Azure OpenAI"
+      ]
+    },
+    {
+      "uuid": "0002ee86-0b44-8000-ddf7-7f0000014e7a",
+      "name": "AS GSS Combine Responses Using AI",
+      "type": "Process Model",
+      "description": "Process to combine responses and justifications for a consensus",
+      "calls": [
+        "AS GSS Summarize With AI",
+        "AS_GSS_COMBINE_CONSENSUS_JUSTIFICATIONS_PROMPT",
+        "AS_GSS_COMBINE_CONSENSUS_RESPONSES_PROMPT",
+        "AS_GSS_ENT_CONSENSUS_RESP_AI_SUMMARY",
+        "AS_GSS_MTR_SAVE_combinedConsensusResponsesUsingConsensusAI",
+        "AS_GSS_MTR_SAVE_combinedConsensusResponsesUsingConsensusNativeAI",
+        "AS_GSS_UT_deepIndex"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "0002ee7f-845b-8000-dd77-7f0000014e7a",
+      "name": "AS GSS Summarize With AI",
+      "type": "Process Model",
+      "description": "Process to summarize content using either Azure OpenAI or Appian AI Skills",
+      "calls": [
+        "AS GSS Summarize With Azure OpenAI",
+        "AS GSS Summarize With Native AI"
+      ],
+      "called_by": [
+        "AS GSS Combine Responses Using AI"
+      ]
+    },
+    {
+      "uuid": "0002ee7d-0147-8000-dd1d-7f0000014e7a",
+      "name": "AS GSS Summarize With Azure OpenAI",
+      "type": "Process Model",
+      "description": "Process to summarize content using Azure Open AI Chat Completion",
+      "calls": [
+        "AS_GSS_UT_deepIndex"
+      ],
+      "called_by": [
+        "AS GSS Summarize With AI"
+      ]
+    },
+    {
+      "uuid": "0002ee7f-7e38-8000-dd72-7f0000014e7a",
+      "name": "AS GSS Summarize With Native AI",
+      "type": "Process Model",
+      "description": "Process to summarize content using Appian AI Skills",
+      "calls": [],
+      "called_by": [
+        "AS GSS Summarize With AI"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "uuid": "_a-0000e3c8-6861-8000-9ba2-011c48011c48_124092-tmg-am-am",
+  "name": "AS_GSS_TMG_GRD_templatesGrid",
+  "type": "Interface",
+  "description": "List of templates",
+  "sail_code": "#\"SYSTEM_SYSRULES_gridField_v1\"(\n  labelPosition: \"COLLAPSED\",\n  data: rule!AS_GSS_TMG_QE_getTemplate(\n    excludeNestedCdts: true,\n    searchText: ri!searchText,\n    pagingInfo: fv!pagingInfo,\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET,\n    triggerRefresh: ri!triggerRefresh,\n    templateTypeId: cons!AS_GSS_REF_ID_TEMPLATE_TYPE_CONTRACTING\n  ),\n  columns: {\n    /*Name*/\n    #\"SYSTEM_SYSRULES_gridColumn\"(\n      label: \"Name\",\n      helpTooltip: \"Click an approach name to edit\",\n      sortField: \"templateName\",\n      value: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n        value: #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n          text: fv!row.templateName,\n          link: #\"SYSTEM_SYSRULES_dynamicLink\"(\n            /*requery upon click to load with nested cdts included*/\n            value: rule!AS_GSS_TMG_QE_getTemplate(\n              templateId: fv!row.templateId,\n              excludeNestedCdts: false,\n              returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT,\n              triggerRefresh: ri!triggerRefresh,\n              templateTypeId: cons!AS_GSS_REF_ID_TEMPLATE_TYPE_CONTRACTING\n            ),\n            saveInto: ri!selectedTemplate\n          ),\n          linkStyle: \"STANDALONE\",\n          style: \"STRONG\"\n        )\n      ),\n\n    ),\n    /*Description*/\n    #\"SYSTEM_SYSRULES_gridColumn\"(\n      label: \"Description\",\n      sortField: \"templateDesc\",\n      value: fv!row.templateDesc\n    ),\n    /*Last Modified*/\n    #\"SYSTEM_SYSRULES_gridColumn\"(\n      label: \"Last Modified\",\n      sortField: \"modifiedDatetime\",\n      value: rule!AS_CO_DSP_displayTimeByUser(\n        user: fv!row.modifiedBy,\n        dateTime: fv!row.modifiedDatetime\n      )\n    ),\n    #\"SYSTEM_SYSRULES_gridColumn\"(\n      value: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n        value: #\"SYSTEM_SYSRULES_richTextIcon\"(\n          icon: \"history\",\n          caption: \"View approach history\",\n          link: #\"SYSTEM_SYSRULES_dynamicLink\"(\n            /*requery upon click to load with nested cdts included*/\n            value: rule!AS_GSS_TMG_QE_getTemplate(\n              templateId: fv!row.templateId,\n              excludeNestedCdts: false,\n              returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT,\n              triggerRefresh: ri!triggerRefresh,\n              templateTypeId: cons!AS_GSS_REF_ID_TEMPLATE_TYPE_CONTRACTING\n            ),\n            saveInto: {\n              a!save(ri!selectedTemplate, save!value),\n              a!save(ri!showHistory, true)\n            }\n          ),\n          linkStyle: \"STANDALONE\",\n          size: \"MEDIUM\"\n        ),\n        accessibilityText: \"Click here to view process history\",\n\n      ),\n      align: \"CENTER\",\n      width: \"ICON\"\n    )\n  },\n  pageSize: cons!AS_CO_ENUM_PAGE_SIZE_MEDIUM_LARGE,\n  initialSorts: {\n    #\"SYSTEM_SYSRULES_sortInfo\"(field: \"templateName\", ascending: true)\n  },\n  secondarySorts: {\n    #\"SYSTEM_SYSRULES_sortInfo\"(field: \"templateName\", ascending: true)\n  }\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_TMG_QE_getTemplate",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_DSP_displayTimeByUser",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_REF_ID_TEMPLATE_TYPE_CONTRACTING",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_PAGE_SIZE_MEDIUM_LARGE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_loadBundleByNames",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_TMG_CPS_viewReferenceTemplates",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

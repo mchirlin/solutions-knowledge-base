@@ -1,0 +1,46 @@
+{
+  "uuid": "_a-0000eca3-4709-8000-9db2-011c48011c48_13722543",
+  "name": "AS_GSS_BL_exposeGcwIntegration",
+  "type": "Expression Rule",
+  "description": "Rule that outputs a boolean to show the GCW integration components in GSS.  Based on user group and applications present in an environment ",
+  "sail_code": "and(\n  /* GCW is present in this environment  */\n  rule!AS_GSS_APPREF_GCW_APPVERSION_UT_VersionTrackerWrapper_exists(),\n  /* The user is in the following groups */\n  #\"urn:appian:function:v1:a:isusermemberofgroup?okey=a!isUserMemberOfGroup\"(\n    username: loggedInUser(),\n    groups: {\n      cons!AS_GAM_GRP_APPIAN_ADMINISTRATORS,\n      cons!AS_GAM_GRP_CONTRACTING_OFFICER,\n      cons!AS_GAM_GRP_CONTRACT_SPECIALIST,\n      cons!AS_GAM_GRP_CONTRACTING_MANAGER,\n      cons!AS_GSS_GRP_EVALUATION_CHAIRS\n    }\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_APPREF_GCW_APPVERSION_UT_VersionTrackerWrapper_exists",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_GRP_APPIAN_ADMINISTRATORS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GAM_GRP_CONTRACTING_OFFICER",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GAM_GRP_CONTRACT_SPECIALIST",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GAM_GRP_CONTRACTING_MANAGER",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_GRP_EVALUATION_CHAIRS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_ENTRYPOINT_LOGIC_isExposeGcwIntegration",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

@@ -6,50 +6,60 @@ import os
 import pytest
 
 from appian_parser.cli import dump_package
-from appian_parser.output.json_dumper import DumpOptions
+from appian_parser.domain.models import DumpOptions
 
 
 class TestCLIPipeline:
     """End-to-end tests for the dump pipeline."""
 
-    def test_dump_produces_manifest(self, sample_zip, tmp_path):
+    def test_dump_produces_app_overview(self, sample_zip, tmp_path):
         output_dir = str(tmp_path / "output")
         options = DumpOptions(pretty=True)
         result = dump_package(sample_zip, output_dir, options)
 
         assert result.objects_parsed > 0
         assert result.errors_count == 0
-        assert os.path.isfile(os.path.join(output_dir, 'manifest.json'))
+        assert os.path.isfile(os.path.join(output_dir, 'app_overview.json'))
 
-    def test_dump_manifest_structure(self, sample_zip, tmp_path):
+    def test_dump_app_overview_structure(self, sample_zip, tmp_path):
         output_dir = str(tmp_path / "output")
         dump_package(sample_zip, output_dir, DumpOptions())
 
-        with open(os.path.join(output_dir, 'manifest.json')) as f:
-            manifest = json.load(f)
+        with open(os.path.join(output_dir, 'app_overview.json')) as f:
+            overview = json.load(f)
 
-        assert '_metadata' in manifest
-        assert 'package_info' in manifest
-        assert 'object_inventory' in manifest
-        assert manifest['package_info']['total_parsed_objects'] > 0
+        assert '_metadata' in overview
+        assert 'package_info' in overview
+        assert 'object_counts' in overview
+        assert 'coverage' in overview
+        assert overview['package_info']['total_parsed_objects'] > 0
 
-    def test_dump_produces_dependencies(self, sample_zip, tmp_path):
+    def test_dump_produces_search_index(self, sample_zip, tmp_path):
+        output_dir = str(tmp_path / "output")
+        dump_package(sample_zip, output_dir, DumpOptions())
+
+        path = os.path.join(output_dir, 'search_index.json')
+        assert os.path.isfile(path)
+        with open(path) as f:
+            index = json.load(f)
+        assert len(index) > 0
+
+    def test_dump_produces_object_files(self, sample_zip, tmp_path):
         output_dir = str(tmp_path / "output")
         dump_package(sample_zip, output_dir, DumpOptions(include_dependencies=True))
 
-        deps_path = os.path.join(output_dir, 'dependencies.json')
-        # Dependencies file may or may not exist depending on whether deps are found
-        if os.path.isfile(deps_path):
-            with open(deps_path) as f:
-                deps = json.load(f)
-            assert '_metadata' in deps
+        objects_dir = os.path.join(output_dir, 'objects')
+        # Object files exist if dependencies were found
+        if os.path.isdir(objects_dir):
+            files = os.listdir(objects_dir)
+            assert len(files) > 0
 
     def test_dump_no_deps_option(self, sample_zip, tmp_path):
         output_dir = str(tmp_path / "output")
         dump_package(sample_zip, output_dir, DumpOptions(include_dependencies=False))
 
-        # Should not produce dependencies.json
-        assert not os.path.isfile(os.path.join(output_dir, 'dependencies.json'))
+        # Should not produce objects/ dir when deps disabled
+        assert not os.path.isdir(os.path.join(output_dir, 'objects'))
 
     def test_dump_no_errors_file_when_clean(self, sample_zip, tmp_path):
         output_dir = str(tmp_path / "output")

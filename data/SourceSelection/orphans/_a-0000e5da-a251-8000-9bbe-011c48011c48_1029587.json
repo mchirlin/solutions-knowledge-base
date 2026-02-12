@@ -1,0 +1,45 @@
+{
+  "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1029587",
+  "name": "AS_GSS_QE_getAggregatedUserByTaskStatus",
+  "type": "Expression Rule",
+  "description": "Returns aggregated user task details based on status",
+  "sail_code": "a!localVariables(\n  local!loggedInUser: loggedInUser(),\n  local!criterias: rule!AS_GSS_QE_getEvaluationCriteria(\n    additionalFilters: {\n      #\"SYSTEM_SYSRULES_queryFilter\"(\n        field: \"evaluation.evaluationId\",\n        operator: \"=\",\n        value: ri!evaluationId\n      )\n    },\n    executeWhen: true,\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY\n  ),\n  local!isFactorChair: and(\n    contains(\n      local!criterias.criteriaChair.username,\n      tostring(local!loggedInUser)\n    )\n  ),\n  local!getUsersData: rule!AS_GSS_TMG_QE_getRuntimeTask(\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_AGGREGATION,\n    aggregation: #\"SYSTEM_SYSRULES_queryAggregation\"(\n      aggregationColumns: {\n        #\"SYSTEM_SYSRULES_queryAggregationColumn\"(\n          field: \"userAssignee\",\n          alias: \"username\",\n          isGrouping: true\n        ),\n        #\"SYSTEM_SYSRULES_queryAggregationColumn\"(\n          field: \"taskStatus.taskStatusId\",\n          alias: \"taskStatusId\",\n          isGrouping: true\n        ),\n        #\"SYSTEM_SYSRULES_queryAggregationColumn\"(\n          field: \"taskId\",\n          alias: \"taskCount\",\n          aggregationFunction: \"COUNT\"\n        ),\n        #\"SYSTEM_SYSRULES_queryAggregationColumn\"(\n          field: \"dueDate\",\n          alias: \"dueDate\",\n          aggregationFunction: \"MIN\"\n        )\n      }\n    ),\n    additionalLogicalExpressions:  #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n      operator: \"AND\",\n      filters: {\n        #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: \"evaluation.evaluationId\",\n          operator: \"=\",\n          value: ri!evaluationId\n        ),\n        #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: \"taskBehaviorType.behaviorSubtypeCode\",\n          operator: \"=\",\n          value: cons!AS_GSS_TMG_ENUM_TASK_BEHAVIOR_SUBTYPE_CODE_COMPLETE_EVALUATION,\n          \n        ),\n        if(\n          local!isFactorChair,\n          #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: \"criteria.criteriaChair.username\",\n            operator: \"=\",\n            value: local!loggedInUser\n          ),\n          {}\n        ),\n        if(\n          rule!AS_CO_UT_isBlank(ri!taskStatusId),\n          {},\n          #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: \"taskStatus.taskStatusId\",\n            operator: \"in\",\n            value: ri!taskStatusId\n          )\n        ),\n        if(\n          rule!AS_CO_UT_isBlank(ri!userAssignee),\n          {},\n          #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: \"userAssignee\",\n            operator: \"=\",\n            value: ri!userAssignee\n          )\n        )\n      },\n      ignoreFiltersWithEmptyValues: true\n    )\n  ),\n  local!getNullUsersIndex: rule!AS_CO_UT_whereContains(\n    values: touniformstring(\"\"),\n    array: touniformstring(local!getUsersData.username)\n  ),\n  local!removeNullUsers: remove(\n    local!getUsersData,\n    local!getNullUsersIndex\n  ),\n  local!removeNullUsers\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_QE_getEvaluationCriteria",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_QE_getRuntimeTask",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_whereContains",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_AGGREGATION",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_ENUM_TASK_BEHAVIOR_SUBTYPE_CODE_COMPLETE_EVALUATION",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

@@ -1,0 +1,96 @@
+{
+  "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_235063-tmg-am-am",
+  "name": "AS_GSS_TMG_VD_importReferenceTasks",
+  "type": "Expression Rule",
+  "description": "Validations to run when adding tasks",
+  "sail_code": "if(\n  /*Check there is at least one task*/\n  rule!AS_CO_UT_isBlank(ri!tasksToAdd),\n  \"You must add at least one task\",\n  rule!AS_CO_UT_distinct(\n    reject(\n      rule!AS_CO_UT_isBlank(_),\n      {\n        touniformstring(\n          /*Check required fields*/\n          a!localVariables(\n            local!requiredFields: rule!AS_CO_UT_filterCdtByField(\n              cdt: rule!AS_GSS_TMG_BL_importTasksFromExcelFieldsList(),\n              field: \"required\",\n              value: true\n            ),\n            if(\n              any(\n                rule!AS_CO_UT_isBlank(_),\n                a!flatten(\n                  #\"SYSTEM_SYSRULES_forEach\"(\n                    items: local!requiredFields.field,\n                    expression: rule!AS_CO_UT_indexPath(cdt: ri!tasksToAdd, field: fv!item)\n                  )\n                )\n              ),\n              rule!AS_GAM_CO_I18N_UT_displayLabel(\n                bundle: ri!i18nData,\n                bundleKey: \"vld_RequiredFields\",\n                arguments: rule!AS_CO_UT_separateListItemsInSentence(\n                  list: local!requiredFields.label,\n                  finalSeparator: lower(\n                    \"and\"\n                  )\n                )\n              ),\n              \"\"\n            )\n          ),\n          /*Check for Attach document required fields, if relevant*/\n          #\"SYSTEM_SYSRULES_forEach\"(\n            items: rule!AS_CO_UT_filterCdtByField(\n              cdt: ri!tasksToAdd,\n              field: \"taskBehaviorType.behaviorSubtypeCode\",\n              value: {\n                cons!AS_GSS_TMG_ENUM_TASK_BEHAVIOR_SUBTYPE_CODE_DOCUMENT_UPLOAD\n              }\n            ),\n            expression: if(\n              rule!AS_CO_UT_isBlank(\n                index(\n                  fv!item.docUploadContext,\n                  \"docTypeId\",\n                  null\n                )\n              ),\n              concat(\n                \"The following fields are required for\",\n                \" \",\n                rule!AS_CO_UT_displayRefDataLabelSingle(\n                  singleData: fv!item.taskBehaviorType,\n                  labelField: \"behaviorDisplayName\",\n                  i18nData: ri!i18nData\n                ),\n                \": \",\n                rule!AS_CO_UT_separateListItemsInSentence(\n                  list: rule!AS_CO_UT_filterCdtByField(\n                    cdt: rule!AS_GSS_TMG_BL_importTasksFromExcelFieldsList(),\n                    field: \"field\",\n                    value: \"docUploadContext.docTypeId.refLabel\"\n                  ).label,\n                  finalSeparator: lower(\n                    \"and\"\n                  )\n                )\n              ),\n              {}\n            )\n          ),\n          /*Check for Attach document with template fields required fields, if relevant*/\n          #\"SYSTEM_SYSRULES_forEach\"(\n            items: rule!AS_CO_UT_filterCdtByField(\n              cdt: ri!tasksToAdd,\n              field: \"taskBehaviorType.behaviorSubtypeCode\",\n              value: {\n                cons!AS_GSS_TMG_ENUM_TASK_BEHAVIOR_SUBTYPE_CODE_DOCUMENT_WITH_TEMPLATE\n              }\n            ),\n            expression: if(\n              or(\n                rule!AS_CO_UT_isBlank(\n                  index(\n                    fv!item.docUploadContext,\n                    \"docTypeId\",\n                    null\n                  )\n                ),\n                rule!AS_CO_UT_isBlank(\n                  index(\n                    fv!item.docUploadContext,\n                    \"docTemplate\",\n                    null\n                  )\n                )\n              ),\n              concat(\n                \"The following fields are required for\",\n                \" \",\n                rule!AS_CO_UT_displayRefDataLabelSingle(\n                  singleData: fv!item.taskBehaviorType,\n                  labelField: \"behaviorDisplayName\",\n                  i18nData: ri!i18nData\n                ),\n                \": \",\n                rule!AS_CO_UT_separateListItemsInSentence(\n                  list: rule!AS_CO_UT_filterCdtByField(\n                    cdt: rule!AS_GSS_TMG_BL_importTasksFromExcelFieldsList(),\n                    field: \"field\",\n                    value: {\n                      \"docUploadContext.docTypeId.refLabel\",\n                      \"docUploadContext.docTemplate.documentName\"\n                    }\n                  ).label,\n                  finalSeparator: lower(\n                    \"and\"\n                  )\n                )\n              ),\n              {}\n            )\n          ),\n          /*Check name length*/\n          #\"SYSTEM_SYSRULES_forEach\"(\n            items: ri!tasksToAdd,\n            expression: rule!AS_CO_VD_textValidation(\n              value: fv!item.taskName,\n              maxLength: 50,\n              maxLengthMessage: \"A task name cannot be more than 50 characters\"\n            )\n          ),\n          /*Check name duplication*/\n          if(\n            or(\n              or(\n                rule!AS_GSS_TMG_UT_isDuplicateTaskReferenceName(\n                  taskRefs: ri!tasksToAdd,\n                  configurationLevelCode: cons!AS_GSS_TMG_ENUM_TASK_CONFIGURATION_LEVEL_CODE_AD_HOC\n                )\n              ),\n              rule!AS_CO_UT_checkIfDuplicateExistsInArray(\n                array: ri!tasksToAdd.taskName,\n                caseSensitive: false,\n                skipNulls: true\n              )\n            ),\n            \"You cannot have two tasks with the same name\",\n            \"\"\n          )\n        )\n      }\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_distinct",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_BL_importTasksFromExcelFieldsList",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_indexPath",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_separateListItemsInSentence",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_displayRefDataLabelSingle",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_VD_textValidation",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_isDuplicateTaskReferenceName",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_checkIfDuplicateExistsInArray",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_ENUM_TASK_BEHAVIOR_SUBTYPE_CODE_DOCUMENT_UPLOAD",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_ENUM_TASK_BEHAVIOR_SUBTYPE_CODE_DOCUMENT_WITH_TEMPLATE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_ENUM_TASK_CONFIGURATION_LEVEL_CODE_AD_HOC",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_QE_getTaskBehaviorTypes",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_INT_QUERY_MAX_BATCH_SIZE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_TMG_GRD_manageImportReferenceTasksGrid",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

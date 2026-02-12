@@ -1,0 +1,1930 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "AS_GSS_Ref_Vendor_SYNCEDRECORD - Create a vendor manually",
+    "parent_name": "AS_GSS_Ref_Vendor_SYNCEDRECORD",
+    "total_objects": 68
+  },
+  "entry_point": {
+    "action_type": "RECORD_LIST_ACTION",
+    "record_type": "AS_GSS_Ref_Vendor_SYNCEDRECORD",
+    "target_process": "AS GSS Add or Update Reference Vendor",
+    "form_interface": "AS_GSS_FM_addOrUpdateRefVendor",
+    "expressions": {
+      "TITLE": "\"Create a vendor manually\"",
+      "DESCRIPTION": null,
+      "VISIBILITY": null
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GSS Add or Update Reference Vendor",
+      "complexity_score": 6.0,
+      "total_nodes": 4,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Check User Action"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Check User Action",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Update Ref Vendor (Create)",
+            "End Node (Cancel)"
+          ]
+        },
+        {
+          "name": "Update Ref Vendor",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_939151",
+      "name": "AS GAM CS Search API for SAM gov",
+      "type": "Connected System",
+      "description": "Connected System for SAM - Search API",
+      "system_type": null,
+      "base_url": "https://api.sam.gov/entity-information/v2/entities",
+      "calls": [],
+      "called_by": [
+        "AS_GAM_GetVendorDetailsFromSAMGov"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290163",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "description": "OBJECT_ARRAY - Returns an array type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "OBJECT_ARRAY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_UT_constructSelectedBusinessTypes"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290157",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "description": "SINGLE_OBJECT - Returns a single type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "SINGLE_OBJECT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GAM_QR_getReferenceVendorBusinessType",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_Ref_Vendor_SYNCEDRECORD"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290175",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+      "type": "Constant",
+      "description": "TOTAL_COUNT - Returns an Integer when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "TOTAL_COUNT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_VD_validateFeinAndTinNumbersForRefVendor",
+        "AS_GSS_VLD_validateUniqueEntityIdForRefVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73500",
+      "name": "AS_CO_ENUM_TEXT_LENGTH_LONG",
+      "type": "Constant",
+      "description": "255 - LONG length for text fields, used for validations and trimming text",
+      "value": "255",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CPS_refVendorAddressInformation",
+        "AS_GSS_CPS_refVendorBasicInformation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3d1-f4dc-8000-9ba4-011c48011c48_153436",
+      "name": "AS_CO_ENUM_TEXT_LENGTH_MEDIUM",
+      "type": "Constant",
+      "description": "50 - MEDIUM length for text fields, used for validations and trimming text",
+      "value": "50",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CPS_refVendorAddressInformation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e438-fd8a-8000-9bbe-011c48011c48_410774",
+      "name": "AS_CO_ENUM_TEXT_LENGTH_SHORT",
+      "type": "Constant",
+      "description": "20 - SHORT length for text fields, used for validations and trimming text",
+      "value": "20",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CPS_refVendorAddressInformation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73173",
+      "name": "AS_CO_ENUM_USER_ACTION_CANCEL",
+      "type": "Constant",
+      "description": "CANCEL.USER_ACTION - Value to use to drive process logic after a user performs a \"Cancel\" action",
+      "value": "CANCEL.USER_ACTION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_FM_addOrUpdateRefVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73305",
+      "name": "AS_CO_ENUM_USER_ACTION_SUBMIT",
+      "type": "Constant",
+      "description": "SUBMIT.USER_ACTION - Value to use to drive process logic after a user performs a \"Submit\" action",
+      "value": "SUBMIT.USER_ACTION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GSS Add or Update Reference Vendor",
+        "AS_GSS_FM_addOrUpdateRefVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_104931",
+      "name": "AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+      "type": "Constant",
+      "description": "AS CO Internationalization Files",
+      "value": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_104925",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationFolder",
+      "calls": [],
+      "called_by": [
+        "AS_CO_I18N_UT_getAndDisplayLabelSingle",
+        "AS_CO_I18N_UT_loadBundleFromFolder",
+        "AS_CO_UT_displayCommonObjectBundleLabel"
+      ]
+    },
+    {
+      "uuid": "_a-0000e534-0cc8-8000-9bb4-011c48011c48_563818",
+      "name": "AS_GAM_ENUM_TEXT_LENGTH_FOR_CAGE",
+      "type": "Constant",
+      "description": "5",
+      "value": "5",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CPS_refVendorBasicInformation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e79a-fc04-8000-9bf4-011c48011c48_2290200",
+      "name": "AS_GAM_ENUM_TEXT_LENGTH_FOR_UEI",
+      "type": "Constant",
+      "description": "Text length for UEI",
+      "value": "12",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_VLD_validateUniqueEntityIdForRefVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e438-ff39-8000-9ba8-011c48011c48_22379",
+      "name": "AS_GAM_REF_ID_COUNTRY_UNITED_STATES",
+      "type": "Constant",
+      "description": "Value: 231",
+      "value": "231",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CPS_refVendorAddressInformation",
+        "AS_GSS_UT_CaptureMetadataForRefVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0001ed6e-54f1-8000-9df6-011c48011c48_15246403",
+      "name": "AS_GSS_ENUM_TEXT_LENGTH_FOR_TIN",
+      "type": "Constant",
+      "description": "Value = 9 , Text length for TIN",
+      "value": "9",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_VD_validateFeinAndTinNumbersForRefVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee39-4c1d-8000-9e29-011c48011c48_16502627",
+      "name": "AS_GSS_ENUM_TEXT_LENGTH_FOR_US_ZIP_CODE",
+      "type": "Constant",
+      "description": "Value: 5. Constant controlling the length of U.S. zip code fields",
+      "value": "5",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CPS_refVendorAddressInformation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee39-4c1d-8000-9e29-011c48011c48_16502634",
+      "name": "AS_GSS_ENUM_TEXT_LENGTH_FOR_US_ZIP_CODE_EXTENSION",
+      "type": "Constant",
+      "description": "Value: 4. Length of a U.S. zip code extension",
+      "value": "4",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CPS_refVendorAddressInformation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec90-d194-8000-9dac-011c48011c48_13562047",
+      "name": "AS_GSS_REF_ID_SOURCE_APPLICATION_GSS",
+      "type": "Constant",
+      "description": "Value: 59",
+      "value": "59",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_FM_addOrUpdateRefVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1026432",
+      "name": "AS_GSS_TX_SAM_GOV_VENDOR_STATUSES",
+      "type": "Constant",
+      "description": "List of SAM.gov Vendor statuses",
+      "value": "\n                ",
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CPS_refVendorBasicInformation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_81818",
+      "name": "AS_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "description": "Displays a label by the `bundleKey` from passed in bundle data, optionally accepts arguments",
+      "parameters": [],
+      "calls": [
+        "AS_CO_I18N_UT_parseBundleKey",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_CO_I18N_UT_getAndDisplayLabelSingle"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_84411",
+      "name": "AS_CO_I18N_UT_getAndDisplayLabelSingle",
+      "type": "Expression Rule",
+      "description": "Retrieves and then displays a single label from a bundle file -- This is meant to be used in places where you cannot utilize local variables, such as record and site page names",
+      "parameters": [],
+      "calls": [
+        "AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+        "AS_CO_I18N_UT_displayLabel",
+        "AS_CO_I18N_UT_loadBundleFromFolder",
+        "AS_CO_I18N_UT_parseBundleKey"
+      ],
+      "called_by": [
+        "AS_CO_UT_displayCommonObjectBundleLabel"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76004",
+      "name": "AS_CO_I18N_UT_getUserLocale",
+      "type": "Expression Rule",
+      "description": "Gets the Appian user locale as defined in the user preferences, returns the default if the user is null",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_I18N_UT_loadBundleFromFolder"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_81720",
+      "name": "AS_CO_I18N_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "description": "Loads a property bundle file by name from a folder, returns a dictionary of the key-value pairs",
+      "parameters": [],
+      "calls": [
+        "AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+        "AS_CO_I18N_UT_getUserLocale",
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_I18N_UT_getAndDisplayLabelSingle"
+      ]
+    },
+    {
+      "uuid": "_a-0000e438-fdf5-8000-9ba8-011c48011c48_19869",
+      "name": "AS_CO_I18N_UT_parseBundleKey",
+      "type": "Expression Rule",
+      "description": "Parses a bundle key and returns a dictionary of the `bundleName` & `labelKey`",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_I18N_UT_displayLabel",
+        "AS_CO_I18N_UT_getAndDisplayLabelSingle"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39070",
+      "name": "AS_CO_UT_booleanDefaultFalse",
+      "type": "Expression Rule",
+      "description": "Default a null value to false, otherwise returns the boolean value",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CPS_refVendorBasicInformation",
+        "AS_GSS_QR_getReferenceVendors",
+        "AS_GSS_UT_captureMetadataForRecords"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39082",
+      "name": "AS_CO_UT_booleanDefaultTrue",
+      "type": "Expression Rule",
+      "description": "Default a null value to true, otherwise returns the boolean value",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_DSP_standardReadOnlyField",
+        "AS_GSS_UT_captureMetadataForRecords"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157603",
+      "name": "AS_CO_UT_cast",
+      "type": "Expression Rule",
+      "description": "Casts a variable to the type of either the input `type`, or the typeof of the input `typeof`, and properly handles for null inputs",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_UT_queryRecordByIdentifier"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6cd-618a-8000-9bd9-011c48011c48_1688557",
+      "name": "AS_CO_UT_checkIsNullOrEmpty",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is null/empty. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_QR_getReferenceVendorByIdentifier",
+        "AS_GSS_UT_CaptureMetadataForRefVendor",
+        "AS_GSS_UT_captureMetadataForRecords",
+        "AS_GSS_VD_validateFeinAndTinNumbersForRefVendor",
+        "AS_GSS_VLD_validateUniqueEntityIdForRefVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_33160",
+      "name": "AS_CO_UT_displayCommonObjectBundleLabel",
+      "type": "Expression Rule",
+      "description": "Retrieves a single label from the Common Objects bundle file",
+      "parameters": [],
+      "calls": [
+        "AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+        "AS_CO_I18N_UT_getAndDisplayLabelSingle"
+      ],
+      "called_by": [
+        "AS_CO_UT_displayRequiredMessage",
+        "AS_CO_VD_textValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb44-a528-8000-9d15-011c48011c48_9978504",
+      "name": "AS_CO_UT_displayRequiredMessage",
+      "type": "Expression Rule",
+      "description": "Returns default required message (used for all editable fields) if required message is not passed.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_displayCommonObjectBundleLabel"
+      ],
+      "called_by": [
+        "AS_CO_CP_radioButtonField",
+        "AS_CO_INP_dateField",
+        "AS_CO_INP_textField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_31679",
+      "name": "AS_CO_UT_formatDate",
+      "type": "Expression Rule",
+      "description": "Formats a date for read-only text display. Note, do not use this rule to format date times, only dates. Returns text.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_INP_dateField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73568",
+      "name": "AS_CO_UT_getLabelPosition",
+      "type": "Expression Rule",
+      "description": "Returns the standard labelPosition based on the context of the component, allows for custom input",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_CO_CP_radioButtonField",
+        "AS_CO_DSP_standardReadOnlyField",
+        "AS_CO_INP_dateField",
+        "AS_CO_INP_textField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_CPS_cancelSaveButtons",
+        "AS_CO_I18N_UT_displayLabel",
+        "AS_CO_I18N_UT_loadBundleFromFolder",
+        "AS_CO_UT_formatDate",
+        "AS_CO_UT_getLabelPosition",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_replaceNull",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GAM_UT_validateAlphanumeric",
+        "AS_GAM_UT_validateNumeric",
+        "AS_GSS_CPS_refVendorBasicInformation",
+        "AS_GSS_Ref_Vendor_SYNCEDRECORD"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around AS_CO_UT_isBlank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_VD_textValidation",
+        "AS_GAM_UT_validateAlphanumeric",
+        "AS_GAM_UT_validateNumeric"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6c8-d132-8000-9bbe-011c48011c48_469266",
+      "name": "AS_CO_UT_queryRecord",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_GAM_QR_getReferenceVendorBusinessType",
+        "AS_GSS_QR_getReferenceVendors"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367",
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GAM_QR_getReferenceVendorBusinessType"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73980",
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "description": "Returns nullableValue only if it is not null. Else returns replacementValue.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_CPS_cancelSaveButtons",
+        "AS_CO_DSP_standardReadOnlyField",
+        "AS_CO_I18N_UT_displayLabel",
+        "AS_CO_UT_getLabelPosition",
+        "AS_CO_VD_textValidation",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GSS_CPS_refVendorBasicInformation",
+        "AS_GSS_FM_addOrUpdateRefVendor",
+        "AS_GSS_Ref_Vendor_SYNCEDRECORD",
+        "AS_GSS_UT_CaptureMetadataForRefVendor",
+        "AS_GSS_UT_captureMetadataForRecords"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_74104",
+      "name": "AS_CO_VD_textValidation",
+      "type": "Expression Rule",
+      "description": "Performs minimum and maximum length validation on a text value. Returns a validation message if any provided length constraints are violated. Allows for custom validation messages.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_displayCommonObjectBundleLabel",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_CO_INP_textField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53662",
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "description": "Displays a label by the `bundleKey` from passed in bundle data, optionally accepts arguments",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GSS_CPS_refVendorBasicInformation",
+        "AS_GSS_FM_addOrUpdateRefVendor",
+        "AS_GSS_VD_validateFeinAndTinNumbersForRefVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed36-f3bd-8000-9dea-011c48011c48_14831506",
+      "name": "AS_GAM_QR_getReferenceVendorBusinessType",
+      "type": "Expression Rule",
+      "description": "Query Record for Reference Vendor Business Types",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GAM_Ref_BusinessType_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_UT_constructSelectedBusinessTypes"
+      ]
+    },
+    {
+      "uuid": "_a-0000e534-0cc8-8000-9bb4-011c48011c48_496337",
+      "name": "AS_GAM_UT_validateAlphanumeric",
+      "type": "Expression Rule",
+      "description": "Validates if the provided text is alphanumeric",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_GSS_CPS_refVendorBasicInformation",
+        "AS_GSS_VLD_validateUniqueEntityIdForRefVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e534-0cc8-8000-9bb4-011c48011c48_496350",
+      "name": "AS_GAM_UT_validateNumeric",
+      "type": "Expression Rule",
+      "description": "Validates if the provided text is numeric",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_GSS_VD_validateFeinAndTinNumbersForRefVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1319026",
+      "name": "AS_GSS_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "description": "Loads a property bundle file by name from a folder, returns a dictionary of the key-value pairs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CPS_refVendorAddressInformation",
+        "AS_GSS_CPS_refVendorBasicInformation",
+        "AS_GSS_FM_addOrUpdateRefVendor",
+        "AS_GSS_VD_validateFeinAndTinNumbersForRefVendor",
+        "AS_GSS_VLD_validateUniqueEntityIdForRefVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0001ed6e-54f1-8000-9df6-011c48011c48_15245604",
+      "name": "AS_GSS_EnableOrDisableStateAndLocalGovernment_wrapper",
+      "type": "Expression Rule",
+      "description": "This rule returns a boolean which represents whether or not State and Local is enabled ",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_FM_addOrUpdateRefVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed36-f3bd-8000-9dea-011c48011c48_14843746",
+      "name": "AS_GSS_QR_getReferenceVendorByIdentifier",
+      "type": "Expression Rule",
+      "description": "Returns Reference vendor synced record based on the provided inputs. ",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_GSS_Ref_Vendor_SYNCEDRECORD",
+        "AS_GSS_UT_queryRecordByIdentifier"
+      ],
+      "called_by": [
+        "AS_GSS_FM_addOrUpdateRefVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed36-f3bd-8000-9dea-011c48011c48_14825444",
+      "name": "AS_GSS_QR_getReferenceVendors",
+      "type": "Expression Rule",
+      "description": "Returns reference vendors synced record based on the given filter set",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_booleanDefaultFalse",
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_Ref_Vendor_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_VD_validateFeinAndTinNumbersForRefVendor",
+        "AS_GSS_VLD_validateUniqueEntityIdForRefVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed36-f3bd-8000-9dea-011c48011c48_14832251",
+      "name": "AS_GSS_UT_CaptureMetadataForRefVendor",
+      "type": "Expression Rule",
+      "description": "The rule to capture metadata for reference vendor information",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_CO_UT_replaceNull",
+        "AS_GAM_REF_ID_COUNTRY_UNITED_STATES",
+        "AS_GAM_Ref_BusinessType_SYNCEDRECORD",
+        "AS_GSS_Ref_VendorBusinessType_SYNCEDRECORD",
+        "AS_GSS_Ref_Vendor_SYNCEDRECORD",
+        "AS_GSS_UT_captureMetadataForRecords",
+        "AS_GSS_UT_updateRecordsByModelRecord"
+      ],
+      "called_by": [
+        "AS_GSS_FM_addOrUpdateRefVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecda-a664-8000-9dc8-011c48011c48_14318496",
+      "name": "AS_GSS_UT_captureMetadataForRecords",
+      "type": "Expression Rule",
+      "description": "The rule is used to capture metadata for records",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_booleanDefaultFalse",
+        "AS_CO_UT_booleanDefaultTrue",
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_CO_UT_replaceNull",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_UT_updateRecordsByModelRecord"
+      ],
+      "called_by": [
+        "AS_GSS_UT_CaptureMetadataForRefVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed77-8e71-8000-9df8-011c48011c48_15334249",
+      "name": "AS_GSS_UT_constructSelectedBusinessTypes",
+      "type": "Expression Rule",
+      "description": "Rule to create reference vendor business types based on selection",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_GAM_QR_getReferenceVendorBusinessType",
+        "AS_GAM_Ref_BusinessType_SYNCEDRECORD",
+        "AS_GSS_Ref_VendorBusinessType_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_CPS_refVendorBasicInformation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec62-ac34-8000-9d9a-011c48011c48_13134000",
+      "name": "AS_GSS_UT_queryRecordByIdentifier",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast"
+      ],
+      "called_by": [
+        "AS_GSS_QR_getReferenceVendorByIdentifier"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb16-753f-8000-9d01-011c48011c48_9522362",
+      "name": "AS_GSS_UT_updateRecordsByModelRecord",
+      "type": "Expression Rule",
+      "description": "Given a model record, updates the provided records' fields to match those of the model record.  Nulls apply if the field exists in the model record.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_FM_addOrUpdateRefVendor",
+        "AS_GSS_UT_CaptureMetadataForRefVendor",
+        "AS_GSS_UT_captureMetadataForRecords"
+      ]
+    },
+    {
+      "uuid": "_a-0001ed6e-54f1-8000-9df6-011c48011c48_15246683",
+      "name": "AS_GSS_VD_validateFeinAndTinNumbersForRefVendor",
+      "type": "Expression Rule",
+      "description": "The rule is used to validate FEIN and TIN values for ref vendor addition/update",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GAM_UT_validateNumeric",
+        "AS_GSS_CO_UT_loadBundleFromFolder",
+        "AS_GSS_ENUM_TEXT_LENGTH_FOR_TIN",
+        "AS_GSS_QR_getReferenceVendors",
+        "AS_GSS_Ref_Vendor_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_CPS_refVendorBasicInformation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed36-f3bd-8000-9dea-011c48011c48_14830540",
+      "name": "AS_GSS_VLD_validateUniqueEntityIdForRefVendor",
+      "type": "Expression Rule",
+      "description": "The rule is used to validate the UEI ID for a reference vendor",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_GAM_ENUM_TEXT_LENGTH_FOR_UEI",
+        "AS_GAM_GetVendorDetailsFromSAMGov",
+        "AS_GAM_UT_validateAlphanumeric",
+        "AS_GSS_CO_UT_loadBundleFromFolder",
+        "AS_GSS_QR_getReferenceVendors",
+        "AS_GSS_Ref_Vendor_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_CPS_refVendorBasicInformation"
+      ]
+    },
+    {
+      "uuid": "39a7fd6a-4f15-4efd-8ddd-92a8831d15f3",
+      "name": "AS_GAM_GetVendorDetailsFromSAMGov",
+      "type": "Integration",
+      "description": "Integration to Get Vendor Details",
+      "connected_system": "AS GAM CS Search API for SAM gov",
+      "http_method": "GET",
+      "calls": [
+        "AS GAM CS Search API for SAM gov"
+      ],
+      "called_by": [
+        "AS_GSS_VLD_validateUniqueEntityIdForRefVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3d1-f4dc-8000-9ba4-011c48011c48_134344",
+      "name": "AS_CO_CPS_cancelSaveButtons",
+      "type": "Interface",
+      "description": "Section with cancel and save buttons",
+      "parameters": [
+        {
+          "name": "confirmLabel",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "cancelLabel",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        },
+        {
+          "name": "confirmSaveInto",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "display_order": 2
+        },
+        {
+          "name": "cancelSaveInto",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "display_order": 3
+        },
+        {
+          "name": "includeDivider",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 4
+        },
+        {
+          "name": "confirmSubmit",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 5
+        },
+        {
+          "name": "cancelSubmit",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 6
+        },
+        {
+          "name": "confirmDisabled",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 7
+        },
+        {
+          "name": "cancelDisabled",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 8
+        },
+        {
+          "name": "confirmHeader",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 9
+        },
+        {
+          "name": "confirmMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 10
+        },
+        {
+          "name": "confirmStyle",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 11
+        },
+        {
+          "name": "cancelStyle",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 12
+        },
+        {
+          "name": "cancelHeader",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 13
+        },
+        {
+          "name": "cancelMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 14
+        },
+        {
+          "name": "confirmAccessibilityText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 15
+        },
+        {
+          "name": "cancelAccessibilityText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 16
+        },
+        {
+          "name": "cancelShowWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 17
+        },
+        {
+          "name": "confirmSize",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 18
+        },
+        {
+          "name": "cancelSize",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 19
+        },
+        {
+          "name": "confirmValidationGroup",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 20
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 21
+        }
+      ],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GSS_FM_addOrUpdateRefVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_74506",
+      "name": "AS_CO_CP_radioButtonField",
+      "type": "Interface",
+      "description": "Generic radio button field that handles read-only logic dynamically. \n\nFor instances where a custom value should be displayed when the component is read-only, pass it into the \"readOnlyValue\" input.",
+      "parameters": [
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "instructions",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        },
+        {
+          "name": "required",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 2
+        },
+        {
+          "name": "readOnly",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 3
+        },
+        {
+          "name": "disabled",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 4
+        },
+        {
+          "name": "choiceLabels",
+          "type": "http://www.appian.com/ae/types/2009:Text?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 5
+        },
+        {
+          "name": "choiceValues",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "display_order": 6
+        },
+        {
+          "name": "value",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "display_order": 7
+        },
+        {
+          "name": "validations",
+          "type": "http://www.appian.com/ae/types/2009:Text?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 8
+        },
+        {
+          "name": "saveInto",
+          "type": "http://www.appian.com/ae/types/2009:Save?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Save?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 9
+        },
+        {
+          "name": "validationGroup",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 10
+        },
+        {
+          "name": "requiredMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 11
+        },
+        {
+          "name": "labelPosition",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 12
+        },
+        {
+          "name": "choiceLayout",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 13
+        },
+        {
+          "name": "helpTooltip",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 14
+        },
+        {
+          "name": "readOnlyValue",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 15
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 16
+        },
+        {
+          "name": "accessibilityText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 17
+        },
+        {
+          "name": "choiceStyle",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 18
+        }
+      ],
+      "calls": [
+        "AS_CO_DSP_standardReadOnlyField",
+        "AS_CO_UT_displayRequiredMessage",
+        "AS_CO_UT_getLabelPosition"
+      ],
+      "called_by": [
+        "AS_GSS_CPS_refVendorBasicInformation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_74131",
+      "name": "AS_CO_DSP_standardReadOnlyField",
+      "type": "Interface",
+      "description": "Standard readOnly field, utilizes a!textField(), use a!richTextDisplayField() for further formatting",
+      "parameters": [
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "instructions",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        },
+        {
+          "name": "value",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 2
+        },
+        {
+          "name": "labelPosition",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 3
+        },
+        {
+          "name": "helpTooltip",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 4
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 5
+        },
+        {
+          "name": "accessibilityText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 6
+        },
+        {
+          "name": "align",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 7
+        },
+        {
+          "name": "showHyphenIfValueNull",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 8
+        }
+      ],
+      "calls": [
+        "AS_CO_UT_booleanDefaultTrue",
+        "AS_CO_UT_getLabelPosition",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_CO_CP_radioButtonField",
+        "AS_CO_INP_dateField",
+        "AS_CO_INP_textField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_74175",
+      "name": "AS_CO_INP_dateField",
+      "type": "Interface",
+      "description": "Standard wrapper for a!dateField()",
+      "parameters": [
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "instructions",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        },
+        {
+          "name": "required",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 2
+        },
+        {
+          "name": "readOnly",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 3
+        },
+        {
+          "name": "disabled",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 4
+        },
+        {
+          "name": "value",
+          "type": "http://www.w3.org/2001/XMLSchema:date",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:date",
+          "required": false,
+          "default_value": null,
+          "display_order": 5
+        },
+        {
+          "name": "validations",
+          "type": "http://www.appian.com/ae/types/2009:Text?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 6
+        },
+        {
+          "name": "saveInto",
+          "type": "http://www.appian.com/ae/types/2009:Save?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Save?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 7
+        },
+        {
+          "name": "validationGroup",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 8
+        },
+        {
+          "name": "requiredMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 9
+        },
+        {
+          "name": "align",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 10
+        },
+        {
+          "name": "labelPosition",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 11
+        },
+        {
+          "name": "helpTooltip",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 12
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 13
+        },
+        {
+          "name": "accessibilityText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 14
+        },
+        {
+          "name": "showHyphenIfValueNull",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 15
+        }
+      ],
+      "calls": [
+        "AS_CO_DSP_standardReadOnlyField",
+        "AS_CO_UT_displayRequiredMessage",
+        "AS_CO_UT_formatDate",
+        "AS_CO_UT_getLabelPosition"
+      ],
+      "called_by": [
+        "AS_GSS_CPS_refVendorBasicInformation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73562",
+      "name": "AS_CO_INP_textField",
+      "type": "Interface",
+      "description": "Standard wrapper for a!textField()",
+      "parameters": [
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "instructions",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        },
+        {
+          "name": "required",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 2
+        },
+        {
+          "name": "readOnly",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 3
+        },
+        {
+          "name": "disabled",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 4
+        },
+        {
+          "name": "value",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 5
+        },
+        {
+          "name": "validations",
+          "type": "http://www.appian.com/ae/types/2009:Text?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 6
+        },
+        {
+          "name": "saveInto",
+          "type": "http://www.appian.com/ae/types/2009:Save?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Save?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 7
+        },
+        {
+          "name": "validationGroup",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 8
+        },
+        {
+          "name": "requiredMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 9
+        },
+        {
+          "name": "align",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 10
+        },
+        {
+          "name": "labelPosition",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 11
+        },
+        {
+          "name": "placeholder",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 12
+        },
+        {
+          "name": "helpTooltip",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 13
+        },
+        {
+          "name": "masked",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 14
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 15
+        },
+        {
+          "name": "accessibilityText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 16
+        },
+        {
+          "name": "maxLength",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "display_order": 17
+        },
+        {
+          "name": "refreshAfter",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 18
+        },
+        {
+          "name": "showCharacterCount",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 19
+        },
+        {
+          "name": "characterLimit",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "display_order": 20
+        },
+        {
+          "name": "inputPurpose",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 21
+        }
+      ],
+      "calls": [
+        "AS_CO_DSP_standardReadOnlyField",
+        "AS_CO_UT_displayRequiredMessage",
+        "AS_CO_UT_getLabelPosition",
+        "AS_CO_VD_textValidation"
+      ],
+      "called_by": [
+        "AS_GSS_CPS_refVendorAddressInformation",
+        "AS_GSS_CPS_refVendorBasicInformation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed36-f3bd-8000-9dea-011c48011c48_14831599",
+      "name": "AS_GSS_CPS_refVendorAddressInformation",
+      "type": "Interface",
+      "description": "The section layout for the address information of Reference vendor",
+      "parameters": [
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "refVendor",
+          "type": "urn:com:appian:recordtype:datatype:0138bd87-14ee-4377-bfc9-182baa8e96d6",
+          "raw_type": "urn:com:appian:recordtype:datatype:0138bd87-14ee-4377-bfc9-182baa8e96d6",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AS_CO_ENUM_TEXT_LENGTH_LONG",
+        "AS_CO_ENUM_TEXT_LENGTH_MEDIUM",
+        "AS_CO_ENUM_TEXT_LENGTH_SHORT",
+        "AS_CO_INP_textField",
+        "AS_GAM_REF_ID_COUNTRY_UNITED_STATES",
+        "AS_GAM_R_Country_SYNCEDRECORD",
+        "AS_GAM_R_State_SYNCEDRECORD",
+        "AS_GSS_CO_UT_loadBundleFromFolder",
+        "AS_GSS_ENUM_TEXT_LENGTH_FOR_US_ZIP_CODE",
+        "AS_GSS_ENUM_TEXT_LENGTH_FOR_US_ZIP_CODE_EXTENSION",
+        "AS_GSS_Ref_Vendor_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_FM_addOrUpdateRefVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed36-f3bd-8000-9dea-011c48011c48_14830376",
+      "name": "AS_GSS_CPS_refVendorBasicInformation",
+      "type": "Interface",
+      "description": "The section layout for the basic information of Reference vendor",
+      "parameters": [
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "refVendor",
+          "type": "urn:com:appian:recordtype:datatype:0138bd87-14ee-4377-bfc9-182baa8e96d6",
+          "raw_type": "urn:com:appian:recordtype:datatype:0138bd87-14ee-4377-bfc9-182baa8e96d6",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        },
+        {
+          "name": "originalRefVendor",
+          "type": "urn:com:appian:recordtype:datatype:0138bd87-14ee-4377-bfc9-182baa8e96d6",
+          "raw_type": "urn:com:appian:recordtype:datatype:0138bd87-14ee-4377-bfc9-182baa8e96d6",
+          "required": false,
+          "default_value": null,
+          "display_order": 2
+        },
+        {
+          "name": "isAddAction",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 3
+        },
+        {
+          "name": "isStateAndLocalGovt",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 4
+        }
+      ],
+      "calls": [
+        "AS_CO_CP_radioButtonField",
+        "AS_CO_ENUM_TEXT_LENGTH_LONG",
+        "AS_CO_INP_dateField",
+        "AS_CO_INP_textField",
+        "AS_CO_UT_booleanDefaultFalse",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GAM_ENUM_TEXT_LENGTH_FOR_CAGE",
+        "AS_GAM_Ref_BusinessType_SYNCEDRECORD",
+        "AS_GAM_UT_validateAlphanumeric",
+        "AS_GSS_CO_UT_loadBundleFromFolder",
+        "AS_GSS_Ref_Vendor_SYNCEDRECORD",
+        "AS_GSS_TX_SAM_GOV_VENDOR_STATUSES",
+        "AS_GSS_UT_constructSelectedBusinessTypes",
+        "AS_GSS_VD_validateFeinAndTinNumbersForRefVendor",
+        "AS_GSS_VLD_validateUniqueEntityIdForRefVendor"
+      ],
+      "called_by": [
+        "AS_GSS_FM_addOrUpdateRefVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed36-f3bd-8000-9dea-011c48011c48_14830039",
+      "name": "AS_GSS_FM_addOrUpdateRefVendor",
+      "type": "Interface",
+      "description": "The interface to add or update reference vendors",
+      "parameters": [
+        {
+          "name": "refVendor",
+          "type": "urn:com:appian:recordtype:datatype:0138bd87-14ee-4377-bfc9-182baa8e96d6",
+          "raw_type": "urn:com:appian:recordtype:datatype:0138bd87-14ee-4377-bfc9-182baa8e96d6",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "userAction",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        },
+        {
+          "name": "isAddAction",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 2
+        },
+        {
+          "name": "isStateAndLocalGovt",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 3
+        }
+      ],
+      "calls": [
+        "AS_CO_CPS_cancelSaveButtons",
+        "AS_CO_ENUM_USER_ACTION_CANCEL",
+        "AS_CO_ENUM_USER_ACTION_SUBMIT",
+        "AS_CO_UT_replaceNull",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GSS_CO_UT_loadBundleFromFolder",
+        "AS_GSS_CPS_refVendorAddressInformation",
+        "AS_GSS_CPS_refVendorBasicInformation",
+        "AS_GSS_EnableOrDisableStateAndLocalGovernment_wrapper",
+        "AS_GSS_QR_getReferenceVendorByIdentifier",
+        "AS_GSS_REF_ID_SOURCE_APPLICATION_GSS",
+        "AS_GSS_Ref_Vendor_SYNCEDRECORD",
+        "AS_GSS_UT_CaptureMetadataForRefVendor",
+        "AS_GSS_UT_updateRecordsByModelRecord"
+      ],
+      "called_by": [
+        "AS GSS Add or Update Reference Vendor"
+      ]
+    },
+    {
+      "uuid": "0002ed39-faaa-8000-c4ff-7f0000014e7a",
+      "name": "AS GSS Add or Update Reference Vendor",
+      "type": "Process Model",
+      "description": "The process model to handle adding or updating reference vendors",
+      "calls": [
+        "AS_CO_ENUM_USER_ACTION_SUBMIT",
+        "AS_GSS_FM_addOrUpdateRefVendor",
+        "AS_GSS_Ref_Vendor_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_Ref_Vendor_SYNCEDRECORD"
+      ]
+    },
+    {
+      "uuid": "3e18f8a1-3d77-4c38-a081-3a3e6ffe1c86",
+      "name": "AS_GAM_R_Country_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "Countries reference data for the GAM suite",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CPS_refVendorAddressInformation",
+        "AS_GSS_Ref_Vendor_SYNCEDRECORD"
+      ]
+    },
+    {
+      "uuid": "ab160230-38c8-42e4-9a17-dcfdcdc28272",
+      "name": "AS_GAM_R_State_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "States reference data for the GAM suite",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CPS_refVendorAddressInformation",
+        "AS_GSS_Ref_Vendor_SYNCEDRECORD"
+      ]
+    },
+    {
+      "uuid": "278d05a3-f98f-4064-a63f-ec29aa624c8a",
+      "name": "AS_GAM_Ref_BusinessType_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "Synced Record for Ref Business Types",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "AS_GAM_QR_getReferenceVendorBusinessType",
+        "AS_GSS_CPS_refVendorBasicInformation",
+        "AS_GSS_Ref_VendorBusinessType_SYNCEDRECORD",
+        "AS_GSS_UT_CaptureMetadataForRefVendor",
+        "AS_GSS_UT_constructSelectedBusinessTypes"
+      ]
+    },
+    {
+      "uuid": "e6bc8561-d3a6-4679-b7af-6e279910468e",
+      "name": "AS_GSS_Evaluation_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "NOTE: Solicitation Description and Evaluation Description are 5000 characters and will be trimmed in the synced record",
+      "actions": [
+        "createNewEvaluation",
+        "addVendor",
+        "UpdatePhases",
+        "AddPhases"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT"
+      ],
+      "called_by": [
+        "AS_GSS_UT_captureMetadataForRecords"
+      ]
+    },
+    {
+      "uuid": "263b1223-7500-4d7a-b7d4-91fae6758a37",
+      "name": "AS_GSS_Ref_VendorBusinessType_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "DEPRECATED IN GSS 2.5 - Synced record for Ref Vendor Business Types (Only used in vendor migration process)",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_GAM_Ref_BusinessType_SYNCEDRECORD",
+        "AS_GSS_Ref_Vendor_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_Ref_Vendor_SYNCEDRECORD",
+        "AS_GSS_UT_CaptureMetadataForRefVendor",
+        "AS_GSS_UT_constructSelectedBusinessTypes"
+      ]
+    },
+    {
+      "uuid": "0138bd87-14ee-4377-bfc9-182baa8e96d6",
+      "name": "AS_GSS_Ref_Vendor_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "DEPRECATED IN GSS 2.5 - Synced Record for Ref Vendor (This record is only used for vendor migration in 2.5)",
+      "actions": [
+        "addVendor",
+        "addVendorManually",
+        "updateVendor",
+        "syncWithSamGov"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS GSS Add or Update Reference Vendor",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull",
+        "AS_GAM_R_Country_SYNCEDRECORD",
+        "AS_GAM_R_State_SYNCEDRECORD",
+        "AS_GSS_Ref_VendorBusinessType_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS GSS Add or Update Reference Vendor",
+        "AS_GSS_CPS_refVendorAddressInformation",
+        "AS_GSS_CPS_refVendorBasicInformation",
+        "AS_GSS_FM_addOrUpdateRefVendor",
+        "AS_GSS_QR_getReferenceVendorByIdentifier",
+        "AS_GSS_QR_getReferenceVendors",
+        "AS_GSS_Ref_VendorBusinessType_SYNCEDRECORD",
+        "AS_GSS_UT_CaptureMetadataForRefVendor",
+        "AS_GSS_VD_validateFeinAndTinNumbersForRefVendor",
+        "AS_GSS_VLD_validateUniqueEntityIdForRefVendor"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,381 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GSS DRM Reconcile Vendor",
+    "parent_name": null,
+    "total_objects": 18
+  },
+  "entry_point": {
+    "complexity_score": 31.0,
+    "total_nodes": 16,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GSS DRM Reconcile Vendor",
+      "complexity_score": 31.0,
+      "total_nodes": 16,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Post Data Reconciliation"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Delay",
+          "type": "Timer/Rule/Receive Message",
+          "next": [
+            "Get Reconciliation status"
+          ]
+        },
+        {
+          "name": "Update Reconciliation  Details",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "IsMax Retry Reached?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Get Reconciliation status",
+          "type": "Call Integration",
+          "next": [
+            "Is Reconciliation completed?"
+          ]
+        },
+        {
+          "name": "Is Reconciliation completed?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Update  Vendor Count and  Ref vendor status (Yes)",
+            "Update Reconcile Status (No)"
+          ]
+        },
+        {
+          "name": "Update Reconciliation Details",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Store Parent ReconciliationId"
+          ]
+        },
+        {
+          "name": "Post Data Reconciliation",
+          "type": "Call Integration",
+          "next": [
+            "Update Reconciliation Details"
+          ]
+        },
+        {
+          "name": "Store Parent ReconciliationId",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Post Reconciliation status"
+          ]
+        },
+        {
+          "name": "Post Reconciliation status",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Get Reconciliation status (Inprogress)",
+            "End Node (Error)"
+          ]
+        },
+        {
+          "name": "Update Reconcile Status",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Update Reconciliation  Details"
+          ]
+        },
+        {
+          "name": "IsMax Retry Reached?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Delay (No)",
+            "Update  Completed  On Max Retry (Yes)"
+          ]
+        },
+        {
+          "name": "Update  Completed  On Max Retry",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Update Reconciliation  Details",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Update  Vendor Count and  Ref vendor status",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Update Reconciliation  Details"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290163",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "description": "OBJECT_ARRAY - Returns an array type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "OBJECT_ARRAY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GSS DRM Reconcile Vendor",
+        "AS_CO_UT_queryRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee30-1118-8000-9e27-011c48011c48_16453685",
+      "name": "AS_GSS_DRM_INT_DATA_RECONCILIATION_ERROR_CODE_200",
+      "type": "Constant",
+      "description": "Constant to hold error code - 200",
+      "value": "200",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GSS DRM Reconcile Vendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee30-1118-8000-9e27-011c48011c48_16453744",
+      "name": "AS_GSS_DRM_INT_DATA_RECONCILIATION_ERROR_CODE_202",
+      "type": "Constant",
+      "description": "Constant to hold error code - 202",
+      "value": "202",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GSS DRM Reconcile Vendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee30-1118-8000-9e27-011c48011c48_16453387",
+      "name": "AS_GSS_DRM_INT_DATA_RECONCILIATION_ERROR_CODE_409",
+      "type": "Constant",
+      "description": "Constant to hold error code - 409",
+      "value": "409",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GSS DRM Reconcile Vendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee30-1118-8000-9e27-011c48011c48_16453820",
+      "name": "AS_GSS_DRM_INT_MAX_RETRY_COUNT",
+      "type": "Constant",
+      "description": "maximum retry count for integration to execute\nvalue:2",
+      "value": "2",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GSS DRM Reconcile Vendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee30-1118-8000-9e27-011c48011c48_16413157",
+      "name": "AS_GSS_DRM_INT_REF_ID_RECONCILIATION_STATUS_PROCESSED",
+      "type": "Constant",
+      "description": "Holds the ref id that indicates the migration status: Processed",
+      "value": "2",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GSS DRM Reconcile Vendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee30-1118-8000-9e27-011c48011c48_16413300",
+      "name": "AS_GSS_DRM_INT_REF_ID_RECONCILIATION_STATUS_SKIPPED",
+      "type": "Constant",
+      "description": "Holds the ref id that indicates the migration status: Skipped",
+      "value": "3",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GSS DRM Reconcile Vendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee39-4c1d-8000-9e29-011c48011c48_16490174",
+      "name": "AS_GSS_DRM_TXT_MESSAGE_RECONCILIATION_COMPLETED",
+      "type": "Constant",
+      "description": "value:Reconciliation Completed",
+      "value": "Reconciliation Completed",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GSS DRM Reconcile Vendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39070",
+      "name": "AS_CO_UT_booleanDefaultFalse",
+      "type": "Expression Rule",
+      "description": "Default a null value to false, otherwise returns the boolean value",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_QR_getReferenceVendors"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GSS DRM Reconcile Vendor",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GSS_Ref_Vendor_SYNCEDRECORD"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6c8-d132-8000-9bbe-011c48011c48_469266",
+      "name": "AS_CO_UT_queryRecord",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GSS_QR_getReferenceVendors"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367",
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS GSS DRM Reconcile Vendor"
+      ]
+    },
+    {
+      "uuid": "_a-0001ed6e-54f1-8000-9df6-011c48011c48_15245604",
+      "name": "AS_GSS_EnableOrDisableStateAndLocalGovernment_wrapper",
+      "type": "Expression Rule",
+      "description": "This rule returns a boolean which represents whether or not State and Local is enabled ",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GSS DRM Reconcile Vendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed36-f3bd-8000-9dea-011c48011c48_14825444",
+      "name": "AS_GSS_QR_getReferenceVendors",
+      "type": "Expression Rule",
+      "description": "Returns reference vendors synced record based on the given filter set",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_booleanDefaultFalse",
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_Ref_Vendor_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS GSS DRM Reconcile Vendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb16-753f-8000-9d01-011c48011c48_9522362",
+      "name": "AS_GSS_UT_updateRecordsByModelRecord",
+      "type": "Expression Rule",
+      "description": "Given a model record, updates the provided records' fields to match those of the model record.  Nulls apply if the field exists in the model record.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GSS DRM Reconcile Vendor"
+      ]
+    },
+    {
+      "uuid": "0002ee35-de0c-8000-d838-7f0000014e7a",
+      "name": "AS GSS DRM Reconcile Vendor",
+      "type": "Process Model",
+      "description": "The process model to Reconcile vendor data  from GSS to GSM",
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GSS_DRM_INT_DATA_RECONCILIATION_ERROR_CODE_200",
+        "AS_GSS_DRM_INT_DATA_RECONCILIATION_ERROR_CODE_202",
+        "AS_GSS_DRM_INT_DATA_RECONCILIATION_ERROR_CODE_409",
+        "AS_GSS_DRM_INT_MAX_RETRY_COUNT",
+        "AS_GSS_DRM_INT_REF_ID_RECONCILIATION_STATUS_PROCESSED",
+        "AS_GSS_DRM_INT_REF_ID_RECONCILIATION_STATUS_SKIPPED",
+        "AS_GSS_DRM_ReconciliationDetails_SYNCEDRECORD",
+        "AS_GSS_DRM_TXT_MESSAGE_RECONCILIATION_COMPLETED",
+        "AS_GSS_EnableOrDisableStateAndLocalGovernment_wrapper",
+        "AS_GSS_QR_getReferenceVendors",
+        "AS_GSS_Ref_Vendor_SYNCEDRECORD",
+        "AS_GSS_UT_updateRecordsByModelRecord"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "e63b9e0b-422f-4990-969a-59f61b4526da",
+      "name": "AS_GSS_DRM_ReconciliationDetails_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "The table to hold information related to reconciliation requests to GSM",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "AS GSS DRM Reconcile Vendor"
+      ]
+    },
+    {
+      "uuid": "0138bd87-14ee-4377-bfc9-182baa8e96d6",
+      "name": "AS_GSS_Ref_Vendor_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "DEPRECATED IN GSS 2.5 - Synced Record for Ref Vendor (This record is only used for vendor migration in 2.5)",
+      "actions": [
+        "addVendor",
+        "addVendorManually",
+        "updateVendor",
+        "syncWithSamGov"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS GSS DRM Reconcile Vendor",
+        "AS_GSS_QR_getReferenceVendors"
+      ]
+    }
+  ]
+}

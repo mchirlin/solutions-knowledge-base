@@ -1,0 +1,66 @@
+{
+  "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_234878-tmg-am-am",
+  "name": "AS_GSS_TMG_UT_readExcelTasks",
+  "type": "Expression Rule",
+  "description": "Reads an excel sheet and returns a dictionary array of the values",
+  "sail_code": "a!localVariables(\n  /*sheetNumber and hasHeaders can be adapted to be rule inputs if that flexibility is desired*/\n  local!sheetNumber: 0,\n  local!hasHeaders: true,\n  local!excelData: readexcelimportfile(\n    ri!excelDocument,\n    rule!AS_CO_UT_replaceNull(\n      nullableValue: local!sheetNumber,\n      replacementValue: 0\n    ),\n    0,\n    ri!numberOfColumns\n  ),\n  local!importedData:if(\n    rule!AS_CO_UT_not(\n      local!excelData.success\n    ),\n    rule!AS_CO_UT_returnNullDictionary(),\n    a!localVariables(\n      local!headers: #\"SYSTEM_SYSRULES_forEach\"(\n        items: index(\n          local!excelData.result,\n          1,\n          \"values\",\n          {}\n        ),\n        expression: if(\n          local!hasHeaders,\n          fv!item,\n          concat(\n            \"col\",\n            fv!index\n          )\n        )\n      ),\n      {\n        sheetNumber: local!sheetNumber,\n        headers: touniformstring(\n          local!headers\n        ),\n        data: if(\n          rule!AS_CO_UT_isBlank(\n            local!excelData.result\n          ),\n          rule!AS_CO_UT_returnNullDictionaryList(),\n          a!flatten(#\"SYSTEM_SYSRULES_forEach\"(\n            items: local!excelData.result.values,\n            expression: if(\n              and(\n                local!hasHeaders,\n                fv!isFirst\n              ),\n              {},\n              rule!AS_CO_UT_updateCdtFields(\n                cdt: rule!AS_CO_UT_returnNullDictionary(),\n                fields: local!headers,\n                newValues: fv!item\n              )\n            )\n          )\n          )\n        )\n      }\n    )\n  ),\n  if(rule!AS_CO_UT_isBlank(local!importedData.data),null,local!importedData)\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_not",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_returnNullDictionary",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_returnNullDictionaryList",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_updateCdtFields",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_DOC_SAMPLE_TASK_IMPORT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_BL_importTasksFromExcelFieldsList",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_loadBundleByNames",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_TMG_CPS_importReferenceTasksFileUpload",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_mapImportTasksToReferenceTasks",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

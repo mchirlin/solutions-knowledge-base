@@ -1,0 +1,51 @@
+{
+  "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_268524",
+  "name": "AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_nestHandler",
+  "type": "Expression Rule",
+  "description": "Used by rule `AS_CO_UT_updateCdtFieldsByPath`",
+  "sail_code": "with(\n  local!nestedCdt: if(\n    ri!index = 1,\n    ri!cdt,\n    rule!AS_CO_UT_zINTERNAL_indexPath_separateFieldHandler(\n      cdt: ri!cdt,\n      fields: ri!fieldsAndIndices[enumerate(ri!index - 1) + 1]\n    )\n  ),\n  \n  /*Have to handle differently for a dictionary/map or list of dictionary/map, or if the field itself is an array*/\n  local!nestedCdtUpdate: if(\n    and(\n      rule!AS_CO_UT_isBlank(local!nestedCdt),\n      or(\n        rule!AS_CO_UT_typeCompare(\n          value1: ri!cdt,\n          value2: rule!AS_CO_UT_returnNullDictionary()\n        ),\n        rule!AS_CO_UT_typeCompare(\n          value1: ri!cdt,\n          value2: rule!AS_CO_UT_returnNullDictionaryList()\n        ),\n        rule!AS_CO_UT_typeCompare(\n          value1: ri!cdt,\n          value2: a!map()\n        ),\n        rule!AS_CO_UT_typeCompare(\n          value1: ri!cdt,\n          value2: {a!map()}\n        )\n      )\n    ),\n    if(\n      /*Have to handle differently if passing indices through from AS_CO_UT_updateCdtFields*/\n      and(\n        rule!AS_CO_UT_isNotBlank(ri!indices),\n        ri!index = 1\n      ),\n      rule!AS_CO_UT_returnNullDictionaryList(),\n      rule!AS_CO_UT_returnNullDictionary()\n    ),\n    local!nestedCdt\n  ),\n  \n  rule!AS_CO_UT_zINTERNAL_updateCdtFields_handler(\n    cdt: local!nestedCdtUpdate,\n    field: ri!fieldsAndIndices[ri!index],\n/*Indices is only used when passing through from AS_CO_UT_updateCdtFields, never AS_CO_UT_updateCdtFieldsByPath*/\n    indices: if(ri!index = 1, ri!indices, {}),\n    newValue: ri!previous\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_zINTERNAL_indexPath_separateFieldHandler",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_typeCompare",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_returnNullDictionary",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_returnNullDictionaryList",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_zINTERNAL_updateCdtFields_handler",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_handler",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

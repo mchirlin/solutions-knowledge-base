@@ -1,0 +1,45 @@
+{
+  "uuid": "_a-0000e3c8-6861-8000-9ba2-011c48011c48_115442-tmg-am-am",
+  "name": "AS_GSS_TMG_CPS_viewOrManageReferenceTaskSettings",
+  "type": "Interface",
+  "description": "Reuseable interface for editing or displaying reference tasks.",
+  "sail_code": "a!localVariables(\n  local!i18nData: rule!AS_GSS_CO_UT_loadBundleFromFolder(langISOCode: null),\n  local!subActionOptions: #\"SYSTEM_SYSRULES_forEach\"(\n    items: {\n      /*Order here MUST align with the order of interfaces in the choose function below*/\n      \"btn_AddTask\",\n      \"btn_ImportTasks\"\n    },\n    expression: rule!AS_GAM_CO_I18N_UT_displayLabel(\n      bundle: local!i18nData,\n      bundleKey: fv!item\n    )\n  ),\n  local!selectedSubAction: 1,\n  local!triggerRefresh: a!refreshVariable(\n    value: now(),\n    refreshOnVarChange: local!selectedSubAction\n  ),\n  local!selectedTaskRef,\n  local!selectedTemplate,\n  {\n    if(\n      rule!AS_CO_UT_isBlank(\n        local!selectedTemplate\n      ),\n      choose(\n        local!selectedSubAction,\n        /*Order here MUST align with the order of options in local!subActionOptions above*/\n        rule!AS_GSS_TMG_CPS_viewReferenceTasks(\n          i18nData: local!i18nData,\n          triggerRefresh: local!triggerRefresh,\n          selectedTaskRef: local!selectedTaskRef,\n          allowManageTaskRefs: true,\n          selectedSubAction: local!selectedSubAction,\n          subActionOptions: local!subActionOptions\n        ),\n        rule!AS_GSS_TMG_CP_manageReferenceTask(\n          i18nData: local!i18nData,\n          selectedTaskRef: local!selectedTaskRef,\n          triggerRefresh: local!triggerRefresh,\n          selectedSubAction: local!selectedSubAction\n        ),\n        rule!AS_GSS_TMG_FM_importReferenceTasks(\n          i18nData: local!i18nData,\n          selectedSubAction: local!selectedSubAction,\n          selectedTemplate: local!selectedTemplate\n        )\n      ),\n      rule!AS_GSS_TMG_CPS_manageReferenceTemplate(\n        triggerRefresh: local!triggerRefresh,\n        i18nData: local!i18nData,\n        selectedTemplate: local!selectedTemplate\n      )\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_CPS_viewReferenceTasks",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_CP_manageReferenceTask",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_FM_importReferenceTasks",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_CPS_manageReferenceTemplate",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

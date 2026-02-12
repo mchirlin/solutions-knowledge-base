@@ -1,0 +1,41 @@
+{
+  "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_74125",
+  "name": "AS_CO_CP_booleanCheckBoxField",
+  "type": "Interface",
+  "description": "Generic boolean checkbox field to handle read-only logic dynamically. This should only have one value for the choiceLabel and choiceValue (e.g. the true label/value).",
+  "sail_code": "if(\n  ri!readOnly,\n  rule!AS_CO_DSP_standardReadOnlyField(\n    label: ri!choiceLabel,\n    instructions: ri!instructions,\n    value: rule!AS_CO_UT_displayBooleanAsYesNo(bool: ri!value),\n    labelPosition: ri!labelPosition,\n    helpTooltip: ri!helpTooltip,\n    showWhen: ri!showWhen,\n    accessibilityText: ri!accessibilityText\n  ),\n  #\"SYSTEM_SYSRULES_checkboxField\"(\n    label: ri!label,\n    labelPosition: rule!AS_CO_UT_getLabelPosition(\n      label: null,\n      labelPosition: ri!labelPosition,\n      readOnly: ri!readOnly\n    ),\n    instructions: ri!instructions,\n    helpTooltip: ri!helpTooltip,\n    choiceLabels: {ri!choiceLabel},\n    choiceValues: {true},\n    value: if(\n      ri!value,\n      {true},\n      null\n    ),\n    saveInto: {a!save(ri!value, rule!AS_CO_UT_not(ri!value)),ri!additionalSaveIntos},\n    showWhen: if(isnull(ri!showWhen), true, ri!showWhen),\n    required: if(ri!readOnly, false, ri!required),\n    /* Updated requiredMessage parameter to show default validation text*/\n    requiredMessage: rule!AS_CO_UT_displayRequiredMessage(\n      label: ri!label,\n      requiredMessage: ri!requiredMessage\n    ),\n    disabled: ri!disabled,\n    validations: ri!validations,\n    validationGroup: ri!validationGroup,\n    align: ri!align,\n    accessibilityText: ri!accessibilityText\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_DSP_standardReadOnlyField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_displayBooleanAsYesNo",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_getLabelPosition",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_not",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_displayRequiredMessage",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_TMG_CPS_manageReviewProperties",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

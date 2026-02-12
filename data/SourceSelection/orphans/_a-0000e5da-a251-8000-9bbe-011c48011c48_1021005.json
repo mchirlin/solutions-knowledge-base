@@ -1,0 +1,20 @@
+{
+  "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1021005",
+  "name": "AS_GAM_UT_GetNumSubProcessToExecute",
+  "type": "Expression Rule",
+  "description": "Calculates the number of sub-processes to kick off in MNI fashion",
+  "sail_code": "a!localVariables(\n  /*The total number of users to sync*/\n  local!totalNumOfUsers: ri!totalNumOfUsers,\n\n  /*The maximum number of users one loop can process*/\n  /*-- For instance, if we were using a batch size of 25 with a max of 1,000 processes per loop*/\n  /*this would return 25,000*/\n  local!maxNumOfUsersOneLoopCanProcess: \n  cons!AS_GAM_INT_USER_SYNC_USERNAME_BATCH_SIZE * cons!AS_GAM_INT_USER_SYNC_MNI_BATCH_SIZE,\n\n  /*The total number of users to process during this loop increment*/\n  /*Continuting with the numbers above, and let's say there's 50,003 total users*/\n  /*-- If this was loop 1:*/\n  /*This would return 50,003, since no users have been processed*/\n  /*-- If this was loop 2:*/\n  /*This would return 25,003, since 25,000 users were previously processed have been processed*/\n  /*-- If this was loop 3:*/\n  /*This would return 3 users, since that's all that's remaining*/\n  local!numUsersRemainingToProcess:\n  local!totalNumOfUsers - (ri!loopIncrement - 1) * local!maxNumOfUsersOneLoopCanProcess,\n\n  /*The total number of users to process during this loop increment*/\n  /*Continuting with the numbers above*/\n  /*-- If this was loop 1:*/\n  /*This would process 25,000 users, since that's the most one loop can process*/\n  /*-- If this was loop 2:*/\n  /*This would process the next 25,000 users, since that's the most one loop can process*/\n  /*-- If this was loop 3:*/\n  /*This would only process the next 3 users, since that's all that's remaining*/\n  local!totalNumOfUsersToProcessThisLoopIncrement: min(\n    /*Take whatever number is lower, either the number of users remaining, or the maximum we can process at once*/\n    local!maxNumOfUsersOneLoopCanProcess,\n    local!numUsersRemainingToProcess\n  ),\n\n  /*Dividing the total number of users to process by the batch size gives the number of sub processes to execute*/\n  local!numOfSubProcessesToExecute: ceiling(\n    local!totalNumOfUsersToProcessThisLoopIncrement / cons!AS_GAM_INT_USER_SYNC_USERNAME_BATCH_SIZE\n  ),\n\n  /*Wrapping this in a handler to always return 1 in case user status changing during execution of the process*/\n  max(local!numOfSubProcessesToExecute, 1)\n)",
+  "calls": [
+    {
+      "name": "AS_GAM_INT_USER_SYNC_USERNAME_BATCH_SIZE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GAM_INT_USER_SYNC_MNI_BATCH_SIZE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

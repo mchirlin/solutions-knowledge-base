@@ -1,0 +1,479 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GSS DRM Migrate Vendor Data",
+    "parent_name": null,
+    "total_objects": 26
+  },
+  "entry_point": {
+    "complexity_score": 15.0,
+    "total_nodes": 8,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GSS DRM Migrate Vendor Data",
+      "complexity_score": 15.0,
+      "total_nodes": 8,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Get Eval Vendor Count"
+          ]
+        },
+        {
+          "name": "Update Ref and Eval Vendors Data",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Is Batching Completed?"
+          ]
+        },
+        {
+          "name": "Wait",
+          "type": "Timer/Rule/Receive Message",
+          "next": [
+            "Construct Updated Eval Vendors"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Is Vendors Available?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Construct Updated Eval Vendors (Yes)",
+            "End Node"
+          ]
+        },
+        {
+          "name": "Get Eval Vendor Count",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Is Vendors Available?"
+          ]
+        },
+        {
+          "name": "Is Batching Completed?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node (Yes)",
+            "Wait (No)"
+          ]
+        },
+        {
+          "name": "Construct Updated Eval Vendors",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Update Ref and Eval Vendors Data"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290131",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+      "type": "Constant",
+      "description": "DATA_SUBSET - Returns a type of DataSubset when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "DATA_SUBSET",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GSS DRM Migrate Vendor Data",
+        "AS_CO_UT_queryRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290175",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+      "type": "Constant",
+      "description": "TOTAL_COUNT - Returns an Integer when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "TOTAL_COUNT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GSS DRM Migrate Vendor Data"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee30-1118-8000-9e27-011c48011c48_16437778",
+      "name": "AS_GSS_DRM_DATA_MIGRATION_API_ERROR_RESPONSE_VENDOR_NOT_FOUND",
+      "type": "Constant",
+      "description": "Constant to hold error for Data Migration: VENDOR_NOT_FOUND",
+      "value": "VENDOR_NOT_FOUND",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_DRM_BL_updateVendorDetailsFromGSM"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee30-1118-8000-9e27-011c48011c48_16435233",
+      "name": "AS_GSS_DRM_INT_BULK_BATCH_SIZE",
+      "type": "Constant",
+      "description": "Value: 10 - Batch size for reading/writing line items in bulk, determined after thorough testing. Lower than this slows things down significantly. Higher than this provides minimal speed improvements while impacting CPU much more.",
+      "value": "10",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GSS DRM Migrate Vendor Data"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_958405",
+      "name": "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
+      "type": "Constant",
+      "description": "Value: 2\n",
+      "value": "2",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_DRM_BL_updateVendorDetailsFromGSM"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_950600",
+      "name": "AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP",
+      "type": "Constant",
+      "description": "Value: 1\n",
+      "value": "1",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_DRM_BL_updateVendorDetailsFromGSM"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6cd-618a-8000-9bd9-011c48011c48_1688557",
+      "name": "AS_CO_UT_checkIsNullOrEmpty",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is null/empty. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GSS DRM Migrate Vendor Data",
+        "AS_GSS_DRM_BL_handleBusinessTypeForEvalVendor",
+        "AS_GSS_DRM_BL_handleBusinessTypeForRefVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76433",
+      "name": "AS_CO_UT_indexPath",
+      "type": "Expression Rule",
+      "description": "Pass in a field (i.e. member[1].name) and this will index(index(index( for each field",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_DRM_BL_handleBusinessTypeForEvalVendor",
+        "AS_GSS_DRM_BL_handleBusinessTypeForRefVendor",
+        "AS_GSS_DRM_BL_updateVendorDetailsFromGSM"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6c8-d132-8000-9bbe-011c48011c48_469266",
+      "name": "AS_CO_UT_queryRecord",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET"
+      ],
+      "called_by": [
+        "AS_GSS_QR_getEvaluationVendors"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367",
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_DRM_BL_handleBusinessTypeForEvalVendor",
+        "AS_GSS_DRM_BL_handleBusinessTypeForRefVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e571-774f-8000-b919-01ef9001ef90_28790",
+      "name": "AS_FRM_getRuleReferenceOrNoOp",
+      "type": "Expression Rule",
+      "description": "Returns either a rule reference to the input rule, or a no-operation if the rule does not exist, uses plugin function `rulereferencebyname()`",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_APPREF_GSM_GETDATA_getVendorDetailsFederal",
+        "AS_GSS_APPREF_GSM_GETDATA_getVendorDetailsState"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee30-1118-8000-9e27-011c48011c48_16437741",
+      "name": "AS_GSS_APPREF_GSM_GETDATA_getVendorDetailsFederal",
+      "type": "Expression Rule",
+      "description": " Application reference to ‘AS_GSM_ENTRYPOINT_GETDATA_getVendorDetails_Federal_v1’",
+      "parameters": [],
+      "calls": [
+        "AS_FRM_getRuleReferenceOrNoOp"
+      ],
+      "called_by": [
+        "AS_GSS_DRM_BL_updateVendorDetailsFromGSM"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee30-1118-8000-9e27-011c48011c48_16437749",
+      "name": "AS_GSS_APPREF_GSM_GETDATA_getVendorDetailsState",
+      "type": "Expression Rule",
+      "description": " Application reference to ‘AS_GSM_ENTRYPOINT_GETDATA_getVendorDetails_Slg_v1’",
+      "parameters": [],
+      "calls": [
+        "AS_FRM_getRuleReferenceOrNoOp"
+      ],
+      "called_by": [
+        "AS_GSS_DRM_BL_updateVendorDetailsFromGSM"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee42-8707-8000-9e2b-011c48011c48_16524669",
+      "name": "AS_GSS_DRM_BL_handleBusinessTypeForEvalVendor",
+      "type": "Expression Rule",
+      "description": "The rule is used to handle the business type data construction logic for eval vendors",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GSS_EvaluationVendorBusinessType_SYNCEDRECORD",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_DRM_BL_updateVendorDetailsFromGSM"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee42-8707-8000-9e2b-011c48011c48_16524795",
+      "name": "AS_GSS_DRM_BL_handleBusinessTypeForRefVendor",
+      "type": "Expression Rule",
+      "description": "The rule is used to handle the business type data construction logic for ref vendors",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GSS_Ref_VendorBusinessType_SYNCEDRECORD",
+        "AS_GSS_Ref_Vendor_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_DRM_BL_updateVendorDetailsFromGSM"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee30-1118-8000-9e27-011c48011c48_16437718",
+      "name": "AS_GSS_DRM_BL_updateVendorDetailsFromGSM",
+      "type": "Expression Rule",
+      "description": "Rule to update the evaluation vendor details with the data fetched from GSM",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_indexPath",
+        "AS_GSS_APPREF_GSM_GETDATA_getVendorDetailsFederal",
+        "AS_GSS_APPREF_GSM_GETDATA_getVendorDetailsState",
+        "AS_GSS_DRM_BL_handleBusinessTypeForEvalVendor",
+        "AS_GSS_DRM_BL_handleBusinessTypeForRefVendor",
+        "AS_GSS_DRM_DATA_MIGRATION_API_ERROR_RESPONSE_VENDOR_NOT_FOUND",
+        "AS_GSS_EnableOrDisableStateAndLocalGovernment_wrapper",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP",
+        "AS_GSS_Ref_Vendor_SYNCEDRECORD",
+        "AS_GSS_UT_constructUeiCageCombo",
+        "AS_GSS_UT_updateRecordsByModelRecord"
+      ],
+      "called_by": [
+        "AS GSS DRM Migrate Vendor Data"
+      ]
+    },
+    {
+      "uuid": "_a-0001ed6e-54f1-8000-9df6-011c48011c48_15245604",
+      "name": "AS_GSS_EnableOrDisableStateAndLocalGovernment_wrapper",
+      "type": "Expression Rule",
+      "description": "This rule returns a boolean which represents whether or not State and Local is enabled ",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_DRM_BL_updateVendorDetailsFromGSM"
+      ]
+    },
+    {
+      "uuid": "_a-0000ece3-e0bc-8000-9dcb-011c48011c48_14341848",
+      "name": "AS_GSS_QR_getEvaluationVendors",
+      "type": "Expression Rule",
+      "description": "Returns evaluation vendors synced record based on the given filter set",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS GSS DRM Migrate Vendor Data"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee70-ab52-8000-9e39-011c48011c48_16862817",
+      "name": "AS_GSS_UT_constructUeiCageCombo",
+      "type": "Expression Rule",
+      "description": "Rule to construct uei and cage combo",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_DRM_BL_updateVendorDetailsFromGSM"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb16-753f-8000-9d01-011c48011c48_9522362",
+      "name": "AS_GSS_UT_updateRecordsByModelRecord",
+      "type": "Expression Rule",
+      "description": "Given a model record, updates the provided records' fields to match those of the model record.  Nulls apply if the field exists in the model record.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_DRM_BL_updateVendorDetailsFromGSM"
+      ]
+    },
+    {
+      "uuid": "0002ee35-a4aa-8000-d819-7f0000014e7a",
+      "name": "AS GSS DRM Migrate Vendor Data",
+      "type": "Process Model",
+      "description": "The process model to migrate individual vendor data along with all its related evaluation vendors",
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_GSS_DRM_BL_updateVendorDetailsFromGSM",
+        "AS_GSS_DRM_INT_BULK_BATCH_SIZE",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_QR_getEvaluationVendors",
+        "AS_GSS_Ref_Vendor_SYNCEDRECORD"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "28b193af-cca3-4ce3-9837-836838923e60",
+      "name": "AS_GSS_EvaluationVendorBusinessType_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "Synced record for evaluation vendor business types",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_DRM_BL_handleBusinessTypeForEvalVendor",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD"
+      ]
+    },
+    {
+      "uuid": "b6081510-0d11-4d51-8eba-966610b168db",
+      "name": "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "Synced record for evaluation vendors",
+      "actions": [
+        "updateVendor",
+        "deleteVendor",
+        "updateVendorDetails",
+        "viewBreakdown",
+        "viewVendorDecision"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_GSS_EvaluationVendorBusinessType_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_Ref_Vendor_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS GSS DRM Migrate Vendor Data",
+        "AS_GSS_DRM_BL_handleBusinessTypeForEvalVendor",
+        "AS_GSS_DRM_BL_updateVendorDetailsFromGSM",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_QR_getEvaluationVendors",
+        "AS_GSS_Ref_Vendor_SYNCEDRECORD"
+      ]
+    },
+    {
+      "uuid": "e6bc8561-d3a6-4679-b7af-6e279910468e",
+      "name": "AS_GSS_Evaluation_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "NOTE: Solicitation Description and Evaluation Description are 5000 characters and will be trimmed in the synced record",
+      "actions": [
+        "createNewEvaluation",
+        "addVendor",
+        "UpdatePhases",
+        "AddPhases"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_DRM_BL_handleBusinessTypeForEvalVendor",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD"
+      ]
+    },
+    {
+      "uuid": "263b1223-7500-4d7a-b7d4-91fae6758a37",
+      "name": "AS_GSS_Ref_VendorBusinessType_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "DEPRECATED IN GSS 2.5 - Synced record for Ref Vendor Business Types (Only used in vendor migration process)",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_GSS_Ref_Vendor_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_DRM_BL_handleBusinessTypeForRefVendor",
+        "AS_GSS_Ref_Vendor_SYNCEDRECORD"
+      ]
+    },
+    {
+      "uuid": "0138bd87-14ee-4377-bfc9-182baa8e96d6",
+      "name": "AS_GSS_Ref_Vendor_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "DEPRECATED IN GSS 2.5 - Synced Record for Ref Vendor (This record is only used for vendor migration in 2.5)",
+      "actions": [
+        "addVendor",
+        "addVendorManually",
+        "updateVendor",
+        "syncWithSamGov"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_Ref_VendorBusinessType_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS GSS DRM Migrate Vendor Data",
+        "AS_GSS_DRM_BL_handleBusinessTypeForRefVendor",
+        "AS_GSS_DRM_BL_updateVendorDetailsFromGSM",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_Ref_VendorBusinessType_SYNCEDRECORD"
+      ]
+    }
+  ]
+}

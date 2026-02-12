@@ -1,0 +1,31 @@
+{
+  "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_68668",
+  "name": "AS_CO_UT_zINTERNAL_cardsToGridStyleLayout_handler",
+  "type": "Expression Rule",
+  "description": "Used by rules `AS_CO_CPS_cardsAsSelection` and `AS_CO_CPS_cardsAsNavigation`",
+  "sail_code": "a!localVariables(\n  local!maxPerRow: rule!AS_CO_UT_replaceNull(nullableValue: ri!maxPerRow, replacementValue: count(ri!cardLayouts)),\n  \n  #\"SYSTEM_SYSRULES_forEach\"(\n    items: enumerate(ceiling(count(ri!cardLayouts)/local!maxPerRow, 1)),\n    expression: a!localVariables(\n      local!rowIndex: fv!index,\n      #\"SYSTEM_SYSRULES_columnsLayout\"(\n        columns: {\n          #\"SYSTEM_SYSRULES_columnLayout\"(showWhen: contains({\"RIGHT\", \"CENTER\"}, ri!align)),\n          #\"SYSTEM_SYSRULES_forEach\"(\n            items: enumerate(local!maxPerRow),\n            expression: a!localVariables(\n              local!adjustedIndex: (local!rowIndex - 1) * local!maxPerRow + fv!index,\n              local!cardLayout: a!refreshVariable(\n                value: index(ri!cardLayouts, local!adjustedIndex, {}),\n                refreshAlways: true\n              ),\n              #\"SYSTEM_SYSRULES_columnLayout\"(\n                width: ri!columnWidth,\n                contents: local!cardLayout,\n                showWhen: if(\n                  and(\n                    local!rowIndex = 1,\n                    rule!AS_CO_UT_isBlank(local!cardLayout)\n                  ),\n                  false,\n                  true\n                )\n              )\n            )\n          ),\n          #\"SYSTEM_SYSRULES_columnLayout\"(showWhen: contains({\"LEFT\", \"CENTER\"}, ri!align))\n        }\n      )\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_CO_CPS_cardsAsSelection",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CPS_cardsAsNavigation",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

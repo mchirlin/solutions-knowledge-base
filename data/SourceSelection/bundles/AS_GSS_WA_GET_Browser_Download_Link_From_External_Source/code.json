@@ -1,0 +1,12 @@
+{
+  "_metadata": {
+    "bundle_id": "AS_GSS_WA_GET_Browser_Download_Link_From_External_Source"
+  },
+  "objects": {
+    "776f4231-2d11-4f9a-9f72-91e1138da763": {
+      "name": "AS GSS WA GET Browser Download Link From External Source",
+      "type": "Web API",
+      "sail_code": "a!localVariables(\n  local!integrationResponse: rule!AS_GSS_INT_POST_fetchDocumentFromExternalSource(\n    source: internalize(\n      tostring(http!request.queryParameters.source)\n    ),\n    appianDocId: internalize(\n      tostring(\n        http!request.queryParameters.appianDocId\n      )\n    )\n  ),\n  local!document: todocument(\n    local!integrationResponse.result.body.docId\n  ),\n  #\"SYSTEM_SYSRULES_httpResponse_v1\"(\n    statusCode: 200,\n    headers: #\"SYSTEM_SYSRULES_httpHeader\"(\n      name: \"Content-Disposition\",\n      value: concat(\n        \"attachment; filename=\"\"\",\n        document(local!document, \"name\"),\n        \".\",\n        document(local!document, \"extension\"),\n        \"\"\"\"\n      )\n    ),\n    body: local!document\n  )\n)"
+    }
+  }
+}

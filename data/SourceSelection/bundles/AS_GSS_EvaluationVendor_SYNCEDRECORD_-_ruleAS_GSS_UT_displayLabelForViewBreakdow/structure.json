@@ -1,0 +1,360 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "AS_GSS_EvaluationVendor_SYNCEDRECORD - rule!AS_GSS_UT_displayLabelForViewBreakdownAction(\n  totalPrice: rv!record[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.totalPrice]\n)",
+    "parent_name": "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+    "total_objects": 20
+  },
+  "entry_point": {
+    "action_type": "RECORD_ACTION",
+    "record_type": "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+    "target_process": "AS GSS View Price Breakup",
+    "form_interface": "AS_GSS_FM_priceBreakup",
+    "expressions": {
+      "TITLE": "rule!AS_GSS_UT_displayLabelForViewBreakdownAction(\n  totalPrice: rv!record[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.totalPrice]\n)",
+      "DESCRIPTION": "\"View price breakup and pricing notes\"",
+      "VISIBILITY": null,
+      "CONTEXT": "{\n  evaluationVendor: rule!AS_GSS_UT_updateEvalVendorRecordWithAllPriceBreakups(\n    evalVendor: rv!record,\n    executeWhen: true()\n  )\n}"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GSS View Price Breakup",
+      "complexity_score": 1.0,
+      "total_nodes": 2,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290131",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+      "type": "Constant",
+      "description": "DATA_SUBSET - Returns a type of DataSubset when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "DATA_SUBSET",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_UT_updateEvalVendorRecordWithAllPriceBreakups"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec62-ac34-8000-9d9a-011c48011c48_13151218",
+      "name": "AS_GSS_CO_NULL_REPLACEABLE_TEXT",
+      "type": "Constant",
+      "description": "Value:  -",
+      "value": "-",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_SEC_priceBreakupInfoReadOnly",
+        "AS_GSS_UT_displayLabelForViewBreakdownAction"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee0b-274d-8000-9e1b-011c48011c48_16190869",
+      "name": "AS_GSS_DOLLAR_ISO_CODE",
+      "type": "Constant",
+      "description": "Holds the dollar ISO code for currency: USD",
+      "value": "USD",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_SEC_priceBreakupInfoReadOnly",
+        "AS_GSS_UT_displayLabelForViewBreakdownAction"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb7c-0389-8000-9d2c-011c48011c48_10563635",
+      "name": "AS_GSS_INT_QUERY_RECORD_MAX_BATCH_SIZE",
+      "type": "Constant",
+      "description": "Value : 5000",
+      "value": "5000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_updateEvalVendorRecordWithAllPriceBreakups"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157603",
+      "name": "AS_CO_UT_cast",
+      "type": "Expression Rule",
+      "description": "Casts a variable to the type of either the input `type`, or the typeof of the input `typeof`, and properly handles for null inputs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_UT_updateEvalVendorRecordWithAllPriceBreakups"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6cd-618a-8000-9bd9-011c48011c48_1688557",
+      "name": "AS_CO_UT_checkIsNullOrEmpty",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is null/empty. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_QR_getEvalVendorPriceBreakup",
+        "AS_GSS_SEC_priceBreakupInfoReadOnly"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6a4-3c85-8000-9ba5-011c48011c48_45984",
+      "name": "AS_CO_UT_indexWhere",
+      "type": "Expression Rule",
+      "description": "Will find the index of a value in one array and return the value in a different array at that same index",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_updateEvalVendorRecordWithAllPriceBreakups"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6c8-d132-8000-9bbe-011c48011c48_469266",
+      "name": "AS_CO_UT_queryRecord",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_UT_cast"
+      ],
+      "called_by": [
+        "AS_GSS_QR_getEvalVendorPriceBreakup"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53662",
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "description": "Displays a label by the `bundleKey` from passed in bundle data, optionally accepts arguments",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_FM_priceBreakup"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1369557",
+      "name": "AS_GSS_BrandingValueByKey",
+      "type": "Expression Rule",
+      "description": "Returns a GSS branding value by key",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_SEC_priceBreakupInfoReadOnly"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1319026",
+      "name": "AS_GSS_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "description": "Loads a property bundle file by name from a folder, returns a dictionary of the key-value pairs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_FM_priceBreakup",
+        "AS_GSS_SEC_priceBreakupInfoReadOnly"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee01-ec73-8000-9e19-011c48011c48_16154842",
+      "name": "AS_GSS_QR_getEvalVendorPriceBreakup",
+      "type": "Expression Rule",
+      "description": "Returns evaluation vendors price breakup synced record based on the given filter set",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_VendorPriceBreakup_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_UT_updateEvalVendorRecordWithAllPriceBreakups"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee15-bcab-8000-9e1f-011c48011c48_16281050",
+      "name": "AS_GSS_UT_displayLabelForViewBreakdownAction",
+      "type": "Expression Rule",
+      "description": "The rule is used to return the display label for View breakdown action in Vendors tab",
+      "parameters": [],
+      "calls": [
+        "AS_GSS_CO_NULL_REPLACEABLE_TEXT",
+        "AS_GSS_DOLLAR_ISO_CODE"
+      ],
+      "called_by": [
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee01-ec73-8000-9e19-011c48011c48_16154834",
+      "name": "AS_GSS_UT_updateEvalVendorRecordWithAllPriceBreakups",
+      "type": "Expression Rule",
+      "description": "The rule is used to update the eval vendor record with all of its related price breakup records. Use this rule where the number of related records could go more than 100.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_indexWhere",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_INT_QUERY_RECORD_MAX_BATCH_SIZE",
+        "AS_GSS_QR_getEvalVendorPriceBreakup",
+        "AS_GSS_UT_updateRecordsByModelRecord",
+        "AS_GSS_VendorPriceBreakup_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb16-753f-8000-9d01-011c48011c48_9522362",
+      "name": "AS_GSS_UT_updateRecordsByModelRecord",
+      "type": "Expression Rule",
+      "description": "Given a model record, updates the provided records' fields to match those of the model record.  Nulls apply if the field exists in the model record.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_updateEvalVendorRecordWithAllPriceBreakups"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee0b-274d-8000-9e1b-011c48011c48_16188378",
+      "name": "AS_GSS_FM_priceBreakup",
+      "type": "Interface",
+      "description": "The form for the price breakup information",
+      "parameters": [
+        {
+          "name": "evaluationVendor",
+          "type": "urn:com:appian:recordtype:datatype:b6081510-0d11-4d51-8eba-966610b168db",
+          "raw_type": "urn:com:appian:recordtype:datatype:b6081510-0d11-4d51-8eba-966610b168db",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        }
+      ],
+      "calls": [
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GSS_CO_UT_loadBundleFromFolder",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_SEC_priceBreakupInfoReadOnly",
+        "AS_GSS_VendorPriceBreakup_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS GSS View Price Breakup"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee0b-274d-8000-9e1b-011c48011c48_16188410",
+      "name": "AS_GSS_SEC_priceBreakupInfoReadOnly",
+      "type": "Interface",
+      "description": "The read only section for the vendor price breakup information",
+      "parameters": [
+        {
+          "name": "evaluationVendor",
+          "type": "urn:com:appian:recordtype:datatype:b6081510-0d11-4d51-8eba-966610b168db",
+          "raw_type": "urn:com:appian:recordtype:datatype:b6081510-0d11-4d51-8eba-966610b168db",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_GSS_BrandingValueByKey",
+        "AS_GSS_CO_NULL_REPLACEABLE_TEXT",
+        "AS_GSS_CO_UT_loadBundleFromFolder",
+        "AS_GSS_DOLLAR_ISO_CODE",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_VendorPriceBreakup_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_FM_priceBreakup"
+      ]
+    },
+    {
+      "uuid": "0002ee0c-db7a-8000-d463-7f0000014e7a",
+      "name": "AS GSS View Price Breakup",
+      "type": "Process Model",
+      "description": "The model with the interface to view vendor pricing informaiton",
+      "calls": [
+        "AS_GSS_FM_priceBreakup"
+      ],
+      "called_by": [
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD"
+      ]
+    },
+    {
+      "uuid": "b6081510-0d11-4d51-8eba-966610b168db",
+      "name": "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "Synced record for evaluation vendors",
+      "actions": [
+        "updateVendor",
+        "deleteVendor",
+        "updateVendorDetails",
+        "viewBreakdown",
+        "viewVendorDecision"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS GSS View Price Breakup",
+        "AS_GSS_UT_displayLabelForViewBreakdownAction",
+        "AS_GSS_UT_updateEvalVendorRecordWithAllPriceBreakups",
+        "AS_GSS_VendorPriceBreakup_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_FM_priceBreakup",
+        "AS_GSS_SEC_priceBreakupInfoReadOnly",
+        "AS_GSS_UT_updateEvalVendorRecordWithAllPriceBreakups",
+        "AS_GSS_VendorPriceBreakup_SYNCEDRECORD"
+      ]
+    },
+    {
+      "uuid": "e29f01c8-20bf-4220-8797-7fe0041be362",
+      "name": "AS_GSS_VendorPriceBreakup_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "Synced record for pricing line item information for Vendors",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_FM_priceBreakup",
+        "AS_GSS_QR_getEvalVendorPriceBreakup",
+        "AS_GSS_SEC_priceBreakupInfoReadOnly",
+        "AS_GSS_UT_updateEvalVendorRecordWithAllPriceBreakups"
+      ]
+    }
+  ]
+}

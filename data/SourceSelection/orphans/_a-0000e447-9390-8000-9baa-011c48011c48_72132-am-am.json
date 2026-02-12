@@ -1,0 +1,35 @@
+{
+  "uuid": "_a-0000e447-9390-8000-9baa-011c48011c48_72132-am-am",
+  "name": "AS_GSS_TMG_CPS_managementWelcomePage",
+  "type": "Interface",
+  "description": "Welcome page when landing on the Task Management",
+  "sail_code": "a!localVariables(\n  local!i18nData: rule!AS_GSS_CO_UT_loadBundleFromFolder(langISOCode: null),\n  /* Remove the currently selected \"Welcome\" subAction from the card navigation options */\n  local!subActionsForCards: rule!AS_CO_UT_rejectCdtByField(\n    cdt: rule!AS_GSS_TMG_BL_taskManagementOptions()[1].subActions,\n    field: \"image\",\n    value: null\n  ),\n  {\n    #\"SYSTEM_SYSRULES_sectionLayout_v1\"(\n      label: \"Welcome to Source Selection Settings\",\n      labelColor: \"STANDARD\",\n      labelHeadingTag: \"H1\",\n      marginAbove: \"LESS\",\n      marginBelow: \"STANDARD\"\n    ),\n    rule!AS_CO_CPS_cardsAsNavigation(\n      choiceLabels: local!subActionsForCards.label,\n      choiceValues: local!subActionsForCards.subActionId,\n      choiceImages: local!subActionsForCards.image,\n      maxPerRow: 3,\n      choiceInstructions: local!subActionsForCards.instructions,\n      choiceLinks: #\"SYSTEM_SYSRULES_forEach\"(\n        items: local!subActionsForCards.subActionId,\n        expression: #\"SYSTEM_SYSRULES_startProcessLink\"(\n          processModel: cons!AS_GSS_TMG_PM_TASK_MANAGEMENT,\n          processParameters: { selectedSubActionId: fv!item }\n        )\n      )\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_rejectCdtByField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_BL_taskManagementOptions",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CPS_cardsAsNavigation",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_PM_TASK_MANAGEMENT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

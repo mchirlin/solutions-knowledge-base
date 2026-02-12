@@ -1,0 +1,91 @@
+{
+  "uuid": "_a-0000e3c8-6861-8000-9ba2-011c48011c48_122652-tmg-am-am",
+  "name": "AS_GSS_TMG_CP_taskRefTaskTypeColumns",
+  "type": "Interface",
+  "description": "Displays a dropdown for Task Type, and includes any additional related dropdown below, if relevant (e.g. Document Type)",
+  "sail_code": "a!localVariables(\n  local!isExistingTaskRef: rule!AS_CO_UT_isNotBlank(ri!taskRef.taskRefId),\n  local!documentTemplates: rule!AS_GSS_QE_getRefDocumentTemplate(isActive: true),\n  {\n    #\"SYSTEM_SYSRULES_columnLayout\"(\n      contents: {\n        rule!AS_CO_CP_dropdownField(\n          label: \"Task Type\",\n          labelPosition: \"ABOVE\",\n          required: true,\n          /*Users should not be able to edit the type of system tasks*/\n          readOnly: local!isExistingTaskRef,\n          choiceLabels: #\"SYSTEM_SYSRULES_forEach\"(\n            items: ri!taskBehaviorTypes,\n            expression: rule!AS_CO_UT_displayRefDataLabelSingle(\n              singleData: fv!item,\n              labelField: \"behaviorDisplayName\",\n              i18nData: ri!i18nData\n            )\n          ),\n          choiceValues: ri!taskBehaviorTypes,\n          value: ri!taskRef.taskBehaviorType,\n          validations: {},\n          saveInto: {\n            ri!taskRef.taskBehaviorType,\n            a!save(\n              target: ri!taskRef.docUploadContext,\n              value: null\n            )\n          },\n          placeholderLabel: \"Select a task type\"\n        )\n      },\n      width: \"NARROW\"\n    ),\n    /*Column should exist but be empty if there is nothing to display to prevent jumping on the screen*/\n    #\"SYSTEM_SYSRULES_columnLayout\"(\n      contents: {\n        rule!AS_GSS_CP_refDataField(\n          placeholderLabel: \"Select a document type\",\n          label: \"Document Type\",\n          refData: rule!AS_GSS_QE_getRefDataByTypes(\n            refTypes: cons!AS_GSS_REF_TYPE_DOCUMENT_TYPE,\n            excludeRefDataIds: rule!AS_GSS_BL_documentTypesToExcludeFromSelectionOnUpload()\n          ),\n          refType: cons!AS_GSS_REF_TYPE_DOCUMENT_TYPE,\n          value: ri!taskRef.docUploadContext.docTypeId,\n          saveInto: ri!taskRef.docUploadContext.docTypeId,\n          showWhen: if(\n            or(\n              cons!AS_GSS_TMG_ENUM_TASK_BEHAVIOR_SUBTYPE_CODE_DOCUMENT_UPLOAD = ri!taskRef.taskBehaviorType.behaviorSubtypeCode,\n              cons!AS_GSS_TMG_ENUM_TASK_BEHAVIOR_SUBTYPE_CODE_DOCUMENT_WITH_TEMPLATE = ri!taskRef.taskBehaviorType.behaviorSubtypeCode\n            ),\n            true,\n            false\n          ),\n          labelPosition: \"ABOVE\",\n          required: true\n        )\n      },\n      width: \"NARROW\"\n    ),\n    #\"SYSTEM_SYSRULES_columnLayout\"(\n      contents: {\n        rule!AS_CO_CP_dropdownField(\n          placeholderLabel: \"Select a document template\",\n          label: \"Document Template\",\n          required: true,\n          choiceLabels: local!documentTemplates.documentName,\n          choiceValues: local!documentTemplates,\n          value: ri!taskRef.docUploadContext.docTemplate,\n          saveInto: ri!taskRef.docUploadContext.docTemplate,\n          showWhen: ri!taskRef.taskBehaviorType.behaviorSubtypeCode = cons!AS_GSS_TMG_ENUM_TASK_BEHAVIOR_SUBTYPE_CODE_DOCUMENT_WITH_TEMPLATE\n        )\n      },\n      width: \"NARROW\"\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_QE_getRefDocumentTemplate",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CP_dropdownField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_displayRefDataLabelSingle",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_CP_refDataField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_QE_getRefDataByTypes",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_BL_documentTypesToExcludeFromSelectionOnUpload",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_REF_TYPE_DOCUMENT_TYPE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_ENUM_TASK_BEHAVIOR_SUBTYPE_CODE_DOCUMENT_UPLOAD",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_ENUM_TASK_BEHAVIOR_SUBTYPE_CODE_DOCUMENT_WITH_TEMPLATE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_loadBundleByNames",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_QE_getTaskRefs",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_QE_getTaskBehaviorTypes",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_ENUM_TASK_CONFIGURATION_LEVEL_CODE_TEMPLATE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_TMG_CPS_referenceTaskContents",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

@@ -1,0 +1,407 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GSS Update Vendor With GSM Federal",
+    "parent_name": null,
+    "total_objects": 21
+  },
+  "entry_point": {
+    "complexity_score": 20.0,
+    "total_nodes": 10,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GSS Update Vendor With GSM Federal",
+      "complexity_score": 20.0,
+      "total_nodes": 10,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "UEI Available?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Vendor exists in GSM ?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Get Vendor Details From GSM (Yes)",
+            "Vendor Source ? (No)"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Vendor Source ?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Create Manual Vendor (Manual)",
+            "Import From SAM.gov (SAM.gov)",
+            "End Node (Unknown)"
+          ]
+        },
+        {
+          "name": "Update Vendor With GSM Id",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Import From SAM.gov",
+          "type": "Start Process",
+          "next": [
+            "Get Vendor Details From GSM"
+          ]
+        },
+        {
+          "name": "UEI Available?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Vendor exists in GSM ? (Yes)",
+            "End Node (No)"
+          ]
+        },
+        {
+          "name": "Create Manual Vendor",
+          "type": "Start Process",
+          "next": [
+            "Get Vendor Details From GSM"
+          ]
+        },
+        {
+          "name": "Get Vendor Details From GSM",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Update Vendor With GSM Id"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ee67-7064-8000-9e36-011c48011c48_16793685",
+      "name": "AS_GSS_TXT_VENDOR_SOURCE_MANUAL",
+      "type": "Constant",
+      "description": "Value: Manual",
+      "value": "Manual",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GSS Update Vendor With GSM Federal"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee67-7064-8000-9e36-011c48011c48_16795537",
+      "name": "AS_GSS_TXT_VENDOR_SOURCE_SAM",
+      "type": "Constant",
+      "description": "Value: SAM.gov",
+      "value": "SAM.gov",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GSS Update Vendor With GSM Federal"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6cd-618a-8000-9bd9-011c48011c48_1688557",
+      "name": "AS_CO_UT_checkIsNullOrEmpty",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is null/empty. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_DRM_BL_handleBusinessTypeForEvalVendor",
+        "AS_GSS_UT_updateVendorWithAdditionalInfoFromSuite"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76433",
+      "name": "AS_CO_UT_indexPath",
+      "type": "Expression Rule",
+      "description": "Pass in a field (i.e. member[1].name) and this will index(index(index( for each field",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_DRM_BL_handleBusinessTypeForEvalVendor",
+        "AS_GSS_UT_updateVendorWithAdditionalInfoFromSuite"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367",
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_DRM_BL_handleBusinessTypeForEvalVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e571-774f-8000-b919-01ef9001ef90_28790",
+      "name": "AS_FRM_getRuleReferenceOrNoOp",
+      "type": "Expression Rule",
+      "description": "Returns either a rule reference to the input rule, or a no-operation if the rule does not exist, uses plugin function `rulereferencebyname()`",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_APPREF_GSM_GETDATA_doesVendorExist",
+        "AS_GSS_APPREF_GSM_GETDATA_getVendorDetailsFederal",
+        "AS_GSS_APPREF_GSM_STARTPROCESS_createVendor_Federal",
+        "AS_GSS_APPREF_GSM_STARTPROCESS_importVendorFromSamGov"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee62-35ac-8000-9e34-011c48011c48_16755356",
+      "name": "AS_GSS_APPREF_GSM_GETDATA_doesVendorExist",
+      "type": "Expression Rule",
+      "description": "Application reference to ‘AS_GSM_ENTRYPOINT_GETDATA_doesVendorExist_v1’",
+      "parameters": [],
+      "calls": [
+        "AS_FRM_getRuleReferenceOrNoOp"
+      ],
+      "called_by": [
+        "AS GSS Update Vendor With GSM Federal"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee30-1118-8000-9e27-011c48011c48_16437741",
+      "name": "AS_GSS_APPREF_GSM_GETDATA_getVendorDetailsFederal",
+      "type": "Expression Rule",
+      "description": " Application reference to ‘AS_GSM_ENTRYPOINT_GETDATA_getVendorDetails_Federal_v1’",
+      "parameters": [],
+      "calls": [
+        "AS_FRM_getRuleReferenceOrNoOp"
+      ],
+      "called_by": [
+        "AS GSS Update Vendor With GSM Federal",
+        "AS_GSS_UT_updateVendorWithAdditionalInfoFromSuite"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee62-35ac-8000-9e34-011c48011c48_16757915",
+      "name": "AS_GSS_APPREF_GSM_STARTPROCESS_createVendor_Federal",
+      "type": "Expression Rule",
+      "description": "Application reference to 'AS_GSM_ENTRYPOINT_STARTPROCESS_createVendor_Federal_v1'",
+      "parameters": [],
+      "calls": [
+        "AS_FRM_getRuleReferenceOrNoOp"
+      ],
+      "called_by": [
+        "AS GSS Update Vendor With GSM Federal"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee62-35ac-8000-9e34-011c48011c48_16758278",
+      "name": "AS_GSS_APPREF_GSM_STARTPROCESS_importVendorFromSamGov",
+      "type": "Expression Rule",
+      "description": "Application reference to 'AS_GSM_ENTRYPOINT_STARTPROCESS_importVendorFromSamGov_v1'",
+      "parameters": [],
+      "calls": [
+        "AS_FRM_getRuleReferenceOrNoOp"
+      ],
+      "called_by": [
+        "AS GSS Update Vendor With GSM Federal"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee67-7064-8000-9e36-011c48011c48_16801601",
+      "name": "AS_GSS_BL_mapVendorDataForGSMCreation",
+      "type": "Expression Rule",
+      "description": "Rule to construct evaluation vendor data to GSM format",
+      "parameters": [],
+      "calls": [
+        "AS_GSS_EnableOrDisableStateAndLocalGovernment_wrapper",
+        "AS_GSS_EvaluationVendorAddress_SYNCEDRECORD",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS GSS Update Vendor With GSM Federal"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee42-8707-8000-9e2b-011c48011c48_16524669",
+      "name": "AS_GSS_DRM_BL_handleBusinessTypeForEvalVendor",
+      "type": "Expression Rule",
+      "description": "The rule is used to handle the business type data construction logic for eval vendors",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GSS_EvaluationVendorBusinessType_SYNCEDRECORD",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_UT_updateVendorWithAdditionalInfoFromSuite"
+      ]
+    },
+    {
+      "uuid": "_a-0001ed6e-54f1-8000-9df6-011c48011c48_15245604",
+      "name": "AS_GSS_EnableOrDisableStateAndLocalGovernment_wrapper",
+      "type": "Expression Rule",
+      "description": "This rule returns a boolean which represents whether or not State and Local is enabled ",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_mapVendorDataForGSMCreation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee70-ab52-8000-9e39-011c48011c48_16862817",
+      "name": "AS_GSS_UT_constructUeiCageCombo",
+      "type": "Expression Rule",
+      "description": "Rule to construct uei and cage combo",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GSS Update Vendor With GSM Federal",
+        "AS_GSS_UT_updateVendorWithAdditionalInfoFromSuite"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb16-753f-8000-9d01-011c48011c48_9522362",
+      "name": "AS_GSS_UT_updateRecordsByModelRecord",
+      "type": "Expression Rule",
+      "description": "Given a model record, updates the provided records' fields to match those of the model record.  Nulls apply if the field exists in the model record.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_updateVendorWithAdditionalInfoFromSuite"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee67-7064-8000-9e36-011c48011c48_16808539",
+      "name": "AS_GSS_UT_updateVendorWithAdditionalInfoFromSuite",
+      "type": "Expression Rule",
+      "description": "The rule is used to update the vendors with additional info such as Doing business as and Business types from Suite. This is done when a vendor is added to an evaluation.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_CO_UT_indexPath",
+        "AS_GSS_APPREF_GSM_GETDATA_getVendorDetailsFederal",
+        "AS_GSS_DRM_BL_handleBusinessTypeForEvalVendor",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_UT_constructUeiCageCombo",
+        "AS_GSS_UT_updateRecordsByModelRecord"
+      ],
+      "called_by": [
+        "AS GSS Update Vendor With GSM Federal"
+      ]
+    },
+    {
+      "uuid": "0002ee6a-52f9-8000-dc1b-7f0000014e7a",
+      "name": "AS GSS Update Vendor With GSM Federal",
+      "type": "Process Model",
+      "description": "Process to get or create vendor data from GSM and map it to the evaluation vendor",
+      "calls": [
+        "AS_GSS_APPREF_GSM_GETDATA_doesVendorExist",
+        "AS_GSS_APPREF_GSM_GETDATA_getVendorDetailsFederal",
+        "AS_GSS_APPREF_GSM_STARTPROCESS_createVendor_Federal",
+        "AS_GSS_APPREF_GSM_STARTPROCESS_importVendorFromSamGov",
+        "AS_GSS_BL_mapVendorDataForGSMCreation",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_TXT_VENDOR_SOURCE_MANUAL",
+        "AS_GSS_TXT_VENDOR_SOURCE_SAM",
+        "AS_GSS_UT_constructUeiCageCombo",
+        "AS_GSS_UT_updateVendorWithAdditionalInfoFromSuite"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "c4e07a80-b1a1-4bd7-8dc2-ee6cddb10803",
+      "name": "AS_GSS_EvaluationVendorAddress_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "Synced Record For Evaluation Vendor Address",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_mapVendorDataForGSMCreation",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD"
+      ]
+    },
+    {
+      "uuid": "28b193af-cca3-4ce3-9837-836838923e60",
+      "name": "AS_GSS_EvaluationVendorBusinessType_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "Synced record for evaluation vendor business types",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_DRM_BL_handleBusinessTypeForEvalVendor",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD"
+      ]
+    },
+    {
+      "uuid": "b6081510-0d11-4d51-8eba-966610b168db",
+      "name": "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "Synced record for evaluation vendors",
+      "actions": [
+        "updateVendor",
+        "deleteVendor",
+        "updateVendorDetails",
+        "viewBreakdown",
+        "viewVendorDecision"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_GSS_EvaluationVendorAddress_SYNCEDRECORD",
+        "AS_GSS_EvaluationVendorBusinessType_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS GSS Update Vendor With GSM Federal",
+        "AS_GSS_BL_mapVendorDataForGSMCreation",
+        "AS_GSS_DRM_BL_handleBusinessTypeForEvalVendor",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_UT_updateVendorWithAdditionalInfoFromSuite"
+      ]
+    },
+    {
+      "uuid": "e6bc8561-d3a6-4679-b7af-6e279910468e",
+      "name": "AS_GSS_Evaluation_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "NOTE: Solicitation Description and Evaluation Description are 5000 characters and will be trimmed in the synced record",
+      "actions": [
+        "createNewEvaluation",
+        "addVendor",
+        "UpdatePhases",
+        "AddPhases"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_DRM_BL_handleBusinessTypeForEvalVendor",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD"
+      ]
+    }
+  ]
+}

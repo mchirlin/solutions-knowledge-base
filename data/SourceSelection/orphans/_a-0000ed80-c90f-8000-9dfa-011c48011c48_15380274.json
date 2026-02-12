@@ -1,0 +1,55 @@
+{
+  "uuid": "_a-0000ed80-c90f-8000-9dfa-011c48011c48_15380274",
+  "name": "AS_GSS_UT_setMatchingReferenceVendorDetails",
+  "type": "Expression Rule",
+  "description": "Expression to set matching reference vendor Id based on identifier",
+  "sail_code": "a!localVariables(\n  local!selectedVendorsWithoutReferenceId: rule!AS_CO_UT_filterRecordByFieldValues(\n    records: ri!selectedVendors,\n    field: recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.vendorRefId,\n    values: { null }\n  ),\n  local!allMatchingExistingReferenceVendorRecords: rule!AS_GSS_QR_getReferenceVendors(\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY,\n    executeWhen: a!isNotNullOrEmpty(\n      index(\n        local!selectedVendorsWithoutReferenceId,\n        recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.legalName,\n        null\n      )\n    ),\n    additionalFilters: if(\n      rule!AS_GSS_EnableOrDisableStateAndLocalGovernment_wrapper(),\n      #\"SYSTEM_SYSRULES_queryFilter\"(\n        field: recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.stateAndLocalIdentifier,\n        operator: \"in\",\n        value: local!selectedVendorsWithoutReferenceId[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.stateAndLocalIdentifier],\n        applyWhen: a!isNotNullOrEmpty(\n          index(\n            local!selectedVendorsWithoutReferenceId,\n            recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.stateAndLocalIdentifier,\n            null\n          )\n        )\n      ),\n      #\"SYSTEM_SYSRULES_queryFilter\"(\n        field: recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.federalIdentifier,\n        operator: \"in\",\n        value: local!selectedVendorsWithoutReferenceId[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.federalIdentifier],\n        applyWhen: a!isNotNullOrEmpty(\n          index(\n            local!selectedVendorsWithoutReferenceId,\n            recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.federalIdentifier,\n            null\n          )\n        )\n      )\n    )\n  ),\n  local!allMatchingExistingReferenceVendorBusinessTypes: rule!AS_GSS_QR_getReferenceVendorBusinessTypes(\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY,\n    executeWhen: a!isNotNullOrEmpty(\n      index(\n        local!allMatchingExistingReferenceVendorRecords,\n        recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.vendorRefId,\n        null\n      )\n    ),\n    vendorRefId: index(\n      local!allMatchingExistingReferenceVendorRecords,\n      recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.vendorRefId,\n      null\n    )\n  ),\n  #\"SYSTEM_SYSRULES_forEach\"(\n    items: ri!selectedVendors,\n    expression: if(\n      a!isNullOrEmpty(\n        fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.vendorRefId]\n      ),\n      a!localVariables(\n        local!matchingExistingReferenceVendorRecord: if(\n          rule!AS_GSS_EnableOrDisableStateAndLocalGovernment_wrapper(),\n          a!defaultValue(\n            rule!AS_CO_UT_filterRecordByFieldValues(\n              records: local!allMatchingExistingReferenceVendorRecords,\n              field: recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.stateAndLocalIdentifier,\n              values: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.stateAndLocalIdentifier]\n            ),\n            null\n          ),\n          a!defaultValue(\n            rule!AS_CO_UT_filterRecordByFieldValues(\n              records: local!allMatchingExistingReferenceVendorRecords,\n              field: recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.federalIdentifier,\n              values: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.federalIdentifier]\n            ),\n            null\n          )\n        ),\n        if(\n          a!isNullOrEmpty(\n            local!matchingExistingReferenceVendorRecord\n          ),\n          fv!item,\n          rule!AS_GSS_UT_updateRecordsByModelRecord(\n            records: fv!item,\n            modelRecord: recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD(\n              recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.vendorRefId: local!matchingExistingReferenceVendorRecord[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.vendorRefId],\n              recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.businessName: a!defaultValue(\n                fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.businessName],\n                local!matchingExistingReferenceVendorRecord[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.businessName]\n              ),\n              recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.cageCode: a!defaultValue(\n                fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.cageCode],\n                local!matchingExistingReferenceVendorRecord[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.cageCode]\n              ),\n              recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.uniqueEntityId: a!defaultValue(\n                fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.uniqueEntityId],\n                local!matchingExistingReferenceVendorRecord[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.uniqueEntityId]\n              ),\n              recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.tin: a!defaultValue(\n                fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.tin],\n                local!matchingExistingReferenceVendorRecord[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.tin]\n              ),\n              recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.fein: a!defaultValue(\n                fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.fein],\n                local!matchingExistingReferenceVendorRecord[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.fein]\n              ),\n              recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.status: a!defaultValue(\n                fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.status],\n                local!matchingExistingReferenceVendorRecord[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.status]\n              ),\n              recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.expirationDate: a!defaultValue(\n                fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.expirationDate],\n                local!matchingExistingReferenceVendorRecord[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.expirationDate]\n              ),\n              recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.sourceApplicationId: a!defaultValue(\n                fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.sourceApplicationId],\n                local!matchingExistingReferenceVendorRecord[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.sourceApplicationId]\n              ),\n              recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.refVendorBusinessTypes: rule!AS_GSS_UT_constructSelectedBusinessTypes(\n                originalRefVendorBusinessTypes: rule!AS_CO_UT_filterRecordByFieldValues(\n                  records: local!allMatchingExistingReferenceVendorBusinessTypes,\n                  field: recordType!AS_GSS_Ref_VendorBusinessType_SYNCEDRECORD.vendorRefId,\n                  values: local!matchingExistingReferenceVendorRecord[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.vendorRefId]\n                ),\n                currentBusinessTypeCodes: fv!item[recordType!AS_GSS_Ref_Vendor_SYNCEDRECORD.refVendorBusinessTypes.typeCode]\n              )\n            )\n          )\n        )\n      ),\n      fv!item\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_filterRecordByFieldValues",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_QR_getReferenceVendors",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_EnableOrDisableStateAndLocalGovernment_wrapper",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_QR_getReferenceVendorBusinessTypes",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_UT_updateRecordsByModelRecord",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_UT_constructSelectedBusinessTypes",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_Ref_Vendor_SYNCEDRECORD",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "AS_GSS_Ref_VendorBusinessType_SYNCEDRECORD",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    }
+  ],
+  "called_by": []
+}

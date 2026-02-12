@@ -1,0 +1,75 @@
+{
+  "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_939604",
+  "name": "AS_GSS_SBS_checklistHomeToolbar",
+  "type": "Interface",
+  "description": "interface for checklist home toolbar ",
+  "sail_code": "a!localVariables(\n  local!taskBehaviorTypes: rule!AS_GSS_TMG_QE_getTaskBehaviorTypes(\n    additionalFilters: #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: \"taskBehaviorTypeId\",\n      operator: \"in\",\n      value: {\n        cons!AS_GSS_TMG_CONS_BEHAVIOR_TYPE_ID_FOR_CHECKLIST_HOME_TOOLBAR\n      }\n    )\n  ),\n  local!taskBehaviorChoiceValues: local!taskBehaviorTypes.taskBehaviorTypeId,\n  local!taskBehaviourChoiceLabels: #\"SYSTEM_SYSRULES_forEach\"(\n    items: local!taskBehaviorTypes,\n    expression: rule!AS_CO_UT_displayRefDataLabelSingle(\n      singleData: fv!item,\n      labelField: \"behaviorDisplayName\",\n      i18nData: ri!i18nData\n    )\n  ),\n  local!triggerRefresh: a!refreshVariable(\n    value: now(),\n    refreshAfter: \"RECORD_ACTION\"\n  ),\n  local!checklistData: rule!AS_GSS_TMG_QE_getRuntimeTask(\n    triggerRefresh: local!triggerRefresh,\n    taskStatusIds: cons!AS_GSS_TMG_REF_ID_TASK_STATUS_ASSIGNED,\n    evaluationId: ri!evaluationId,\n    additionalFilters: {\n      #\"SYSTEM_SYSRULES_queryFilter\"(\n        field: \"taskBehaviorType.behaviorTypeCode\",\n        operator: \"<>\",\n        value: cons!AS_GSS_TMG_ENUM_TASK_BEHAVIOR_TYPE_CODE_AUTOMATED\n      )\n    },\n    additionalLogicalExpressions: rule!AS_GSS_TMG_UT_defaultFilterForTasksInHomePage(evaluationId: ri!evaluationId),\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY\n  ),\n  local!assignedUsers: reject(\n    rule!AS_CO_UT_isBlank(_),\n    {\n      if(\n        rule!AS_CO_UT_isBlank(local!checklistData),\n        null,\n        union(\n          local!checklistData.userAssignee,\n          local!checklistData.userAssignee\n        )\n      )\n    }\n  ),\n  #\"SYSTEM_SYSRULES_columnsLayout\"(\n    columns: {\n      #\"SYSTEM_SYSRULES_columnLayout\"(\n        contents: rule!AS_CO_CP_dropdownField(\n          placeholderLabel: \"Select a task type\",\n          choiceLabels: local!taskBehaviourChoiceLabels,\n          choiceValues: local!taskBehaviorChoiceValues,\n          value: ri!selectedChecklistBehaviorType,\n          saveInto: { ri!selectedChecklistBehaviorType }\n        )\n      ),\n      #\"SYSTEM_SYSRULES_columnLayout\"(\n        contents: rule!AS_CO_CP_dropdownField(\n          placeholderLabel: \"Select a user\",\n          choiceLabels: #\"SYSTEM_SYSRULES_forEach\"(\n            items: local!assignedUsers,\n            expression: rule!AS_CO_UT_displayUser(user: fv!item)\n          ),\n          choiceValues: local!assignedUsers,\n          value: ri!selectedUser,\n          saveInto: { ri!selectedUser }\n        )\n      ),\n      #\"SYSTEM_SYSRULES_columnLayout\"(\n        contents: {\n          #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n            items: {\n              #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                item: rule!AS_CO_INP_dateField(\n                  value: ri!selectedStartDate,\n                  saveInto: ri!selectedStartDate\n                ),\n                width: \"MINIMIZE\"\n              ),\n              #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                  value: {\n                    #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                      text: \"to\"\n                    )\n                  }\n                ),\n                width: \"MINIMIZE\"\n              ),\n              #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                item: rule!AS_CO_INP_dateField(\n                  value: ri!selectedEndDate,\n                  saveInto: ri!selectedEndDate,\n                  validations: if(\n                    ri!selectedEndDate < ri!selectedStartDate,\n                    \"End date should be greater than start date\",\n                    \"\"\n                  )\n                )\n              )\n            },\n            alignVertical: \"MIDDLE\"\n          )\n        }\n      )\n    },\n    showWhen: ri!showChecklistHomeToolbar\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_TMG_QE_getTaskBehaviorTypes",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_displayRefDataLabelSingle",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_QE_getRuntimeTask",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_defaultFilterForTasksInHomePage",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CP_dropdownField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_displayUser",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_INP_dateField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_CONS_BEHAVIOR_TYPE_ID_FOR_CHECKLIST_HOME_TOOLBAR",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_REF_ID_TASK_STATUS_ASSIGNED",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_ENUM_TASK_BEHAVIOR_TYPE_CODE_AUTOMATED",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_loadBundleByNames",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

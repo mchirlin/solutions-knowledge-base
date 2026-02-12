@@ -1,0 +1,25 @@
+{
+  "uuid": "70de4764-469e-46ac-86e9-de6fee3d31bb-tmg-am-am",
+  "name": "AS_GSS_TMG_QE_getUniqueCategoriesForRecord",
+  "type": "Expression Rule",
+  "description": "takes in onbWorkflowId and returns a text array of the unique category codes",
+  "sail_code": "touniformstring(index(rule!AS_CO_UT_queryEntity(\n  entity: cons!AS_GSS_TMG_ENT_TASK,\n  entityType: 'type!{urn:com:appian:types:AS:GSS:TMG}AS_GSS_TMG_Task',\n  returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_AGGREGATION,\n  aggregation: #\"SYSTEM_SYSRULES_queryAggregation\"(\n    aggregationColumns: {\n      #\"SYSTEM_SYSRULES_queryAggregationColumn\"(\n        field: \"taskCategory.categoryName\",\n        isGrouping: true\n      )\n    }\n  ),\n  filters: {\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: \"evaluation.evaluationId\",\n      operator: \"=\",\n      value: ri!evaluationId\n    )\n  },\n  sort: #\"SYSTEM_SYSRULES_sortInfo\"(\n    field: \"taskCategory.categoryName\",\n    ascending: true\n  )\n).taskCategory, \"categoryName\", {}))",
+  "calls": [
+    {
+      "name": "AS_CO_UT_queryEntity",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_ENT_TASK",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_AGGREGATION",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

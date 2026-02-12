@@ -1,0 +1,107 @@
+{
+  "_metadata": {
+    "bundle_id": "AS_GSS_Update_Vendor_Action_to_VM"
+  },
+  "objects": {
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782": {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Boolean',\n  not(rule!AS_CO_UT_isBlank(ri!input))\n)"
+    },
+    "_a-0000e447-933d-8000-9baa-011c48011c48_43466": {
+      "name": "AS_CO_UT_zINTERNAL_returnMembersOfAllGroups_intersectionHandler",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}UserOrGroup?list',\n  intersection(ri!previous, ri!groupMembersResult.data)\n)"
+    },
+    "_a-0000ed93-2faa-8000-9dfe-011c48011c48_15537508": {
+      "name": "AS_GSS_BL_constructEmailContentForIntegrationFailure",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!bundle: rule!AS_GSS_CO_UT_loadBundleFromFolder(langISOCode: null),\n  rule!AS_GSS_UT_sendEmailProcessParameters(\n    greeting: \"Hello Team,\",\n    sendTo: rule!AS_CO_UT_rejectNullValuesFromArray(\n      array: #\"SYSTEM_SYSRULES_forEach\"(\n        items: rule!AS_CO_UT_returnMembersOfAllGroups(\n          groups: cons!AS_GSS_GRP_ALERTS,\n          memberType: \"USER\"\n        ),\n        expression: toemailaddress(fv!item)\n      )\n    ),\n    subject: rule!AS_GSS_UT_emailSubjectForIntegrationFailure(),\n    content: rule!AS_GSS_UT_emailBodyForIntegrationFailure(\n      integrationError: ri!integrationError,\n      processInstanceId: ri!processInstanceId\n    )\n  )\n)"
+    },
+    "_a-0000e5d4-2024-8000-9baf-011c48011c48_320878": {
+      "name": "AS_FRM_determineRuntimeRule",
+      "type": "Expression Rule",
+      "sail_code": "if( \n  cons!AS_FRM_BOOL_RULE_CUSTOMIZATION_1_0_ENABLED,\n  \n  determineruntimerule(ri!defaultRuleReference),\n  \n  ri!defaultRuleReference\n)"
+    },
+    "_a-0000ed93-2faa-8000-9dfe-011c48011c48_15537477": {
+      "name": "AS_GSS_UT_emailSubjectForIntegrationFailure",
+      "type": "Expression Rule",
+      "sail_code": "\"An error occurred when trying to connect to the external system\""
+    },
+    "_a-0000ed93-2faa-8000-9dfe-011c48011c48_15537184": {
+      "name": "AS_GSS_BL_constructVendorActionDetailsForVM",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  rule!AS_CO_UT_checkIsNullOrEmpty(\n    value: ri!evaluationVendors[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.externalVendorId]\n  ),\n  {},\n  rule!AS_CO_UT_castToDictionary(\n    value: {\n      solicitationPiid: ri!evaluation[recordType!AS_GSS_Evaluation_SYNCEDRECORD.evaluationNumber],\n      vendorId: rule!AS_CO_UT_rejectNullValuesFromArray(\n        array: ri!evaluationVendors[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.externalVendorId]\n      ),\n      actionType: if(\n        ri!isAddAction,\n        cons!AS_GSS_ENUM_VENDOR_ACTION_ADDED,\n        cons!AS_GSS_ENUM_VENDOR_ACTION_DELETED\n      )\n    }\n  )\n)"
+    },
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536": {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  length(a!flatten(ri!value)) = 0\n)"
+    },
+    "_a-0000e721-640b-8000-9ba8-011c48011c48_74268": {
+      "name": "AS_GSS_UT_sendEmailProcessParameters",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!bundle: rule!AS_GSS_CO_UT_loadBundleFromFolder(langISOCode: null),\n  local!fontDetails: rule!AS_GSS_UT_FontDetailsForEmailTemplate_wrapper(),\n  {\n    ccRecipient: ri!ccRecipient,\n    closing: a!defaultValue(\n      value: ri!closing,\n      default: rule!AS_GAM_CO_I18N_UT_displayLabel(\n        bundle: local!bundle,\n        bundleKey: \"txt_ThankYou\",\n        arguments: \",\"\n      )\n    ),\n    closingSender: a!defaultValue(\n      value: ri!closingSender,\n      default: \"Source Selection Admin\"\n    ),\n    content: ri!content,\n    greeting: a!defaultValue(\n      value: ri!greeting,\n      default: rule!AS_GAM_CO_I18N_UT_displayLabel(\n        bundle: local!bundle,\n        bundleKey: \"txt_Hello\",\n        arguments: rule!AS_CO_UT_returnUserFirstName(username: ri!sendTo) & \",\"\n      )\n    ),\n    sendTo: ri!sendTo,\n    subject: ri!subject,\n    fontFamily: index(local!fontDetails, \"fontFamily\", null),\n    fontSize: index(local!fontDetails, \"fontSize\", null),\n    backgroundColor: index(\n      local!fontDetails,\n      \"backgroundColor\",\n      null\n    ),\n    fontColor: index(local!fontDetails, \"fontColor\", null)\n  }\n)"
+    },
+    "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_100254": {
+      "name": "AS_CO_UT_getSiteUrl",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Text',\n  extract(linktodocument(0, \"doc\"), \"\"\"\", \"doc/\")\n)"
+    },
+    "_a-0000e40a-de32-8000-9ba8-011c48011c48_279147": {
+      "name": "AS_CO_UT_castToDictionary",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Dictionary',\n  if(\n    rule!AS_CO_UT_isBlank(ri!value),\n    null,\n    ri!value\n  )\n)"
+    },
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73758": {
+      "name": "AS_CO_UT_distinct",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n  typeof(ri!value),\n  union({ri!value}, {ri!value})\n)"
+    },
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367": {
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n  typeof(ri!array),\n  reject(\n    rule!AS_CO_UT_isBlank(_),\n    a!flatten(ri!array)\n  )\n)"
+    },
+    "_a-0000e447-933d-8000-9baa-011c48011c48_43413": {
+      "name": "AS_CO_UT_returnMembersOfAllGroups",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}UserOrGroup?list',\n  if(\n    rule!AS_CO_UT_isBlank(ri!groups),\n    {},\n    with(\n      local!groupMembersResults: #\"SYSTEM_SYSRULES_forEach\"(\n        items: ri!groups,\n        expression: a!groupMembers(\n          group: fv!item,\n          direct: ri!onlyDirectMembers,\n          memberType: ri!memberType,\n          pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(startIndex: 1, batchSize: cons!AS_CO_INT_GROUP_QUERY_MAX_BATCH_SIZE)\n        )\n      ),\n      \n      local!membersOfAnyGroup: a!flatten(#\"SYSTEM_SYSRULES_forEach\"(\n        items: local!groupMembersResults,\n        expression: fv!item.data\n      )),\n      \n      local!membersOfAllGroups: reduce(\n        rule!AS_CO_UT_zINTERNAL_returnMembersOfAllGroups_intersectionHandler(\n          previous: _, \n          groupMembersResult: _\n        ),\n        local!membersOfAnyGroup,\n        local!groupMembersResults\n      ),\n      \n      rule!AS_CO_UT_distinct(local!membersOfAllGroups)\n    )\n  )\n)"
+    },
+    "_a-0000e6a4-3c85-8000-9ba5-011c48011c48_44806": {
+      "name": "AS_CO_UT_returnUserFirstName",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  and(\n    /*username exists*/\n    rule!AS_CO_UT_isNotBlank(ri!username),\n    /*username is a user*/\n    isusernametaken(ri!username)\n  ),\n  user(ri!username, \"firstName\"),\n  ri!username\n)"
+    },
+    "_a-0000ed93-2faa-8000-9dfe-011c48011c48_15537493": {
+      "name": "AS_GSS_UT_emailBodyForIntegrationFailure",
+      "type": "Expression Rule",
+      "sail_code": "concat(\n  \"<b>Problem: </b>\",\n  ri!integrationError.title,\n  \"<br><br>\n<b>Message: </b>\",\n  ri!integrationError.message,\n  \"<br><br>\n<b>Detail: </b>\",\n  ri!integrationError.detail,\n  \"<br><br>\n<a href=\",\n  rule!AS_CO_UT_getSiteUrl(),\n  \"design/monitoring/\",\n  ri!processInstanceId,\n  \">View process for this task</a>\"\n)"
+    },
+    "_a-0000e643-f7f1-8000-9bca-011c48011c48_1319026": {
+      "name": "AS_GSS_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "sail_code": "with(\n  local!lang: \"en_US\",\n  /* below is deprecated for now, uncomment to support multi-language display */\n  /*if(*/\n  /*isnull(ri!langISOCode),*/\n  /*userlocale(loggedInUser()),*/\n  /*ri!langISOCode*/\n  /*),*/\n  local!bundleName: /*rule!AS_GCM_determineValueBySolutionFlavor(\n    options: cons!AS_GCM_TXT_VALID_SOLUTION_FLAVORS\n  )*/\"AS.GSS.General\",\n  /*local!bundleName*/\n  local!output: loadbundlepropertiesfile(\n    cons!AS_GSS_FLD_PROPERTIES_FILES,\n    local!lang,\n    local!bundleName\n  )[local!bundleName],\n  local!output\n)"
+    },
+    "0002ed96-24ce-8000-cdcd-7f0000014e7a": {
+      "name": "AS GSS Update Vendor Action to VM",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n=rule!AS_GSS_BL_constructVendorActionDetailsForVM( evaluation: pv!evaluation, evaluationVendors: pv!evaluationVendors, isAddAction: pv!isAddAction)\n\n// Output: ?\nAC!Error\n\n// Output: ?\nAC!Result\n\n// Output: ?\nAC!Success\n\n// Input: ?\n=cons!AS_GSS_PM_SEND_EMAIL\n\n// Input: ?\n=rule!AS_GSS_BL_constructEmailContentForIntegrationFailure( processInstanceId: pp!id, integrationError: pv!error)"
+    },
+    "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53662": {
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Text',\n  a!localVariables(\n    local!result: a!refreshVariable(\n      value: if(\n        rule!AS_CO_UT_isBlank(ri!bundleKey),\n        null,\n        if(\n          rule!AS_CO_UT_isBlank(ri!arguments),\n          rule!AS_CO_UT_replaceNull(\n            nullableValue: ri!bundle[ri!bundleKey],\n            replacementValue: ri!bundleKey\n          ),\n          rule!AS_GAM_CO_I18N_UT_replaceArguments(\n            bundleKey: ri!bundle[ri!bundleKey],\n            arguments: ri!arguments\n          )\n        )\n      ),\n      refreshAlways: true\n    ),\n    local!result\n  )\n)"
+    },
+    "_a-0000e6cd-618a-8000-9bd9-011c48011c48_1688557": {
+      "name": "AS_CO_UT_checkIsNullOrEmpty",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  or(\n    isnull(\n      ri!value\n    ),\n    trim(\n      ri!value\n    ) = \"\"\n  ),\n  true(),\n  if(\n    length(\n      ri!value\n    ) = 0,\n    true(),\n    false()\n  )\n)"
+    },
+    "_a-0000e752-5ddb-8000-9be7-011c48011c48_1980712": {
+      "name": "AS_GSS_UT_FontDetailsForEmailTemplate_wrapper",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  /*Determine whether to execute the _default or _custom rule*/\n  local!runtimeRule: a!refreshVariable(\n    value: rule!AS_FRM_determineRuntimeRule(\n      defaultRuleReference: rule!AS_GSS_UT_FontDetailsForEmailTemplate_v1_default\n    ),\n    refreshAlways: true\n  ),\n  local!runtimeRule()\n)"
+    }
+  }
+}

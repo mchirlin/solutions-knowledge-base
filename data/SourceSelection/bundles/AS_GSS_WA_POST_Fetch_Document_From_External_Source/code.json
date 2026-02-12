@@ -1,0 +1,12 @@
+{
+  "_metadata": {
+    "bundle_id": "AS_GSS_WA_POST_Fetch_Document_From_External_Source"
+  },
+  "objects": {
+    "b4a8eaa9-aec8-4bd1-8921-96c3fea735b0": {
+      "name": "AS GSS WA POST Fetch Document From External Source",
+      "type": "Web API",
+      "sail_code": "a!match(\n  value: http!request.queryParameters.source,\n  equals: cons!AS_GSS_ENUM_TXT_PROPOSAL_DOC_DOWNLOAD_SOURCE_VM,\n  then: rule!AS_GSS_INT_GET_getProposalDocumentFromVendorManagement(\n    appianDocId: http!request.queryParameters.appianDocId,\n    onSuccess: #\"SYSTEM_SYSRULES_httpResponse_v1\"(\n      statusCode: 200,\n      body: #\"SYSTEM_SYSRULES_toJson_v1\"(\n        value: a!map(docId: tointeger(fv!result.body))\n      )\n    )\n  ),\n  default: #\"SYSTEM_SYSRULES_httpResponse_v1\"(\n    statusCode: 400,\n    body: #\"SYSTEM_SYSRULES_toJson_v1\"(\n      value: a!map(errorMessage: \"INVALID SOURCE PASSED\")\n    )\n  )\n)"
+    }
+  }
+}

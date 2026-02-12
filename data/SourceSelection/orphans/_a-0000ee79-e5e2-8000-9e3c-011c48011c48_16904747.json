@@ -1,0 +1,81 @@
+{
+  "uuid": "_a-0000ee79-e5e2-8000-9e3c-011c48011c48_16904747",
+  "name": "AS_GSS_AM_getEvaluationDetailsBySolicPiid_V1",
+  "type": "Expression Rule",
+  "description": "Returns the evaluation details ",
+  "sail_code": "if(\n  a!isNullOrEmpty(ri!solicitationPiid),\n  null,\n  a!localVariables(\n    local!triggerRefresh: a!refreshVariable(\n      value: now(),\n      refreshAfter: \"RECORD_ACTION\"\n    ),\n    local!evaluation: rule!AS_CO_UT_queryRecord(\n      recordType: recordType!AS_GSS_Evaluation_RECORD,\n      filters: {\n        #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: recordType!AS_GSS_Evaluation_RECORD.evaluationNumber,\n          operator: \"=\",\n          value: left(\n            ri!solicitationPiid,\n            cons!AS_GSS_INT_MAX_CHARACTERS_FOR_EVALUATION_NUMBER\n          )\n        ),\n        #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: recordType!AS_GSS_Evaluation_RECORD.sourceApplication.refDataId,\n          operator: \"=\",\n          value: cons!AS_GSS_REF_ID_SOURCE_APPLICATION_AM\n        ),\n        #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: recordType!AS_GSS_Evaluation_RECORD.isActive,\n          operator: \"=\",\n          value: true()\n        ),\n        \n      },\n      fields: {\n        recordType!AS_GSS_Evaluation_RECORD.evaluationNumber,\n        recordType!AS_GSS_Evaluation_RECORD.evaluationTitle,\n        recordType!AS_GSS_Evaluation_RECORD.createdDatetime,\n        recordType!AS_GSS_Evaluation_RECORD.evaluationStatus.refLabel,\n        recordType!AS_GSS_Evaluation_RECORD.evaluationStatus.refDataId,\n        recordType!AS_GSS_Evaluation_RECORD.evaluationId,\n        recordType!AS_GSS_Evaluation_RECORD.sourceApplication\n      },\n      triggerRefresh: local!triggerRefresh,\n      executeWhen: a!isNotNullOrEmpty(ri!solicitationPiid),\n      returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT\n    ),\n    if(\n      rule!AS_CO_UT_checkIsNullOrEmpty(\n        value: local!evaluation[recordType!AS_GSS_Evaluation_RECORD.evaluationId]\n      ),\n      a!map(),\n      a!map(\n        evaluationId: local!evaluation[recordType!AS_GSS_Evaluation_RECORD.evaluationId],\n        solicitationPiid: local!evaluation[recordType!AS_GSS_Evaluation_RECORD.evaluationNumber],\n        title: local!evaluation[recordType!AS_GSS_Evaluation_RECORD.evaluationTitle],\n        status: local!evaluation[recordType!AS_GSS_Evaluation_RECORD.evaluationStatus.refLabel],\n        statusBranding: a!map(\n          bgColor: rule!AS_GSS_BrandingValueByKey(\n            brandingKey: a!match(\n              value: local!evaluation[recordType!AS_GSS_Evaluation_RECORD.evaluationStatus.refDataId],\n              equals: cons!AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS,\n              then: \"GrayOne\",\n              equals: cons!AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP,\n              then: \"BlueOne\",\n              equals: cons!AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE,\n              then: \"GreenOne\",\n              default: null\n            ),\n            useSuiteBranding: true\n          ),\n          textColor: rule!AS_GSS_BrandingValueByKey(\n            brandingKey: a!match(\n              value: local!evaluation[recordType!AS_GSS_Evaluation_RECORD.evaluationStatus.refDataId],\n              equals: cons!AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS,\n              then: \"GrayFour\",\n              equals: cons!AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP,\n              then: \"BlueTwo\",\n              equals: cons!AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE,\n              then: \"GreenFour\",\n              default: null\n            ),\n            useSuiteBranding: true\n          )\n        ),\n        createdOn: datetext(\n          local!evaluation[recordType!AS_GSS_Evaluation_RECORD.createdDatetime],\n          \"MMM dd, YYYY\"\n        ),\n        evaluationLink: rule!AS_CO_UT_urlForRecord(\n          recordType: recordType!AS_GSS_Evaluation_RECORD,\n          recordId: local!evaluation[recordType!AS_GSS_Evaluation_RECORD.evaluationId],\n          siteWebAddressIdentifier: cons!AS_GSS_ENUM_TEXT_WEB_ADDRESS_IDENTIFIER,\n          sitePage: cons!AS_GSS_ENUM_TEXT_SITE_PAGE_EVALUATION\n        )\n      )\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_queryRecord",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_checkIsNullOrEmpty",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_BrandingValueByKey",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_urlForRecord",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_INT_MAX_CHARACTERS_FOR_EVALUATION_NUMBER",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_REF_ID_SOURCE_APPLICATION_AM",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_ENUM_TEXT_WEB_ADDRESS_IDENTIFIER",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_ENUM_TEXT_SITE_PAGE_EVALUATION",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_Evaluation_RECORD",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_ENTRYPOINT_GETDATA_getEvaluationDetailsBySolicPiid",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

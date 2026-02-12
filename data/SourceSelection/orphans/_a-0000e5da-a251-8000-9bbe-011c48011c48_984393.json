@@ -1,0 +1,40 @@
+{
+  "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_984393",
+  "name": "AS_GSS_UI_vendorGrid_uploadDocs",
+  "type": "Expression Rule",
+  "description": "Grid Row for Upload /Uploaded Docs",
+  "sail_code": "if(\n  rule!AS_CO_UT_isBlank(\n    index(\n      ri!vendorDocs,\n      wherecontains(false, ri!vendorDocs.isDeleted),\n      null\n    )\n  ),\n  /*          Tag line      */\n  rule!AS_GSS_UI_vendorGrid_docTagLine(i18nData: ri!i18nData, align: \"START\"),\n  rule!AS_GSS_CPS_richTextListWithShowMoreLess(\n    label: \"Vendor Documents\",\n    labelPosition: \"COLLAPSED\",\n    align: \"LEFT\",\n    items: #\"SYSTEM_SYSRULES_forEach\"(\n      items: index(\n        ri!vendorDocs,\n        wherecontains(false, ri!vendorDocs.isDeleted),\n        null\n      ),\n      expression: {\n        #\"SYSTEM_SYSRULES_richTextIcon\"(\n          icon: \"file-text-o\",\n          size: \"STANDARD\",\n          color: \"ACCENT\"\n        ),\n        #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n          text: \" \" & fv!item.documentName & \" \",\n          style: \"STRONG\",\n          link: #\"SYSTEM_SYSRULES_documentDownloadLink\"(\n            document: fv!item.appianDocId,\n            label: fv!item.documentName\n          ),\n          linkStyle: \"STANDALONE\"\n        ),\n        char(10),\n        #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n          text: if(\n            rule!AS_CO_UT_isBlank(ri!factorDocumentMappingData),\n            \"0 Factors, 0 Subfactors\",\n            rule!AS_GAM_CO_I18N_UT_displayLabel(\n              bundle: ri!i18nData,\n              bundleKey: \"txt_FactorsandSubfactors\",\n              arguments: {\n                tointeger(\n                  index(\n                    ri!factorDocumentMappingData[wherecontains(\n                      tointeger(fv!item.evalDocumentId), tointeger(\n                        ri!factorDocumentMappingData.evalDocumentId\n                      )\n                    )],\n                    \"factors\",\n                    0\n                  )\n                ),\n                index(\n                  ri!factorDocumentMappingData[wherecontains(\n                    tointeger(fv!item.evalDocumentId), tointeger(\n                      rule!AS_CO_UT_indexPath(\n                        cdt: ri!factorDocumentMappingData, field: \"evalDocumentId\", indexDefault: {}\n                      )\n                    )\n                  )],\n                  \"subFactors\",\n                  0\n                )\n              }\n            ),\n            \n          ),\n          style: \"PLAIN\",\n          color: \"SECONDARY\"\n        ),\n        if(\n          ri!isDeletable,\n          #\"SYSTEM_SYSRULES_richTextIcon\"(\n            icon: \"trash-o\",\n            link: #\"SYSTEM_SYSRULES_dynamicLink\"(\n              value: fv!item.evalDocumentId,\n              saveInto: {\n                a!save(\n                  ri!vendorDocs[wherecontains(\n                    fv!item.evalDocumentId, ri!vendorDocs.evalDocumentId\n                  )].isDeleted,\n                  true\n                )\n              },\n              showWhen: ri!isDeletable\n            ),\n            linkStyle: \"STANDALONE\"\n          ),\n          {}\n        ),\n        char(10),\n        char(10)\n      }\n    ),\n    shortenIfLongerThanCount: cons!AS_GSS_MAX_LIMIT_FOR_DOCUMENT_DISPLAY,\n    includeLineBreak: true(),\n    showBulletedList: false(),\n    i18nData: ri!i18nData\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_UI_vendorGrid_docTagLine",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_CPS_richTextListWithShowMoreLess",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_indexPath",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_MAX_LIMIT_FOR_DOCUMENT_DISPLAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

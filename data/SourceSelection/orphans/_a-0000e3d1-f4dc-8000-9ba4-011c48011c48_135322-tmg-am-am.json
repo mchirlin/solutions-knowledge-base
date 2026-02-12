@@ -1,0 +1,41 @@
+{
+  "uuid": "_a-0000e3d1-f4dc-8000-9ba4-011c48011c48_135322-tmg-am-am",
+  "name": "AS_GSS_TMG_CP_taskCategoryContents",
+  "type": "Interface",
+  "description": "Allows user to configure a task category",
+  "sail_code": "a!localVariables(\n  /* Used to track if we are creating a new category or editing an existing one\n  If there is an ID populated, this must be a preexisting category that is being edited */\n  /*Check to see if there is a different category with the same name in the DB*/\n  local!isDuplicateTaskCategoryName: a!refreshVariable(\n    value: rule!AS_GSS_TMG_UT_isDuplicateTaskCategoryName(taskCategory: ri!taskCategory),\n    /*Don't want to update every time anything changes, just the name*/\n    refreshOnReferencedVarChange: false,\n    refreshOnVarChange: ri!taskCategory.categoryName\n  ),\n  {\n    #\"SYSTEM_SYSRULES_columnsLayout\"(\n      columns: {\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: {\n            rule!AS_CO_INP_textField(\n              label:\"Phase Name\",\n\n              required: true,\n              value: ri!taskCategory.categoryName,\n              validations: {\n                rule!AS_CO_VD_textValidation(\n                  value: ri!taskCategory.categoryName,\n                  minLength: 1,\n                  maxLength: cons!AS_CO_ENUM_TEXT_LENGTH_LONG\n                ),\n                if(\n                  local!isDuplicateTaskCategoryName,\n                  \"You cannot have two phases with the same name\",\n\n                  \"\"\n                )\n              },\n              saveInto: a!save(\n                target: ri!taskCategory.categoryName,\n                value: save!value\n              ),\n              refreshAfter: \"UNFOCUS\",\n              labelPosition: \"ABOVE\"\n            )\n          },\n          width: \"MEDIUM_PLUS\"\n        )\n      }\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_TMG_UT_isDuplicateTaskCategoryName",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_INP_textField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_VD_textValidation",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_TEXT_LENGTH_LONG",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_TMG_CPS_manageTaskCategory",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

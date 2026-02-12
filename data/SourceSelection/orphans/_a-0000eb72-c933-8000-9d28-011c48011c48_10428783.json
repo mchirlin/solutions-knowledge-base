@@ -1,0 +1,40 @@
+{
+  "uuid": "_a-0000eb72-c933-8000-9d28-011c48011c48_10428783",
+  "name": "AS_GSS_CPS_showWeightsWarningBanners",
+  "type": "Interface",
+  "description": "This is used to display the banners related to factor weight validation on weights step of an evaluation",
+  "sail_code": "a!localVariables(\n  local!weightValidationBannerList: rule!AS_GSS_VD_validateFactorWeights(\n    evaluationFactors: ri!evaluationFactors,\n    evaluationSubFactors: ri!evaluationSubFactors,\n    bundle: ri!bundle,\n    checkForBlankWeights: false()\n  ),\n  #\"SYSTEM_SYSRULES_forEach\"(\n    items: local!weightValidationBannerList,\n    expression: {\n      rule!AS_GSS_CRD_customisableBanner(\n        primaryIcon: \"exclamation-triangle\",\n        primaryIconColor: rule!AS_GSS_BrandingValueByKey(\n          brandingKey: \"FactorWeightsValidationBannerIconColor\",\n          useSuiteBranding: true\n        ),\n        primaryTextColor: rule!AS_GSS_BrandingValueByKey(\n          brandingKey: \"FactorWeightsValidationBannerTextColor\",\n          useSuiteBranding: true\n        ),\n        decorativeBarColor: rule!AS_GSS_BrandingValueByKey(\n          brandingKey: \"FactorWeightsValidationBannerCardDecorativeBarColor\",\n          useSuiteBranding: true\n        ),\n        cardLayoutStyle: rule!AS_GSS_BrandingValueByKey(\n          brandingKey: \"FactorWeightsValidationBannerCardStyle\",\n          useSuiteBranding: true\n        ),\n        primaryText: fv!item,\n        showBorder: false(),\n        marginBelow: \"LESS\"\n      )\n    }\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_VD_validateFactorWeights",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_CRD_customisableBanner",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_BrandingValueByKey",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_QE_getEvaluationCriteria",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

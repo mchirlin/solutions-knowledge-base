@@ -1,0 +1,91 @@
+{
+  "uuid": "_a-0000e527-3b38-8000-9ba9-011c48011c48_395184-am",
+  "name": "AS_GSS_TMG_CPS_manageReviewProperties",
+  "type": "Interface",
+  "description": "Manages Document template and threshold amount associated with the reviews",
+  "sail_code": "a!localVariables(\n  local!isExistingTemplate: rule!AS_CO_UT_isNotBlank(ri!selectedReview.templateId),\n  local!docTemplates: rule!AS_GSS_QE_getRefDocumentTemplate(isActive: true),\n  local!docReviews: rule!AS_CO_UT_rejectCdtByField(\n    cdt: rule!AS_GSS_TMG_QE_getTemplate(\n      returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY,\n      templateTypeId: cons!AS_GSS_REF_ID_TEMPLATE_TYPE_DOCUMENT_REVIEW,\n      triggerRefresh: ri!triggerRefresh\n    ),\n    field: \"templateId\",\n    value: ri!selectedReview.templateId\n  ),\n  local!isDuplicateTemplateName: rule!AS_GSS_TMG_UT_isDuplicateTemplateName(\n    selectedTemplate: ri!selectedReview,\n    refTemplates: rule!AS_GSS_TMG_QE_getTemplate(\n      templateName: ri!selectedReview.templateName,\n      returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY,\n      templateTypeId: cons!AS_GSS_REF_ID_TEMPLATE_TYPE_DOCUMENT_REVIEW,\n      triggerRefresh: ri!triggerRefresh\n    )\n  ),\n  local!reviewValuesDuplication: rule!AS_GSS_TMG_UT_duplicateDocReviewValidation(\n    selectedTemplate: ri!selectedReview,\n    docReviews: local!docReviews,\n    i18nData: ri!i18nData,\n    isDuplicateName: local!isDuplicateTemplateName\n  ),\n  {\n    #\"SYSTEM_SYSRULES_columnsLayout\"(\n      columns: {\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: /*Review Name*/\n          rule!AS_CO_INP_textField(\n            label: \"Review Name\",\n            value: ri!selectedReview.templateName,\n            saveInto: ri!selectedReview.templateName,\n            validations: {\n              rule!AS_CO_VD_textValidation(\n                value: ri!selectedReview.templateName,\n                maxLength: cons!AS_CO_ENUM_TEXT_LENGTH_MEDIUM\n              ),\n              rule!AS_CO_UT_validation(\n                validation: \"You cannot have two reviews with the same name\",\n                validateWhen: and(\n                  local!isDuplicateTemplateName,\n                  rule!AS_CO_UT_isBlank(local!reviewValuesDuplication)\n                )\n              )\n            },\n            required: true\n          )\n        ),\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: /*Doc Template*/\n          rule!AS_CO_CP_dropdownField(\n            label: \"Document Template\",\n            placeholderLabel: \"Select a template\",\n            value: ri!selectedReview.docTemplate,\n            saveInto: ri!selectedReview.docTemplate,\n            choiceLabels: local!docTemplates.documentName,\n            choiceValues: local!docTemplates,\n            required: true\n          )\n        ),\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: /*Status*/\n          {\n            rule!AS_CO_CP_booleanCheckBoxField(\n              label:\n              \"Status\",\n              labelPosition: \"ABOVE\",\n              choiceLabel:\n              \"Active\", value: ri!selectedReview.isActive,\n              additionalSaveIntos: a!save(\n                ri!showWarning,\n                if(ri!selectedReview.isActive, false, true)\n              ),\n              showWhen: local!isExistingTemplate\n            ),\n            /*Warning message when status is marked inactive*/\n            #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n              labelPosition: \"COLLAPSED\",\n              value: {\n                #\"SYSTEM_SYSRULES_richTextIcon\"(\n                  icon: \"warning\",\n                  color: \"ACCENT\",\n                  showWhen: = true\n                ),\n                #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                  text:\n                  \" \"&\n                  \"Making this inactive will cause the review process to not show to users but will not affect in flight review processes\",\n                  style: \"EMPHASIS\",\n                  color: \"ACCENT\"\n                )\n              },\n              showWhen: and(\n                ri!showWarning,\n                local!isExistingTemplate\n              )\n            )\n          }\n        )\n      }\n    ),\n    #\"SYSTEM_SYSRULES_sectionLayout_v1\"(\n      contents: {},\n      validations: local!reviewValuesDuplication\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_QE_getRefDocumentTemplate",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_rejectCdtByField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_QE_getTemplate",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_isDuplicateTemplateName",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_duplicateDocReviewValidation",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_INP_textField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_VD_textValidation",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_validation",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CP_dropdownField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CP_booleanCheckBoxField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_REF_ID_TEMPLATE_TYPE_DOCUMENT_REVIEW",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_TEXT_LENGTH_MEDIUM",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_TMG_CPS_manageDocReviews",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

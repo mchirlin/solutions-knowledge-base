@@ -1,0 +1,51 @@
+{
+  "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_228522",
+  "name": "AS_CO_CPS_cardsAsNavigation",
+  "type": "Interface",
+  "description": "Cards arranged in a grid that function as navigation through a page or site",
+  "sail_code": "a!localVariables(\n  local!cardLayouts: a!refreshVariable(\n    value: #\"SYSTEM_SYSRULES_forEach\"(\n      items: ri!choiceValues,\n      expression: a!localVariables(\n        local!hasImage: rule!AS_CO_UT_isNotBlank(index(ri!choiceImages, fv!index, null)),\n        local!hasLabel: rule!AS_CO_UT_isNotBlank(index(ri!choiceLabels, fv!index, null)),\n        local!hasInstructions: rule!AS_CO_UT_isNotBlank(index(ri!choiceInstructions, fv!index, null)),\n        local!itemLink: index(ri!choiceLinks, fv!index, null),\n        #\"SYSTEM_SYSRULES_cardLayout\"(\n          contents: {\n            #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n              labelPosition: \"COLLAPSED\",\n              value: {\n                cons!AS_CO_TXT_CARRIAGE_RETURN,\n                #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                  text: upper(ri!choiceLabels[fv!index]),\n                  showWhen: local!hasLabel,\n                  color: \"ACCENT\",\n                  size: \"MEDIUM_PLUS\",\n                  style: \"STRONG\"\n                )\n              },\n              align: \"CENTER\"\n            ),\n            #\"SYSTEM_SYSRULES_imageField_v1\"(\n              labelPosition: \"COLLAPSED\",\n              images: #\"SYSTEM_SYSRULES_documentImage\"(\n                document: ri!choiceImages[fv!index]\n              ),\n              showWhen: local!hasImage,\n              align: \"CENTER\"\n            ),\n            #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n              value: {\n                #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                  text: ri!choiceInstructions[fv!index],\n                  showWhen: local!hasInstructions,\n                  size: \"SMALL\"\n                ),\n                cons!AS_CO_TXT_CARRIAGE_RETURN,\n                cons!AS_CO_TXT_CARRIAGE_RETURN\n              },\n              align: \"CENTER\"\n            )\n          },\n          link: if(\n            rule!AS_CO_UT_isBlank(local!itemLink),\n            #\"SYSTEM_SYSRULES_dynamicLink\"(\n              value: ri!choiceValues[fv!index],\n              saveInto: ri!saveInto,\n              showWhen: rule!AS_CO_UT_not(ri!disabled)\n            ),\n            local!itemLink\n          ),\n          accessibilityText: rule!AS_CO_UT_displayCommonObjectBundleLabel(\n            bundleKey: \"AS.CO.CommonObjects.acs_CardAsNavigation\",\n            arguments: ri!choiceLabels[fv!index]\n          ),\n        ),\n      )\n    ),\n    refreshAlways: true\n  ),\n\n  rule!AS_CO_UT_zINTERNAL_cardsToGridStyleLayout_handler(\n    cardLayouts: local!cardLayouts,\n    maxPerRow: ri!maxPerRow,\n    align: rule!AS_CO_UT_replaceNull(nullableValue: ri!align, replacementValue: \"CENTER\"),\n    columnWidth: rule!AS_CO_UT_replaceNull(nullableValue: ri!columnWidth, replacementValue: \"WIDE_PLUS\")\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_not",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_displayCommonObjectBundleLabel",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_zINTERNAL_cardsToGridStyleLayout_handler",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_TXT_CARRIAGE_RETURN",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_TMG_CPS_managementWelcomePage",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

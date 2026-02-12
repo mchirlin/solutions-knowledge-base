@@ -1,0 +1,75 @@
+{
+  "uuid": "_a-0000eb7c-0389-8000-9d2c-011c48011c48_10521307",
+  "name": "AS_GSS_BL_ShowFactorWeight_v1_default",
+  "type": "Expression Rule",
+  "description": "This rule represents the visibilty to show or hide factor weights in the factors tab.Modify this rule to show/hide factor weight, as per need.",
+  "sail_code": "/*\n\nDESCRIPTION: This rule represents the visibilty to show or hide Factor weights in the factors tab.\n\nDEFAULT BEHAVIOR: Factor weights are always shown\n    hide subfactor weights if user is assigned as an evaluator\n    UNLESS they created the evaluation or are assigned as a super user on the evaluation/criteria/parent criteria\n    OR are a member of a super user group\n    assignments are not limited to the associated groups\n\nCUSTOMIZATION STEPS: \n1.Configure conditions accordingly  and set which groups can able to see the factor weights. \nSee inline comments about what each field of the conditions represents .\n\n\n\nEXPECTED OUTPUT TYPE: Boolean\n\n*/\nand(\n  ri!evaluation[recordType!AS_GSS_Evaluation_SYNCEDRECORD.isWeightedFactorsRequired],\n  /* \n    factor weights are always shown\n    hide subfactor weights if user is assigned as an evaluator\n    UNLESS they created the evaluation or are assigned as a super user on the evaluation/criteria/parent criteria\n    OR are a member of a super user group\n  */\n  or(\n    isnull(\n      ri!currentFactor[recordType!AS_GSS_Criteria_SYNCEDRECORD.parentCriteriaId]\n    ),\n    not(\n      contains(\n        rule!AS_CO_UT_distinct(\n          value: a!flatten(\n            touniformstring(\n              #\"SYSTEM_SYSRULES_forEach\"(\n                items: ri!allFactors,\n                expression: fv!item[recordType!AS_GSS_Criteria_SYNCEDRECORD.CriteriaAssignment.assignee]\n              )\n            )\n          )\n        ),\n        tostring(ri!loggedInUser)\n      )\n    ),\n    /*\n      as of GSS 1.7, these assignments are not limited to the associated groups\n      so we check separately from the groups memebership\n    */\n    contains(\n      touniformstring(\n        {\n          ri!evaluation[recordType!AS_GSS_Evaluation_SYNCEDRECORD.createdBy],\n          ri!evaluation[recordType!AS_GSS_Evaluation_SYNCEDRECORD.evaluationChief],\n          ri!evaluation[recordType!AS_GSS_Evaluation_SYNCEDRECORD.contractingOfficer],\n          ri!evaluation[recordType!AS_GSS_Evaluation_SYNCEDRECORD.contractingSpecialist],\n          ri!currentFactor[recordType!AS_GSS_Criteria_SYNCEDRECORD.criteriaChair]\n        }\n      ),\n      tostring(ri!loggedInUser)\n    ),\n    /* super users groups */\n    #\"urn:appian:function:v1:a:isusermemberofgroup?okey=a!isUserMemberOfGroup\"(\n      username: ri!loggedInUser,\n      matchAllGroups: false,\n      groups: {\n        cons!AS_GSS_GRP_CONTRACTING_PERSONNEL,\n        cons!AS_GSS_GRP_FACTOR_ADVISOR,\n        cons!AS_GSS_GRP_EVALUATION_CHAIRS\n      }\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_distinct",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_GRP_CONTRACTING_PERSONNEL",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_GRP_FACTOR_ADVISOR",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_GRP_EVALUATION_CHAIRS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_Evaluation_SYNCEDRECORD",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "AS_GSS_Criteria_SYNCEDRECORD",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "AS_GAM_GRP_CONTRACTING_OFFICER",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_zTST_showFactorWeight_RECORD",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_zTST_USER_showFactorWeight_BASIC_USER_ASSIGNED_PARENT_FACTOR_CHAIR",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_zTST_USER_showFactorWeight_BASIC_USER_ASSIGNED_SUBFACTOR_CHAIR",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_zTST_USER_showFactorWeight_BASIC_USER_ASSIGNED_EVALUATION_CHIEF",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_zTST_USER_showFactorWeight_BASIC_USER_EVALUATOR",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_zTST_USER_showFactorWeight_BASIC_USER_NOT_EVALUATOR",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

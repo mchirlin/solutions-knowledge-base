@@ -1,0 +1,31 @@
+{
+  "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157548",
+  "name": "AS_CO_UT_checkIfSingleType",
+  "type": "Expression Rule",
+  "description": "Returns true if the `type` or `typeOf` inputs represent a singular, non-array type",
+  "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Boolean',\n  with(\n    local!typeNumber: rule!AS_CO_UT_returnTypeNumber(\n      type: ri!type,\n      typeOf: ri!typeOf\n    ),\n  \n    and(\n      /*The type of the input equals the type of the input returned as single type*/\n      local!typeNumber = rule!AS_CO_UT_returnTypeNumber(\n        typeOf: rule!AS_CO_UT_returnSingleTypeObject(typeOf: cast(local!typeNumber, null))\n      ),\n      \n      /*And the type of the input is not list of variant*/\n      local!typeNumber <> rule!AS_CO_UT_returnTypeNumber(\n        typeOf: {}\n      )\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_returnTypeNumber",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_returnSingleTypeObject",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_CO_UT_cast",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_checkIfArrayType",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

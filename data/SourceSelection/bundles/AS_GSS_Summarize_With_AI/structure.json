@@ -1,0 +1,155 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GSS Summarize With AI",
+    "parent_name": null,
+    "total_objects": 4
+  },
+  "entry_point": {
+    "complexity_score": 8.0,
+    "total_nodes": 5,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GSS Summarize With AI",
+      "complexity_score": 8.0,
+      "total_nodes": 5,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Which AI?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Call Azure Summarizer",
+          "type": "SUBPROCESS",
+          "next": [
+            "End Node"
+          ],
+          "subprocess": "AS GSS Summarize With Azure OpenAI"
+        },
+        {
+          "name": "Call Appian AI Summarizer",
+          "type": "SUBPROCESS",
+          "next": [
+            "End Node"
+          ],
+          "subprocess": "AS GSS Summarize With Native AI"
+        },
+        {
+          "name": "Which AI?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Call Azure Summarizer (Azure)",
+            "Call Appian AI Summarizer"
+          ]
+        }
+      ]
+    },
+    "subprocesses": [
+      {
+        "name": "AS GSS Summarize With Native AI",
+        "complexity_score": 3.0,
+        "total_nodes": 3,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Execute Generative AI Skill"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Execute Generative AI Skill",
+            "type": "Execute Generative AI Skill",
+            "next": [
+              "End Node"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AS GSS Summarize With Azure OpenAI",
+        "complexity_score": 3.0,
+        "total_nodes": 3,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Call Azure Open AI Chat Completion"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Call Azure Open AI Chat Completion",
+            "type": "Call Integration",
+            "next": [
+              "End Node"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000eb16-753f-8000-9d01-011c48011c48_9518400",
+      "name": "AS_GSS_UT_deepIndex",
+      "type": "Expression Rule",
+      "description": "Rule to get the index value. It supports indexing nested CDT values.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GSS Summarize With Azure OpenAI"
+      ]
+    },
+    {
+      "uuid": "0002ee7f-845b-8000-dd77-7f0000014e7a",
+      "name": "AS GSS Summarize With AI",
+      "type": "Process Model",
+      "description": "Process to summarize content using either Azure OpenAI or Appian AI Skills",
+      "calls": [
+        "AS GSS Summarize With Azure OpenAI",
+        "AS GSS Summarize With Native AI"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "0002ee7d-0147-8000-dd1d-7f0000014e7a",
+      "name": "AS GSS Summarize With Azure OpenAI",
+      "type": "Process Model",
+      "description": "Process to summarize content using Azure Open AI Chat Completion",
+      "calls": [
+        "AS_GSS_UT_deepIndex"
+      ],
+      "called_by": [
+        "AS GSS Summarize With AI"
+      ]
+    },
+    {
+      "uuid": "0002ee7f-7e38-8000-dd72-7f0000014e7a",
+      "name": "AS GSS Summarize With Native AI",
+      "type": "Process Model",
+      "description": "Process to summarize content using Appian AI Skills",
+      "calls": [],
+      "called_by": [
+        "AS GSS Summarize With AI"
+      ]
+    }
+  ]
+}

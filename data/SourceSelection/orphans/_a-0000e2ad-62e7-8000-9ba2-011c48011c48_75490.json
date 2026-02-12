@@ -1,0 +1,36 @@
+{
+  "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75490",
+  "name": "AS_CO_UT_checkIfDuplicateExistsInArrayByIndex",
+  "type": "Expression Rule",
+  "description": "Checks if an array contains duplicate values, but only returns true if the index entered is duplicated (used for grid validations)",
+  "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Boolean',\n  if(\n    or(\n      \n      /*If index is less than 0*/\n      tointeger(ri!index) <= 0,\n      \n      /*If index is greater than array length*/\n      tointeger(ri!index) > count(ri!array),\n      \n      /*If we are skipping nulls, and the current index is null*/\n      and(\n        rule!AS_CO_UT_booleanDefaultFalse(ri!skipNulls),\n        rule!AS_CO_UT_isBlank(ri!array[ri!index])\n      )\n    ),\n    \n    /*Then return false*/\n    false,\n  \n    /*Otherwise, remove the current index from the list*/\n    /*And check if the remaining list contains the current index*/\n    with(\n      local!array: remove(\n        ri!array,\n        tointeger(ri!index)\n      ),\n      local!valueAtIndex: ri!array[ri!index],\n      if(\n        ri!caseSensitive,\n        contains(\n          local!array,\n          local!valueAtIndex\n        ),\n        contains(\n          lower(local!array),\n          lower(local!valueAtIndex)\n        )\n      )\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_booleanDefaultFalse",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_TMG_CPS_importReferenceTasksFileUpload",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_GRD_manageImportReferenceTasksGrid",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_checkIfDuplicateExistsInArray",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

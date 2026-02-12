@@ -1,0 +1,61 @@
+{
+  "uuid": "_a-0000eb72-c933-8000-9d28-011c48011c48_10426144",
+  "name": "AS_GSS_VD_validateFactorWeights",
+  "type": "Expression Rule",
+  "description": "Returns a message based on the total sum of the factor weights",
+  "sail_code": "a!localVariables(\n  local!activeEvaluationFactors: rule!AS_CO_UT_filterCdtByField(\n    cdt: ri!evaluationFactors,\n    field: \"isActive\",\n    value: true\n  ),\n  local!activeEvaluationSubFactors: rule!AS_CO_UT_filterCdtByField(\n    cdt: ri!evaluationSubFactors,\n    field: \"isActive\",\n    value: true\n  ),\n  local!allParentFactorsWeights: local!activeEvaluationFactors.factorWeight,\n  local!totalWeight: rule!AS_GSS_UT_returnsSumOfFactorsWeight(\n    factorWeights: local!allParentFactorsWeights\n  ),\n  rule!AS_CO_UT_rejectNullValuesFromArray(\n    {\n      /*Returns text only if all parent factor weights <> NULL and total factor weight <> 100*/\n      if(\n        rule!AS_GSS_UT_checkIfAnyWeightIsNullAndMismatchedTotalWeight(\n          totalWeight: local!totalWeight,\n          allFactorsWeights: local!allParentFactorsWeights\n        ),\n        \"Your factors do not equal 100 points. Adjust each factor weight to ensure their sum equals 100.\",\n        null\n      ),\n      /*Returns parent factors with all subfactor weights <> NULL and its sum <> total factor weight*/\n      #\"SYSTEM_SYSRULES_forEach\"(\n        local!activeEvaluationFactors,\n        a!localVariables(\n          local!subFactors: rule!AS_CO_UT_filterCdtByField(\n            cdt: local!activeEvaluationSubFactors,\n            field: \"parentCriteriaId\",\n            value: fv!item.criteriaId\n          ),\n          local!sumOfSubfactorWeights: rule!AS_GSS_UT_returnsSumOfFactorsWeight(\n            factorWeights: local!subFactors.factorWeight\n          ),\n          if(\n            and(\n              not(rule!AS_GSS_UT_checkIfNullOrZero(input:fv!item.factorWeight)),\n              rule!AS_GSS_UT_isNotBlank(\n                value: local!subFactors,\n                checkIfAllCdtFieldsAreNull: true\n              ),\n              rule!AS_GSS_UT_checkIfAnyWeightIsNullAndMismatchedTotalWeight(\n                totalWeight: local!sumOfSubfactorWeights,\n                allFactorsWeights: local!subFactors.factorWeight,\n                parentFactorWeight: fv!item.factorWeight\n              )\n            ),\n            rule!AS_GAM_CO_I18N_UT_displayLabel(\n              bundle: ri!bundle,\n              bundleKey: \"txt_SubFactorWeightValidationBannerMessage\",\n              arguments: fv!item.criteriaName\n            ),\n            null\n          )\n        )\n      ),\n      /*Returns text only if any factor weights is null*/\n      if(\n        and(\n          ri!checkForBlankWeights,\n          or(\n            #\"SYSTEM_SYSRULES_forEach\"(\n              items: {\n                local!activeEvaluationFactors.factorWeight,\n                local!activeEvaluationSubFactors.factorWeight\n              },\n              expression: rule!AS_GSS_UT_checkIfNullOrZero(input: fv!item)\n            )\n          )\n        ),\n        \"At least one factor or subfactor needs a weight. Apply a weight greater than 0 to each factor or subfactor.\",\n        {}\n      )\n    }\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_UT_returnsSumOfFactorsWeight",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_UT_checkIfAnyWeightIsNullAndMismatchedTotalWeight",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_UT_checkIfNullOrZero",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_UT_isNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_BL_validateStartEvaluation",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_CPS_showWeightsWarningBanners",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

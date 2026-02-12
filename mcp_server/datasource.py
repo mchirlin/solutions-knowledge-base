@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import os
 from abc import ABC, abstractmethod
+from collections import OrderedDict
 from pathlib import Path
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError
@@ -42,7 +43,7 @@ class LocalDataSource(DataSource):
     def list_apps(self) -> list[str]:
         return sorted(
             e.name for e in self._root.iterdir()
-            if e.is_dir() and (e / "manifest.json").exists()
+            if e.is_dir() and (e / "app_overview.json").exists()
         )
 
     def read_json(self, app_name: str, rel_path: str) -> dict | list:
@@ -59,17 +60,23 @@ class LocalDataSource(DataSource):
 class GitHubDataSource(DataSource):
     """Reads data from a GitHub repository via raw content URLs.
 
-    Uses in-memory caching to avoid repeated fetches for the same file.
+    Uses LRU caching to avoid repeated fetches. Anchor files
+    (app_overview.json, search_index.json) are pinned and never evicted.
     """
 
+    _PINNED_FILES = {'app_overview.json', 'search_index.json', 'orphans/_index.json'}
+
     def __init__(self, owner: str, repo: str, branch: str = "main",
-                 token: str | None = None, data_prefix: str = "data"):
+                 token: str | None = None, data_prefix: str = "data",
+                 maxsize: int = 500):
         self._owner = owner
         self._repo = repo
         self._branch = branch
         self._token = token or os.environ.get("GITHUB_TOKEN", "")
         self._prefix = data_prefix
-        self._cache: dict[str, dict | list] = {}
+        self._maxsize = maxsize
+        self._pinned: dict[str, dict | list] = {}
+        self._cache: OrderedDict[str, dict | list] = OrderedDict()
         self._app_list: list[str] | None = None
 
     def _raw_url(self, path: str) -> str:
@@ -85,7 +92,6 @@ class GitHubDataSource(DataSource):
         return h
 
     def _fetch_raw(self, path: str) -> bytes:
-        """Fetch raw file content from GitHub."""
         url = self._raw_url(path)
         req = Request(url, headers=self._headers())
         try:
@@ -97,15 +103,28 @@ class GitHubDataSource(DataSource):
             raise
 
     def _fetch_json(self, path: str) -> dict | list:
-        """Fetch and parse a JSON file, with caching."""
+        # Check pinned first
+        if path in self._pinned:
+            return self._pinned[path]
+        # Check LRU cache
         if path in self._cache:
+            self._cache.move_to_end(path)
             return self._cache[path]
+
         data = json.loads(self._fetch_raw(path))
-        self._cache[path] = data
+
+        # Pin anchor files, LRU-cache everything else
+        rel = path.split("/", 2)[-1] if "/" in path else path
+        if any(rel.endswith(p) for p in self._PINNED_FILES):
+            self._pinned[path] = data
+        else:
+            self._cache[path] = data
+            if len(self._cache) > self._maxsize:
+                self._cache.popitem(last=False)
+
         return data
 
     def _list_directory(self, path: str) -> list[dict]:
-        """List directory contents via GitHub Contents API."""
         url = self._api_url(path)
         req = Request(url, headers=self._headers())
         try:
@@ -132,7 +151,7 @@ class GitHubDataSource(DataSource):
 
     def file_exists(self, app_name: str, rel_path: str) -> bool:
         full_path = f"{self._prefix}/{app_name}/{rel_path}"
-        if full_path in self._cache:
+        if full_path in self._pinned or full_path in self._cache:
             return True
         try:
             self._fetch_json(full_path)

@@ -1,0 +1,80 @@
+{
+  "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_939658",
+  "name": "AS_GSS_SBS_checklistTaskToolbar",
+  "type": "Interface",
+  "description": "interface for checklist task toolbar (assignment)",
+  "sail_code": "a!localVariables(\n  local!checklistData: rule!AS_GSS_TMG_QE_getRuntimeTask(\n    triggerRefresh: ri!triggerRefresh,\n    taskStatusIds: {\n      cons!AS_GSS_TMG_REF_ID_TASK_STATUS_ASSIGNED,\n      cons!AS_GSS_TMG_REF_ID_TASK_STATUS_IN_PROGRESS\n    },\n    evaluationId: ri!evaluation.evaluationId,\n    executeWhen: rule!AS_CO_UT_isNotBlank(ri!evaluation.evaluationId),\n    additionalFilters: {\n      #\"SYSTEM_SYSRULES_queryFilter\"(\n        field: \"taskBehaviorType.behaviorTypeCode\",\n        operator: \"<>\",\n        value: cons!AS_GSS_TMG_ENUM_TASK_BEHAVIOR_TYPE_CODE_AUTOMATED\n      ),\n      if(\n        rule!AS_CO_UT_isNotBlank(ri!criteriaId),\n        {\n          #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: \"taskBehaviorType.behaviorSubtypeCode\",\n            operator: \"=\",\n            value: cons!AS_GSS_TMG_ENUM_TASK_BEHAVIOR_SUBTYPE_CODE_COMPLETE_EVALUATION\n          ),\n          #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: \"criteria.criteriaId\",\n            operator: \"=\",\n            value: ri!criteriaId\n          )\n        },\n        #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: \"taskBehaviorType.behaviorSubtypeCode\",\n          operator: \"<>\",\n          value: cons!AS_GSS_TMG_ENUM_TASK_BEHAVIOR_SUBTYPE_CODE_COMPLETE_EVALUATION\n        )\n      )\n    },\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY\n  ),\n  local!assignedUsers: reject(\n    rule!AS_CO_UT_isBlank(_),\n    {\n      if(\n        rule!AS_CO_UT_isBlank(local!checklistData),\n        null,\n        union(\n          local!checklistData.userAssignee,\n          local!checklistData.userAssignee\n        )\n      )\n    }\n  ),\n  local!uniqueAssignedUsers: remove(\n    local!assignedUsers,\n    wherecontains(\n      tostring(loggedInUser()),\n      touniformstring(local!assignedUsers)\n    )\n  ),\n  local!assigneeChoiceLabels: #\"SYSTEM_SYSRULES_forEach\"(\n    items: local!uniqueAssignedUsers,\n    expression: rule!AS_CO_UT_displayUser(user: fv!item)\n  ),\n  local!choiceLabels: rule!AS_CO_UT_rejectNullValuesFromArray(\n    {\n      local!assigneeChoiceLabels,\n      #\"SYSTEM_SYSRULES_forEach\"(\n        items: rule!AS_GSS_TMG_CONS_ASSIGNEE_TYPE_FILTERS(),\n        expression: rule!AS_GAM_CO_I18N_UT_displayLabel(\n          bundle: ri!i18nData,\n          bundleKey: fv!item.bundleKey\n        )\n      )\n    }\n  ),\n  local!choiceValues: rule!AS_CO_UT_rejectNullValuesFromArray(\n    {\n      local!uniqueAssignedUsers,\n      rule!AS_GSS_TMG_CONS_ASSIGNEE_TYPE_FILTERS().value\n    }\n  ),\n  #\"SYSTEM_SYSRULES_sideBySideItem\"(\n    item: rule!AS_CO_CP_dropdownField(\n      choiceLabels: local!choiceLabels,\n      choiceValues: local!choiceValues,\n      placeholderLabel: \"Select assignment\",\n      value: ri!assigneeTypeFilter,\n      saveInto: {\n        ri!assigneeTypeFilter,\n        rule!AS_CO_UT_saveNull(valueToNull: ri!selectedTasks)\n      },\n      accessibilityText: ri!accessibilityText\n    ),\n    width: \"2X\",\n    showWhen: ri!showChecklistTaskToolbar\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_TMG_QE_getRuntimeTask",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_displayUser",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_CONS_ASSIGNEE_TYPE_FILTERS",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CP_dropdownField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_saveNull",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_REF_ID_TASK_STATUS_ASSIGNED",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_REF_ID_TASK_STATUS_IN_PROGRESS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_ENUM_TASK_BEHAVIOR_TYPE_CODE_AUTOMATED",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_ENUM_TASK_BEHAVIOR_SUBTYPE_CODE_COMPLETE_EVALUATION",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

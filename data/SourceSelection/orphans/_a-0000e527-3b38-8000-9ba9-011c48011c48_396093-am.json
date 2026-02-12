@@ -1,0 +1,111 @@
+{
+  "uuid": "_a-0000e527-3b38-8000-9ba9-011c48011c48_396093-am",
+  "name": "AS_GSS_TMG_CPS_GRD_manageReviewGrid",
+  "type": "Interface",
+  "description": "Grid to add / edit items for review process",
+  "sail_code": "a!localVariables(\n  local!refData: rule!AS_GSS_QE_getRefDataByTypes(\n    refTypes: cons!AS_GSS_REF_TYPE_ITEM_DURATION_UNIT\n  ),\n  local!refTask: rule!AS_GSS_TMG_QE_getTaskRefs(\n    taskRefId: cons!AS_GSS_TMG_TASK_REF_ID_REVIEW_DOCUMENT,\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT\n  ),\n  #\"SYSTEM_SYSRULES_gridLayout\"(\n    label:\"Reviews\",\n    emptyGridMessage: \"No tasks available\",\n    headerCells: {\n      #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(label: \"\"),\n      #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(\n        label: \"Precedents\",\n        helpTooltip: \"Review groups without precedents will be kicked off upon submission\"\n      ),\n      #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(\n        label: \"Assigned Group\" & \" * \"\n      ),\n      #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(\n        label: \"Duration\" & \" * \"\n      ),\n      #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(\n        label: \"Duration Unit\" & \" * \"\n      ),\n      #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(label: \"\")\n    },\n    columnConfigs: {\n      #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(width: \"ICON\"),\n      /*Make precedent fields larger*/\n      #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(weight: 2),\n      #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(weight: 1),\n      #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(weight: 1),\n      #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(weight: 1),\n      #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(width: \"ICON\")\n    },\n    rows: {\n      #\"SYSTEM_SYSRULES_forEach\"(\n        items: ri!selectedReview.templateTasks,\n        expression: {\n          #\"SYSTEM_SYSRULES_gridRowLayout\"(\n            contents: {\n              /*index*/\n              rule!AS_CO_CP_integerField(\n                readOnly: true,\n                value: fv!index,\n                align: \"CENTER\"\n              ),\n              a!localVariables(\n                local!precTaskOptions: a!refreshVariable(\n                  value: rule!AS_CO_UT_rejectCdtByField(\n                    cdt: ri!selectedReview.templateTasks,\n                    field: \"groupAssignee\",\n                    value: fv!item.groupAssignee\n                  ),\n                  refreshOnReferencedVarChange: true\n                ),\n                local!choiceLabels: a!refreshVariable(\n                  value: #\"SYSTEM_SYSRULES_forEach\"(\n                    items: rule!AS_CO_UT_rejectNullValuesFromArray(\n                      union(\n                        local!precTaskOptions.groupAssignee,\n                        local!precTaskOptions.groupAssignee\n                      )\n                    ),\n                    expression: group(fv!item, \"groupName\"),\n\n                  ),\n                  refreshOnReferencedVarChange: true\n                ),\n                local!choiceValues: a!refreshVariable(\n                  value: rule!AS_CO_UT_rejectNullValuesFromArray(\n                    union(\n                      local!precTaskOptions.groupAssignee,\n                      local!precTaskOptions.groupAssignee\n                    )\n                  ),\n                  refreshOnReferencedVarChange: true\n                ),\n                /*precedents*/\n                {\n                  rule!AS_CO_CP_multipleDropdownField(\n                    placeholderLabel: \"Select Precedents\",\n                    choiceLabels: local!choiceLabels,\n                    choiceValues: local!choiceValues,\n                    value: a!flatten(fv!item.templateTaskPrecedents).groupId_precedent,\n                    disabled: rule!AS_CO_UT_isBlank(local!precTaskOptions.groupAssignee),\n                    readOnly: rule!AS_CO_UT_isBlank(local!precTaskOptions.groupAssignee),\n                    saveInto: {\n                      a!save(\n                        fv!item.templateTaskPrecedents,\n                        #\"SYSTEM_SYSRULES_forEach\"(\n                          items: save!value,\n                          expression: 'type!{urn:com:appian:types:AS:GSS:TMG}AS_GSS_TMG_R_TemplateTask_Precedent'(groupId_precedent: fv!item)\n                        )\n                      )\n                    }\n                  ),\n                  /*default assignee*/\n                  rule!AS_CO_CP_pickerFieldGroups(\n                    required: true,\n                    maxSelections: 1,\n                    groupFilter: cons!AS_GSS_TMG_GRP_TASK_RECIPIENTS,\n                    value: fv!item.groupAssignee,\n                    validations: if(\n                      contains(\n                        remove(\n                          ri!selectedReview.templateTasks.groupAssignee,\n                          fv!index\n                        ),\n                        fv!item.groupAssignee\n                      ),\n                      \"Group exists already\",\n                      \"\"\n                    ),\n                    saveInto: {\n                      fv!item.groupAssignee,\n                      /*to update the task precedents*/\n                      rule!AS_GSS_TMG_UT_updatePrecedentsOnUpdatingGroupAssignee(selectedReview: ri!selectedReview)\n                    },\n                    placeholder: \"Select a group\"\n                  )\n                }\n              ),\n              /*Duration*/\n              rule!AS_CO_CP_integerField(\n                required: true,\n                value: fv!item.duration,\n                validations: rule!AS_CO_VD_numberValidation(\n                  value: fv!item.duration,\n                  minSize: 1,\n                  minSizeMessage: \"Please enter a duration value greater than 0\",\n                  maxSize: 1000,\n                  maxSizeMessage: \"Please enter a duration value less than or equal to 1000\"\n                ),\n                saveInto: fv!item.duration,\n                placeholder: \"Enter duration\"\n              ),\n              /*Duration Unit*/\n              rule!AS_CO_CP_dropdownField(\n                required: true,\n                choiceLabels: local!refData.refLabel,\n                choiceValues: local!refData.refDataId,\n                placeholderLabel: \"Select a unit\",\n                value: fv!item.durationUnit.refDataId,\n                saveInto: fv!item.durationUnit.refDataId\n              ),\n              /*remove task*/\n              rule!AS_CO_DSP_removeIcon(\n                caption: \"Remove Task\",\n                /*remove task as precedent for other tasks, then remove task from template*/\n                saveInto: {\n                  rule!AS_GSS_TMG_UT_removeItemFromReviewSaves(\n                    selectedReview: ri!selectedReview,\n                    groupIdToRemove: fv!item.groupAssignee,\n                    templateTaskIndexToRemove: fv!index\n                  )\n                },\n                removalType: cons!AS_CO_ENUM_REMOVAL_ICON_TYPE_CLEAR\n              )\n            }\n          )\n        }\n      )\n    },\n    addRowLink: #\"SYSTEM_SYSRULES_dynamicLink\"(\n      label: \"Review Group\",\n      value: {\n        rule!AS_CO_UT_cast(\n          type: 'type!{urn:com:appian:types:AS:GSS:TMG}AS_GSS_TMG_R_TemplateTask',\n          value: {\n            templateTaskId: null,\n            /*Populating the task ref details for \"Review Document*/\n            taskRef: local!refTask,\n            templateTaskPrecedents: {}\n          }\n        )\n      },\n      saveInto: {\n        a!save(\n          ri!selectedReview.templateTasks,\n          append(\n            ri!selectedReview.templateTasks,\n            save!value\n          )\n        )\n      }\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_QE_getRefDataByTypes",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_QE_getTaskRefs",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CP_integerField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_rejectCdtByField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CP_multipleDropdownField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CP_pickerFieldGroups",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_updatePrecedentsOnUpdatingGroupAssignee",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_VD_numberValidation",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CP_dropdownField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_DSP_removeIcon",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_UT_removeItemFromReviewSaves",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_cast",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_REF_TYPE_ITEM_DURATION_UNIT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_TASK_REF_ID_REVIEW_DOCUMENT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_GRP_TASK_RECIPIENTS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_REMOVAL_ICON_TYPE_CLEAR",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_TMG_CPS_manageDocReviews",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

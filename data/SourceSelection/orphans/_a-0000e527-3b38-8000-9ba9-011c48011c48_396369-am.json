@@ -1,0 +1,81 @@
+{
+  "uuid": "_a-0000e527-3b38-8000-9ba9-011c48011c48_396369-am",
+  "name": "AS_GSS_TMG_CPS_manageDocReviews",
+  "type": "Interface",
+  "description": "Manage document reviews",
+  "sail_code": "a!localVariables(\n  local!isExistingTemplate: rule!AS_CO_UT_isNotBlank(ri!selectedReview.templateId),\n  /*Boolean to show warning message when the status is made inactive*/\n  local!showWarning: false,\n  {\n    /*form header*/\n    rule!AS_CO_DSP_displayHeader(\n      headerText: if(\n        local!isExistingTemplate,\n        \"Edit Review\",\n        \"Add Review\"\n      )\n    ),\n    /*template name, description, mapping fields*/\n    rule!AS_GSS_TMG_CPS_manageReviewProperties(\n      selectedReview: ri!selectedReview,\n      i18nData: ri!i18nData,\n      /*readOnly: false,*/\n      showWarning: local!showWarning,\n      triggerRefresh: ri!triggerRefresh\n    ),\n    /*Review grid*/\n    rule!AS_GSS_TMG_CPS_GRD_manageReviewGrid(\n      i18nData: ri!i18nData,\n      selectedReview: ri!selectedReview,\n      /*triggerRefresh: ri!triggerRefresh*/\n\n    ),\n    /*save and cancel buttons*/\n    rule!AS_CO_CPS_cancelSaveButtons(\n      confirmLabel: rule!AS_GAM_CO_I18N_UT_displayLabel(\n        bundle: ri!i18nData,\n        bundleKey: if(\n          local!isExistingTemplate,\n          \"btn_SaveChanges\",\n          \"btn_AddReview\"\n        )\n      ),\n      cancelLabel: \"Cancel\",\n      confirmSaveInto: {\n        a!save(local!showWarning, false),\n        a!save(\n          ri!selectedReview.templateType.refDataId,\n          cons!AS_GSS_REF_ID_TEMPLATE_TYPE_DOCUMENT_REVIEW\n        ),\n        rule!AS_ADT_UT_startAuditProcess(\n          newObjects: ri!selectedReview,\n          objectType: 'type!{urn:com:appian:types:AS:GSS:TMG}AS_GSS_TMG_R_Template',\n          objectDse: cons!AS_GSS_TMG_ENT_R_TEMPLATE,\n          auditDse: cons!AS_GSS_TMG_ENT_A_R_TEMPLATE,\n          auditConfig: rule!AS_GSS_TMG_ADT_BL_auditConfig_R_Template(),\n          onSuccess: {\n            rule!AS_CO_UT_triggerRefresh(triggerRefresh: ri!triggerRefresh),\n            rule!AS_CO_UT_saveNull(valueToNull: ri!selectedReview)\n          }\n        )\n      },\n      cancelSaveInto: {\n        a!save(local!showWarning, false),\n        rule!AS_CO_UT_saveNull(valueToNull: ri!selectedReview)\n      },\n      includeDivider: true,\n      confirmAccessibilityText: \"Press Enter to save changes\",\n      cancelAccessibilityText: \"Press Enter to cancel changes\"\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_DSP_displayHeader",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_CPS_manageReviewProperties",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_CPS_GRD_manageReviewGrid",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CPS_cancelSaveButtons",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_ADT_UT_startAuditProcess",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_ADT_BL_auditConfig_R_Template",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_triggerRefresh",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_saveNull",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_REF_ID_TEMPLATE_TYPE_DOCUMENT_REVIEW",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_ENT_R_TEMPLATE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_TMG_ENT_A_R_TEMPLATE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_TMG_CPS_viewOrManageDocumentReviewSettings",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

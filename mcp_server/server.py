@@ -59,16 +59,14 @@ def list_applications() -> list[dict]:
     ds = _datasource()
     apps = []
     for name in ds.list_apps():
-        manifest = ds.read_json(name, "manifest.json")
-        info = manifest.get("package_info", {})
-        coverage = {}
-        bundle_types = {}
-        if ds.file_exists(name, "bundles/_index.json"):
-            index = ds.read_json(name, "bundles/_index.json")
-            coverage = index.get("coverage", {})
-            for b in index.get("bundles", []):
-                bt = b.get("bundle_type", "unknown")
-                bundle_types[bt] = bundle_types.get(bt, 0) + 1
+        overview = ds.read_json(name, "app_overview.json")
+        info = overview.get("package_info", {})
+        coverage = overview.get("coverage", {})
+        bundles = overview.get("bundles", [])
+        bundle_types: dict[str, int] = {}
+        for b in bundles:
+            bt = b.get("bundle_type", "unknown")
+            bundle_types[bt] = bundle_types.get(bt, 0) + 1
         apps.append({
             "name": name,
             "total_objects": info.get("total_parsed_objects"),
@@ -83,53 +81,14 @@ def list_applications() -> list[dict]:
 def get_app_overview(app_name: str) -> dict:
     """Get a comprehensive overview of a GAM application in a single call.
 
-    Returns package metadata, object counts by type, bundle index, dependency
-    summary (top shared utilities, dependency type breakdown), and orphan count.
+    Returns package metadata, object counts by type, bundle index with key objects,
+    dependency summary (top shared utilities, dependency type breakdown), and coverage.
     Use this as the starting point before drilling into specific bundles or objects.
 
     Args:
         app_name: Application folder name (from list_applications).
     """
-    ds = _datasource()
-    manifest = ds.read_json(app_name, "manifest.json")
-
-    overview: dict = {
-        "package_info": manifest.get("package_info", {}),
-        "object_counts": manifest.get("object_inventory", {}).get("total_by_type", {}),
-    }
-
-    if not overview["object_counts"]:
-        by_type = manifest.get("object_inventory", {}).get("by_type", {})
-        overview["object_counts"] = {k: v.get("count", len(v.get("objects", []))) for k, v in by_type.items()}
-
-    if ds.file_exists(app_name, "bundles/_index.json"):
-        index = ds.read_json(app_name, "bundles/_index.json")
-        overview["coverage"] = index.get("coverage", {})
-        overview["bundles"] = [
-            {
-                "file": b["file"],
-                "bundle_type": b["bundle_type"],
-                "root_name": b["root_name"],
-                "parent_name": b.get("parent_name"),
-                "object_count": b["object_count"],
-            }
-            for b in index.get("bundles", [])
-        ]
-
-    if ds.file_exists(app_name, "dependencies.json"):
-        deps = ds.read_json(app_name, "dependencies.json")
-        overview["dependency_summary"] = {
-            "total_dependencies": deps.get("_metadata", {}).get("total_dependencies"),
-            "by_type": deps.get("dependency_summary", {}).get("by_type", {}),
-            "most_depended_on": deps.get("dependency_summary", {}).get("most_depended_on", [])[:10],
-            "most_dependencies": deps.get("dependency_summary", {}).get("most_dependencies", [])[:10],
-        }
-
-    if ds.file_exists(app_name, "bundles/_orphans.json"):
-        orphans = ds.read_json(app_name, "bundles/_orphans.json")
-        overview["orphan_count"] = orphans.get("_metadata", {}).get("total_objects", 0)
-
-    return overview
+    return _datasource().read_json(app_name, "app_overview.json")
 
 
 @mcp.tool()
@@ -143,65 +102,17 @@ def search_bundles(app_name: str, query: str, bundle_type: str | None = None) ->
         query: Case-insensitive substring to match against bundle root names.
         bundle_type: Optional filter — one of: action, process, page, site, dashboard, web_api.
     """
-    ds = _datasource()
-    if not ds.file_exists(app_name, "bundles/_index.json"):
-        return []
-    index = ds.read_json(app_name, "bundles/_index.json")
+    overview = _datasource().read_json(app_name, "app_overview.json")
     query_lower = query.lower()
     results = []
-    for b in index.get("bundles", []):
+    for b in overview.get("bundles", []):
         if bundle_type and b.get("bundle_type") != bundle_type:
             continue
         name = b.get("root_name", "")
         parent = b.get("parent_name", "") or ""
         if query_lower in name.lower() or query_lower in parent.lower():
-            results.append({
-                "file": b["file"],
-                "bundle_type": b["bundle_type"],
-                "root_name": name,
-                "parent_name": b.get("parent_name"),
-                "object_count": b["object_count"],
-            })
+            results.append(b)
     return results
-
-
-@mcp.tool()
-def get_bundle(app_name: str, bundle_file: str, detail_level: str = "full") -> dict | str:
-    """Get a bundle's content at the requested detail level.
-
-    Args:
-        app_name: Application folder name.
-        bundle_file: Relative path from bundles/ (e.g. "actions/My_Action.json").
-                     Use search_bundles or get_app_overview to find available files.
-        detail_level: "summary" for metadata + object names only (fast, small),
-                      "full" for complete bundle with SAIL code and all data.
-    """
-    ds = _datasource()
-    path = f"bundles/{bundle_file}"
-    data = ds.read_json(app_name, path)
-
-    if detail_level == "summary":
-        summary: dict = {"_metadata": data.get("_metadata", {})}
-        objects = []
-        for key, val in data.items():
-            if key == "_metadata":
-                continue
-            if isinstance(val, list):
-                for item in val:
-                    if isinstance(item, dict) and "name" in item:
-                        objects.append({"name": item["name"], "object_type": item.get("object_type"), "section": key})
-            elif isinstance(val, dict):
-                for sub_key, sub_val in val.items():
-                    if isinstance(sub_val, dict) and "name" in sub_val:
-                        objects.append({"name": sub_val["name"], "object_type": sub_val.get("object_type"), "section": f"{key}.{sub_key}"})
-                    elif isinstance(sub_val, list):
-                        for item in sub_val:
-                            if isinstance(item, dict) and "name" in item:
-                                objects.append({"name": item["name"], "object_type": item.get("object_type"), "section": f"{key}.{sub_key}"})
-        summary["objects"] = objects
-        return summary
-
-    return _truncate(data)
 
 
 @mcp.tool()
@@ -215,21 +126,42 @@ def search_objects(app_name: str, query: str, object_type: str | None = None) ->
                      "Record Type", "CDT", "Integration", "Web API", "Constant").
     """
     ds = _datasource()
-    manifest = ds.read_json(app_name, "manifest.json")
-    inventory = manifest.get("object_inventory", {}).get("by_type", {})
+    index = ds.read_json(app_name, "search_index.json")
     query_lower = query.lower()
     results = []
-    for otype, info in inventory.items():
-        if object_type and otype != object_type:
+    for name, info in index.items():
+        if object_type and info.get("type") != object_type:
             continue
-        for obj in info.get("objects", []):
-            if query_lower in obj.get("name", "").lower():
-                results.append({
-                    "uuid": obj["uuid"],
-                    "name": obj["name"],
-                    "object_type": otype,
-                })
+        if query_lower in name.lower():
+            results.append({"name": name, **info})
     return results[:50]
+
+
+@mcp.tool()
+def get_bundle(app_name: str, bundle_id: str, detail_level: str = "summary") -> dict | str:
+    """Get a bundle's content at the requested detail level.
+
+    Args:
+        app_name: Application folder name.
+        bundle_id: Bundle directory name (e.g. "AS_GSS_ConsensusReport_RECORD_-_Sign").
+                   Use search_bundles or get_app_overview to find available bundles.
+        detail_level: "summary" for structure only (fast, small, no code),
+                      "full" for structure + SAIL code merged together.
+    """
+    ds = _datasource()
+    structure = ds.read_json(app_name, f"bundles/{bundle_id}/structure.json")
+
+    if detail_level == "summary":
+        return structure
+
+    # Full: merge code into structure
+    code = ds.read_json(app_name, f"bundles/{bundle_id}/code.json")
+    code_map = code.get("objects", {})
+    for obj in structure.get("objects", []):
+        uuid = obj.get("uuid")
+        if uuid and uuid in code_map:
+            obj["sail_code"] = code_map[uuid].get("sail_code")
+    return _truncate(structure)
 
 
 @mcp.tool()
@@ -243,31 +175,52 @@ def get_dependencies(app_name: str, object_name: str) -> dict:
         object_name: Case-insensitive object name to look up.
     """
     ds = _datasource()
-    data = ds.read_json(app_name, "dependencies.json")
+    # Look up UUID from search index
+    index = ds.read_json(app_name, "search_index.json")
     name_lower = object_name.lower()
+    uuid = None
+    for name, info in index.items():
+        if name.lower() == name_lower:
+            uuid = info.get("uuid")
+            break
 
-    outbound, inbound = [], []
-    for dep in data.get("dependencies", []):
-        src, tgt = dep.get("source", {}), dep.get("target", {})
-        if src.get("name", "").lower() == name_lower:
-            outbound.append({
-                "target": tgt.get("name"),
-                "target_type": tgt.get("object_type"),
-                "dependency_type": dep.get("dependency_type"),
-            })
-        if tgt.get("name", "").lower() == name_lower:
-            inbound.append({
-                "source": src.get("name"),
-                "source_type": src.get("object_type"),
-                "dependency_type": dep.get("dependency_type"),
-            })
-    return {
-        "object_name": object_name,
-        "outbound_count": len(outbound),
-        "inbound_count": len(inbound),
-        "calls": outbound[:100],
-        "called_by": inbound[:100],
-    }
+    if not uuid:
+        return {"error": f"Object '{object_name}' not found", "object_name": object_name}
+
+    obj_data = ds.read_json(app_name, f"objects/{uuid}.json")
+    return obj_data
+
+
+@mcp.tool()
+def get_object_detail(app_name: str, object_uuid: str) -> dict:
+    """Get full dependency and bundle info for a specific object by UUID.
+
+    Args:
+        app_name: Application folder name.
+        object_uuid: The object's UUID.
+    """
+    return _datasource().read_json(app_name, f"objects/{object_uuid}.json")
+
+
+@mcp.tool()
+def list_orphans(app_name: str) -> dict:
+    """List all orphaned objects (not reachable from any entry point).
+
+    Args:
+        app_name: Application folder name.
+    """
+    return _datasource().read_json(app_name, "orphans/_index.json")
+
+
+@mcp.tool()
+def get_orphan(app_name: str, object_uuid: str) -> dict:
+    """Get full detail (including code) for an orphaned object.
+
+    Args:
+        app_name: Application folder name.
+        object_uuid: The orphan object's UUID.
+    """
+    return _datasource().read_json(app_name, f"orphans/{object_uuid}.json")
 
 
 # ── Entry point ─────────────────────────────────────────────────────────

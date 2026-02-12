@@ -1,0 +1,211 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GSS TMG  Cancel Tasks",
+    "parent_name": null,
+    "total_objects": 7
+  },
+  "entry_point": {
+    "complexity_score": 15.0,
+    "total_nodes": 8,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GSS TMG  Cancel Tasks",
+      "complexity_score": 15.0,
+      "total_nodes": 8,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Tasks empty?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Alerts empty?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node (Yes)",
+            "Update Alerts Inactive (No)"
+          ]
+        },
+        {
+          "name": "Tasks empty?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Write to Task (No)",
+            "Alerts empty? (Yes)"
+          ]
+        },
+        {
+          "name": "Write to Task",
+          "type": "Write to Data Store Entity",
+          "next": [
+            "Write to Task Audit"
+          ]
+        },
+        {
+          "name": "Write to Task Audit",
+          "type": "SUBPROCESS",
+          "next": [
+            "Alerts empty?"
+          ],
+          "subprocess": "AS GSS TMG Task Action Audit"
+        },
+        {
+          "name": "Update Alerts Inactive",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write to Alert"
+          ]
+        },
+        {
+          "name": "Write to Alert",
+          "type": "Write to Data Store Entity",
+          "next": [
+            "End Node"
+          ]
+        }
+      ]
+    },
+    "subprocesses": [
+      {
+        "name": "AS GSS TMG Task Action Audit",
+        "complexity_score": 8.0,
+        "total_nodes": 5,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "data?"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "data?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "End Node",
+              "Create Task Action Audit CDTs"
+            ]
+          },
+          {
+            "name": "Write to Task Action Audit",
+            "type": "Write to Data Store Entity",
+            "next": [
+              "End Node"
+            ]
+          },
+          {
+            "name": "Create Task Action Audit CDTs",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Write to Task Action Audit"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e393-fbf1-8000-9ba2-011c48011c48_100868-tmg-am-am",
+      "name": "AS_GSS_TMG_ENT_TASK",
+      "type": "Constant",
+      "description": "Value: AS_GSS_TMG_Task",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS GSS TMG  Cancel Tasks"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_37385-tmg-am-am",
+      "name": "AS_GSS_TMG_ENT_TASK_ACTION_AUDIT",
+      "type": "Constant",
+      "description": "Value: AS_GSS_TMG_TaskActionAudit",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS GSS TMG Task Action Audit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e534-0cc8-8000-9bb4-011c48011c48_473437-am",
+      "name": "AS_GSS_TMG_REF_ID_TASK_ACTION_CANCELLED",
+      "type": "Constant",
+      "description": "Value: 6",
+      "value": "6",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GSS TMG  Cancel Tasks"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GSS TMG  Cancel Tasks",
+        "AS GSS TMG Task Action Audit",
+        "AS_CO_UT_replaceNull"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73980",
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "description": "Returns nullableValue only if it is not null. Else returns replacementValue.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS GSS TMG Task Action Audit"
+      ]
+    },
+    {
+      "uuid": "0000e543-e62a-8000-0322-7f0000014e7a-am",
+      "name": "AS GSS TMG  Cancel Tasks",
+      "type": "Process Model",
+      "description": "Process for task Cancel",
+      "calls": [
+        "AS GSS TMG Task Action Audit",
+        "AS_CO_UT_isBlank",
+        "AS_GSS_TMG_ENT_TASK",
+        "AS_GSS_TMG_REF_ID_TASK_ACTION_CANCELLED"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "0002e2d7-0c89-8000-f92f-7f0000014e7a-tmg-am-am",
+      "name": "AS GSS TMG Task Action Audit",
+      "type": "Process Model",
+      "description": "Sub-process to track task action audits",
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull",
+        "AS_GSS_TMG_ENT_TASK_ACTION_AUDIT"
+      ],
+      "called_by": [
+        "AS GSS TMG  Cancel Tasks"
+      ]
+    }
+  ]
+}

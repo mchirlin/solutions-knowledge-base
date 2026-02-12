@@ -1,0 +1,20 @@
+{
+  "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1058208",
+  "name": "AS_GSS_getDuedateAndDays",
+  "type": "Expression Rule",
+  "description": "This rule is used to get the due Date and day by business days,non business days based on condition",
+  "sail_code": "if(\n  cons!AS_GSS_TMG_BOL_BUSINESS_DAYS_ONLY,\n  /*Business days*/\n  a!localVariables(\n    /*calculating the end date diff from today*/\n    local!workingDays: if(rule!AS_CO_UT_isBlank(ri!dueDate),0,calworkdays(today(), ri!dueDate)),\n    #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n      value: {\n        #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n          text: {\n            if(\n              local!workingDays < 0,\n              #\"SYSTEM_SYSRULES_richTextIcon\"(\n                icon: \"exclamation-circle\",\n                color: \"NEGATIVE\",\n                altText: \"Over due\"\n              ),\n              {}\n            ),\n            if(\n              local!workingDays < 0,\n              \" \" & local!workingDays,\n              \" \" & local!workingDays - 1\n            ) & \"d\"\n          },\n          color: if(local!workingDays < 0, \"NEGATIVE\", null)\n        ),\n        char(10),\n        #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n          text: ri!dueDate,\n          color: \"SECONDARY\",\n          size: \"SMALL\"\n        )\n      }\n    )\n  ),\n  /*Not Business days*/\n  a!localVariables(\n    /*calculating the end date diff from today*/\n    local!endDateDifference: tointeger(todate(ri!dueDate) - today()),\n    /*checking if alreadt expired*/\n    local!expired: todate(min(ri!dueDate)) < today(),\n    #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n      value: {\n        #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n          text: {\n            if(\n              local!expired,\n              #\"SYSTEM_SYSRULES_richTextIcon\"(\n                icon: \"exclamation-circle\",\n                color: \"NEGATIVE\",\n                altText: \"Over due\"\n              ),\n              {}\n            ),\n            if(\n              local!expired,\n              \" \" & local!endDateDifference & \"d\",\n              or(\n                local!endDateDifference = 1,\n                local!endDateDifference = 0\n              ),\n              \" \" & local!endDateDifference & \"d\",\n              and(\n                local!endDateDifference > 0,\n                todate(ri!dueDate) > today()\n              ),\n              \" \" & local!endDateDifference & \"d\",\n              null\n            )\n          },\n          color: if(local!expired, \"NEGATIVE\", null)\n        ),\n        char(10),\n        #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n          text: ri!dueDate,\n          color: \"SECONDARY\",\n          size: \"SMALL\"\n        )\n      }\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_TMG_BOL_BUSINESS_DAYS_ONLY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

@@ -1,0 +1,35 @@
+{
+  "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_935474",
+  "name": "AS_GSS_BL_statusFilterForEvaluationRecord",
+  "type": "Expression Rule",
+  "description": "Status filter for Evaluation Record",
+  "sail_code": "a!localVariables(\n  local!refData: rule!AS_GSS_QE_getRefDataByTypes(\n    refTypes: cons!AS_GSS_REF_TYPE_EVALUATION_STATUS,\n    excludeRefDataIds: {\n      cons!AS_GSS_REF_ID_EVALUATION_STATUS_TEMP,\n      cons!AS_GSS_REF_ID_EVALUATION_STATUS_DELETED\n    }\n  ),\n  #\"SYSTEM_SYSRULES_recordFilterList\"(\n    name: \"Status\",\n    options: #\"SYSTEM_SYSRULES_forEach\"(\n      items: local!refData,\n      expression: #\"SYSTEM_SYSRULES_recordFilterListOption\"(\n        id: fv!item.refDataId,\n        name: fv!item.refLabel,\n        filter: #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: recordType!AS_GSS_Evaluation_RECORD.evaluationStatus.refDataId,\n          operator: \"=\",\n          value: fv!item.refDataId\n        )\n      )\n    ),\n    allowMultipleSelections: true\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_QE_getRefDataByTypes",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_REF_TYPE_EVALUATION_STATUS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_REF_ID_EVALUATION_STATUS_TEMP",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_REF_ID_EVALUATION_STATUS_DELETED",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_Evaluation_RECORD",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    }
+  ],
+  "called_by": []
+}

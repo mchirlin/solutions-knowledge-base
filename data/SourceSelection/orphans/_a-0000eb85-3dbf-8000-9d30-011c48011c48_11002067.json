@@ -1,0 +1,20 @@
+{
+  "uuid": "_a-0000eb85-3dbf-8000-9d30-011c48011c48_11002067",
+  "name": "AS_GSS_UT_copyEvaluationData",
+  "type": "Expression Rule",
+  "description": "Rule to copy data from source evaluation to duplicated evaluation",
+  "sail_code": "#\"urn:appian:function:v1:a:update\"(\n  ri!targetEvaluation,\n  {\n    \"evaluationDesc\",\n    \"evaluationMethod\",\n    \"isSignaturesRequired\",\n    \"isWeightedFactorsRequired\",\n    \"duplicatedFromEvaluationId\",\n    \"evaluationStatus\",\n    \"sourceApplication\",\n    \"isActive\"\n  },\n  {\n    ri!sourceEvaluation.evaluationDesc,\n    ri!sourceEvaluation.evaluationMethod,\n    ri!sourceEvaluation.isSignaturesRequired,\n    ri!sourceEvaluation.isWeightedFactorsRequired,\n    ri!sourceEvaluation.evaluationId,\n    #\"urn:appian:function:v1:a:update\"(\n      data: 'type!{urn:com:appian:types:AS:GSS}AS_GSS_R_Data'(\n        refDataId: ri!targetEvaluation.evaluationStatus.refDataId\n      ),\n      index: \"refDataId\",\n      value: cons!AS_GSS_REF_ID_EVALUATION_STATUS_TEMP\n    ),\n    'type!{urn:com:appian:types:AS:GSS}AS_GSS_R_Data'(\n      refDataId: cons!AS_GSS_REF_ID_SOURCE_APPLICATION_GSS\n    ),\n    false()\n  }\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_REF_ID_EVALUATION_STATUS_TEMP",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_REF_ID_SOURCE_APPLICATION_GSS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

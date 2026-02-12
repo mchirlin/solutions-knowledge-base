@@ -1,0 +1,51 @@
+{
+  "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_268432",
+  "name": "AS_CO_UT_zINTERNAL_updateCdtFields_handler",
+  "type": "Expression Rule",
+  "description": "Used by rule `AS_CO_UT_updateCdtFields`",
+  "sail_code": "cast(\n  typeof(ri!cdt),\n  if(\n    and(\n      /*Have to handle differently for a dictionary/map list, or if the underlying field is an array*/\n      or(\n        rule!AS_CO_UT_typeCompare(\n          value1: ri!cdt,\n          value2: rule!AS_CO_UT_returnNullDictionaryList()\n        ),\n        rule!AS_CO_UT_typeCompare(\n          value1: ri!cdt,\n          value2: {a!map()}\n        ),\n        and(\n          /*Both the CDT to update and the field within the CDT are list types*/\n          rule!AS_CO_UT_checkIfArrayType(\n            typeOf: ri!cdt\n          ),\n          rule!AS_CO_UT_checkIfArrayType(\n            typeOf: rule!AS_CO_UT_returnSingleTypeObject(\n              typeOf: ri!cdt\n            )[ri!field]\n          )\n        )\n      ),\n      rule!AS_CO_UT_typeCompare(\n        value1: ri!field,\n        /*Actual field type, not index*/\n        value2: \"\"\n      )\n    ),\n    apply(\n      rule!AS_CO_UT_zINTERNAL_updateCdtFields_dicionaryHandler(\n        dicionary: ri!cdt,\n        indices: a!defaultValue(\n          value: ri!indices,\n          default: rule!AS_CO_UT_enumForCount(input: ri!cdt)\n        ),\n        field: ri!field,\n        newValue: ri!newValue,\n        index: _\n      ),\n      rule!AS_CO_UT_enumForCount(input: ri!cdt)\n    ),\n    rule!AS_CO_UT_zINTERNAL_updateCdtFields_updateHandler(\n      cdt: ri!cdt,\n      field: ri!field,\n      indices: ri!indices,\n      newValue: ri!newValue\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_typeCompare",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_returnNullDictionaryList",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_checkIfArrayType",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_returnSingleTypeObject",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_zINTERNAL_updateCdtFields_dicionaryHandler",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_enumForCount",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_zINTERNAL_updateCdtFields_updateHandler",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_nestHandler",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

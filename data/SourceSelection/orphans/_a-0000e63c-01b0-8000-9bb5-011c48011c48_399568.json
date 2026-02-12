@@ -1,0 +1,15 @@
+{
+  "uuid": "_a-0000e63c-01b0-8000-9bb5-011c48011c48_399568",
+  "name": "AS_FRM_getBrandingValueByKey",
+  "type": "Expression Rule",
+  "description": "Returns a branding value from the branding configuration file by its key. Checks both _custom and _default branding files.",
+  "sail_code": "a!localVariables(\n  local!brandingConfigs: getbrandingconfig(ri!defaultBrandingConfigDoc, true),\n  \n  local!defaultValue: displayvalue(\n    tostring(ri!brandingKey),\n    touniformstring(local!brandingConfigs.defaultBranding.key),\n    local!brandingConfigs.defaultBranding.value,\n    null\n  ),\n  \n  local!customValue: displayvalue(\n    tostring(ri!brandingKey),\n    touniformstring(local!brandingConfigs.customBranding.key),\n    local!brandingConfigs.customBranding.value,\n    null\n  ),\n  \n  local!type: displayvalue(\n    tostring(ri!brandingKey),\n    touniformstring(local!brandingConfigs.defaultBranding.key),\n    touniformstring(local!brandingConfigs.defaultBranding.type),\n    null\n  ),\n  \n  local!returnValue: if(\n    isnull(local!customValue),\n    local!defaultValue,\n    local!customValue\n  ),\n  \n  local!castReturnValue: if(\n    contains({\"IMAGE\", \"FAVICON\"}, local!type),\n    todocument(local!returnValue),\n    local!returnValue\n  ),\n  \n  local!castReturnValue\n)",
+  "calls": [],
+  "called_by": [
+    {
+      "name": "AS_GSS_BrandingValueByKey",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

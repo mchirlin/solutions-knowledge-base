@@ -1,0 +1,1565 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_object": {
+      "uuid": "000be5ce-8854-8000-0b33-7f0000014e7a",
+      "name": "AS GSS Move Word Doc To Sharepoint and Get Document Link",
+      "object_type": "Process Model",
+      "parent_name": null
+    },
+    "total_objects": 10
+  },
+  "process": {
+    "process_model": {
+      "uuid": "000be5ce-8854-8000-0b33-7f0000014e7a",
+      "name": "AS GSS Move Word Doc To Sharepoint and Get Document Link",
+      "object_type": "Process Model",
+      "description": "Process model to upload document to SharePoint and get document link.",
+      "data": {
+        "nodes": [
+          {
+            "node_id": "0000e5ce-8854-8000-0b33-7f0000014e7a",
+            "node_type": "core.0",
+            "node_name": "Start Node",
+            "gui_id": "0",
+            "node_type_name": "Start Event",
+            "node_category": "Core",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [],
+            "outputs": [],
+            "properties": {}
+          },
+          {
+            "node_id": "0001e5ce-8854-8000-0b33-7f0000014e7a",
+            "node_type": "core.1",
+            "node_name": "Terminate",
+            "gui_id": "1",
+            "node_type_name": "End Event",
+            "node_category": "Core",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [],
+            "outputs": [],
+            "properties": {}
+          },
+          {
+            "node_id": "0002e5ce-8854-8000-0b33-7f0000014e7a",
+            "node_type": "core.4",
+            "node_name": "Integration ON?",
+            "gui_id": "6",
+            "node_type_name": "XOR Gateway",
+            "node_category": "Gateway",
+            "gateway_conditions": [
+              {
+                "target_gui_id": "2",
+                "label": "Yes",
+                "condition": "= and( cons!AS_GAM_BOL_OFFICE_365, rule!AS_CO_UT_isNotBlank(pv!task.evaluation.office365FolderId))",
+                "is_default": false
+              },
+              {
+                "target_gui_id": "8",
+                "label": null,
+                "condition": "= and( cons!AS_GAM_BOL_OFFICE_365, rule!AS_CO_UT_isBlank(pv!task.evaluation.office365FolderId))",
+                "is_default": false
+              },
+              {
+                "target_gui_id": "1",
+                "label": null,
+                "condition": null,
+                "is_default": true
+              }
+            ],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [],
+            "outputs": [],
+            "properties": {}
+          },
+          {
+            "node_id": "0009e5ce-8854-8000-0b33-7f0000014e7a",
+            "node_type": "core.4",
+            "node_name": "Skip Write to task?",
+            "gui_id": "9",
+            "node_type_name": "XOR Gateway",
+            "node_category": "Gateway",
+            "gateway_conditions": [
+              {
+                "target_gui_id": "1",
+                "label": null,
+                "condition": "=pv!skipWriteToTask=true",
+                "is_default": false
+              },
+              {
+                "target_gui_id": "4",
+                "label": null,
+                "condition": null,
+                "is_default": true
+              }
+            ],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [],
+            "outputs": [],
+            "properties": {}
+          },
+          {
+            "node_id": "0008e5ce-8854-8000-0b33-7f0000014e7a",
+            "node_type": "internal.16",
+            "node_name": "Set evaluation",
+            "gui_id": "5",
+            "node_type_name": "Script Task",
+            "node_category": "Activity",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [],
+            "outputs": [
+              {
+                "save_into": "evaluation",
+                "output_expression": "rule!AS_CO_UT_updateCdtFields(\ncdt: pv!task.evaluation,\n fields : \"office365FolderId\",\n newValues :pv!office365FolderId\n)"
+              }
+            ],
+            "properties": {}
+          },
+          {
+            "node_id": "0007e5ce-8854-8000-0b33-7f0000014e7a",
+            "node_type": "appian.system.smart-services.write-to-data-store",
+            "node_name": "Write to Task",
+            "gui_id": "4",
+            "node_type_name": "Write to Data Store Entity",
+            "node_category": "Data Services",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [
+              {
+                "input_name": "DataStoreEntity",
+                "input_expression": "=cons!AS_GSS_TMG_ENT_TASK"
+              },
+              {
+                "input_name": "task",
+                "input_expression": "=pv!task"
+              }
+            ],
+            "outputs": [
+              {
+                "save_into": "task",
+                "output_expression": "AC!StoredValues"
+              }
+            ],
+            "properties": {}
+          },
+          {
+            "node_id": "0004e5ce-8854-8000-0b33-7f0000014e7a",
+            "node_type": "appian.system.smart-services.write-to-data-store",
+            "node_name": "Update evaluation",
+            "gui_id": "7",
+            "node_type_name": "Write to Data Store Entity",
+            "node_category": "Data Services",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [
+              {
+                "input_name": "DataStoreEntity",
+                "input_expression": "=cons!AS_GSS_ENT_EVALUATION"
+              },
+              {
+                "input_name": "evaluation",
+                "input_expression": "=pv!evaluation"
+              }
+            ],
+            "outputs": [
+              {
+                "save_into": "evaluation",
+                "output_expression": "AC!StoredValues"
+              },
+              {
+                "save_into": "task.evaluation",
+                "output_expression": "pv!evaluation"
+              }
+            ],
+            "properties": {}
+          },
+          {
+            "node_id": "0003e5ce-8854-8000-0b33-7f0000014e7a",
+            "node_type": "internal.38",
+            "node_name": "Create folder in SharePoint",
+            "gui_id": "8",
+            "node_type_name": "Subprocess",
+            "node_category": "Activity",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": "AS GAM Create Folder in SharePoint",
+            "subprocess_config": {
+              "target_uuid": "0002e4ad-3dbb-8000-0046-7f0000014e7a",
+              "input_mappings": [
+                {
+                  "param_name": "folderName",
+                  "expression": "=rule!AS_GSS_UT_sharepointFolderName(evaluation: pv!task.evaluation)"
+                },
+                {
+                  "param_name": "parentSpFolderId",
+                  "expression": "=cons!AS_GSS_SHAREPOINT_FOLDER_ID"
+                },
+                {
+                  "param_name": "primaryKey",
+                  "expression": "=pv!task.evaluation.evaluationId"
+                }
+              ]
+            },
+            "timer_config": null,
+            "inputs": [
+              {
+                "input_name": "folderName",
+                "input_expression": "=rule!AS_GSS_UT_sharepointFolderName(evaluation: pv!task.evaluation)"
+              },
+              {
+                "input_name": "parentSpFolderId",
+                "input_expression": "=cons!AS_GSS_SHAREPOINT_FOLDER_ID"
+              },
+              {
+                "input_name": "primaryKey",
+                "input_expression": "=pv!task.evaluation.evaluationId"
+              }
+            ],
+            "outputs": [],
+            "properties": {}
+          },
+          {
+            "node_id": "0002e60c-15a3-8000-123d-7f0000014e7a",
+            "node_type": "internal3.integration",
+            "node_name": "Get document link from Sharepoint",
+            "gui_id": "3",
+            "node_type_name": "Call Integration",
+            "node_category": "Integration",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [
+              {
+                "input_name": "office365DocumentId",
+                "input_expression": "=pv!task.docUploadContext.office365DocumentId"
+              }
+            ],
+            "outputs": [
+              {
+                "save_into": "pullBackError",
+                "output_expression": "AC!Error"
+              },
+              {
+                "save_into": "task.docUploadContext.office365DocumentLink",
+                "output_expression": "ac!Result.body.link.webUrl"
+              }
+            ],
+            "properties": {}
+          },
+          {
+            "node_id": "0001e60c-15a3-8000-123d-7f0000014e7a",
+            "node_type": "internal3.integration",
+            "node_name": "Upload Doc to Sharepoint",
+            "gui_id": "2",
+            "node_type_name": "Call Integration",
+            "node_category": "Integration",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [
+              {
+                "input_name": "office365FolderId",
+                "input_expression": "=pv!task.evaluation.office365FolderId"
+              },
+              {
+                "input_name": "document",
+                "input_expression": "=pv!tempWordDocId"
+              }
+            ],
+            "outputs": [
+              {
+                "save_into": "uploadError",
+                "output_expression": "AC!Error"
+              },
+              {
+                "save_into": "task.docUploadContext.office365DocumentId",
+                "output_expression": "ac!Result.body.id"
+              }
+            ],
+            "properties": {}
+          }
+        ],
+        "flows": [
+          {
+            "from_node_id": "0000e5ce-8854-8000-0b33-7f0000014e7a",
+            "to_node_id": "6",
+            "flow_label": null,
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0002e5ce-8854-8000-0b33-7f0000014e7a",
+            "to_node_id": "1",
+            "flow_label": "Integration OFF",
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0002e5ce-8854-8000-0b33-7f0000014e7a",
+            "to_node_id": "8",
+            "flow_label": "Yes & Folder Null",
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0002e5ce-8854-8000-0b33-7f0000014e7a",
+            "to_node_id": "2",
+            "flow_label": "Yes & Folder not null",
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0009e5ce-8854-8000-0b33-7f0000014e7a",
+            "to_node_id": "4",
+            "flow_label": "No",
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0009e5ce-8854-8000-0b33-7f0000014e7a",
+            "to_node_id": "1",
+            "flow_label": null,
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0008e5ce-8854-8000-0b33-7f0000014e7a",
+            "to_node_id": "7",
+            "flow_label": null,
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0007e5ce-8854-8000-0b33-7f0000014e7a",
+            "to_node_id": "1",
+            "flow_label": null,
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0004e5ce-8854-8000-0b33-7f0000014e7a",
+            "to_node_id": "2",
+            "flow_label": null,
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0003e5ce-8854-8000-0b33-7f0000014e7a",
+            "to_node_id": "5",
+            "flow_label": null,
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0002e60c-15a3-8000-123d-7f0000014e7a",
+            "to_node_id": "9",
+            "flow_label": null,
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0001e60c-15a3-8000-123d-7f0000014e7a",
+            "to_node_id": "3",
+            "flow_label": null,
+            "flow_condition": null
+          }
+        ],
+        "variables": [
+          {
+            "variable_name": "evaluation",
+            "variable_type": "n1:AS_GSS_Evaluation",
+            "is_parameter": false,
+            "default_value": null
+          },
+          {
+            "variable_name": "office365FolderId",
+            "variable_type": "xsd:string",
+            "is_parameter": false,
+            "default_value": null
+          },
+          {
+            "variable_name": "pullBackError",
+            "variable_type": "a:IntegrationError",
+            "is_parameter": false,
+            "default_value": null
+          },
+          {
+            "variable_name": "skipWriteToTask",
+            "variable_type": "xsd:boolean",
+            "is_parameter": true,
+            "default_value": null
+          },
+          {
+            "variable_name": "task",
+            "variable_type": "n1:AS_GSS_TMG_Task",
+            "is_parameter": true,
+            "default_value": null
+          },
+          {
+            "variable_name": "tempWordDocId",
+            "variable_type": "a:CollaborationDocument",
+            "is_parameter": true,
+            "default_value": null
+          },
+          {
+            "variable_name": "uploadError",
+            "variable_type": "a:IntegrationError",
+            "is_parameter": false,
+            "default_value": null
+          }
+        ],
+        "total_nodes": 10,
+        "total_flows": 12,
+        "complexity_score": 20.0
+      },
+      "calls": [
+        "AS GAM Create Folder in SharePoint",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_updateCdtFields",
+        "AS_GAM_BOL_OFFICE_365",
+        "AS_GSS_ENT_EVALUATION",
+        "AS_GSS_SHAREPOINT_FOLDER_ID",
+        "AS_GSS_TMG_ENT_TASK",
+        "AS_GSS_UT_sharepointFolderName"
+      ],
+      "called_by": []
+    },
+    "subprocesses": [
+      {
+        "uuid": "0002e4ad-3dbb-8000-0046-7f0000014e7a",
+        "name": "AS GAM Create Folder in SharePoint",
+        "object_type": "Process Model",
+        "description": "Process model to create folder in SharePoint",
+        "data": {
+          "nodes": [
+            {
+              "node_id": "0001e50d-e0cf-8000-fe0c-7f0000014e7a",
+              "node_type": "core.0",
+              "node_name": "Start Node",
+              "gui_id": "3",
+              "node_type_name": "Start Event",
+              "node_category": "Core",
+              "gateway_conditions": [],
+              "form_expression": null,
+              "interface_uuid": null,
+              "interface_name": null,
+              "pre_triggers": [],
+              "subprocess_uuid": null,
+              "subprocess_config": null,
+              "timer_config": null,
+              "inputs": [],
+              "outputs": [],
+              "properties": {}
+            },
+            {
+              "node_id": "0002e50d-e0cf-8000-fe0c-7f0000014e7a",
+              "node_type": "core.1",
+              "node_name": "Terminate",
+              "gui_id": "4",
+              "node_type_name": "End Event",
+              "node_category": "Core",
+              "gateway_conditions": [],
+              "form_expression": null,
+              "interface_uuid": null,
+              "interface_name": null,
+              "pre_triggers": [],
+              "subprocess_uuid": null,
+              "subprocess_config": null,
+              "timer_config": null,
+              "inputs": [],
+              "outputs": [],
+              "properties": {}
+            },
+            {
+              "node_id": "0003e50d-e0cf-8000-fe0c-7f0000014e7a",
+              "node_type": "internal3.integration",
+              "node_name": "Call Integration",
+              "gui_id": "5",
+              "node_type_name": "Call Integration",
+              "node_category": "Integration",
+              "gateway_conditions": [],
+              "form_expression": null,
+              "interface_uuid": null,
+              "interface_name": null,
+              "pre_triggers": [],
+              "subprocess_uuid": null,
+              "subprocess_config": null,
+              "timer_config": null,
+              "inputs": [
+                {
+                  "input_name": "folderName",
+                  "input_expression": "=pv!folderName"
+                },
+                {
+                  "input_name": "parentSpFolderId",
+                  "input_expression": "=pv!parentSpFolderId"
+                }
+              ],
+              "outputs": [
+                {
+                  "save_into": "integError",
+                  "output_expression": "AC!Error"
+                },
+                {
+                  "save_into": "office365FolderId",
+                  "output_expression": "ac!Result.body.id"
+                }
+              ],
+              "properties": {}
+            }
+          ],
+          "flows": [
+            {
+              "from_node_id": "0001e50d-e0cf-8000-fe0c-7f0000014e7a",
+              "to_node_id": "5",
+              "flow_label": null,
+              "flow_condition": null
+            },
+            {
+              "from_node_id": "0003e50d-e0cf-8000-fe0c-7f0000014e7a",
+              "to_node_id": "4",
+              "flow_label": null,
+              "flow_condition": null
+            }
+          ],
+          "variables": [
+            {
+              "variable_name": "folderName",
+              "variable_type": "xsd:string",
+              "is_parameter": true,
+              "default_value": null
+            },
+            {
+              "variable_name": "integError",
+              "variable_type": "a:IntegrationError",
+              "is_parameter": false,
+              "default_value": null
+            },
+            {
+              "variable_name": "office365FolderId",
+              "variable_type": "xsd:string",
+              "is_parameter": false,
+              "default_value": null
+            },
+            {
+              "variable_name": "parentSpFolderId",
+              "variable_type": "xsd:string",
+              "is_parameter": true,
+              "default_value": null
+            },
+            {
+              "variable_name": "primaryKey",
+              "variable_type": "xsd:int",
+              "is_parameter": true,
+              "default_value": null
+            }
+          ],
+          "total_nodes": 3,
+          "total_flows": 2,
+          "complexity_score": 3.0
+        },
+        "calls": [],
+        "called_by": [
+          "AS GSS Move Word Doc To Sharepoint and Get Document Link"
+        ]
+      }
+    ]
+  },
+  "interfaces": [],
+  "supporting_objects": {
+    "expression_rules": [
+      {
+        "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_260165",
+        "name": "AS_CO_UT_updateCdtFields",
+        "object_type": "Expression Rule",
+        "description": "Updates one or more fields of a CDT, with an optional input for indices",
+        "data": {
+          "sail_code": "cast(\n  typeof(ri!cdt),\n  if(\n    and(\n      rule!AS_CO_UT_isBlank(ri!cdt),\n      rule!AS_CO_UT_checkIfArrayType(\n        typeOf: ri!cdt\n      )\n    ),\n    ri!cdt,\n    reduce(\n      rule!AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_handler(\n        cdt: _,\n        indices: ri!indices,\n        field: _,\n        newValue: _\n      ),\n      ri!cdt,\n      merge(\n        a!flatten(ri!fields),\n        a!flatten(ri!newValues)\n      )\n    )\n  )\n)",
+          "definition": "cast(\n  typeof(ri!cdt),\n  if(\n    and(\n      rule!AS_CO_UT_isBlank(ri!cdt),\n      rule!AS_CO_UT_checkIfArrayType(\n        typeOf: ri!cdt\n      )\n    ),\n    ri!cdt,\n    reduce(\n      rule!AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_handler(\n        cdt: _,\n        indices: ri!indices,\n        field: _,\n        newValue: _\n      ),\n      ri!cdt,\n      merge(\n        a!flatten(ri!fields),\n        a!flatten(ri!newValues)\n      )\n    )\n  )\n)",
+          "inputs": [
+            {
+              "name": "cdt",
+              "type": "http://www.appian.com/ae/types/2009:Variant",
+              "data_type": "http://www.appian.com/ae/types/2009:Variant",
+              "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            },
+            {
+              "name": "fields",
+              "type": "http://www.appian.com/ae/types/2009:Text?list",
+              "data_type": "http://www.appian.com/ae/types/2009:Text?list",
+              "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 1
+            },
+            {
+              "name": "indices",
+              "type": "http://www.appian.com/ae/types/2009:Integer?list",
+              "data_type": "http://www.appian.com/ae/types/2009:Integer?list",
+              "raw_type": "http://www.appian.com/ae/types/2009:Integer?list",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 2
+            },
+            {
+              "name": "newValues",
+              "type": "http://www.appian.com/ae/types/2009:Variant",
+              "data_type": "http://www.appian.com/ae/types/2009:Variant",
+              "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 3
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "No Indices",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "cdt",
+                  "input_value": "{a: 1}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "fields",
+                  "input_value": "{\"b\", \"c\"}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "indices",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 2
+                },
+                {
+                  "input_name_ref": "newValues",
+                  "input_value": "{2, 3}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 3
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "No Indices List",
+              "display_order": 1,
+              "test_inputs": [
+                {
+                  "input_name_ref": "cdt",
+                  "input_value": "{{a: 1}, {a: 1}}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "fields",
+                  "input_value": "{\"b\", \"c\"}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "indices",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 2
+                },
+                {
+                  "input_name_ref": "newValues",
+                  "input_value": "{2, 3}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 3
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Has Indices",
+              "display_order": 2,
+              "test_inputs": [
+                {
+                  "input_name_ref": "cdt",
+                  "input_value": "{{a: 1}, {a: 1}}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "fields",
+                  "input_value": "{\"b\", \"c\"}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "indices",
+                  "input_value": "{2}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 2
+                },
+                {
+                  "input_name_ref": "newValues",
+                  "input_value": "{2, 3}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 3
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Single Field",
+              "display_order": 3,
+              "test_inputs": [
+                {
+                  "input_name_ref": "cdt",
+                  "input_value": "{a: 1}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "fields",
+                  "input_value": "\"b\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "indices",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 2
+                },
+                {
+                  "input_name_ref": "newValues",
+                  "input_value": "2",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 3
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Nested Field",
+              "display_order": 4,
+              "test_inputs": [
+                {
+                  "input_name_ref": "cdt",
+                  "input_value": "{{a: 1}, {a: 2}}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "fields",
+                  "input_value": "\"b.c\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "indices",
+                  "input_value": "1",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 2
+                },
+                {
+                  "input_name_ref": "newValues",
+                  "input_value": "3",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 3
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Empty Array Input",
+              "display_order": 5,
+              "test_inputs": [
+                {
+                  "input_name_ref": "cdt",
+                  "input_value": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Dictionary?list',\n  {}\n)",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "fields",
+                  "input_value": "\"a\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "indices",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 2
+                },
+                {
+                  "input_name_ref": "newValues",
+                  "input_value": "1",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 3
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [
+          "AS_CO_UT_isBlank"
+        ],
+        "called_by": [
+          "AS GSS Move Word Doc To Sharepoint and Get Document Link"
+        ]
+      },
+      {
+        "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+        "name": "AS_CO_UT_isBlank",
+        "object_type": "Expression Rule",
+        "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+        "data": {
+          "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  length(a!flatten(ri!value)) = 0\n)",
+          "definition": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  length(a!flatten(ri!value)) = 0\n)",
+          "inputs": [
+            {
+              "name": "value",
+              "type": "http://www.appian.com/ae/types/2009:Variant",
+              "data_type": "http://www.appian.com/ae/types/2009:Variant",
+              "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "Empty String",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "=\"\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Null Integer",
+              "display_order": 1,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "=tointeger(null)",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Null",
+              "display_order": 2,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "null",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Null Group",
+              "display_order": 3,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "=togroup(null)",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "String",
+              "display_order": 4,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "=\"cats\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Integer",
+              "display_order": 5,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "3",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Empty Array",
+              "display_order": 6,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "={}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "List of Lists",
+              "display_order": 7,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "={{}}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Empty Dictionary",
+              "display_order": 8,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "cast('type!{http://www.appian.com/ae/types/2009}Dictionary', null)",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "List of Empty Dictionary",
+              "display_order": 9,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "{\n  cast('type!{http://www.appian.com/ae/types/2009}Dictionary', null),\n  cast('type!{http://www.appian.com/ae/types/2009}Dictionary', null),\n}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Empty Dictionary As Field",
+              "display_order": 10,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "{field1:{}}.field1",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Empty String Array",
+              "display_order": 11,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "=cast(typeof({\"a\",\"b\",\"c\"}),{})",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Array cast to Any Type with first value null",
+              "display_order": 12,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "cast(197, {null, 1, 2})",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Array of Null",
+              "display_order": 13,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "{null, null}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "String array",
+              "display_order": 14,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "{\"hi\", \"\", \"there\"}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [],
+        "called_by": [
+          "AS GSS Move Word Doc To Sharepoint and Get Document Link",
+          "AS_CO_UT_isNotBlank",
+          "AS_CO_UT_updateCdtFields"
+        ]
+      },
+      {
+        "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_940968",
+        "name": "AS_GSS_UT_sharepointFolderName",
+        "object_type": "Expression Rule",
+        "description": "Returns the evaluation folder name in sharepoint",
+        "data": {
+          "sail_code": "concat(ri!evaluation.evaluationNumber,\"-\",ri!evaluation.evaluationId)",
+          "definition": "concat(ri!evaluation.evaluationNumber,\"-\",ri!evaluation.evaluationId)",
+          "inputs": [
+            {
+              "name": "evaluation",
+              "type": "urn:com:appian:types:AS:GSS:AS_GSS_Evaluation",
+              "data_type": "urn:com:appian:types:AS:GSS:AS_GSS_Evaluation",
+              "raw_type": "urn:com:appian:types:AS:GSS:AS_GSS_Evaluation",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": []
+        },
+        "calls": [],
+        "called_by": [
+          "AS GSS Move Word Doc To Sharepoint and Get Document Link"
+        ]
+      },
+      {
+        "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+        "name": "AS_CO_UT_isNotBlank",
+        "object_type": "Expression Rule",
+        "description": "A not() wrapped around AS_CO_UT_isBlank",
+        "data": {
+          "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Boolean',\n  not(rule!AS_CO_UT_isBlank(ri!input))\n)",
+          "definition": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Boolean',\n  not(rule!AS_CO_UT_isBlank(ri!input))\n)",
+          "inputs": [
+            {
+              "name": "input",
+              "type": "http://www.appian.com/ae/types/2009:Variant",
+              "data_type": "http://www.appian.com/ae/types/2009:Variant",
+              "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "Value is Null",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "input",
+                  "input_value": "null",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Value is Not Null",
+              "display_order": 1,
+              "test_inputs": [
+                {
+                  "input_name_ref": "input",
+                  "input_value": "\"not null\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [
+          "AS_CO_UT_isBlank"
+        ],
+        "called_by": [
+          "AS GSS Move Word Doc To Sharepoint and Get Document Link"
+        ]
+      }
+    ],
+    "constants": [
+      {
+        "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_940138",
+        "name": "AS_GSS_ENT_EVALUATION",
+        "object_type": "Constant",
+        "description": "Value: AS_GSS_Evaluation",
+        "data": {
+          "raw_value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+          "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity"
+        },
+        "calls": [],
+        "called_by": [
+          "AS GSS Move Word Doc To Sharepoint and Get Document Link"
+        ]
+      },
+      {
+        "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_942267",
+        "name": "AS_GSS_SHAREPOINT_FOLDER_ID",
+        "object_type": "Constant",
+        "description": "Main folder id for all the evaluation documents in Sharepoint Site.\n",
+        "data": {
+          "raw_value_type": "http://www.w3.org/2001/XMLSchema:string",
+          "value_type": "http://www.w3.org/2001/XMLSchema:string"
+        },
+        "calls": [],
+        "called_by": [
+          "AS GSS Move Word Doc To Sharepoint and Get Document Link"
+        ]
+      },
+      {
+        "uuid": "_a-0000e393-fbf1-8000-9ba2-011c48011c48_100868-tmg-am-am",
+        "name": "AS_GSS_TMG_ENT_TASK",
+        "object_type": "Constant",
+        "description": "Value: AS_GSS_TMG_Task",
+        "data": {
+          "raw_value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+          "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity"
+        },
+        "calls": [],
+        "called_by": [
+          "AS GSS Move Word Doc To Sharepoint and Get Document Link"
+        ]
+      },
+      {
+        "uuid": "_a-0000e49f-7b90-8000-9bac-011c48011c48_192834",
+        "name": "AS_GAM_BOL_OFFICE_365",
+        "object_type": "Constant",
+        "description": "Boolean constant for Turning ON / OFF  Office 365 Integration",
+        "data": {
+          "raw_value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "value_type": "http://www.w3.org/2001/XMLSchema:boolean"
+        },
+        "calls": [],
+        "called_by": [
+          "AS GSS Move Word Doc To Sharepoint and Get Document Link"
+        ]
+      }
+    ]
+  }
+}

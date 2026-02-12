@@ -1,0 +1,1592 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_object": {
+      "uuid": "0002e5d9-e789-8000-0d13-7f0000014e7a",
+      "name": "AS GSS Create Evaluation Document Folders",
+      "object_type": "Process Model",
+      "parent_name": null
+    },
+    "total_objects": 12
+  },
+  "process": {
+    "process_model": {
+      "uuid": "0002e5d9-e789-8000-0d13-7f0000014e7a",
+      "name": "AS GSS Create Evaluation Document Folders",
+      "object_type": "Process Model",
+      "description": "Process model to create evaluation related folders",
+      "data": {
+        "nodes": [
+          {
+            "node_id": "0001e5d9-ef1b-8000-0d16-7f0000014e7a",
+            "node_type": "core.0",
+            "node_name": "Start Node",
+            "gui_id": "2",
+            "node_type_name": "Start Event",
+            "node_category": "Core",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [],
+            "outputs": [],
+            "properties": {}
+          },
+          {
+            "node_id": "0002e5d9-ef1b-8000-0d16-7f0000014e7a",
+            "node_type": "core.1",
+            "node_name": "Terminate",
+            "gui_id": "3",
+            "node_type_name": "End Event",
+            "node_category": "Core",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [],
+            "outputs": [],
+            "properties": {}
+          },
+          {
+            "node_id": "0003e5d9-ef1b-8000-0d16-7f0000014e7a",
+            "node_type": "internal3.foldersecurity",
+            "node_name": "Modify Evaluation Doc Folder Security",
+            "gui_id": "5",
+            "node_type_name": "Modify Folder Security",
+            "node_category": "Document Management",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [
+              {
+                "input_name": "Content",
+                "input_expression": "=pv!evaluation.folderId"
+              },
+              {
+                "input_name": "Editors",
+                "input_expression": "=rule!AS_GSS_evaluationDocumentFolderSecurity()"
+              },
+              {
+                "input_name": "Administrators",
+                "input_expression": "=cons!AS_GAM_GRP_APPIAN_ADMINISTRATORS"
+              }
+            ],
+            "outputs": [],
+            "properties": {}
+          },
+          {
+            "node_id": "0001e5da-1236-8000-0d3c-7f0000014e7a",
+            "node_type": "internal.16",
+            "node_name": "Map folderIds to evaluation",
+            "gui_id": "0",
+            "node_type_name": "Script Task",
+            "node_category": "Activity",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [],
+            "outputs": [
+              {
+                "save_into": "evaluation.folderId",
+                "output_expression": "pv!mainFolder"
+              },
+              {
+                "save_into": "evaluation.office365FolderId",
+                "output_expression": "pv!office365FolderId"
+              }
+            ],
+            "properties": {}
+          },
+          {
+            "node_id": "0004e5d9-ef1b-8000-0d16-7f0000014e7a",
+            "node_type": "internal.38",
+            "node_name": "Create Doc Folders",
+            "gui_id": "8",
+            "node_type_name": "Subprocess",
+            "node_category": "Activity",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": "AS GAM Create Folders in Appian and SP",
+            "subprocess_config": {
+              "target_uuid": "0000e50c-64fd-8000-fd6c-7f0000014e7a",
+              "input_mappings": [
+                {
+                  "param_name": "mainFolderName",
+                  "expression": "=pv!evaluation.evaluationNumber"
+                },
+                {
+                  "param_name": "parentAppFolder",
+                  "expression": "=cons!AS_GSS_EVALUATION_DOCUMENT_FOLDERS"
+                },
+                {
+                  "param_name": "primaryKey",
+                  "expression": "=pv!evaluation.evaluationId"
+                },
+                {
+                  "param_name": "parentSpFolderId",
+                  "expression": "=cons!AS_GSS_SHAREPOINT_FOLDER_ID"
+                },
+                {
+                  "param_name": "contractingFolders",
+                  "expression": null
+                },
+                {
+                  "param_name": "spFolderName",
+                  "expression": "=pv!evaluation.evaluationNumber"
+                },
+                {
+                  "param_name": "mainFolder",
+                  "expression": "=pv!evaluation.folderId"
+                },
+                {
+                  "param_name": "office365FolderId",
+                  "expression": "=pv!evaluation.office365FolderId"
+                },
+                {
+                  "param_name": "skipContractingFolderCreation",
+                  "expression": "=true()"
+                }
+              ]
+            },
+            "timer_config": null,
+            "inputs": [
+              {
+                "input_name": "mainFolderName",
+                "input_expression": "=pv!evaluation.evaluationNumber"
+              },
+              {
+                "input_name": "parentAppFolder",
+                "input_expression": "=cons!AS_GSS_EVALUATION_DOCUMENT_FOLDERS"
+              },
+              {
+                "input_name": "primaryKey",
+                "input_expression": "=pv!evaluation.evaluationId"
+              },
+              {
+                "input_name": "parentSpFolderId",
+                "input_expression": "=cons!AS_GSS_SHAREPOINT_FOLDER_ID"
+              },
+              {
+                "input_name": "contractingFolders",
+                "input_expression": null
+              },
+              {
+                "input_name": "spFolderName",
+                "input_expression": "=pv!evaluation.evaluationNumber"
+              },
+              {
+                "input_name": "mainFolder",
+                "input_expression": "=pv!evaluation.folderId"
+              },
+              {
+                "input_name": "office365FolderId",
+                "input_expression": "=pv!evaluation.office365FolderId"
+              },
+              {
+                "input_name": "skipContractingFolderCreation",
+                "input_expression": "=true()"
+              }
+            ],
+            "outputs": [],
+            "properties": {}
+          },
+          {
+            "node_id": "0001e657-77dc-8000-19ad-7f0000014e7a",
+            "node_type": "core.4",
+            "node_name": "Security needs update?",
+            "gui_id": "4",
+            "node_type_name": "XOR Gateway",
+            "node_category": "Gateway",
+            "gateway_conditions": [
+              {
+                "target_gui_id": "5",
+                "label": "Yes",
+                "condition": "=rule!AS_GSS_BL_checkIfFolderSecurityNeedsUpdate(folderId:pv!evaluation.folderId)",
+                "is_default": false
+              },
+              {
+                "target_gui_id": "3",
+                "label": null,
+                "condition": null,
+                "is_default": true
+              }
+            ],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [],
+            "outputs": [],
+            "properties": {}
+          },
+          {
+            "node_id": "0001e657-3978-8000-199c-7f0000014e7a",
+            "node_type": "core.4",
+            "node_name": "Appian folderId/ SP folderId null?",
+            "gui_id": "1",
+            "node_type_name": "XOR Gateway",
+            "node_category": "Gateway",
+            "gateway_conditions": [
+              {
+                "target_gui_id": "8",
+                "label": "Yes",
+                "condition": "=or( rule!AS_CO_UT_isBlank(pv!evaluation.folderId), rule!AS_CO_UT_isBlank(pv!evaluation.office365FolderId))",
+                "is_default": false
+              },
+              {
+                "target_gui_id": "4",
+                "label": null,
+                "condition": null,
+                "is_default": true
+              }
+            ],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [],
+            "outputs": [],
+            "properties": {}
+          }
+        ],
+        "flows": [
+          {
+            "from_node_id": "0001e5d9-ef1b-8000-0d16-7f0000014e7a",
+            "to_node_id": "1",
+            "flow_label": null,
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0003e5d9-ef1b-8000-0d16-7f0000014e7a",
+            "to_node_id": "3",
+            "flow_label": null,
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0001e5da-1236-8000-0d3c-7f0000014e7a",
+            "to_node_id": "4",
+            "flow_label": null,
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0004e5d9-ef1b-8000-0d16-7f0000014e7a",
+            "to_node_id": "0",
+            "flow_label": null,
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0001e657-77dc-8000-19ad-7f0000014e7a",
+            "to_node_id": "5",
+            "flow_label": "Yes",
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0001e657-77dc-8000-19ad-7f0000014e7a",
+            "to_node_id": "3",
+            "flow_label": "No",
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0001e657-3978-8000-199c-7f0000014e7a",
+            "to_node_id": "8",
+            "flow_label": "Yes",
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0001e657-3978-8000-199c-7f0000014e7a",
+            "to_node_id": "4",
+            "flow_label": "No",
+            "flow_condition": null
+          }
+        ],
+        "variables": [
+          {
+            "variable_name": "evaluation",
+            "variable_type": "n1:AS_GSS_Evaluation",
+            "is_parameter": true,
+            "default_value": null
+          },
+          {
+            "variable_name": "mainFolder",
+            "variable_type": "a:CollaborationFolder",
+            "is_parameter": false,
+            "default_value": null
+          },
+          {
+            "variable_name": "office365FolderId",
+            "variable_type": "xsd:string",
+            "is_parameter": false,
+            "default_value": null
+          }
+        ],
+        "total_nodes": 7,
+        "total_flows": 8,
+        "complexity_score": 13.0
+      },
+      "calls": [
+        "AS GAM Create Folders in Appian and SP",
+        "AS_CO_UT_isBlank",
+        "AS_GAM_GRP_APPIAN_ADMINISTRATORS",
+        "AS_GSS_BL_checkIfFolderSecurityNeedsUpdate",
+        "AS_GSS_EVALUATION_DOCUMENT_FOLDERS",
+        "AS_GSS_SHAREPOINT_FOLDER_ID",
+        "AS_GSS_evaluationDocumentFolderSecurity"
+      ],
+      "called_by": []
+    },
+    "subprocesses": [
+      {
+        "uuid": "0000e50c-64fd-8000-fd6c-7f0000014e7a",
+        "name": "AS GAM Create Folders in Appian and SP",
+        "object_type": "Process Model",
+        "description": "Process model to create folders in appian and sharepoint",
+        "data": {
+          "nodes": [
+            {
+              "node_id": "0000e45b-794b-8000-fb8b-7f0000014e7a",
+              "node_type": "core.0",
+              "node_name": "Start Node",
+              "gui_id": "0",
+              "node_type_name": "Start Event",
+              "node_category": "Core",
+              "gateway_conditions": [],
+              "form_expression": null,
+              "interface_uuid": null,
+              "interface_name": null,
+              "pre_triggers": [],
+              "subprocess_uuid": null,
+              "subprocess_config": null,
+              "timer_config": null,
+              "inputs": [],
+              "outputs": [],
+              "properties": {}
+            },
+            {
+              "node_id": "0001e45b-794b-8000-fb8b-7f0000014e7a",
+              "node_type": "core.1",
+              "node_name": "Terminate",
+              "gui_id": "1",
+              "node_type_name": "End Event",
+              "node_category": "Core",
+              "gateway_conditions": [],
+              "form_expression": null,
+              "interface_uuid": null,
+              "interface_name": null,
+              "pre_triggers": [],
+              "subprocess_uuid": null,
+              "subprocess_config": null,
+              "timer_config": null,
+              "inputs": [],
+              "outputs": [],
+              "properties": {}
+            },
+            {
+              "node_id": "0002e45b-7bc3-8000-fb8e-7f0000014e7a",
+              "node_type": "internal.9",
+              "node_name": "Create Main Document Folder",
+              "gui_id": "2",
+              "node_type_name": "Create Folder",
+              "node_category": "Document Management",
+              "gateway_conditions": [],
+              "form_expression": null,
+              "interface_uuid": null,
+              "interface_name": null,
+              "pre_triggers": [],
+              "subprocess_uuid": null,
+              "subprocess_config": null,
+              "timer_config": null,
+              "inputs": [
+                {
+                  "input_name": "ParentFolder",
+                  "input_expression": "=pv!parentAppFolder"
+                },
+                {
+                  "input_name": "FolderName",
+                  "input_expression": "=rule!AS_CO_UT_cleanFolderName(folderName:pv!mainFolderName)"
+                }
+              ],
+              "outputs": [
+                {
+                  "save_into": "mainFolder",
+                  "output_expression": "AC!NewFolder"
+                },
+                {
+                  "save_into": "mainFolder",
+                  "output_expression": "ac!NewFolder"
+                }
+              ],
+              "properties": {}
+            },
+            {
+              "node_id": "0001ea60-cbe2-8000-773d-7f0000014e7a",
+              "node_type": "appian.system.smart-services.start-process-2",
+              "node_name": "Create Contracting Folders Wrapper",
+              "gui_id": "9",
+              "node_type_name": "Start Process (v2)",
+              "node_category": "Process Management",
+              "gateway_conditions": [],
+              "form_expression": null,
+              "interface_uuid": null,
+              "interface_name": null,
+              "pre_triggers": [],
+              "subprocess_uuid": null,
+              "subprocess_config": null,
+              "timer_config": null,
+              "inputs": [
+                {
+                  "input_name": "ProcessParameters",
+                  "input_expression": "= { contractingFolders: pv!contractingFolders, mainFolder: pv!mainFolder, primaryKey: pv!primaryKey}"
+                }
+              ],
+              "outputs": [],
+              "properties": {}
+            },
+            {
+              "node_id": "0001e45b-7bc3-8000-fb8e-7f0000014e7a",
+              "node_type": "core.4",
+              "node_name": "Doc Folder Exists?",
+              "gui_id": "3",
+              "node_type_name": "XOR Gateway",
+              "node_category": "Gateway",
+              "gateway_conditions": [
+                {
+                  "target_gui_id": "2",
+                  "label": "No",
+                  "condition": "= a!isNullOrEmpty(pv!mainFolder)",
+                  "is_default": false
+                },
+                {
+                  "target_gui_id": "4",
+                  "label": null,
+                  "condition": null,
+                  "is_default": true
+                }
+              ],
+              "form_expression": null,
+              "interface_uuid": null,
+              "interface_name": null,
+              "pre_triggers": [],
+              "subprocess_uuid": null,
+              "subprocess_config": null,
+              "timer_config": null,
+              "inputs": [],
+              "outputs": [],
+              "properties": {}
+            },
+            {
+              "node_id": "0001e5d9-e4c5-8000-0d0d-7f0000014e7a",
+              "node_type": "core.4",
+              "node_name": "Skip Contracting folder creation?",
+              "gui_id": "4",
+              "node_type_name": "XOR Gateway",
+              "node_category": "Gateway",
+              "gateway_conditions": [
+                {
+                  "target_gui_id": "8",
+                  "label": "Yes",
+                  "condition": "=pv!skipContractingFolderCreation=true",
+                  "is_default": false
+                },
+                {
+                  "target_gui_id": "9",
+                  "label": null,
+                  "condition": null,
+                  "is_default": true
+                }
+              ],
+              "form_expression": null,
+              "interface_uuid": null,
+              "interface_name": null,
+              "pre_triggers": [],
+              "subprocess_uuid": null,
+              "subprocess_config": null,
+              "timer_config": null,
+              "inputs": [],
+              "outputs": [],
+              "properties": {}
+            },
+            {
+              "node_id": "0002e4cb-9503-8000-f9f0-7f0000014e7a",
+              "node_type": "core.4",
+              "node_name": "Integration with Office 365?",
+              "gui_id": "8",
+              "node_type_name": "XOR Gateway",
+              "node_category": "Gateway",
+              "gateway_conditions": [
+                {
+                  "target_gui_id": "5",
+                  "label": "Yes",
+                  "condition": "= and( cons!AS_GAM_BOL_OFFICE_365, a!isNullOrEmpty(pv!office365FolderId))",
+                  "is_default": false
+                },
+                {
+                  "target_gui_id": "1",
+                  "label": null,
+                  "condition": null,
+                  "is_default": true
+                }
+              ],
+              "form_expression": null,
+              "interface_uuid": null,
+              "interface_name": null,
+              "pre_triggers": [],
+              "subprocess_uuid": null,
+              "subprocess_config": null,
+              "timer_config": null,
+              "inputs": [],
+              "outputs": [],
+              "properties": {}
+            },
+            {
+              "node_id": "0001ea60-d83b-8000-773e-7f0000014e7a",
+              "node_type": "internal3.integration",
+              "node_name": "Create Folder in Sharepoint",
+              "gui_id": "5",
+              "node_type_name": "Call Integration",
+              "node_category": "Integration",
+              "gateway_conditions": [],
+              "form_expression": null,
+              "interface_uuid": null,
+              "interface_name": null,
+              "pre_triggers": [],
+              "subprocess_uuid": null,
+              "subprocess_config": null,
+              "timer_config": null,
+              "inputs": [
+                {
+                  "input_name": "folderName",
+                  "input_expression": "=pv!spFolderName"
+                },
+                {
+                  "input_name": "parentSpFolderId",
+                  "input_expression": "=pv!parentSpFolderId"
+                }
+              ],
+              "outputs": [
+                {
+                  "save_into": "office365FolderId",
+                  "output_expression": "ac!Result.body.id"
+                }
+              ],
+              "properties": {}
+            }
+          ],
+          "flows": [
+            {
+              "from_node_id": "0000e45b-794b-8000-fb8b-7f0000014e7a",
+              "to_node_id": "3",
+              "flow_label": null,
+              "flow_condition": null
+            },
+            {
+              "from_node_id": "0002e45b-7bc3-8000-fb8e-7f0000014e7a",
+              "to_node_id": "4",
+              "flow_label": null,
+              "flow_condition": null
+            },
+            {
+              "from_node_id": "0001ea60-cbe2-8000-773d-7f0000014e7a",
+              "to_node_id": "8",
+              "flow_label": null,
+              "flow_condition": null
+            },
+            {
+              "from_node_id": "0001e45b-7bc3-8000-fb8e-7f0000014e7a",
+              "to_node_id": "2",
+              "flow_label": "No",
+              "flow_condition": null
+            },
+            {
+              "from_node_id": "0001e45b-7bc3-8000-fb8e-7f0000014e7a",
+              "to_node_id": "4",
+              "flow_label": "Yes",
+              "flow_condition": null
+            },
+            {
+              "from_node_id": "0001e5d9-e4c5-8000-0d0d-7f0000014e7a",
+              "to_node_id": "9",
+              "flow_label": "No",
+              "flow_condition": null
+            },
+            {
+              "from_node_id": "0001e5d9-e4c5-8000-0d0d-7f0000014e7a",
+              "to_node_id": "8",
+              "flow_label": "Yes",
+              "flow_condition": null
+            },
+            {
+              "from_node_id": "0002e4cb-9503-8000-f9f0-7f0000014e7a",
+              "to_node_id": "1",
+              "flow_label": "No",
+              "flow_condition": null
+            },
+            {
+              "from_node_id": "0002e4cb-9503-8000-f9f0-7f0000014e7a",
+              "to_node_id": "5",
+              "flow_label": "Yes",
+              "flow_condition": null
+            },
+            {
+              "from_node_id": "0001ea60-d83b-8000-773e-7f0000014e7a",
+              "to_node_id": "1",
+              "flow_label": null,
+              "flow_condition": null
+            }
+          ],
+          "variables": [
+            {
+              "variable_name": "contractingFolders",
+              "variable_type": "n1:AS_GAM_P_ContractFolderStructure?list",
+              "is_parameter": true,
+              "default_value": null
+            },
+            {
+              "variable_name": "mainFolder",
+              "variable_type": "a:CollaborationFolder",
+              "is_parameter": true,
+              "default_value": null
+            },
+            {
+              "variable_name": "mainFolderName",
+              "variable_type": "xsd:string",
+              "is_parameter": true,
+              "default_value": null
+            },
+            {
+              "variable_name": "office365FolderId",
+              "variable_type": "xsd:string",
+              "is_parameter": true,
+              "default_value": null
+            },
+            {
+              "variable_name": "parentAppFolder",
+              "variable_type": "a:CollaborationFolder",
+              "is_parameter": true,
+              "default_value": null
+            },
+            {
+              "variable_name": "parentSpFolderId",
+              "variable_type": "xsd:string",
+              "is_parameter": true,
+              "default_value": null
+            },
+            {
+              "variable_name": "primaryKey",
+              "variable_type": "xsd:int",
+              "is_parameter": true,
+              "default_value": null
+            },
+            {
+              "variable_name": "skipContractingFolderCreation",
+              "variable_type": "xsd:boolean",
+              "is_parameter": true,
+              "default_value": null
+            },
+            {
+              "variable_name": "spFolderName",
+              "variable_type": "xsd:string",
+              "is_parameter": true,
+              "default_value": null
+            }
+          ],
+          "total_nodes": 8,
+          "total_flows": 10,
+          "complexity_score": 16.0
+        },
+        "calls": [
+          "AS_CO_UT_cleanFolderName",
+          "AS_GAM_BOL_OFFICE_365"
+        ],
+        "called_by": [
+          "AS GSS Create Evaluation Document Folders"
+        ]
+      }
+    ]
+  },
+  "interfaces": [],
+  "supporting_objects": {
+    "constants": [
+      {
+        "uuid": "_a-0000e447-9390-8000-9baa-011c48011c48_43624",
+        "name": "AS_GAM_GRP_APPIAN_ADMINISTRATORS",
+        "object_type": "Constant",
+        "description": "Value: AS GAM Appian Administrators",
+        "data": {
+          "value": "AS GAM Appian Administrators",
+          "raw_value_type": "http://www.appian.com/ae/types/2009:Group",
+          "value_type": "http://www.appian.com/ae/types/2009:Group"
+        },
+        "calls": [],
+        "called_by": [
+          "AS GSS Create Evaluation Document Folders",
+          "AS_GSS_BL_checkIfFolderSecurityNeedsUpdate"
+        ]
+      },
+      {
+        "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_942267",
+        "name": "AS_GSS_SHAREPOINT_FOLDER_ID",
+        "object_type": "Constant",
+        "description": "Main folder id for all the evaluation documents in Sharepoint Site.\n",
+        "data": {
+          "raw_value_type": "http://www.w3.org/2001/XMLSchema:string",
+          "value_type": "http://www.w3.org/2001/XMLSchema:string"
+        },
+        "calls": [],
+        "called_by": [
+          "AS GSS Create Evaluation Document Folders"
+        ]
+      },
+      {
+        "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_956392",
+        "name": "AS_GSS_EVALUATION_DOCUMENT_FOLDERS",
+        "object_type": "Constant",
+        "description": "Value: AS GSS Evaluation Document Folders",
+        "data": {
+          "value": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_934385",
+          "raw_value_type": "http://www.appian.com/ae/types/2009:CollaborationFolder",
+          "value_type": "http://www.appian.com/ae/types/2009:CollaborationFolder"
+        },
+        "calls": [],
+        "called_by": [
+          "AS GSS Create Evaluation Document Folders"
+        ]
+      },
+      {
+        "uuid": "_a-0000e49f-7b90-8000-9bac-011c48011c48_192834",
+        "name": "AS_GAM_BOL_OFFICE_365",
+        "object_type": "Constant",
+        "description": "Boolean constant for Turning ON / OFF  Office 365 Integration",
+        "data": {
+          "raw_value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "value_type": "http://www.w3.org/2001/XMLSchema:boolean"
+        },
+        "calls": [],
+        "called_by": [
+          "AS GAM Create Folders in Appian and SP"
+        ]
+      },
+      {
+        "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_937193",
+        "name": "AS_GSS_GRP_ALL_BUSINESS_USERS",
+        "object_type": "Constant",
+        "description": "Value: AS GSS All Business Users",
+        "data": {
+          "value": "AS GSS All Business Users",
+          "raw_value_type": "http://www.appian.com/ae/types/2009:Group",
+          "value_type": "http://www.appian.com/ae/types/2009:Group"
+        },
+        "calls": [],
+        "called_by": [
+          "AS_GSS_evaluationDocumentFolderSecurity"
+        ]
+      }
+    ],
+    "expression_rules": [
+      {
+        "uuid": "_a-0000e447-9390-8000-9baa-011c48011c48_41575",
+        "name": "AS_CO_UT_cleanFolderName",
+        "object_type": "Expression Rule",
+        "description": "Removes special characters from folder name",
+        "data": {
+          "sail_code": "cleanwith(\n  ri!folderName,\n  \" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890\"\n)",
+          "definition": "cleanwith(\n  ri!folderName,\n  \" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890\"\n)",
+          "inputs": [
+            {
+              "name": "folderName",
+              "type": "http://www.w3.org/2001/XMLSchema:string",
+              "data_type": "http://www.w3.org/2001/XMLSchema:string",
+              "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "Folder name with special charcs",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "folderName",
+                  "input_value": "\"Req #1234\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Folder name with only alpha numerals",
+              "display_order": 1,
+              "test_inputs": [
+                {
+                  "input_name_ref": "folderName",
+                  "input_value": "\"ReqAQVBRRTG\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": null,
+                  "is_null": true,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [],
+        "called_by": [
+          "AS GAM Create Folders in Appian and SP"
+        ]
+      },
+      {
+        "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+        "name": "AS_CO_UT_isBlank",
+        "object_type": "Expression Rule",
+        "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+        "data": {
+          "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  length(a!flatten(ri!value)) = 0\n)",
+          "definition": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  length(a!flatten(ri!value)) = 0\n)",
+          "inputs": [
+            {
+              "name": "value",
+              "type": "http://www.appian.com/ae/types/2009:Variant",
+              "data_type": "http://www.appian.com/ae/types/2009:Variant",
+              "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "Empty String",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "=\"\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Null Integer",
+              "display_order": 1,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "=tointeger(null)",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Null",
+              "display_order": 2,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "null",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Null Group",
+              "display_order": 3,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "=togroup(null)",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "String",
+              "display_order": 4,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "=\"cats\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Integer",
+              "display_order": 5,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "3",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Empty Array",
+              "display_order": 6,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "={}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "List of Lists",
+              "display_order": 7,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "={{}}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Empty Dictionary",
+              "display_order": 8,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "cast('type!{http://www.appian.com/ae/types/2009}Dictionary', null)",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "List of Empty Dictionary",
+              "display_order": 9,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "{\n  cast('type!{http://www.appian.com/ae/types/2009}Dictionary', null),\n  cast('type!{http://www.appian.com/ae/types/2009}Dictionary', null),\n}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Empty Dictionary As Field",
+              "display_order": 10,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "{field1:{}}.field1",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Empty String Array",
+              "display_order": 11,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "=cast(typeof({\"a\",\"b\",\"c\"}),{})",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Array cast to Any Type with first value null",
+              "display_order": 12,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "cast(197, {null, 1, 2})",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Array of Null",
+              "display_order": 13,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "{null, null}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "String array",
+              "display_order": 14,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "{\"hi\", \"\", \"there\"}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [],
+        "called_by": [
+          "AS GSS Create Evaluation Document Folders"
+        ]
+      },
+      {
+        "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75636",
+        "name": "AS_CO_UT_not",
+        "object_type": "Expression Rule",
+        "description": "Null handles for not -- null returns true (null acts like false)",
+        "data": {
+          "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Boolean',\n  not(rule!AS_CO_UT_booleanDefaultFalse(ri!input))\n)\n\n/*True returns False*/\n/*False returns True*/\n/*Null returns True*/",
+          "definition": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Boolean',\n  not(rule!AS_CO_UT_booleanDefaultFalse(ri!input))\n)\n\n/*True returns False*/\n/*False returns True*/\n/*Null returns True*/",
+          "inputs": [
+            {
+              "name": "input",
+              "type": "http://www.appian.com/ae/types/2009:Variant",
+              "data_type": "http://www.appian.com/ae/types/2009:Variant",
+              "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "True -> False",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "input",
+                  "input_value": "true",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "False -> True",
+              "display_order": 1,
+              "test_inputs": [
+                {
+                  "input_name_ref": "input",
+                  "input_value": "false",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Null -> True",
+              "display_order": 2,
+              "test_inputs": [
+                {
+                  "input_name_ref": "input",
+                  "input_value": "null",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "List Input",
+              "display_order": 3,
+              "test_inputs": [
+                {
+                  "input_name_ref": "input",
+                  "input_value": "{true, true}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [],
+        "called_by": [
+          "AS_GSS_BL_checkIfFolderSecurityNeedsUpdate"
+        ]
+      },
+      {
+        "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1320201",
+        "name": "AS_GSS_BL_checkIfFolderSecurityNeedsUpdate",
+        "object_type": "Expression Rule",
+        "description": "Checks if the folder security is as expected. Returns true if it needs to be updated",
+        "data": {
+          "sail_code": "a!localVariables(\n  /*Getting the current security configuration of the folder*/\n  local!currentSecurity: returncontentrolemap(tofolder(ri!folderId), true),\n  if(\n    /*Returns true if the folder security is improper or needs update, else returns false*/\n    or(\n      rule!AS_CO_UT_not(\n        contains(\n          togroup(local!currentSecurity.editorGroups),\n          togroup(rule!AS_GSS_evaluationDocumentFolderSecurity())\n        )\n      ),\n      rule!AS_CO_UT_not(\n        contains(\n          togroup(local!currentSecurity.adminGroups),\n          togroup(cons!AS_GAM_GRP_APPIAN_ADMINISTRATORS)\n        )\n      )\n    ),\n    true,\n    false\n  )\n)",
+          "definition": "a!localVariables(\n  /*Getting the current security configuration of the folder*/\n  local!currentSecurity: returncontentrolemap(tofolder(ri!folderId), true),\n  if(\n    /*Returns true if the folder security is improper or needs update, else returns false*/\n    or(\n      rule!AS_CO_UT_not(\n        contains(\n          togroup(local!currentSecurity.editorGroups),\n          togroup(rule!AS_GSS_evaluationDocumentFolderSecurity())\n        )\n      ),\n      rule!AS_CO_UT_not(\n        contains(\n          togroup(local!currentSecurity.adminGroups),\n          togroup(cons!AS_GAM_GRP_APPIAN_ADMINISTRATORS)\n        )\n      )\n    ),\n    true,\n    false\n  )\n)",
+          "inputs": [
+            {
+              "name": "folderId",
+              "type": "http://www.w3.org/2001/XMLSchema:int",
+              "data_type": "http://www.w3.org/2001/XMLSchema:int",
+              "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "Null check",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "folderId",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": null,
+                  "is_null": true,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [
+          "AS_CO_UT_not",
+          "AS_GAM_GRP_APPIAN_ADMINISTRATORS",
+          "AS_GSS_evaluationDocumentFolderSecurity"
+        ],
+        "called_by": [
+          "AS GSS Create Evaluation Document Folders"
+        ]
+      },
+      {
+        "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_956401",
+        "name": "AS_GSS_evaluationDocumentFolderSecurity",
+        "object_type": "Expression Rule",
+        "description": "Returns the group with editor access for evaluation folder",
+        "data": {
+          "sail_code": "togroup(\n  cons!AS_GSS_GRP_ALL_BUSINESS_USERS\n)",
+          "definition": "togroup(\n  cons!AS_GSS_GRP_ALL_BUSINESS_USERS\n)",
+          "inputs": [],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "Returns the editor groups",
+              "display_order": 0,
+              "test_inputs": [],
+              "assertions": [
+                {
+                  "assertion_value": null,
+                  "is_null": true,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [
+          "AS_GSS_GRP_ALL_BUSINESS_USERS"
+        ],
+        "called_by": [
+          "AS GSS Create Evaluation Document Folders",
+          "AS_GSS_BL_checkIfFolderSecurityNeedsUpdate"
+        ]
+      }
+    ]
+  }
+}

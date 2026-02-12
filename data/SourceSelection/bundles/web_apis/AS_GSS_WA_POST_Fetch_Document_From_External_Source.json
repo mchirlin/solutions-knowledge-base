@@ -1,0 +1,242 @@
+{
+  "_metadata": {
+    "bundle_type": "web_api",
+    "root_object": {
+      "uuid": "b4a8eaa9-aec8-4bd1-8921-96c3fea735b0",
+      "name": "AS GSS WA POST Fetch Document From External Source",
+      "object_type": "Web API",
+      "parent_name": null
+    },
+    "total_objects": 4
+  },
+  "web_api": {
+    "url_alias": "fetchDocumentFromExtSource",
+    "http_method": "POST",
+    "sail_code": "a!match(\n  value: http!request.queryParameters.source,\n  equals: cons!AS_GSS_ENUM_TXT_PROPOSAL_DOC_DOWNLOAD_SOURCE_VM,\n  then: rule!AS_GSS_INT_GET_getProposalDocumentFromVendorManagement(\n    appianDocId: http!request.queryParameters.appianDocId,\n    onSuccess: #\"SYSTEM_SYSRULES_httpResponse_v1\"(\n      statusCode: 200,\n      body: #\"SYSTEM_SYSRULES_toJson_v1\"(\n        value: a!map(docId: tointeger(fv!result.body))\n      )\n    )\n  ),\n  default: #\"SYSTEM_SYSRULES_httpResponse_v1\"(\n    statusCode: 400,\n    body: #\"SYSTEM_SYSRULES_toJson_v1\"(\n      value: a!map(errorMessage: \"INVALID SOURCE PASSED\")\n    )\n  )\n)",
+    "security": [
+      {
+        "role_name": "web_api_administrator",
+        "users": [],
+        "groups": [
+          "_e-0000e42d-ffef-8000-9af3-01075c01075c_19"
+        ]
+      },
+      {
+        "role_name": "web_api_viewer",
+        "users": [],
+        "groups": [
+          "_e-0000e5bc-4a9a-8000-9b09-01075c01075c_991"
+        ]
+      }
+    ]
+  },
+  "supporting_objects": {
+    "integrations": [
+      {
+        "uuid": "d837ec92-7122-4071-b0f9-890127f35676",
+        "name": "AS_GSS_INT_GET_getProposalDocumentFromVendorManagement",
+        "object_type": "Integration",
+        "description": "To get proposal documents from Vendor management",
+        "data": {
+          "integration_type": "system.http",
+          "connected_system_uuid": "AS GSS CS Vendor Management",
+          "is_write": true,
+          "rule_inputs": [
+            {
+              "input_name": "appianDocId",
+              "input_type": "int",
+              "type_namespace": "http://www.w3.org/2001/XMLSchema",
+              "display_order": 0
+            },
+            {
+              "input_name": "onSuccess",
+              "input_type": "Variant",
+              "type_namespace": "http://www.appian.com/ae/types/2009",
+              "display_order": 1
+            },
+            {
+              "input_name": "onError",
+              "input_type": "Variant",
+              "type_namespace": "http://www.appian.com/ae/types/2009",
+              "display_order": 2
+            }
+          ],
+          "url_is_expression": false,
+          "relative_path": "downloadVmDocument",
+          "is_inherited_url": true,
+          "auth_type": "None",
+          "http_method": "GET",
+          "body_parse_type": "application/octet-stream",
+          "timeout": 10,
+          "automatically_convert": true,
+          "exclude_null_params": true,
+          "exclude_null_headers": true,
+          "remove_null_json_fields": true,
+          "request_body_is_expression": false,
+          "query_parameters": [
+            {
+              "name": "appianDocId",
+              "value": "ri!appianDocId",
+              "is_expression": true,
+              "display_order": 0
+            }
+          ],
+          "headers": [
+            {
+              "name": "Version",
+              "value": "1",
+              "is_expression": false,
+              "display_order": 0
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_inputs": [
+            {
+              "input_name_ref": "appianDocId",
+              "input_value": "null",
+              "value_type": "Expression",
+              "is_null": false,
+              "input_order": 0
+            }
+          ]
+        },
+        "calls": [
+          "AS GSS CS Vendor Management"
+        ],
+        "called_by": [
+          "AS GSS WA POST Fetch Document From External Source"
+        ]
+      }
+    ],
+    "connected_systems": [
+      {
+        "uuid": "_a-0000ed77-8e71-8000-9df8-011c48011c48_15308175",
+        "name": "AS GSS CS Vendor Management",
+        "object_type": "Connected System",
+        "description": "Holds the connection to vendor management system",
+        "data": {
+          "integration_type": "system.http",
+          "base_url": "https://sample-url.com",
+          "is_inherited_url": false,
+          "auth_type": "API Key",
+          "auth_details": [
+            {
+              "key": "apiKeyName",
+              "value": "Appian-API-Key",
+              "value_type": "string",
+              "display_order": 0
+            },
+            {
+              "key": "apiKeyValue",
+              "value": "[ENCRYPTED]",
+              "value_type": "EncryptedText",
+              "display_order": 1
+            },
+            {
+              "key": "sendAsHeader",
+              "value": "true",
+              "value_type": "boolean",
+              "display_order": 2
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ]
+        },
+        "calls": [],
+        "called_by": [
+          "AS_GSS_INT_GET_getProposalDocumentFromVendorManagement"
+        ]
+      }
+    ],
+    "constants": [
+      {
+        "uuid": "_a-0000ed77-8e71-8000-9df8-011c48011c48_15350258",
+        "name": "AS_GSS_ENUM_TXT_PROPOSAL_DOC_DOWNLOAD_SOURCE_VM",
+        "object_type": "Constant",
+        "description": "Supporting constant for single click document download. It points to the proposal document download integration from VM.\nValue: PROPOSAL_DOCUMENT_DOWNLOAD_FROM_VM",
+        "data": {
+          "value": "PROPOSAL_DOCUMENT_DOWNLOAD_FROM_VM",
+          "raw_value_type": "http://www.w3.org/2001/XMLSchema:string",
+          "value_type": "http://www.w3.org/2001/XMLSchema:string"
+        },
+        "calls": [],
+        "called_by": [
+          "AS GSS WA POST Fetch Document From External Source"
+        ]
+      }
+    ]
+  }
+}

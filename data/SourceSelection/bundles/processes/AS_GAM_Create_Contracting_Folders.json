@@ -1,0 +1,182 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_object": {
+      "uuid": "0000e49a-9a91-8000-ff60-7f0000014e7a",
+      "name": "AS GAM Create Contracting Folders",
+      "object_type": "Process Model",
+      "parent_name": null
+    },
+    "total_objects": 1
+  },
+  "process": {
+    "process_model": {
+      "uuid": "0000e49a-9a91-8000-ff60-7f0000014e7a",
+      "name": "AS GAM Create Contracting Folders",
+      "object_type": "Process Model",
+      "description": "Process model to create contracting folders",
+      "data": {
+        "nodes": [
+          {
+            "node_id": "0001e50d-df3c-8000-fe08-7f0000014e7a",
+            "node_type": "core.0",
+            "node_name": "Start Node",
+            "gui_id": "0",
+            "node_type_name": "Start Event",
+            "node_category": "Core",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [],
+            "outputs": [],
+            "properties": {}
+          },
+          {
+            "node_id": "0002e50d-df3c-8000-fe08-7f0000014e7a",
+            "node_type": "core.1",
+            "node_name": "Terminate",
+            "gui_id": "1",
+            "node_type_name": "End Event",
+            "node_category": "Core",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [],
+            "outputs": [],
+            "properties": {}
+          },
+          {
+            "node_id": "0003e50d-df3c-8000-fe08-7f0000014e7a",
+            "node_type": "internal.9",
+            "node_name": "Create Parent Folder",
+            "gui_id": "2",
+            "node_type_name": "Create Folder",
+            "node_category": "Document Management",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [
+              {
+                "input_name": "ParentFolder",
+                "input_expression": "=pv!mainFolder"
+              },
+              {
+                "input_name": "FolderName",
+                "input_expression": "=pv!folderName"
+              }
+            ],
+            "outputs": [
+              {
+                "save_into": "parentFolder",
+                "output_expression": "AC!NewFolder"
+              }
+            ],
+            "properties": {}
+          },
+          {
+            "node_id": "0004e50d-df3c-8000-fe08-7f0000014e7a",
+            "node_type": "internal.9",
+            "node_name": "Create Sub Folders",
+            "gui_id": "3",
+            "node_type_name": "Create Folder",
+            "node_category": "Document Management",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [
+              {
+                "input_name": "ParentFolder",
+                "input_expression": "=pv!parentFolder"
+              },
+              {
+                "input_name": "FolderName",
+                "input_expression": "=pv!subFolders[tp!instanceindex]"
+              }
+            ],
+            "outputs": [],
+            "properties": {}
+          }
+        ],
+        "flows": [
+          {
+            "from_node_id": "0001e50d-df3c-8000-fe08-7f0000014e7a",
+            "to_node_id": "2",
+            "flow_label": null,
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0003e50d-df3c-8000-fe08-7f0000014e7a",
+            "to_node_id": "3",
+            "flow_label": null,
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0004e50d-df3c-8000-fe08-7f0000014e7a",
+            "to_node_id": "1",
+            "flow_label": null,
+            "flow_condition": null
+          }
+        ],
+        "variables": [
+          {
+            "variable_name": "folderName",
+            "variable_type": "xsd:string",
+            "is_parameter": true,
+            "default_value": null
+          },
+          {
+            "variable_name": "mainFolder",
+            "variable_type": "a:CollaborationFolder",
+            "is_parameter": true,
+            "default_value": null
+          },
+          {
+            "variable_name": "parentFolder",
+            "variable_type": "a:CollaborationFolder",
+            "is_parameter": false,
+            "default_value": null
+          },
+          {
+            "variable_name": "primaryKey",
+            "variable_type": "xsd:int",
+            "is_parameter": true,
+            "default_value": null
+          },
+          {
+            "variable_name": "subFolders",
+            "variable_type": "a:Text?list",
+            "is_parameter": true,
+            "default_value": null
+          }
+        ],
+        "total_nodes": 4,
+        "total_flows": 3,
+        "complexity_score": 5.0
+      },
+      "calls": [],
+      "called_by": []
+    }
+  },
+  "interfaces": [],
+  "supporting_objects": {}
+}

@@ -1,0 +1,4255 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_object": {
+      "uuid": "000ae5ce-3b97-8000-0b0f-7f0000014e7a",
+      "name": "AS GSS Add Document Details",
+      "object_type": "Process Model",
+      "parent_name": null
+    },
+    "total_objects": 29
+  },
+  "process": {
+    "process_model": {
+      "uuid": "000ae5ce-3b97-8000-0b0f-7f0000014e7a",
+      "name": "AS GSS Add Document Details",
+      "object_type": "Process Model",
+      "description": "Process to provide doc details and write to doc table",
+      "data": {
+        "nodes": [
+          {
+            "node_id": "0000e5ce-3b97-8000-0b0f-7f0000014e7a",
+            "node_type": "core.0",
+            "node_name": "Start Node",
+            "gui_id": "0",
+            "node_type_name": "Start Event",
+            "node_category": "Core",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [],
+            "outputs": [],
+            "properties": {}
+          },
+          {
+            "node_id": "0001e5ce-3b97-8000-0b0f-7f0000014e7a",
+            "node_type": "core.1",
+            "node_name": "End Node",
+            "gui_id": "1",
+            "node_type_name": "End Event",
+            "node_category": "Core",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [],
+            "outputs": [],
+            "properties": {}
+          },
+          {
+            "node_id": "0006e5ce-3b97-8000-0b0f-7f0000014e7a",
+            "node_type": "internal.17",
+            "node_name": "Add doc details",
+            "gui_id": "8",
+            "node_type_name": "User Input Task",
+            "node_category": "Human Task",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": "AS_GSS_FM_addDocumentDetails",
+            "interface_name": "AS_GSS_FM_addDocumentDetails",
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [
+              {
+                "input_name": "evaluationDocuments",
+                "input_expression": "=pv!evaluationDocuments"
+              },
+              {
+                "input_name": "userAction",
+                "input_expression": "=pv!userAction"
+              }
+            ],
+            "outputs": [],
+            "properties": {}
+          },
+          {
+            "node_id": "0002e5ce-3b97-8000-0b0f-7f0000014e7a",
+            "node_type": "appian.system.smart-services.write-to-data-store",
+            "node_name": "Write to evaluation Doc Entity",
+            "gui_id": "4",
+            "node_type_name": "Write to Data Store Entity",
+            "node_category": "Data Services",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [
+              {
+                "input_name": "DataStoreEntity",
+                "input_expression": "=cons!AS_GSS_ENT_EVALUATION_DOCUMENT"
+              },
+              {
+                "input_name": "evaluationDocuments",
+                "input_expression": "=pv!evaluationDocuments"
+              }
+            ],
+            "outputs": [
+              {
+                "save_into": "evaluationDocuments",
+                "output_expression": "AC!StoredValues"
+              }
+            ],
+            "properties": {}
+          }
+        ],
+        "flows": [
+          {
+            "from_node_id": "0000e5ce-3b97-8000-0b0f-7f0000014e7a",
+            "to_node_id": "8",
+            "flow_label": null,
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0006e5ce-3b97-8000-0b0f-7f0000014e7a",
+            "to_node_id": "4",
+            "flow_label": null,
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0002e5ce-3b97-8000-0b0f-7f0000014e7a",
+            "to_node_id": "1",
+            "flow_label": null,
+            "flow_condition": null
+          }
+        ],
+        "variables": [
+          {
+            "variable_name": "evaluationDocuments",
+            "variable_type": "n1:AS_GSS_EvaluationDocument?list",
+            "is_parameter": true,
+            "default_value": null
+          },
+          {
+            "variable_name": "userAction",
+            "variable_type": "xsd:string",
+            "is_parameter": false,
+            "default_value": null
+          }
+        ],
+        "total_nodes": 4,
+        "total_flows": 3,
+        "complexity_score": 5.0
+      },
+      "calls": [
+        "AS_GSS_ENT_EVALUATION_DOCUMENT",
+        "AS_GSS_FM_addDocumentDetails"
+      ],
+      "called_by": []
+    }
+  },
+  "interfaces": [
+    {
+      "uuid": "_a-0000e3d1-f4dc-8000-9ba4-011c48011c48_134344",
+      "name": "AS_CO_CPS_cancelSaveButtons",
+      "object_type": "Interface",
+      "description": "Section with cancel and save buttons",
+      "data": {
+        "sail_code": "a!localVariables(\n  /*The button layout, which can dynamically be inside a section or not*/\n  /*Note that when using this pattern of storing an interface as a local variable, it must be set to refreshAlways = true*/\n  local!buttonLayout: a!refreshVariable(\n    value: #\"SYSTEM_SYSRULES_ButtonLayout\"(\n      primaryButtons: {\n        #\"SYSTEM_SYSRULES_ButtonWidget\"(\n          accessibilityText: ri!confirmAccessibilityText,\n          label: ri!confirmLabel,\n          size: ri!confirmSize,\n          saveInto: if(\n            rule!AS_CO_UT_isBlank(\n              ri!confirmSaveInto\n            ),\n            {},\n            ri!confirmSaveInto\n          ),\n          style: rule!AS_CO_UT_replaceNull(\n            nullableValue: ri!confirmStyle,\n            replacementValue: \"PRIMARY\"\n          ),\n          validate: true,\n          validationGroup: ri!confirmValidationGroup,\n          submit: ri!confirmSubmit,\n          disabled: ri!confirmDisabled,\n          confirmHeader: ri!confirmHeader,\n          confirmMessage: ri!confirmMessage\n        )\n      },\n      secondaryButtons: {\n        #\"SYSTEM_SYSRULES_ButtonWidget\"(\n          accessibilityText: ri!cancelAccessibilityText,\n          label: ri!cancelLabel,\n          size: ri!cancelSize,\n          saveInto: if(\n            rule!AS_CO_UT_isBlank(\n              ri!cancelSaveInto\n            ),\n            {},\n            ri!cancelSaveInto\n          ),\n          style: rule!AS_CO_UT_replaceNull(\n            nullableValue: ri!cancelStyle,\n            replacementValue: \"NORMAL\"\n          ),\n          validate: false,\n          submit: ri!cancelSubmit,\n          disabled: ri!cancelDisabled,\n          confirmHeader: ri!cancelHeader,\n          confirmMessage: ri!cancelMessage,\n          showWhen: ri!cancelShowWhen\n        )\n      },\n      showWhen: ri!showWhen\n    ),\n    refreshAlways: true\n  ),\n  /*Components to show*/\n  if(\n    ri!includeDivider,\n    #\"SYSTEM_SYSRULES_sectionLayout_v1\"(\n      divider: \"ABOVE\",\n      contents: {\n        local!buttonLayout\n      }\n    ),\n    local!buttonLayout\n  )\n)",
+        "parameters": [
+          {
+            "name": "confirmLabel",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 0
+          },
+          {
+            "name": "cancelLabel",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 1
+          },
+          {
+            "name": "confirmSaveInto",
+            "type": "http://www.appian.com/ae/types/2009:Variant",
+            "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+            "required": false,
+            "default_value": null,
+            "display_order": 2
+          },
+          {
+            "name": "cancelSaveInto",
+            "type": "http://www.appian.com/ae/types/2009:Variant",
+            "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+            "required": false,
+            "default_value": null,
+            "display_order": 3
+          },
+          {
+            "name": "includeDivider",
+            "type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "required": false,
+            "default_value": null,
+            "display_order": 4
+          },
+          {
+            "name": "confirmSubmit",
+            "type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "required": false,
+            "default_value": null,
+            "display_order": 5
+          },
+          {
+            "name": "cancelSubmit",
+            "type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "required": false,
+            "default_value": null,
+            "display_order": 6
+          },
+          {
+            "name": "confirmDisabled",
+            "type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "required": false,
+            "default_value": null,
+            "display_order": 7
+          },
+          {
+            "name": "cancelDisabled",
+            "type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "required": false,
+            "default_value": null,
+            "display_order": 8
+          },
+          {
+            "name": "confirmHeader",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 9
+          },
+          {
+            "name": "confirmMessage",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 10
+          },
+          {
+            "name": "confirmStyle",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 11
+          },
+          {
+            "name": "cancelStyle",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 12
+          },
+          {
+            "name": "cancelHeader",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 13
+          },
+          {
+            "name": "cancelMessage",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 14
+          },
+          {
+            "name": "confirmAccessibilityText",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 15
+          },
+          {
+            "name": "cancelAccessibilityText",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 16
+          },
+          {
+            "name": "cancelShowWhen",
+            "type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "required": false,
+            "default_value": null,
+            "display_order": 17
+          },
+          {
+            "name": "confirmSize",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 18
+          },
+          {
+            "name": "cancelSize",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 19
+          },
+          {
+            "name": "confirmValidationGroup",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 20
+          },
+          {
+            "name": "showWhen",
+            "type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "required": false,
+            "default_value": null,
+            "display_order": 21
+          }
+        ],
+        "security": [
+          {
+            "role_name": "readers",
+            "permission_type": "VIEW",
+            "inherit": true,
+            "allow_for_all": false
+          },
+          {
+            "role_name": "authors",
+            "permission_type": "EDIT",
+            "inherit": true,
+            "allow_for_all": false
+          },
+          {
+            "role_name": "administrators",
+            "permission_type": "ADMIN",
+            "inherit": true,
+            "allow_for_all": false
+          },
+          {
+            "role_name": "denyReaders",
+            "permission_type": "DENY_VIEW",
+            "inherit": false,
+            "allow_for_all": false
+          },
+          {
+            "role_name": "denyAuthors",
+            "permission_type": "DENY_EDIT",
+            "inherit": false,
+            "allow_for_all": false
+          },
+          {
+            "role_name": "denyAdministrators",
+            "permission_type": "DENY_ADMIN",
+            "inherit": false,
+            "allow_for_all": false
+          }
+        ],
+        "test_inputs": [
+          {
+            "input_name_ref": "confirmLabel",
+            "input_value": "\"Save\"",
+            "value_type": "Expression",
+            "is_null": false,
+            "input_order": 0
+          },
+          {
+            "input_name_ref": "cancelLabel",
+            "input_value": "\"Cancel\"",
+            "value_type": "Expression",
+            "is_null": false,
+            "input_order": 1
+          },
+          {
+            "input_name_ref": "confirmSaveInto",
+            "input_value": null,
+            "value_type": "string",
+            "is_null": false,
+            "input_order": 2
+          },
+          {
+            "input_name_ref": "cancelSaveInto",
+            "input_value": null,
+            "value_type": "string",
+            "is_null": false,
+            "input_order": 3
+          },
+          {
+            "input_name_ref": "includeDivider",
+            "input_value": null,
+            "value_type": "nil",
+            "is_null": true,
+            "input_order": 4
+          },
+          {
+            "input_name_ref": "confirmSubmit",
+            "input_value": null,
+            "value_type": "nil",
+            "is_null": true,
+            "input_order": 5
+          },
+          {
+            "input_name_ref": "cancelSubmit",
+            "input_value": null,
+            "value_type": "nil",
+            "is_null": true,
+            "input_order": 6
+          },
+          {
+            "input_name_ref": "confirmDisabled",
+            "input_value": null,
+            "value_type": "nil",
+            "is_null": true,
+            "input_order": 7
+          },
+          {
+            "input_name_ref": "cancelDisabled",
+            "input_value": null,
+            "value_type": "nil",
+            "is_null": true,
+            "input_order": 8
+          },
+          {
+            "input_name_ref": "confirmHeader",
+            "input_value": null,
+            "value_type": "string",
+            "is_null": false,
+            "input_order": 9
+          },
+          {
+            "input_name_ref": "confirmMessage",
+            "input_value": null,
+            "value_type": "string",
+            "is_null": false,
+            "input_order": 10
+          },
+          {
+            "input_name_ref": "confirmStyle",
+            "input_value": null,
+            "value_type": "string",
+            "is_null": false,
+            "input_order": 11
+          },
+          {
+            "input_name_ref": "cancelStyle",
+            "input_value": null,
+            "value_type": "string",
+            "is_null": false,
+            "input_order": 12
+          },
+          {
+            "input_name_ref": "cancelHeader",
+            "input_value": null,
+            "value_type": "string",
+            "is_null": false,
+            "input_order": 13
+          },
+          {
+            "input_name_ref": "cancelMessage",
+            "input_value": null,
+            "value_type": "string",
+            "is_null": false,
+            "input_order": 14
+          },
+          {
+            "input_name_ref": "confirmAccessibilityText",
+            "input_value": null,
+            "value_type": "string",
+            "is_null": false,
+            "input_order": 15
+          },
+          {
+            "input_name_ref": "cancelAccessibilityText",
+            "input_value": null,
+            "value_type": "string",
+            "is_null": false,
+            "input_order": 16
+          },
+          {
+            "input_name_ref": "cancelShowWhen",
+            "input_value": null,
+            "value_type": "nil",
+            "is_null": true,
+            "input_order": 17
+          },
+          {
+            "input_name_ref": "confirmSize",
+            "input_value": null,
+            "value_type": "string",
+            "is_null": false,
+            "input_order": 18
+          },
+          {
+            "input_name_ref": "cancelSize",
+            "input_value": null,
+            "value_type": "string",
+            "is_null": false,
+            "input_order": 19
+          },
+          {
+            "input_name_ref": "confirmValidationGroup",
+            "input_value": null,
+            "value_type": "string",
+            "is_null": false,
+            "input_order": 20
+          },
+          {
+            "input_name_ref": "showWhen",
+            "input_value": null,
+            "value_type": "nil",
+            "is_null": true,
+            "input_order": 21
+          }
+        ]
+      },
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GSS_FM_addDocumentDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_74131",
+      "name": "AS_CO_DSP_standardReadOnlyField",
+      "object_type": "Interface",
+      "description": "Standard readOnly field, utilizes a!textField(), use a!richTextDisplayField() for further formatting",
+      "data": {
+        "sail_code": "#\"SYSTEM_SYSRULES_textField\"(\n  label: ri!label,\n  labelPosition: rule!AS_CO_UT_getLabelPosition(\n    label: ri!label,\n    labelPosition: ri!labelPosition,\n    readOnly: true\n  ),\n  instructions: ri!instructions,\n  helpTooltip: ri!helpTooltip,\n  value: rule!AS_CO_UT_replaceNull(\n    nullableValue: ri!value,\n    replacementValue: if(\n      rule!AS_CO_UT_booleanDefaultTrue(\n        ri!showHyphenIfValueNull\n      ),\n      \"-\",\n      \"\"\n    )\n  ),\n  showWhen: ri!showWhen,\n  readOnly: true,\n  align: ri!align,\n  accessibilityText: ri!accessibilityText\n)",
+        "parameters": [
+          {
+            "name": "label",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 0
+          },
+          {
+            "name": "instructions",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 1
+          },
+          {
+            "name": "value",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 2
+          },
+          {
+            "name": "labelPosition",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 3
+          },
+          {
+            "name": "helpTooltip",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 4
+          },
+          {
+            "name": "showWhen",
+            "type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "required": false,
+            "default_value": null,
+            "display_order": 5
+          },
+          {
+            "name": "accessibilityText",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 6
+          },
+          {
+            "name": "align",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 7
+          },
+          {
+            "name": "showHyphenIfValueNull",
+            "type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "required": false,
+            "default_value": null,
+            "display_order": 8
+          }
+        ],
+        "security": [
+          {
+            "role_name": "readers",
+            "permission_type": "VIEW",
+            "inherit": true,
+            "allow_for_all": false
+          },
+          {
+            "role_name": "authors",
+            "permission_type": "EDIT",
+            "inherit": true,
+            "allow_for_all": false
+          },
+          {
+            "role_name": "administrators",
+            "permission_type": "ADMIN",
+            "inherit": true,
+            "allow_for_all": false
+          },
+          {
+            "role_name": "denyReaders",
+            "permission_type": "DENY_VIEW",
+            "inherit": false,
+            "allow_for_all": false
+          },
+          {
+            "role_name": "denyAuthors",
+            "permission_type": "DENY_EDIT",
+            "inherit": false,
+            "allow_for_all": false
+          },
+          {
+            "role_name": "denyAdministrators",
+            "permission_type": "DENY_ADMIN",
+            "inherit": false,
+            "allow_for_all": false
+          }
+        ],
+        "test_inputs": []
+      },
+      "calls": [
+        "AS_CO_UT_booleanDefaultTrue",
+        "AS_CO_UT_getLabelPosition",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_CO_INP_paragraphField",
+        "AS_GSS_GRD_uploadedDocumentGrid"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_74400",
+      "name": "AS_CO_INP_paragraphField",
+      "object_type": "Interface",
+      "description": "Standard wrapper for a!paragraphField()",
+      "data": {
+        "sail_code": "if(\n  ri!readOnly,\n  rule!AS_CO_DSP_standardReadOnlyField(\n    label: ri!label,\n    instructions: ri!instructions,\n    value: ri!value,\n    labelPosition: ri!labelPosition,\n    helpTooltip: ri!helpTooltip,\n    showWhen: ri!showWhen,\n    accessibilityText: ri!accessibilityText,\n    align: null,\n    showHyphenIfValueNull: ri!showHyphenIfValueNull\n  ),\n  #\"SYSTEM_SYSRULES_paragraphField\"(\n    label: ri!label,\n    labelPosition: rule!AS_CO_UT_getLabelPosition(\n      label: ri!label,\n      labelPosition: ri!labelPosition,\n      readOnly: false\n    ),\n    height: ri!height,\n    instructions: ri!instructions,\n    helpTooltip: ri!helpTooltip,\n    placeholder: ri!placeholder,\n    value: ri!value,\n    /* We are using nested saveIntos to automatically perform a trim on any value */\n    /* before executing the actual saves */\n    /* Saves can be nested in this format to allow for better reusability */\n    saveInto: a!save(ri!saveInto, trim(save!value)),\n    showWhen: ri!showWhen,\n    required: if(ri!readOnly, false, ri!required),\n    /* Updated requiredMessage parameter to show default validation text*/\n    requiredMessage: rule!AS_CO_UT_displayRequiredMessage(\n      label: ri!label,\n      requiredMessage: ri!requiredMessage\n    ),\n    readOnly: ri!readOnly,\n    disabled: ri!disabled,\n    validations: if(\n      ri!readOnly,\n      {},\n      a!flatten(\n        {\n          ri!validations,\n          rule!AS_CO_VD_textValidation(value: ri!value, maxLength: ri!maxLength)\n        }\n      )\n    ),\n    validationGroup: ri!validationGroup,\n    accessibilitytext: ri!accessibilityText,\n    characterLimit: ri!characterLimit,\n    showCharacterCount: ri!showCharacterCount\n  )\n)",
+        "parameters": [
+          {
+            "name": "label",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 0
+          },
+          {
+            "name": "instructions",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 1
+          },
+          {
+            "name": "required",
+            "type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "required": false,
+            "default_value": null,
+            "display_order": 2
+          },
+          {
+            "name": "readOnly",
+            "type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "required": false,
+            "default_value": null,
+            "display_order": 3
+          },
+          {
+            "name": "disabled",
+            "type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "required": false,
+            "default_value": null,
+            "display_order": 4
+          },
+          {
+            "name": "value",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 5
+          },
+          {
+            "name": "validations",
+            "type": "http://www.appian.com/ae/types/2009:Text?list",
+            "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+            "required": false,
+            "default_value": null,
+            "display_order": 6
+          },
+          {
+            "name": "saveInto",
+            "type": "http://www.appian.com/ae/types/2009:Save?list",
+            "raw_type": "http://www.appian.com/ae/types/2009:Save?list",
+            "required": false,
+            "default_value": null,
+            "display_order": 7
+          },
+          {
+            "name": "labelPosition",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 8
+          },
+          {
+            "name": "validationGroup",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 9
+          },
+          {
+            "name": "requiredMessage",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 10
+          },
+          {
+            "name": "height",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 11
+          },
+          {
+            "name": "placeholder",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 12
+          },
+          {
+            "name": "helpTooltip",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 13
+          },
+          {
+            "name": "showWhen",
+            "type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "required": false,
+            "default_value": null,
+            "display_order": 14
+          },
+          {
+            "name": "accessibilityText",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 15
+          },
+          {
+            "name": "maxLength",
+            "type": "http://www.w3.org/2001/XMLSchema:int",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+            "required": false,
+            "default_value": null,
+            "display_order": 16
+          },
+          {
+            "name": "showHyphenIfValueNull",
+            "type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "required": false,
+            "default_value": null,
+            "display_order": 17
+          },
+          {
+            "name": "characterLimit",
+            "type": "http://www.w3.org/2001/XMLSchema:int",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+            "required": false,
+            "default_value": null,
+            "display_order": 18
+          },
+          {
+            "name": "showCharacterCount",
+            "type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+            "required": false,
+            "default_value": null,
+            "display_order": 19
+          }
+        ],
+        "security": [
+          {
+            "role_name": "readers",
+            "permission_type": "VIEW",
+            "inherit": true,
+            "allow_for_all": false
+          },
+          {
+            "role_name": "authors",
+            "permission_type": "EDIT",
+            "inherit": true,
+            "allow_for_all": false
+          },
+          {
+            "role_name": "administrators",
+            "permission_type": "ADMIN",
+            "inherit": true,
+            "allow_for_all": false
+          },
+          {
+            "role_name": "denyReaders",
+            "permission_type": "DENY_VIEW",
+            "inherit": false,
+            "allow_for_all": false
+          },
+          {
+            "role_name": "denyAuthors",
+            "permission_type": "DENY_EDIT",
+            "inherit": false,
+            "allow_for_all": false
+          },
+          {
+            "role_name": "denyAdministrators",
+            "permission_type": "DENY_ADMIN",
+            "inherit": false,
+            "allow_for_all": false
+          }
+        ],
+        "test_inputs": []
+      },
+      "calls": [
+        "AS_CO_DSP_standardReadOnlyField",
+        "AS_CO_UT_displayRequiredMessage",
+        "AS_CO_UT_getLabelPosition",
+        "AS_CO_VD_textValidation"
+      ],
+      "called_by": [
+        "AS_GSS_GRD_uploadedDocumentGrid"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_940429",
+      "name": "AS_GSS_FM_addDocumentDetails",
+      "object_type": "Interface",
+      "description": "Interface to add document Details like Description, Folder location.",
+      "data": {
+        "sail_code": "a!localVariables(\n  local!i18nData: rule!AS_GSS_CO_UT_loadBundleFromFolder(langISOCode: null),\n  /*rule!AS_GSS_UT_loadBundleByNames(bundleNames: \"AS.GSS.General\"),*/\n  #\"SYSTEM_SYSRULES_formLayout_v1\"(\n    label: \"Add document details\",\n    contents: rule!AS_GSS_GRD_uploadedDocumentGrid(\n      evaluationDocuments: ri!evaluationDocuments\n    ),\n    buttons: rule!AS_CO_CPS_cancelSaveButtons(\n      confirmAccessibilityText: \"Press Enter to save changes\",\n      cancelAccessibilityText: \"Press Enter to cancel changes\",\n      confirmLabel: \"Select\",\n      /*rule!AS_GSS_UT_displayDynamicLabel(bundleKey: \"AS.GSS.General.btn_Select\")*/\n      cancelLabel: \"Cancel\",\n      /*rule!AS_GSS_UT_displayDynamicLabel(bundleKey: \"AS.GSS.General.btn_Cancel\"),*/\n      confirmSaveInto: {\n        a!save(\n          ri!userAction,\n          cons!AS_CO_ENUM_USER_ACTION_SAVE\n        )\n      },\n      cancelSaveInto: {\n        a!save(\n          ri!userAction,\n          cons!AS_CO_ENUM_USER_ACTION_CANCEL\n        )\n      },\n      confirmSubmit: true,\n      cancelSubmit: true,\n      cancelShowWhen: rule!AS_CO_UT_isNotBlank(ri!evaluationDocuments.evalDocumentId)\n    )\n  )\n)",
+        "parameters": [
+          {
+            "name": "evaluationDocuments",
+            "type": "urn:com:appian:types:AS:GSS:AS_GSS_EvaluationDocument?list",
+            "raw_type": "urn:com:appian:types:AS:GSS:AS_GSS_EvaluationDocument?list",
+            "required": false,
+            "default_value": null,
+            "display_order": 0
+          },
+          {
+            "name": "userAction",
+            "type": "http://www.w3.org/2001/XMLSchema:string",
+            "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+            "required": false,
+            "default_value": null,
+            "display_order": 1
+          }
+        ],
+        "security": [
+          {
+            "role_name": "readers",
+            "permission_type": "VIEW",
+            "inherit": true,
+            "allow_for_all": false
+          },
+          {
+            "role_name": "authors",
+            "permission_type": "EDIT",
+            "inherit": true,
+            "allow_for_all": false
+          },
+          {
+            "role_name": "administrators",
+            "permission_type": "ADMIN",
+            "inherit": true,
+            "allow_for_all": false
+          },
+          {
+            "role_name": "denyReaders",
+            "permission_type": "DENY_VIEW",
+            "inherit": false,
+            "allow_for_all": false
+          },
+          {
+            "role_name": "denyAuthors",
+            "permission_type": "DENY_EDIT",
+            "inherit": false,
+            "allow_for_all": false
+          },
+          {
+            "role_name": "denyAdministrators",
+            "permission_type": "DENY_ADMIN",
+            "inherit": false,
+            "allow_for_all": false
+          }
+        ],
+        "test_inputs": [
+          {
+            "input_name_ref": "evaluationDocuments",
+            "input_value": "{documentName:\"Statement Work\",folderId:6551}",
+            "value_type": "Expression",
+            "is_null": false,
+            "input_order": 0
+          },
+          {
+            "input_name_ref": "userAction",
+            "input_value": null,
+            "value_type": "string",
+            "is_null": false,
+            "input_order": 1
+          }
+        ]
+      },
+      "calls": [
+        "AS_CO_CPS_cancelSaveButtons",
+        "AS_CO_ENUM_USER_ACTION_CANCEL",
+        "AS_CO_ENUM_USER_ACTION_SAVE",
+        "AS_CO_UT_isNotBlank",
+        "AS_GSS_CO_UT_loadBundleFromFolder",
+        "AS_GSS_GRD_uploadedDocumentGrid",
+        "AS_GSS_UT_displayDynamicLabel",
+        "AS_GSS_UT_loadBundleByNames"
+      ],
+      "called_by": [
+        "AS GSS Add Document Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_940470",
+      "name": "AS_GSS_GRD_uploadedDocumentGrid",
+      "object_type": "Interface",
+      "description": "Editable grid for documents uploaded from related action",
+      "data": {
+        "sail_code": "a!localVariables(\n  local!i18nData: rule!AS_GSS_CO_UT_loadBundleFromFolder(null()),\n  {\n    #\"SYSTEM_SYSRULES_gridLayout\"(\n      label: \"\",\n      labelPosition: \"ABOVE\",\n      headerCells: {\n        #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(\n          label: \"Document Name\"\n        ),\n        #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(\n          label: \"Description\"\n        )\n      },\n      columnConfigs: {\n        #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(width: \"\"),\n        #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(width: \"DISTRIBUTE\", weight: 2)\n      },\n      rows: #\"SYSTEM_SYSRULES_forEach\"(\n        items: ri!evaluationDocuments,\n        expression: #\"SYSTEM_SYSRULES_gridRowLayout\"(\n          contents: {\n            rule!AS_CO_DSP_standardReadOnlyField(value: fv!item.documentName),\n            rule!AS_CO_INP_paragraphField(\n              value: fv!item.documentDesc,\n              saveInto: fv!item.documentDesc,\n              placeholder: \"Enter document description\",\n              maxLength: cons!AS_CO_ENUM_PARAGRAPH_LENGTH_SHORT\n            )\n          }\n        )\n      ),\n      validations: {},\n      shadeAlternateRows: true,\n      borderStyle: \"LIGHT\"\n    )\n  }\n)",
+        "parameters": [
+          {
+            "name": "evaluationDocuments",
+            "type": "urn:com:appian:types:AS:GSS:AS_GSS_EvaluationDocument?list",
+            "raw_type": "urn:com:appian:types:AS:GSS:AS_GSS_EvaluationDocument?list",
+            "required": false,
+            "default_value": null,
+            "display_order": 0
+          }
+        ],
+        "security": [
+          {
+            "role_name": "readers",
+            "permission_type": "VIEW",
+            "inherit": true,
+            "allow_for_all": false
+          },
+          {
+            "role_name": "authors",
+            "permission_type": "EDIT",
+            "inherit": true,
+            "allow_for_all": false
+          },
+          {
+            "role_name": "administrators",
+            "permission_type": "ADMIN",
+            "inherit": true,
+            "allow_for_all": false
+          },
+          {
+            "role_name": "denyReaders",
+            "permission_type": "DENY_VIEW",
+            "inherit": false,
+            "allow_for_all": false
+          },
+          {
+            "role_name": "denyAuthors",
+            "permission_type": "DENY_EDIT",
+            "inherit": false,
+            "allow_for_all": false
+          },
+          {
+            "role_name": "denyAdministrators",
+            "permission_type": "DENY_ADMIN",
+            "inherit": false,
+            "allow_for_all": false
+          }
+        ],
+        "test_inputs": [
+          {
+            "input_name_ref": "evaluationDocuments",
+            "input_value": "{{documentName:\"Test\"},{documentName:\"Test1\"}}",
+            "value_type": "Expression",
+            "is_null": false,
+            "input_order": 0
+          }
+        ]
+      },
+      "calls": [
+        "AS_CO_DSP_standardReadOnlyField",
+        "AS_CO_ENUM_PARAGRAPH_LENGTH_SHORT",
+        "AS_CO_INP_paragraphField",
+        "AS_GSS_CO_UT_loadBundleFromFolder"
+      ],
+      "called_by": [
+        "AS_GSS_FM_addDocumentDetails"
+      ]
+    }
+  ],
+  "supporting_objects": {
+    "expression_rules": [
+      {
+        "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76004",
+        "name": "AS_CO_I18N_UT_getUserLocale",
+        "object_type": "Expression Rule",
+        "description": "Gets the Appian user locale as defined in the user preferences, returns the default if the user is null",
+        "data": {
+          "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Text',\n  userlocale(ri!user)\n)",
+          "definition": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Text',\n  userlocale(ri!user)\n)",
+          "inputs": [
+            {
+              "name": "user",
+              "type": "http://www.appian.com/ae/types/2009:User",
+              "data_type": "http://www.appian.com/ae/types/2009:User",
+              "raw_type": "http://www.appian.com/ae/types/2009:User",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "Sample Test Case",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "user",
+                  "input_value": "loggedInUser()",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [],
+        "called_by": [
+          "AS_CO_I18N_UT_loadBundleFromFolder"
+        ]
+      },
+      {
+        "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_33160",
+        "name": "AS_CO_UT_displayCommonObjectBundleLabel",
+        "object_type": "Expression Rule",
+        "description": "Retrieves a single label from the Common Objects bundle file",
+        "data": {
+          "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Text',\n  rule!AS_CO_I18N_UT_getAndDisplayLabelSingle(\n    bundleFolder: cons!AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES,\n    bundleKey: ri!bundleKey,\n    arguments: ri!arguments,\n    localeAgnostic: false\n  )\n)",
+          "definition": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Text',\n  rule!AS_CO_I18N_UT_getAndDisplayLabelSingle(\n    bundleFolder: cons!AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES,\n    bundleKey: ri!bundleKey,\n    arguments: ri!arguments,\n    localeAgnostic: false\n  )\n)",
+          "inputs": [
+            {
+              "name": "bundleKey",
+              "type": "http://www.w3.org/2001/XMLSchema:string",
+              "data_type": "http://www.w3.org/2001/XMLSchema:string",
+              "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            },
+            {
+              "name": "arguments",
+              "type": "http://www.appian.com/ae/types/2009:Text?list",
+              "data_type": "http://www.appian.com/ae/types/2009:Text?list",
+              "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 1
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "Sample",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "bundleKey",
+                  "input_value": "\"AS.CO.SampleBundle.lbl_Example\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "arguments",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 1
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Sample with Arguments",
+              "display_order": 1,
+              "test_inputs": [
+                {
+                  "input_name_ref": "bundleKey",
+                  "input_value": "\"AS.CO.SampleBundle.vld_Message\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "arguments",
+                  "input_value": "{25}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Invalid Bundle Input",
+              "display_order": 2,
+              "test_inputs": [
+                {
+                  "input_name_ref": "bundleKey",
+                  "input_value": "\"BundleName.lbl_Example\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "arguments",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 1
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [
+          "AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+          "AS_CO_I18N_UT_getAndDisplayLabelSingle"
+        ],
+        "called_by": [
+          "AS_CO_UT_displayRequiredMessage",
+          "AS_CO_VD_textValidation"
+        ]
+      },
+      {
+        "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_84411",
+        "name": "AS_CO_I18N_UT_getAndDisplayLabelSingle",
+        "object_type": "Expression Rule",
+        "description": "Retrieves and then displays a single label from a bundle file -- This is meant to be used in places where you cannot utilize local variables, such as record and site page names",
+        "data": {
+          "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Text',\n  a!localVariables(\n\n    local!bundleKeyParse: rule!AS_CO_I18N_UT_parseBundleKey(\n      bundleKey: ri!bundleKey\n    ),\n\n    local!i18nData: rule!AS_CO_I18N_UT_loadBundleFromFolder(\n      bundleFolder: ri!bundleFolder,\n      bundleNames: local!bundleKeyParse.bundleName,\n      localeAgnostic: ri!localeAgnostic\n    ),\n\n    rule!AS_CO_I18N_UT_displayLabel(\n      i18nData: local!i18nData,\n      bundleKey: ri!bundleKey,\n      arguments: ri!arguments\n    )\n  )\n)",
+          "definition": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Text',\n  a!localVariables(\n  \n    local!bundleKeyParse: rule!AS_CO_I18N_UT_parseBundleKey(\n      bundleKey: ri!bundleKey\n    ),\n    \n    local!i18nData: rule!AS_CO_I18N_UT_loadBundleFromFolder(\n      bundleFolder: ri!bundleFolder,\n      bundleNames: local!bundleKeyParse.bundleName,\n      localeAgnostic: ri!localeAgnostic\n    ),\n    \n    rule!AS_CO_I18N_UT_displayLabel(\n      i18nData: local!i18nData,\n      bundleKey: ri!bundleKey,\n      arguments: ri!arguments\n    )\n  )\n)",
+          "inputs": [
+            {
+              "name": "bundleFolder",
+              "type": "http://www.appian.com/ae/types/2009:CollaborationFolder",
+              "data_type": "http://www.appian.com/ae/types/2009:CollaborationFolder",
+              "raw_type": "http://www.appian.com/ae/types/2009:CollaborationFolder",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            },
+            {
+              "name": "bundleKey",
+              "type": "http://www.w3.org/2001/XMLSchema:string",
+              "data_type": "http://www.w3.org/2001/XMLSchema:string",
+              "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 1
+            },
+            {
+              "name": "arguments",
+              "type": "http://www.appian.com/ae/types/2009:Text?list",
+              "data_type": "http://www.appian.com/ae/types/2009:Text?list",
+              "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 2
+            },
+            {
+              "name": "localeAgnostic",
+              "type": "http://www.w3.org/2001/XMLSchema:boolean",
+              "data_type": "http://www.w3.org/2001/XMLSchema:boolean",
+              "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 3
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "Sample",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "bundleFolder",
+                  "input_value": "cons!AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "bundleKey",
+                  "input_value": "\"AS.CO.SampleBundle.lbl_Example\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "arguments",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 2
+                },
+                {
+                  "input_name_ref": "localeAgnostic",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 3
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Sample with Arguments",
+              "display_order": 1,
+              "test_inputs": [
+                {
+                  "input_name_ref": "bundleFolder",
+                  "input_value": "cons!AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "bundleKey",
+                  "input_value": "\"AS.CO.SampleBundle.vld_Message\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "arguments",
+                  "input_value": "{25}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 2
+                },
+                {
+                  "input_name_ref": "localeAgnostic",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 3
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Sample Locale Agnostic",
+              "display_order": 2,
+              "test_inputs": [
+                {
+                  "input_name_ref": "bundleFolder",
+                  "input_value": "cons!AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "bundleKey",
+                  "input_value": "\"AS.CO.SampleBundle.lbl_Example\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "arguments",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 2
+                },
+                {
+                  "input_name_ref": "localeAgnostic",
+                  "input_value": "true",
+                  "value_type": "boolean",
+                  "is_null": false,
+                  "input_order": 3
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Sample Locale Agnostic with Arguments",
+              "display_order": 3,
+              "test_inputs": [
+                {
+                  "input_name_ref": "bundleFolder",
+                  "input_value": "cons!AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "bundleKey",
+                  "input_value": "\"AS.CO.SampleBundle.vld_Message\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "arguments",
+                  "input_value": "{25}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 2
+                },
+                {
+                  "input_name_ref": "localeAgnostic",
+                  "input_value": "true",
+                  "value_type": "boolean",
+                  "is_null": false,
+                  "input_order": 3
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Invalid Bundle Input",
+              "display_order": 4,
+              "test_inputs": [
+                {
+                  "input_name_ref": "bundleFolder",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "bundleKey",
+                  "input_value": "\"BundleName.lbl_Example\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "arguments",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 2
+                },
+                {
+                  "input_name_ref": "localeAgnostic",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 3
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [
+          "AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+          "AS_CO_I18N_UT_displayLabel",
+          "AS_CO_I18N_UT_loadBundleFromFolder",
+          "AS_CO_I18N_UT_parseBundleKey"
+        ],
+        "called_by": [
+          "AS_CO_UT_displayCommonObjectBundleLabel"
+        ]
+      },
+      {
+        "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73980",
+        "name": "AS_CO_UT_replaceNull",
+        "object_type": "Expression Rule",
+        "description": "Returns nullableValue only if it is not null. Else returns replacementValue.",
+        "data": {
+          "sail_code": "if(\n  rule!AS_CO_UT_isBlank(ri!nullableValue),\n  ri!replacementValue,\n  ri!nullableValue\n)",
+          "definition": "if(\n  rule!AS_CO_UT_isBlank(ri!nullableValue),\n  ri!replacementValue,\n  ri!nullableValue\n)",
+          "inputs": [
+            {
+              "name": "nullableValue",
+              "type": "http://www.appian.com/ae/types/2009:Variant",
+              "data_type": "http://www.appian.com/ae/types/2009:Variant",
+              "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            },
+            {
+              "name": "replacementValue",
+              "type": "http://www.appian.com/ae/types/2009:Variant",
+              "data_type": "http://www.appian.com/ae/types/2009:Variant",
+              "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 1
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "Value is Null",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "nullableValue",
+                  "input_value": "null",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "replacementValue",
+                  "input_value": "\"replace\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Value is Not Null",
+              "display_order": 1,
+              "test_inputs": [
+                {
+                  "input_name_ref": "nullableValue",
+                  "input_value": "\"value\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "replacementValue",
+                  "input_value": "\"replace\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [
+          "AS_CO_UT_isBlank"
+        ],
+        "called_by": [
+          "AS_CO_CPS_cancelSaveButtons",
+          "AS_CO_DSP_standardReadOnlyField",
+          "AS_CO_I18N_UT_displayLabel",
+          "AS_CO_UT_getLabelPosition",
+          "AS_CO_VD_textValidation",
+          "AS_GAM_CO_I18N_UT_displayLabel",
+          "AS_GSS_UT_loadBundleByNames"
+        ]
+      },
+      {
+        "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+        "name": "AS_CO_UT_isBlank",
+        "object_type": "Expression Rule",
+        "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+        "data": {
+          "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  length(a!flatten(ri!value)) = 0\n)",
+          "definition": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  length(a!flatten(ri!value)) = 0\n)",
+          "inputs": [
+            {
+              "name": "value",
+              "type": "http://www.appian.com/ae/types/2009:Variant",
+              "data_type": "http://www.appian.com/ae/types/2009:Variant",
+              "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "Empty String",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "=\"\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Null Integer",
+              "display_order": 1,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "=tointeger(null)",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Null",
+              "display_order": 2,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "null",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Null Group",
+              "display_order": 3,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "=togroup(null)",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "String",
+              "display_order": 4,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "=\"cats\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Integer",
+              "display_order": 5,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "3",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Empty Array",
+              "display_order": 6,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "={}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "List of Lists",
+              "display_order": 7,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "={{}}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Empty Dictionary",
+              "display_order": 8,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "cast('type!{http://www.appian.com/ae/types/2009}Dictionary', null)",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "List of Empty Dictionary",
+              "display_order": 9,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "{\n  cast('type!{http://www.appian.com/ae/types/2009}Dictionary', null),\n  cast('type!{http://www.appian.com/ae/types/2009}Dictionary', null),\n}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Empty Dictionary As Field",
+              "display_order": 10,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "{field1:{}}.field1",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Empty String Array",
+              "display_order": 11,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "=cast(typeof({\"a\",\"b\",\"c\"}),{})",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Array cast to Any Type with first value null",
+              "display_order": 12,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "cast(197, {null, 1, 2})",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Array of Null",
+              "display_order": 13,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "{null, null}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "String array",
+              "display_order": 14,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "{\"hi\", \"\", \"there\"}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [],
+        "called_by": [
+          "AS_CO_CPS_cancelSaveButtons",
+          "AS_CO_I18N_UT_displayLabel",
+          "AS_CO_I18N_UT_loadBundleFromFolder",
+          "AS_CO_UT_getLabelPosition",
+          "AS_CO_UT_isNotBlank",
+          "AS_CO_UT_replaceNull",
+          "AS_GAM_CO_I18N_UT_displayLabel"
+        ]
+      },
+      {
+        "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_939732",
+        "name": "AS_GSS_UT_displayDynamicLabel",
+        "object_type": "Expression Rule",
+        "description": "Displays a label for the input key based on the properties file for GSS",
+        "data": {
+          "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Text',\n  a!localVariables(\n    local!bundle: rule!AS_GSS_CO_UT_loadBundleFromFolder(langISOCode: null()),\n    rule!AS_GAM_CO_I18N_UT_displayLabel(\n      bundle: local!bundle,\n      bundleKey: ri!bundleKey,\n      arguments: ri!arguments\n    )\n  )\n)",
+          "definition": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Text',\n  a!localVariables(\n    local!bundle: rule!AS_GSS_CO_UT_loadBundleFromFolder(langISOCode: null()),\n    rule!AS_GAM_CO_I18N_UT_displayLabel(\n      bundle:  local!bundle,\n      bundleKey: ri!bundleKey,\n      arguments: ri!arguments\n    )\n  )\n)",
+          "inputs": [
+            {
+              "name": "bundleKey",
+              "type": "http://www.w3.org/2001/XMLSchema:string",
+              "data_type": "http://www.w3.org/2001/XMLSchema:string",
+              "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            },
+            {
+              "name": "arguments",
+              "type": "http://www.appian.com/ae/types/2009:Text?list",
+              "data_type": "http://www.appian.com/ae/types/2009:Text?list",
+              "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 1
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "Null Bundle Key",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "bundleKey",
+                  "input_value": null,
+                  "value_type": "string",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "arguments",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 1
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": null,
+                  "is_null": true,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Label for Save",
+              "display_order": 1,
+              "test_inputs": [
+                {
+                  "input_name_ref": "bundleKey",
+                  "input_value": "\"AS.GSS.General.btn_Save\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "arguments",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 1
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": null,
+                  "is_null": true,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [
+          "AS_GAM_CO_I18N_UT_displayLabel",
+          "AS_GSS_CO_UT_loadBundleFromFolder"
+        ],
+        "called_by": [
+          "AS_GSS_FM_addDocumentDetails"
+        ]
+      },
+      {
+        "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_81720",
+        "name": "AS_CO_I18N_UT_loadBundleFromFolder",
+        "object_type": "Expression Rule",
+        "description": "Loads a property bundle file by name from a folder, returns a dictionary of the key-value pairs",
+        "data": {
+          "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Dictionary',\n  a!localVariables(\n\n    local!locale: if(\n      ri!localeAgnostic,\n      null,\n      rule!AS_CO_I18N_UT_getUserLocale(user: loggedInUser())\n    ),\n\n    if(\n      rule!AS_CO_UT_isBlank(ri!bundleFolder),\n\n      null,\n\n      a!localVariables(\n        /*Wrapping this in a local variable to ensure caching -- it will only re-execute if inputs change*/\n        local!bundleData: loadbundlepropertiesfile(\n          ri!bundleFolder,\n          local!locale,\n          a!flatten(ri!bundleNames)\n        ),\n\n        local!bundleData\n      )\n    )\n  )\n)",
+          "definition": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Dictionary',\n  a!localVariables(\n    \n    local!locale: if(\n      ri!localeAgnostic,\n      null,\n      rule!AS_CO_I18N_UT_getUserLocale(user: loggedInUser())\n    ),\n    \n    if(\n      rule!AS_CO_UT_isBlank(ri!bundleFolder),\n      \n      null,\n      \n      a!localVariables(\n        /*Wrapping this in a local variable to ensure caching -- it will only re-execute if inputs change*/\n        local!bundleData: loadbundlepropertiesfile(\n          ri!bundleFolder,\n          local!locale,\n          a!flatten(ri!bundleNames)\n        ),\n        \n        local!bundleData\n      )\n    )\n  )\n)",
+          "inputs": [
+            {
+              "name": "bundleFolder",
+              "type": "http://www.appian.com/ae/types/2009:CollaborationFolder",
+              "data_type": "http://www.appian.com/ae/types/2009:CollaborationFolder",
+              "raw_type": "http://www.appian.com/ae/types/2009:CollaborationFolder",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            },
+            {
+              "name": "bundleNames",
+              "type": "http://www.appian.com/ae/types/2009:Text?list",
+              "data_type": "http://www.appian.com/ae/types/2009:Text?list",
+              "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 1
+            },
+            {
+              "name": "localeAgnostic",
+              "type": "http://www.w3.org/2001/XMLSchema:boolean",
+              "data_type": "http://www.w3.org/2001/XMLSchema:boolean",
+              "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 2
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "Sample with Bundle Names",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "bundleFolder",
+                  "input_value": "cons!AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "bundleNames",
+                  "input_value": "{\"AS.CO.SampleBundle\"}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "localeAgnostic",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 2
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Sample without Bundle Names",
+              "display_order": 1,
+              "test_inputs": [
+                {
+                  "input_name_ref": "bundleFolder",
+                  "input_value": "cons!AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "bundleNames",
+                  "input_value": "{}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "localeAgnostic",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 2
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Sample Locale Agnostic with Bundle Names",
+              "display_order": 2,
+              "test_inputs": [
+                {
+                  "input_name_ref": "bundleFolder",
+                  "input_value": "cons!AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "bundleNames",
+                  "input_value": "{\"AS.CO.SampleBundle\"}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "localeAgnostic",
+                  "input_value": "true",
+                  "value_type": "boolean",
+                  "is_null": false,
+                  "input_order": 2
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Sample Locale Agnostic without Bundle Names",
+              "display_order": 3,
+              "test_inputs": [
+                {
+                  "input_name_ref": "bundleFolder",
+                  "input_value": "cons!AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "bundleNames",
+                  "input_value": "{}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "localeAgnostic",
+                  "input_value": "true",
+                  "value_type": "boolean",
+                  "is_null": false,
+                  "input_order": 2
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Null Folder Input",
+              "display_order": 4,
+              "test_inputs": [
+                {
+                  "input_name_ref": "bundleFolder",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "bundleNames",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "localeAgnostic",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 2
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [
+          "AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+          "AS_CO_I18N_UT_getUserLocale",
+          "AS_CO_UT_isBlank"
+        ],
+        "called_by": [
+          "AS_CO_I18N_UT_getAndDisplayLabelSingle",
+          "AS_GSS_UT_loadBundleByNames"
+        ]
+      },
+      {
+        "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73568",
+        "name": "AS_CO_UT_getLabelPosition",
+        "object_type": "Expression Rule",
+        "description": "Returns the standard labelPosition based on the context of the component, allows for custom input",
+        "data": {
+          "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Text',\n  rule!AS_CO_UT_replaceNull(\n    nullableValue: ri!labelPosition,\n    replacementValue: if(\n      rule!AS_CO_UT_isBlank(ri!label),\n      \"COLLAPSED\",\n      if(ri!readOnly, \"ADJACENT\", \"ABOVE\")\n    )\n  )\n)",
+          "definition": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Text',\n  rule!AS_CO_UT_replaceNull(\n    nullableValue: ri!labelPosition,\n    replacementValue: if(\n      rule!AS_CO_UT_isBlank(ri!label),\n      \"COLLAPSED\",\n      if(ri!readOnly, \"ADJACENT\", \"ABOVE\")\n    )\n  )\n)",
+          "inputs": [
+            {
+              "name": "label",
+              "type": "http://www.w3.org/2001/XMLSchema:string",
+              "data_type": "http://www.w3.org/2001/XMLSchema:string",
+              "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            },
+            {
+              "name": "labelPosition",
+              "type": "http://www.w3.org/2001/XMLSchema:string",
+              "data_type": "http://www.w3.org/2001/XMLSchema:string",
+              "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 1
+            },
+            {
+              "name": "readOnly",
+              "type": "http://www.w3.org/2001/XMLSchema:boolean",
+              "data_type": "http://www.w3.org/2001/XMLSchema:boolean",
+              "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 2
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "Passed Label Position",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "label",
+                  "input_value": null,
+                  "value_type": "string",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "labelPosition",
+                  "input_value": "\"JUSTIFIED\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "readOnly",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 2
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Null Label",
+              "display_order": 1,
+              "test_inputs": [
+                {
+                  "input_name_ref": "label",
+                  "input_value": null,
+                  "value_type": "string",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "labelPosition",
+                  "input_value": null,
+                  "value_type": "string",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "readOnly",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 2
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Valid Label, Read Only",
+              "display_order": 2,
+              "test_inputs": [
+                {
+                  "input_name_ref": "label",
+                  "input_value": "\"Label\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "labelPosition",
+                  "input_value": null,
+                  "value_type": "string",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "readOnly",
+                  "input_value": "true",
+                  "value_type": "boolean",
+                  "is_null": false,
+                  "input_order": 2
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Valid Label, Not Read Only",
+              "display_order": 3,
+              "test_inputs": [
+                {
+                  "input_name_ref": "label",
+                  "input_value": "\"Label\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "labelPosition",
+                  "input_value": null,
+                  "value_type": "string",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "readOnly",
+                  "input_value": "false",
+                  "value_type": "boolean",
+                  "is_null": false,
+                  "input_order": 2
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [
+          "AS_CO_UT_isBlank",
+          "AS_CO_UT_replaceNull"
+        ],
+        "called_by": [
+          "AS_CO_DSP_standardReadOnlyField",
+          "AS_CO_INP_paragraphField"
+        ]
+      },
+      {
+        "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_948612",
+        "name": "AS_GSS_UT_loadBundleByNames",
+        "object_type": "Expression Rule",
+        "description": "Loads a bundle file from passed in bundle names\n\nDocumentation is available for this design object",
+        "data": {
+          "sail_code": "rule!AS_CO_I18N_UT_loadBundleFromFolder(\n  bundleFolder: cons!AS_GSS_FLD_PROPERTIES_FILES,\n  localeAgnostic: true,\n  bundleNames: rule!AS_CO_UT_replaceNull(\n    nullableValue: ri!bundleNames,\n    replacementValue: { \"AS.GSS.General\" }\n  )\n)",
+          "definition": "rule!AS_CO_I18N_UT_loadBundleFromFolder(\n  bundleFolder: cons!AS_GSS_FLD_PROPERTIES_FILES,\n  localeAgnostic: true,\n  bundleNames: rule!AS_CO_UT_replaceNull(\n    nullableValue: ri!bundleNames,\n    replacementValue: { \"AS.GSS.General\" }\n  )\n)",
+          "inputs": [
+            {
+              "name": "bundleNames",
+              "type": "http://www.appian.com/ae/types/2009:Text?list",
+              "data_type": "http://www.appian.com/ae/types/2009:Text?list",
+              "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "null input",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "bundleNames",
+                  "input_value": "{}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": null,
+                  "is_null": true,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [
+          "AS_CO_I18N_UT_loadBundleFromFolder",
+          "AS_CO_UT_replaceNull",
+          "AS_GSS_FLD_PROPERTIES_FILES"
+        ],
+        "called_by": [
+          "AS_GSS_FM_addDocumentDetails"
+        ]
+      },
+      {
+        "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_81818",
+        "name": "AS_CO_I18N_UT_displayLabel",
+        "object_type": "Expression Rule",
+        "description": "Displays a label by the `bundleKey` from passed in bundle data, optionally accepts arguments",
+        "data": {
+          "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Text',\n  with(\n    local!bundleKeyParse: rule!AS_CO_I18N_UT_parseBundleKey(bundleKey: ri!bundleKey),\n    local!label: if(\n      rule!AS_CO_UT_isBlank(local!bundleKeyParse.bundleName),\n      ri!i18nData[local!bundleKeyParse.labelKey],\n      ri!i18nData[local!bundleKeyParse.bundleName][local!bundleKeyParse.labelKey]\n    ),\n    local!updatedLabel: rule!AS_CO_UT_replaceNull(\n      nullableValue: local!label,\n      replacementValue: ri!bundleKey\n    ),\n    local!updatedLabelForArguments: if(\n      rule!AS_CO_UT_isBlank(ri!arguments),\n      local!updatedLabel,\n      reduce(\n        rule!AS_CO_I18N_UT_replaceArgument(input: _, index: _, arguments: ri!arguments),\n        local!updatedLabel,\n        enumerate(count(ri!arguments)) + 1\n      )\n    ),\n    local!updatedLabelForArguments\n  )\n)",
+          "definition": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Text',\n  with(\n    local!bundleKeyParse: rule!AS_CO_I18N_UT_parseBundleKey(bundleKey: ri!bundleKey),\n    local!label: if(\n      rule!AS_CO_UT_isBlank(local!bundleKeyParse.bundleName),\n      ri!i18nData[local!bundleKeyParse.labelKey],\n      ri!i18nData[local!bundleKeyParse.bundleName][local!bundleKeyParse.labelKey]\n    ),\n    local!updatedLabel: rule!AS_CO_UT_replaceNull(\n      nullableValue: local!label,\n      replacementValue: ri!bundleKey\n    ),\n    local!updatedLabelForArguments: if(\n      rule!AS_CO_UT_isBlank(ri!arguments),\n      local!updatedLabel,\n      reduce(\n        rule!AS_CO_I18N_UT_replaceArgument(input: _, index: _, arguments: ri!arguments),\n        local!updatedLabel,\n        enumerate(count(ri!arguments)) + 1\n      )\n    ),\n    local!updatedLabelForArguments\n  )\n)",
+          "inputs": [
+            {
+              "name": "i18nData",
+              "type": "http://www.appian.com/ae/types/2009:Variant",
+              "data_type": "http://www.appian.com/ae/types/2009:Variant",
+              "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            },
+            {
+              "name": "bundleKey",
+              "type": "http://www.w3.org/2001/XMLSchema:string",
+              "data_type": "http://www.w3.org/2001/XMLSchema:string",
+              "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 1
+            },
+            {
+              "name": "arguments",
+              "type": "http://www.appian.com/ae/types/2009:Text?list",
+              "data_type": "http://www.appian.com/ae/types/2009:Text?list",
+              "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 2
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "Sample Bundle",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "i18nData",
+                  "input_value": "{\n  SampleBundle: {\n    lbl_Example: \"Label 1\"\n  }\n}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "bundleKey",
+                  "input_value": "\"SampleBundle.lbl_Example\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "arguments",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 2
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Sample Bundle with Arguments",
+              "display_order": 1,
+              "test_inputs": [
+                {
+                  "input_name_ref": "i18nData",
+                  "input_value": "{\n  SampleBundle: {\n    vld_Message: \"You cannot have more than [%1] characters\"\n  }\n}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "bundleKey",
+                  "input_value": "\"SampleBundle.vld_Message\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "arguments",
+                  "input_value": "{25}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 2
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Sample bundle without bundle name",
+              "display_order": 2,
+              "test_inputs": [
+                {
+                  "input_name_ref": "i18nData",
+                  "input_value": "{\n    lbl_Example: \"Label 1\"\n}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "bundleKey",
+                  "input_value": "\"lbl_Example\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "arguments",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 2
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [
+          "AS_CO_I18N_UT_parseBundleKey",
+          "AS_CO_UT_isBlank",
+          "AS_CO_UT_replaceNull"
+        ],
+        "called_by": [
+          "AS_CO_I18N_UT_getAndDisplayLabelSingle"
+        ]
+      },
+      {
+        "uuid": "_a-0000eb44-a528-8000-9d15-011c48011c48_9978504",
+        "name": "AS_CO_UT_displayRequiredMessage",
+        "object_type": "Expression Rule",
+        "description": "Returns default required message (used for all editable fields) if required message is not passed.",
+        "data": {
+          "sail_code": "if(\n  a!isNotNullOrEmpty(\n    ri!label\n  ),\n  a!defaultValue(\n    value: ri!requiredMessage,\n    default: rule!AS_CO_UT_displayCommonObjectBundleLabel(\n      bundleKey: \"AS.CO.CommonObjects.vld_RequiredMessage\",\n      arguments: stripwith(ri!label, \"*\")\n    )\n  ),\n  ri!requiredMessage\n)",
+          "definition": "if(\n  a!isNotNullOrEmpty(\n    ri!label\n  ),\n  a!defaultValue(\n    value: ri!requiredMessage,\n    default: rule!AS_CO_UT_displayCommonObjectBundleLabel(\n      bundleKey: \"AS.CO.CommonObjects.vld_RequiredMessage\",\n      arguments: stripwith(ri!label, \"*\")\n    )\n  ),\n  ri!requiredMessage\n)",
+          "inputs": [
+            {
+              "name": "label",
+              "type": "http://www.w3.org/2001/XMLSchema:string",
+              "data_type": "http://www.w3.org/2001/XMLSchema:string",
+              "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            },
+            {
+              "name": "requiredMessage",
+              "type": "http://www.w3.org/2001/XMLSchema:string",
+              "data_type": "http://www.w3.org/2001/XMLSchema:string",
+              "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 1
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "Returns default required message text",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "label",
+                  "input_value": "\"Name\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "requiredMessage",
+                  "input_value": null,
+                  "value_type": "string",
+                  "is_null": false,
+                  "input_order": 1
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Label with *",
+              "display_order": 1,
+              "test_inputs": [
+                {
+                  "input_name_ref": "label",
+                  "input_value": "\"Name *\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "requiredMessage",
+                  "input_value": null,
+                  "value_type": "string",
+                  "is_null": false,
+                  "input_order": 1
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Custom required message",
+              "display_order": 2,
+              "test_inputs": [
+                {
+                  "input_name_ref": "label",
+                  "input_value": null,
+                  "value_type": "string",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "requiredMessage",
+                  "input_value": "\"A value is required\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [
+          "AS_CO_UT_displayCommonObjectBundleLabel"
+        ],
+        "called_by": [
+          "AS_CO_INP_paragraphField"
+        ]
+      },
+      {
+        "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1319026",
+        "name": "AS_GSS_CO_UT_loadBundleFromFolder",
+        "object_type": "Expression Rule",
+        "description": "Loads a property bundle file by name from a folder, returns a dictionary of the key-value pairs",
+        "data": {
+          "sail_code": "with(\n  local!lang: \"en_US\",\n  /* below is deprecated for now, uncomment to support multi-language display */\n  /*if(*/\n  /*isnull(ri!langISOCode),*/\n  /*userlocale(loggedInUser()),*/\n  /*ri!langISOCode*/\n  /*),*/\n  local!bundleName: /*rule!AS_GCM_determineValueBySolutionFlavor(\n    options: cons!AS_GCM_TXT_VALID_SOLUTION_FLAVORS\n  )*/\"AS.GSS.General\",\n  /*local!bundleName*/\n  local!output: loadbundlepropertiesfile(\n    cons!AS_GSS_FLD_PROPERTIES_FILES,\n    local!lang,\n    local!bundleName\n  )[local!bundleName],\n  local!output\n)",
+          "definition": "with(\n  local!lang: \"en_US\",\n  /* below is deprecated for now, uncomment to support multi-language display */\n  /*if(*/\n  /*isnull(ri!langISOCode),*/\n  /*userlocale(loggedInUser()),*/\n  /*ri!langISOCode*/\n  /*),*/\n  local!bundleName: /*rule!AS_GCM_determineValueBySolutionFlavor(\n    options: cons!AS_GCM_TXT_VALID_SOLUTION_FLAVORS\n  )*/\"AS.GSS.General\",\n  /*local!bundleName*/\n  local!output: loadbundlepropertiesfile(\n    cons!AS_GSS_FLD_PROPERTIES_FILES,\n    local!lang,\n    local!bundleName\n  )[local!bundleName],\n  local!output\n)",
+          "inputs": [
+            {
+              "name": "langISOCode",
+              "type": "http://www.w3.org/2001/XMLSchema:string",
+              "data_type": "http://www.w3.org/2001/XMLSchema:string",
+              "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "EXCEPTION: It is not possible to have a test case with assertion for this rule",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "langISOCode",
+                  "input_value": null,
+                  "value_type": "string",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": null,
+                  "is_null": true,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [
+          "AS_GSS_FLD_PROPERTIES_FILES"
+        ],
+        "called_by": [
+          "AS_GSS_FM_addDocumentDetails",
+          "AS_GSS_GRD_uploadedDocumentGrid",
+          "AS_GSS_UT_displayDynamicLabel"
+        ]
+      },
+      {
+        "uuid": "_a-0000e438-fdf5-8000-9ba8-011c48011c48_19869",
+        "name": "AS_CO_I18N_UT_parseBundleKey",
+        "object_type": "Expression Rule",
+        "description": "Parses a bundle key and returns a dictionary of the `bundleName` & `labelKey`",
+        "data": {
+          "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Dictionary',\n  with(\n    local!split: split(\n      ri!bundleKey,\n      \".\"\n    ),\n    local!bundleName: joinarray(\n      remove(\n        local!split,\n        count(\n          local!split\n        )\n      ),\n      \".\"\n    ),\n    local!labelKey: local!split[count(\n      local!split\n    )],\n    {\n      bundleName: local!bundleName,\n      labelKey: local!labelKey\n    }\n  )\n)",
+          "definition": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Dictionary',\n  with(\n    local!split: split(\n      ri!bundleKey,\n      \".\"\n    ),\n    local!bundleName: joinarray(\n      remove(\n        local!split,\n        count(\n          local!split\n        )\n      ),\n      \".\"\n    ),\n    local!labelKey: local!split[count(\n      local!split\n    )],\n    {\n      bundleName: local!bundleName,\n      labelKey: local!labelKey\n    }\n  )\n)",
+          "inputs": [
+            {
+              "name": "bundleKey",
+              "type": "http://www.w3.org/2001/XMLSchema:string",
+              "data_type": "http://www.w3.org/2001/XMLSchema:string",
+              "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "Null",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "bundleKey",
+                  "input_value": null,
+                  "value_type": "string",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Standard",
+              "display_order": 1,
+              "test_inputs": [
+                {
+                  "input_name_ref": "bundleKey",
+                  "input_value": "\"SampleBundle.lbl_Example\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "With Prefixes",
+              "display_order": 2,
+              "test_inputs": [
+                {
+                  "input_name_ref": "bundleKey",
+                  "input_value": "\"AS.CO.SampleBundle.lbl_Example\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [],
+        "called_by": [
+          "AS_CO_I18N_UT_displayLabel",
+          "AS_CO_I18N_UT_getAndDisplayLabelSingle"
+        ]
+      },
+      {
+        "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39082",
+        "name": "AS_CO_UT_booleanDefaultTrue",
+        "object_type": "Expression Rule",
+        "description": "Default a null value to true, otherwise returns the boolean value",
+        "data": {
+          "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  if(\n    isnull(ri!boolean),\n    true,\n    ri!boolean\n  )\n)",
+          "definition": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  if(\n    isnull(ri!boolean),\n    true,\n    ri!boolean\n  )\n)",
+          "inputs": [
+            {
+              "name": "boolean",
+              "type": "http://www.w3.org/2001/XMLSchema:boolean",
+              "data_type": "http://www.w3.org/2001/XMLSchema:boolean",
+              "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "True",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "boolean",
+                  "input_value": "true",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "False",
+              "display_order": 1,
+              "test_inputs": [
+                {
+                  "input_name_ref": "boolean",
+                  "input_value": "false",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Null",
+              "display_order": 2,
+              "test_inputs": [
+                {
+                  "input_name_ref": "boolean",
+                  "input_value": "null",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [],
+        "called_by": [
+          "AS_CO_DSP_standardReadOnlyField"
+        ]
+      },
+      {
+        "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53662",
+        "name": "AS_GAM_CO_I18N_UT_displayLabel",
+        "object_type": "Expression Rule",
+        "description": "Displays a label by the `bundleKey` from passed in bundle data, optionally accepts arguments",
+        "data": {
+          "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Text',\n  a!localVariables(\n    local!result: a!refreshVariable(\n      value: if(\n        rule!AS_CO_UT_isBlank(ri!bundleKey),\n        null,\n        if(\n          rule!AS_CO_UT_isBlank(ri!arguments),\n          rule!AS_CO_UT_replaceNull(\n            nullableValue: ri!bundle[ri!bundleKey],\n            replacementValue: ri!bundleKey\n          ),\n          rule!AS_GAM_CO_I18N_UT_replaceArguments(\n            bundleKey: ri!bundle[ri!bundleKey],\n            arguments: ri!arguments\n          )\n        )\n      ),\n      refreshAlways: true\n    ),\n    local!result\n  )\n)",
+          "definition": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Text',\n  a!localVariables(\n    local!result: a!refreshVariable(\n      value: if(\n        rule!AS_CO_UT_isBlank(ri!bundleKey),\n        null,\n        if(\n          rule!AS_CO_UT_isBlank(ri!arguments),\n          rule!AS_CO_UT_replaceNull(\n            nullableValue: ri!bundle[ri!bundleKey],\n            replacementValue: ri!bundleKey\n          ),\n          rule!AS_GAM_CO_I18N_UT_replaceArguments(\n            bundleKey: ri!bundle[ri!bundleKey],\n            arguments: ri!arguments\n          )\n        )\n      ),\n      refreshAlways: true\n    ),\n    local!result\n  )\n)",
+          "inputs": [
+            {
+              "name": "bundle",
+              "type": "http://www.appian.com/ae/types/2009:Variant",
+              "data_type": "http://www.appian.com/ae/types/2009:Variant",
+              "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            },
+            {
+              "name": "bundleKey",
+              "type": "http://www.w3.org/2001/XMLSchema:string",
+              "data_type": "http://www.w3.org/2001/XMLSchema:string",
+              "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 1
+            },
+            {
+              "name": "arguments",
+              "type": "http://www.appian.com/ae/types/2009:Text?list",
+              "data_type": "http://www.appian.com/ae/types/2009:Text?list",
+              "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 2
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "Sample Bundle",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "bundle",
+                  "input_value": "{\n    lbl_Example: \"Label 1\"\n }",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "bundleKey",
+                  "input_value": "\"lbl_Example\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "arguments",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 2
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Sample Bundle with Arguments",
+              "display_order": 1,
+              "test_inputs": [
+                {
+                  "input_name_ref": "bundle",
+                  "input_value": "{\n    vld_Message: \"You cannot have more than [%1] characters\"\n}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "bundleKey",
+                  "input_value": "\"vld_Message\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "arguments",
+                  "input_value": "{25}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 2
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [
+          "AS_CO_UT_isBlank",
+          "AS_CO_UT_replaceNull"
+        ],
+        "called_by": [
+          "AS_GSS_UT_displayDynamicLabel"
+        ]
+      },
+      {
+        "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_74104",
+        "name": "AS_CO_VD_textValidation",
+        "object_type": "Expression Rule",
+        "description": "Performs minimum and maximum length validation on a text value. Returns a validation message if any provided length constraints are violated. Allows for custom validation messages.",
+        "data": {
+          "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Text',\n  a!localVariables(\n    local!length: len(ri!value),\n    local!minLength: rule!AS_CO_UT_replaceNull(\n      nullableValue: ri!minLength,\n      replacementValue: 0\n    ),\n    if(\n      /* Does not meet exact length requirement */\n      and(\n        rule!AS_CO_UT_isNotBlank(ri!minLength),\n        rule!AS_CO_UT_isNotBlank(ri!maxLength),\n        ri!minLength = ri!maxLength,\n        local!length <> ri!minLength\n      ),\n      rule!AS_CO_UT_replaceNull(\n        nullableValue: rule!AS_CO_UT_replaceNull(\n          nullableValue: ri!maxLengthMessage,\n          replacementValue: ri!minLengthMessage\n        ),\n        replacementValue: rule!AS_CO_UT_displayCommonObjectBundleLabel(\n          bundleKey: if(\n            ri!minLength = 1,\n            \"AS.CO.CommonObjects.vld_EnterExactlySingle\",\n            \"AS.CO.CommonObjects.vld_EnterExactlyMultiple\"\n          ),\n          arguments: ri!minLength\n        )\n      ),\n      /*Too short*/\n      if(\n        local!length < ri!minLength,\n        rule!AS_CO_UT_replaceNull(\n          nullableValue: ri!minLengthMessage,\n          replacementValue: rule!AS_CO_UT_displayCommonObjectBundleLabel(\n            bundleKey: \"AS.CO.CommonObjects.vld_EnterAtLeast\",\n            arguments: local!minLength\n          )\n        ),\n        /*Too long*/\n        if(\n          and(\n            rule!AS_CO_UT_isNotBlank(ri!maxLength),\n            local!length > ri!maxLength\n          ),\n          rule!AS_CO_UT_replaceNull(\n            nullableValue: ri!maxLengthMessage,\n            replacementValue: rule!AS_CO_UT_displayCommonObjectBundleLabel(\n              bundleKey: if(\n                ri!maxLength = 1,\n                \"AS.CO.CommonObjects.vld_EnterNoMoreThanSingle\",\n                \"AS.CO.CommonObjects.vld_EnterNoMoreThanMultiple\"\n              ),\n              arguments: ri!maxLength\n            )\n          ),\n          /*Valid*/\n          \"\"\n        )\n      )\n    )\n  )\n)",
+          "definition": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Text',\n  a!localVariables(\n    local!length: len(ri!value),\n    local!minLength: rule!AS_CO_UT_replaceNull(\n      nullableValue: ri!minLength,\n      replacementValue: 0\n    ),\n    if(\n      /* Does not meet exact length requirement */\n      and(\n        rule!AS_CO_UT_isNotBlank(ri!minLength),\n        rule!AS_CO_UT_isNotBlank(ri!maxLength),\n        ri!minLength = ri!maxLength,\n        local!length <> ri!minLength\n      ),\n      rule!AS_CO_UT_replaceNull(\n        nullableValue: rule!AS_CO_UT_replaceNull(\n          nullableValue: ri!maxLengthMessage,\n          replacementValue: ri!minLengthMessage\n        ),\n        replacementValue: rule!AS_CO_UT_displayCommonObjectBundleLabel(\n          bundleKey: if(\n            ri!minLength = 1,\n            \"AS.CO.CommonObjects.vld_EnterExactlySingle\",\n            \"AS.CO.CommonObjects.vld_EnterExactlyMultiple\"\n          ),\n          arguments: ri!minLength\n        )\n      ),\n      /*Too short*/\n      if(\n        local!length < ri!minLength,\n        rule!AS_CO_UT_replaceNull(\n          nullableValue: ri!minLengthMessage,\n          replacementValue: rule!AS_CO_UT_displayCommonObjectBundleLabel(\n            bundleKey: \"AS.CO.CommonObjects.vld_EnterAtLeast\",\n            arguments: local!minLength\n          )\n        ),\n        /*Too long*/\n        if(\n          and(\n            rule!AS_CO_UT_isNotBlank(ri!maxLength),\n            local!length > ri!maxLength\n          ),\n          rule!AS_CO_UT_replaceNull(\n            nullableValue: ri!maxLengthMessage,\n            replacementValue: rule!AS_CO_UT_displayCommonObjectBundleLabel(\n              bundleKey: if(\n                ri!maxLength = 1,\n                \"AS.CO.CommonObjects.vld_EnterNoMoreThanSingle\",\n                \"AS.CO.CommonObjects.vld_EnterNoMoreThanMultiple\"\n              ),\n              arguments: ri!maxLength\n            )\n          ),\n          /*Valid*/\n          \"\"\n        )\n      )\n    )\n  )\n)",
+          "inputs": [
+            {
+              "name": "value",
+              "type": "http://www.w3.org/2001/XMLSchema:string",
+              "data_type": "http://www.w3.org/2001/XMLSchema:string",
+              "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            },
+            {
+              "name": "minLength",
+              "type": "http://www.w3.org/2001/XMLSchema:int",
+              "data_type": "http://www.w3.org/2001/XMLSchema:int",
+              "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 1
+            },
+            {
+              "name": "minLengthMessage",
+              "type": "http://www.w3.org/2001/XMLSchema:string",
+              "data_type": "http://www.w3.org/2001/XMLSchema:string",
+              "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 2
+            },
+            {
+              "name": "maxLength",
+              "type": "http://www.w3.org/2001/XMLSchema:int",
+              "data_type": "http://www.w3.org/2001/XMLSchema:int",
+              "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 3
+            },
+            {
+              "name": "maxLengthMessage",
+              "type": "http://www.w3.org/2001/XMLSchema:string",
+              "data_type": "http://www.w3.org/2001/XMLSchema:string",
+              "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 4
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "Valid Input",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "\"Valid\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "minLength",
+                  "input_value": "5",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "minLengthMessage",
+                  "input_value": "\"Too short\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 2
+                },
+                {
+                  "input_name_ref": "maxLength",
+                  "input_value": "10",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 3
+                },
+                {
+                  "input_name_ref": "maxLengthMessage",
+                  "input_value": "\"Too Long\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 4
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Too Short",
+              "display_order": 1,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "\"Tiny\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "minLength",
+                  "input_value": "5",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "minLengthMessage",
+                  "input_value": "\"Too short\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 2
+                },
+                {
+                  "input_name_ref": "maxLength",
+                  "input_value": "10",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 3
+                },
+                {
+                  "input_name_ref": "maxLengthMessage",
+                  "input_value": "\"Too Long\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 4
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Too Long",
+              "display_order": 2,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "\"Very long input\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "minLength",
+                  "input_value": "5",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "minLengthMessage",
+                  "input_value": "\"Too short\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 2
+                },
+                {
+                  "input_name_ref": "maxLength",
+                  "input_value": "10",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 3
+                },
+                {
+                  "input_name_ref": "maxLengthMessage",
+                  "input_value": "\"Too Long\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 4
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Value Not Exact",
+              "display_order": 3,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "10",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "minLength",
+                  "input_value": "9",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "minLengthMessage",
+                  "input_value": "\"Exact Message\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 2
+                },
+                {
+                  "input_name_ref": "maxLength",
+                  "input_value": "9",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 3
+                },
+                {
+                  "input_name_ref": "maxLengthMessage",
+                  "input_value": null,
+                  "value_type": "string",
+                  "is_null": false,
+                  "input_order": 4
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Null Validation Inputs",
+              "display_order": 4,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "\"hi there\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "minLength",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "minLengthMessage",
+                  "input_value": null,
+                  "value_type": "string",
+                  "is_null": false,
+                  "input_order": 2
+                },
+                {
+                  "input_name_ref": "maxLength",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 3
+                },
+                {
+                  "input_name_ref": "maxLengthMessage",
+                  "input_value": null,
+                  "value_type": "string",
+                  "is_null": false,
+                  "input_order": 4
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [
+          "AS_CO_UT_displayCommonObjectBundleLabel",
+          "AS_CO_UT_isNotBlank",
+          "AS_CO_UT_replaceNull"
+        ],
+        "called_by": [
+          "AS_CO_INP_paragraphField"
+        ]
+      },
+      {
+        "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+        "name": "AS_CO_UT_isNotBlank",
+        "object_type": "Expression Rule",
+        "description": "A not() wrapped around AS_CO_UT_isBlank",
+        "data": {
+          "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Boolean',\n  not(rule!AS_CO_UT_isBlank(ri!input))\n)",
+          "definition": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Boolean',\n  not(rule!AS_CO_UT_isBlank(ri!input))\n)",
+          "inputs": [
+            {
+              "name": "input",
+              "type": "http://www.appian.com/ae/types/2009:Variant",
+              "data_type": "http://www.appian.com/ae/types/2009:Variant",
+              "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "Value is Null",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "input",
+                  "input_value": "null",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Value is Not Null",
+              "display_order": 1,
+              "test_inputs": [
+                {
+                  "input_name_ref": "input",
+                  "input_value": "\"not null\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [
+          "AS_CO_UT_isBlank"
+        ],
+        "called_by": [
+          "AS_CO_VD_textValidation",
+          "AS_GSS_FM_addDocumentDetails"
+        ]
+      }
+    ],
+    "constants": [
+      {
+        "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73173",
+        "name": "AS_CO_ENUM_USER_ACTION_CANCEL",
+        "object_type": "Constant",
+        "description": "CANCEL.USER_ACTION - Value to use to drive process logic after a user performs a \"Cancel\" action",
+        "data": {
+          "value": "CANCEL.USER_ACTION",
+          "raw_value_type": "http://www.w3.org/2001/XMLSchema:string",
+          "value_type": "http://www.w3.org/2001/XMLSchema:string"
+        },
+        "calls": [],
+        "called_by": [
+          "AS_GSS_FM_addDocumentDetails"
+        ]
+      },
+      {
+        "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_104931",
+        "name": "AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+        "object_type": "Constant",
+        "description": "AS CO Internationalization Files",
+        "data": {
+          "value": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_104925",
+          "raw_value_type": "http://www.appian.com/ae/types/2009:CollaborationFolder",
+          "value_type": "http://www.appian.com/ae/types/2009:CollaborationFolder"
+        },
+        "calls": [],
+        "called_by": [
+          "AS_CO_I18N_UT_getAndDisplayLabelSingle",
+          "AS_CO_I18N_UT_loadBundleFromFolder",
+          "AS_CO_UT_displayCommonObjectBundleLabel"
+        ]
+      },
+      {
+        "uuid": "_a-0000e438-fd8a-8000-9bbe-011c48011c48_410799",
+        "name": "AS_CO_ENUM_PARAGRAPH_LENGTH_SHORT",
+        "object_type": "Constant",
+        "description": "255 - SHORT length for paragraph fields, used for validations and trimming text",
+        "data": {
+          "value": "255",
+          "raw_value_type": "http://www.w3.org/2001/XMLSchema:int",
+          "value_type": "http://www.w3.org/2001/XMLSchema:int"
+        },
+        "calls": [],
+        "called_by": [
+          "AS_GSS_GRD_uploadedDocumentGrid"
+        ]
+      },
+      {
+        "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_939753",
+        "name": "AS_GSS_FLD_PROPERTIES_FILES",
+        "object_type": "Constant",
+        "description": "Points to the GSS Properties Files Folder",
+        "data": {
+          "value": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_930435",
+          "raw_value_type": "http://www.appian.com/ae/types/2009:CollaborationFolder",
+          "value_type": "http://www.appian.com/ae/types/2009:CollaborationFolder"
+        },
+        "calls": [],
+        "called_by": [
+          "AS_GSS_CO_UT_loadBundleFromFolder",
+          "AS_GSS_UT_loadBundleByNames"
+        ]
+      },
+      {
+        "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_940532",
+        "name": "AS_GSS_ENT_EVALUATION_DOCUMENT",
+        "object_type": "Constant",
+        "description": "Value: AS_GSS_EvaluationDocument",
+        "data": {
+          "raw_value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+          "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity"
+        },
+        "calls": [],
+        "called_by": [
+          "AS GSS Add Document Details"
+        ]
+      },
+      {
+        "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73281",
+        "name": "AS_CO_ENUM_USER_ACTION_SAVE",
+        "object_type": "Constant",
+        "description": "SAVE.USER_ACTION - Value to use to drive process logic after a user performs a \"Save\" action",
+        "data": {
+          "value": "SAVE.USER_ACTION",
+          "raw_value_type": "http://www.w3.org/2001/XMLSchema:string",
+          "value_type": "http://www.w3.org/2001/XMLSchema:string"
+        },
+        "calls": [],
+        "called_by": [
+          "AS_GSS_FM_addDocumentDetails"
+        ]
+      }
+    ]
+  }
+}

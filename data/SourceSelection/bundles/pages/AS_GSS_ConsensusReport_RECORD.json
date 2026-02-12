@@ -1,0 +1,134 @@
+{
+  "_metadata": {
+    "bundle_type": "page",
+    "root_object": {
+      "uuid": "5368ada8-cf9d-4076-9264-805b6f5d7727",
+      "name": "AS_GSS_ConsensusReport_RECORD",
+      "object_type": "Record Type Page",
+      "parent_name": null
+    },
+    "total_objects": 1
+  },
+  "views": [
+    {
+      "view_type": "LIST",
+      "view_name": "List View",
+      "url_stub": null,
+      "ui_expr": "#\"SYSTEM_SYSRULES_recordGridField\"(\n  columns: {\n    #\"SYSTEM_SYSRULES_gridColumn\"(\n      label: \"Consensus Id\",\n      sortField: recordType!AS_GSS_ConsensusReport_RECORD.consensusId,\n      value: fv!row[recordType!AS_GSS_ConsensusReport_RECORD.consensusId],\n      align: \"END\"\n    )\n  },\n  pageSize: 50,\n  shadeAlternateRows: true\n)"
+    }
+  ],
+  "interfaces": [],
+  "supporting_objects": {
+    "record_types": [
+      {
+        "uuid": "5368ada8-cf9d-4076-9264-805b6f5d7727",
+        "name": "AS_GSS_ConsensusReport_RECORD",
+        "object_type": "Record Type",
+        "description": "Record type for evaluation consensus report",
+        "data": {
+          "plural_name": "Consensus Reports",
+          "fields": [],
+          "relationships": [],
+          "views": [
+            {
+              "view_type": "DETAIL",
+              "view_name": "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+              "url_stub": "summary",
+              "visibility_expr": "=true()",
+              "ui_expr": null,
+              "display_order": 0
+            },
+            {
+              "view_type": "LIST",
+              "view_name": "List View",
+              "url_stub": null,
+              "visibility_expr": null,
+              "ui_expr": "#\"SYSTEM_SYSRULES_recordGridField\"(\n  columns: {\n    #\"SYSTEM_SYSRULES_gridColumn\"(\n      label: \"Consensus Id\",\n      sortField: recordType!AS_GSS_ConsensusReport_RECORD.consensusId,\n      value: fv!row[recordType!AS_GSS_ConsensusReport_RECORD.consensusId],\n      align: \"END\"\n    )\n  },\n  pageSize: 50,\n  shadeAlternateRows: true\n)",
+              "display_order": 1
+            }
+          ],
+          "actions": [
+            {
+              "action_uuid": "c916b652-328b-4e67-9288-deb24ca942a8",
+              "action_type": "RECORD_ACTION",
+              "reference_key": "openConsensusForm",
+              "target_uuid": "AS GSS Start or Continue Consensus Form",
+              "icon_id": "f011",
+              "dialog_size": "FIT$FIT",
+              "dialog_width": "FIT",
+              "dialog_height": "FIT",
+              "show_in_record_list": false,
+              "record_ui_security_type": "EXPRESSION",
+              "display_order": 0,
+              "expressions": {
+                "TITLE": "\"Open Consensus Form\"",
+                "DESCRIPTION": null,
+                "VISIBILITY": "rule!AS_GSS_BL_getRelatedActionVisibilityToStartConsensusForm(\n  consensus: rule!AS_GSS_QR_getConsensusReport(\n    consensusId: rv!identifier,\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT,\n    fields: recordType!AS_GSS_ConsensusReport_SYNCEDRECORD.criteria\n  )\n)",
+                "CONTEXT": "rule!AS_GSS_parametersForStartOrContinueConsensusFormAction(\n  consensusId: rv!identifier\n)"
+              }
+            },
+            {
+              "action_uuid": "48ee607a-1617-47a1-a555-b53e0b049c64",
+              "action_type": "RECORD_ACTION",
+              "reference_key": "continueConsensus",
+              "target_uuid": "AS GSS Start or Continue Consensus Form",
+              "icon_id": "f044",
+              "dialog_size": "FIT$FIT",
+              "dialog_width": "FIT",
+              "dialog_height": "FIT",
+              "show_in_record_list": false,
+              "record_ui_security_type": "EXPRESSION",
+              "display_order": 1,
+              "expressions": {
+                "TITLE": "\"Continue Consensus Form\"",
+                "DESCRIPTION": null,
+                "VISIBILITY": "rule!AS_GSS_BL_getRelatedActionVisibilityToContinueConsensusForm(\n  consensus: rule!AS_GSS_QR_getConsensusReport(\n    consensusId: rv!identifier,\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT\n  )\n)",
+                "CONTEXT": "rule!AS_GSS_parametersForStartOrContinueConsensusFormAction(\n  consensusId: rv!identifier\n)"
+              }
+            },
+            {
+              "action_uuid": "1fd4c09a-5a26-4903-b0e1-5c0cacc62236",
+              "action_type": "RECORD_ACTION",
+              "reference_key": "addVersion",
+              "target_uuid": "AS GSS Add Consensus Version",
+              "icon_id": "f055",
+              "dialog_size": "TALL$WIDE",
+              "dialog_width": "WIDE",
+              "dialog_height": "TALL",
+              "show_in_record_list": false,
+              "record_ui_security_type": "EXPRESSION",
+              "display_order": 2,
+              "expressions": {
+                "TITLE": "\"Add Version\"",
+                "DESCRIPTION": "\"Create a new version of this consensus, archiving this existing version\"",
+                "VISIBILITY": "rule!AS_GSS_BL_getRelatedActionVisibilityToArchiveConsensusReport(\n  consensusReport: rule!AS_GSS_QR_getConsensusReport(\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT,\n    consensusId: rv!identifier,\n    fields: recordType!AS_GSS_ConsensusReport_SYNCEDRECORD.criteria\n  ),\n  loggedInUser: loggedInUser()\n)",
+                "CONTEXT": "{\n  existingConsensus: rule!AS_GSS_QE_getConsensusReport(\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT,\n    consensusId: rv!identifier\n  )\n}"
+              }
+            },
+            {
+              "action_uuid": "6b573b33-d2e4-4d0f-8349-2049a4aa201b",
+              "action_type": "RECORD_ACTION",
+              "reference_key": "signConsensusReport",
+              "target_uuid": "AS GSS Sign Consensus Report",
+              "icon_id": "f3a4",
+              "dialog_size": "SHORT$MEDIUM",
+              "dialog_width": "MEDIUM",
+              "dialog_height": "SHORT",
+              "show_in_record_list": false,
+              "record_ui_security_type": "EXPRESSION",
+              "display_order": 3,
+              "expressions": {
+                "TITLE": "\"Sign\"",
+                "DESCRIPTION": null,
+                "VISIBILITY": "rule!AS_GSS_BL_SignConsensusReportRecordActionVisibility(\n  consensusId: rv!identifier,\n  user: loggedInUser()\n)",
+                "CONTEXT": "{\n  consensusReportSignature: rule!AS_GSS_QR_getConsensusSignatures(\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT,\n    consensusId: rv!identifier,\n    username: loggedInUser(),\n    isUnsigned: true\n  )\n}"
+              }
+            }
+          ]
+        },
+        "calls": [],
+        "called_by": []
+      }
+    ]
+  }
+}

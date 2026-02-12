@@ -1,0 +1,2048 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_object": {
+      "uuid": "0002e3f6-76db-8000-fa93-7f0000014e7a-tmg-am-am",
+      "name": "AS GSS TMG Update Task Details for Initiation",
+      "object_type": "Process Model",
+      "parent_name": null
+    },
+    "total_objects": 14
+  },
+  "process": {
+    "process_model": {
+      "uuid": "0002e3f6-76db-8000-fa93-7f0000014e7a-tmg-am-am",
+      "name": "AS GSS TMG Update Task Details for Initiation",
+      "object_type": "Process Model",
+      "description": "Process for updating task details for initiation - Used for Tasks Reopening/ Initiation",
+      "data": {
+        "nodes": [
+          {
+            "node_id": "0000e3f6-76db-8000-fa93-7f0000014e7a-tmg-am-am",
+            "node_type": "core.0",
+            "node_name": "Start Node",
+            "gui_id": "0",
+            "node_type_name": "Start Event",
+            "node_category": "Core",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [],
+            "outputs": [],
+            "properties": {}
+          },
+          {
+            "node_id": "0001e3f6-76db-8000-fa93-7f0000014e7a-tmg-am-am",
+            "node_type": "core.1",
+            "node_name": "End Node",
+            "gui_id": "1",
+            "node_type_name": "End Event",
+            "node_category": "Core",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [],
+            "outputs": [],
+            "properties": {}
+          },
+          {
+            "node_id": "0002e3f6-8836-8000-fa98-7f0000014e7a-tmg-am-am",
+            "node_type": "core.4",
+            "node_name": "Automated Tasks to Start?",
+            "gui_id": "12",
+            "node_type_name": "XOR Gateway",
+            "node_category": "Gateway",
+            "gateway_conditions": [
+              {
+                "target_gui_id": "1",
+                "label": null,
+                "condition": "=rule!AS_CO_UT_isBlank(pv!automatedTasksToInitiate)",
+                "is_default": false
+              },
+              {
+                "target_gui_id": "15",
+                "label": null,
+                "condition": null,
+                "is_default": true
+              }
+            ],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [],
+            "outputs": [],
+            "properties": {}
+          },
+          {
+            "node_id": "0002e3f6-801f-8000-fa96-7f0000014e7a-tmg-am-am",
+            "node_type": "appian.system.smart-services.write-to-data-store",
+            "node_name": "Write Current Task Status",
+            "gui_id": "3",
+            "node_type_name": "Write to Data Store Entity",
+            "node_category": "Data Services",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [
+              {
+                "input_name": "DataStoreEntity",
+                "input_expression": "=cons!AS_GSS_TMG_ENT_TASK"
+              },
+              {
+                "input_name": "currentTasks",
+                "input_expression": "=pv!tasksToInitiate"
+              }
+            ],
+            "outputs": [
+              {
+                "save_into": "tasksToInitiate",
+                "output_expression": "AC!StoredValues"
+              }
+            ],
+            "properties": {}
+          },
+          {
+            "node_id": "0001e3f6-801f-8000-fa96-7f0000014e7a-tmg-am-am",
+            "node_type": "internal.16",
+            "node_name": "Update Current Task Status",
+            "gui_id": "2",
+            "node_type_name": "Script Task",
+            "node_category": "Activity",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [
+              {
+                "input_name": "initiatedTasks",
+                "input_expression": "=rule!AS_GSS_TMG_UT_initiateTasks(tasks: pv!tasksToInitiate, initiator: pp!initiator)"
+              }
+            ],
+            "outputs": [],
+            "properties": {}
+          },
+          {
+            "node_id": "0004e3f6-8836-8000-fa98-7f0000014e7a-tmg-am-am",
+            "node_type": "internal.16",
+            "node_name": "Get Automated Tasks",
+            "gui_id": "9",
+            "node_type_name": "Script Task",
+            "node_category": "Activity",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [
+              {
+                "input_name": "automatedTasksToInitiate",
+                "input_expression": "=rule!AS_CO_UT_filterCdtByField(cdt: pv!tasksToInitiate,field: \"taskBehaviorType.behaviorTypeCode\",value: cons!AS_GSS_TMG_ENUM_TASK_BEHAVIOR_TYPE_CODE_AUTOMATED)"
+              }
+            ],
+            "outputs": [],
+            "properties": {}
+          },
+          {
+            "node_id": "0003e3f6-8836-8000-fa98-7f0000014e7a-tmg-am-am",
+            "node_type": "appian.system.smart-services.start-process-2",
+            "node_name": "Start Automated Tasks",
+            "gui_id": "15",
+            "node_type_name": "Start Process (v2)",
+            "node_category": "Process Management",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [
+              {
+                "input_name": "ProcessModel",
+                "input_expression": "=cons!AS_GSS_TMG_PM_START_AUTOMATED_TASK"
+              },
+              {
+                "input_name": "ProcessParameters",
+                "input_expression": "={startTime:now(),task:pv!automatedTasksToInitiate[tp!instanceindex]}"
+              }
+            ],
+            "outputs": [],
+            "properties": {}
+          },
+          {
+            "node_id": "0001e3f6-8836-8000-fa98-7f0000014e7a-tmg-am-am",
+            "node_type": "internal.38",
+            "node_name": "Create Audit Task",
+            "gui_id": "6",
+            "node_type_name": "Subprocess",
+            "node_category": "Activity",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": "AS GSS TMG Task Action Audit",
+            "subprocess_config": {
+              "target_uuid": "0002e2d7-0c89-8000-f92f-7f0000014e7a-tmg-am-am",
+              "input_mappings": [
+                {
+                  "param_name": "tasks",
+                  "expression": "=tasksToInitiate"
+                },
+                {
+                  "param_name": "startTime",
+                  "expression": null
+                },
+                {
+                  "param_name": "taskActionId",
+                  "expression": "=cons!AS_GSS_TMG_REF_ID_TASK_ACTION_ASSIGNED"
+                }
+              ]
+            },
+            "timer_config": null,
+            "inputs": [
+              {
+                "input_name": "tasks",
+                "input_expression": "=tasksToInitiate"
+              },
+              {
+                "input_name": "startTime",
+                "input_expression": null
+              },
+              {
+                "input_name": "taskActionId",
+                "input_expression": "=cons!AS_GSS_TMG_REF_ID_TASK_ACTION_ASSIGNED"
+              }
+            ],
+            "outputs": [],
+            "properties": {}
+          }
+        ],
+        "flows": [
+          {
+            "from_node_id": "0000e3f6-76db-8000-fa93-7f0000014e7a-tmg-am-am",
+            "to_node_id": "2",
+            "flow_label": null,
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0002e3f6-8836-8000-fa98-7f0000014e7a-tmg-am-am",
+            "to_node_id": "15",
+            "flow_label": null,
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0002e3f6-8836-8000-fa98-7f0000014e7a-tmg-am-am",
+            "to_node_id": "1",
+            "flow_label": null,
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0002e3f6-801f-8000-fa96-7f0000014e7a-tmg-am-am",
+            "to_node_id": "6",
+            "flow_label": null,
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0001e3f6-801f-8000-fa96-7f0000014e7a-tmg-am-am",
+            "to_node_id": "3",
+            "flow_label": null,
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0004e3f6-8836-8000-fa98-7f0000014e7a-tmg-am-am",
+            "to_node_id": "12",
+            "flow_label": null,
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0003e3f6-8836-8000-fa98-7f0000014e7a-tmg-am-am",
+            "to_node_id": "1",
+            "flow_label": null,
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0001e3f6-8836-8000-fa98-7f0000014e7a-tmg-am-am",
+            "to_node_id": "9",
+            "flow_label": null,
+            "flow_condition": null
+          }
+        ],
+        "variables": [
+          {
+            "variable_name": "automatedTasksToInitiate",
+            "variable_type": "n1:AS_GSS_TMG_Task?list",
+            "is_parameter": false,
+            "default_value": null
+          },
+          {
+            "variable_name": "tasksToInitiate",
+            "variable_type": "n1:AS_GSS_TMG_Task?list",
+            "is_parameter": true,
+            "default_value": null
+          }
+        ],
+        "total_nodes": 8,
+        "total_flows": 8,
+        "complexity_score": 14.0
+      },
+      "calls": [
+        "AS GSS TMG Task Action Audit",
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_isBlank",
+        "AS_GSS_TMG_ENT_TASK",
+        "AS_GSS_TMG_ENUM_TASK_BEHAVIOR_TYPE_CODE_AUTOMATED",
+        "AS_GSS_TMG_PM_START_AUTOMATED_TASK",
+        "AS_GSS_TMG_REF_ID_TASK_ACTION_ASSIGNED",
+        "AS_GSS_TMG_UT_initiateTasks"
+      ],
+      "called_by": []
+    },
+    "subprocesses": [
+      {
+        "uuid": "0002e2d7-0c89-8000-f92f-7f0000014e7a-tmg-am-am",
+        "name": "AS GSS TMG Task Action Audit",
+        "object_type": "Process Model",
+        "description": "Sub-process to track task action audits",
+        "data": {
+          "nodes": [
+            {
+              "node_id": "0000e2d7-0c89-8000-f92f-7f0000014e7a-tmg-am-am",
+              "node_type": "core.0",
+              "node_name": "Start Node",
+              "gui_id": "0",
+              "node_type_name": "Start Event",
+              "node_category": "Core",
+              "gateway_conditions": [],
+              "form_expression": null,
+              "interface_uuid": null,
+              "interface_name": null,
+              "pre_triggers": [],
+              "subprocess_uuid": null,
+              "subprocess_config": null,
+              "timer_config": null,
+              "inputs": [],
+              "outputs": [],
+              "properties": {}
+            },
+            {
+              "node_id": "0001e2d7-0c89-8000-f92f-7f0000014e7a-tmg-am-am",
+              "node_type": "core.1",
+              "node_name": "End Node",
+              "gui_id": "1",
+              "node_type_name": "End Event",
+              "node_category": "Core",
+              "gateway_conditions": [],
+              "form_expression": null,
+              "interface_uuid": null,
+              "interface_name": null,
+              "pre_triggers": [],
+              "subprocess_uuid": null,
+              "subprocess_config": null,
+              "timer_config": null,
+              "inputs": [],
+              "outputs": [],
+              "properties": {}
+            },
+            {
+              "node_id": "0001e2d7-458b-8000-f92f-7f0000014e7a-tmg-am-am",
+              "node_type": "core.4",
+              "node_name": "data?",
+              "gui_id": "4",
+              "node_type_name": "XOR Gateway",
+              "node_category": "Gateway",
+              "gateway_conditions": [
+                {
+                  "target_gui_id": "1",
+                  "label": null,
+                  "condition": "=rule!AS_CO_UT_isBlank(pv!tasks)",
+                  "is_default": false
+                },
+                {
+                  "target_gui_id": "2",
+                  "label": null,
+                  "condition": null,
+                  "is_default": true
+                }
+              ],
+              "form_expression": null,
+              "interface_uuid": null,
+              "interface_name": null,
+              "pre_triggers": [],
+              "subprocess_uuid": null,
+              "subprocess_config": null,
+              "timer_config": null,
+              "inputs": [],
+              "outputs": [],
+              "properties": {}
+            },
+            {
+              "node_id": "0002e2d7-1290-8000-f92f-7f0000014e7a-tmg-am-am",
+              "node_type": "appian.system.smart-services.write-to-data-store",
+              "node_name": "Write to Task Action Audit",
+              "gui_id": "3",
+              "node_type_name": "Write to Data Store Entity",
+              "node_category": "Data Services",
+              "gateway_conditions": [],
+              "form_expression": null,
+              "interface_uuid": null,
+              "interface_name": null,
+              "pre_triggers": [],
+              "subprocess_uuid": null,
+              "subprocess_config": null,
+              "timer_config": null,
+              "inputs": [
+                {
+                  "input_name": "DataStoreEntity",
+                  "input_expression": "=cons!AS_GSS_TMG_ENT_TASK_ACTION_AUDIT"
+                },
+                {
+                  "input_name": "taskActionAudits",
+                  "input_expression": "=pv!taskActionAudits"
+                }
+              ],
+              "outputs": [
+                {
+                  "save_into": "taskActionAudits",
+                  "output_expression": "AC!StoredValues"
+                }
+              ],
+              "properties": {}
+            },
+            {
+              "node_id": "0001e2ee-e975-8000-f92f-7f0000014e7a-tmg-am-am",
+              "node_type": "internal.16",
+              "node_name": "Create Task Action Audit CDTs",
+              "gui_id": "2",
+              "node_type_name": "Script Task",
+              "node_category": "Activity",
+              "gateway_conditions": [],
+              "form_expression": null,
+              "interface_uuid": null,
+              "interface_name": null,
+              "pre_triggers": [],
+              "subprocess_uuid": null,
+              "subprocess_config": null,
+              "timer_config": null,
+              "inputs": [],
+              "outputs": [
+                {
+                  "save_into": "taskActionAudits",
+                  "output_expression": "#\"c993facf-ee9a-40e5-857f-2688c58b0839-tmg-am-am\"(\n  tasks: pv!tasks,\n  initiator: rule!AS_CO_UT_replaceNull(\n    nullableValue: pv!initiator,\n    replacementValue: pp!initiator\n  ),\n  startTime: pv!startTime,\n  taskActionId: pv!taskActionId\n)"
+                }
+              ],
+              "properties": {}
+            }
+          ],
+          "flows": [
+            {
+              "from_node_id": "0000e2d7-0c89-8000-f92f-7f0000014e7a-tmg-am-am",
+              "to_node_id": "4",
+              "flow_label": null,
+              "flow_condition": null
+            },
+            {
+              "from_node_id": "0001e2d7-458b-8000-f92f-7f0000014e7a-tmg-am-am",
+              "to_node_id": "1",
+              "flow_label": null,
+              "flow_condition": null
+            },
+            {
+              "from_node_id": "0001e2d7-458b-8000-f92f-7f0000014e7a-tmg-am-am",
+              "to_node_id": "2",
+              "flow_label": null,
+              "flow_condition": null
+            },
+            {
+              "from_node_id": "0002e2d7-1290-8000-f92f-7f0000014e7a-tmg-am-am",
+              "to_node_id": "1",
+              "flow_label": null,
+              "flow_condition": null
+            },
+            {
+              "from_node_id": "0001e2ee-e975-8000-f92f-7f0000014e7a-tmg-am-am",
+              "to_node_id": "3",
+              "flow_label": null,
+              "flow_condition": null
+            }
+          ],
+          "variables": [
+            {
+              "variable_name": "initiator",
+              "variable_type": "xsd:string",
+              "is_parameter": true,
+              "default_value": null
+            },
+            {
+              "variable_name": "startTime",
+              "variable_type": "xsd:dateTime",
+              "is_parameter": true,
+              "default_value": null
+            },
+            {
+              "variable_name": "taskActionAudits",
+              "variable_type": "n1:AS_GSS_TMG_TaskActionAudit?list",
+              "is_parameter": false,
+              "default_value": null
+            },
+            {
+              "variable_name": "taskActionId",
+              "variable_type": "xsd:int",
+              "is_parameter": true,
+              "default_value": null
+            },
+            {
+              "variable_name": "tasks",
+              "variable_type": "n1:AS_GSS_TMG_Task?list",
+              "is_parameter": true,
+              "default_value": null
+            }
+          ],
+          "total_nodes": 5,
+          "total_flows": 5,
+          "complexity_score": 8.0
+        },
+        "calls": [
+          "AS_CO_UT_isBlank",
+          "AS_CO_UT_replaceNull",
+          "AS_GSS_TMG_ENT_TASK_ACTION_AUDIT"
+        ],
+        "called_by": [
+          "AS GSS TMG Update Task Details for Initiation"
+        ]
+      }
+    ]
+  },
+  "interfaces": [],
+  "supporting_objects": {
+    "expression_rules": [
+      {
+        "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_260165",
+        "name": "AS_CO_UT_updateCdtFields",
+        "object_type": "Expression Rule",
+        "description": "Updates one or more fields of a CDT, with an optional input for indices",
+        "data": {
+          "sail_code": "cast(\n  typeof(ri!cdt),\n  if(\n    and(\n      rule!AS_CO_UT_isBlank(ri!cdt),\n      rule!AS_CO_UT_checkIfArrayType(\n        typeOf: ri!cdt\n      )\n    ),\n    ri!cdt,\n    reduce(\n      rule!AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_handler(\n        cdt: _,\n        indices: ri!indices,\n        field: _,\n        newValue: _\n      ),\n      ri!cdt,\n      merge(\n        a!flatten(ri!fields),\n        a!flatten(ri!newValues)\n      )\n    )\n  )\n)",
+          "definition": "cast(\n  typeof(ri!cdt),\n  if(\n    and(\n      rule!AS_CO_UT_isBlank(ri!cdt),\n      rule!AS_CO_UT_checkIfArrayType(\n        typeOf: ri!cdt\n      )\n    ),\n    ri!cdt,\n    reduce(\n      rule!AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_handler(\n        cdt: _,\n        indices: ri!indices,\n        field: _,\n        newValue: _\n      ),\n      ri!cdt,\n      merge(\n        a!flatten(ri!fields),\n        a!flatten(ri!newValues)\n      )\n    )\n  )\n)",
+          "inputs": [
+            {
+              "name": "cdt",
+              "type": "http://www.appian.com/ae/types/2009:Variant",
+              "data_type": "http://www.appian.com/ae/types/2009:Variant",
+              "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            },
+            {
+              "name": "fields",
+              "type": "http://www.appian.com/ae/types/2009:Text?list",
+              "data_type": "http://www.appian.com/ae/types/2009:Text?list",
+              "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 1
+            },
+            {
+              "name": "indices",
+              "type": "http://www.appian.com/ae/types/2009:Integer?list",
+              "data_type": "http://www.appian.com/ae/types/2009:Integer?list",
+              "raw_type": "http://www.appian.com/ae/types/2009:Integer?list",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 2
+            },
+            {
+              "name": "newValues",
+              "type": "http://www.appian.com/ae/types/2009:Variant",
+              "data_type": "http://www.appian.com/ae/types/2009:Variant",
+              "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 3
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "No Indices",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "cdt",
+                  "input_value": "{a: 1}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "fields",
+                  "input_value": "{\"b\", \"c\"}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "indices",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 2
+                },
+                {
+                  "input_name_ref": "newValues",
+                  "input_value": "{2, 3}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 3
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "No Indices List",
+              "display_order": 1,
+              "test_inputs": [
+                {
+                  "input_name_ref": "cdt",
+                  "input_value": "{{a: 1}, {a: 1}}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "fields",
+                  "input_value": "{\"b\", \"c\"}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "indices",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 2
+                },
+                {
+                  "input_name_ref": "newValues",
+                  "input_value": "{2, 3}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 3
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Has Indices",
+              "display_order": 2,
+              "test_inputs": [
+                {
+                  "input_name_ref": "cdt",
+                  "input_value": "{{a: 1}, {a: 1}}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "fields",
+                  "input_value": "{\"b\", \"c\"}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "indices",
+                  "input_value": "{2}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 2
+                },
+                {
+                  "input_name_ref": "newValues",
+                  "input_value": "{2, 3}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 3
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Single Field",
+              "display_order": 3,
+              "test_inputs": [
+                {
+                  "input_name_ref": "cdt",
+                  "input_value": "{a: 1}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "fields",
+                  "input_value": "\"b\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "indices",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 2
+                },
+                {
+                  "input_name_ref": "newValues",
+                  "input_value": "2",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 3
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Nested Field",
+              "display_order": 4,
+              "test_inputs": [
+                {
+                  "input_name_ref": "cdt",
+                  "input_value": "{{a: 1}, {a: 2}}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "fields",
+                  "input_value": "\"b.c\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "indices",
+                  "input_value": "1",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 2
+                },
+                {
+                  "input_name_ref": "newValues",
+                  "input_value": "3",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 3
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Empty Array Input",
+              "display_order": 5,
+              "test_inputs": [
+                {
+                  "input_name_ref": "cdt",
+                  "input_value": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Dictionary?list',\n  {}\n)",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "fields",
+                  "input_value": "\"a\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "indices",
+                  "input_value": null,
+                  "value_type": "nil",
+                  "is_null": true,
+                  "input_order": 2
+                },
+                {
+                  "input_name_ref": "newValues",
+                  "input_value": "1",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 3
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [
+          "AS_CO_UT_isBlank"
+        ],
+        "called_by": [
+          "AS_CO_UT_captureMetadata",
+          "AS_GSS_TMG_UT_initiateTasks"
+        ]
+      },
+      {
+        "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73980",
+        "name": "AS_CO_UT_replaceNull",
+        "object_type": "Expression Rule",
+        "description": "Returns nullableValue only if it is not null. Else returns replacementValue.",
+        "data": {
+          "sail_code": "if(\n  rule!AS_CO_UT_isBlank(ri!nullableValue),\n  ri!replacementValue,\n  ri!nullableValue\n)",
+          "definition": "if(\n  rule!AS_CO_UT_isBlank(ri!nullableValue),\n  ri!replacementValue,\n  ri!nullableValue\n)",
+          "inputs": [
+            {
+              "name": "nullableValue",
+              "type": "http://www.appian.com/ae/types/2009:Variant",
+              "data_type": "http://www.appian.com/ae/types/2009:Variant",
+              "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            },
+            {
+              "name": "replacementValue",
+              "type": "http://www.appian.com/ae/types/2009:Variant",
+              "data_type": "http://www.appian.com/ae/types/2009:Variant",
+              "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 1
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "Value is Null",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "nullableValue",
+                  "input_value": "null",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "replacementValue",
+                  "input_value": "\"replace\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Value is Not Null",
+              "display_order": 1,
+              "test_inputs": [
+                {
+                  "input_name_ref": "nullableValue",
+                  "input_value": "\"value\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "replacementValue",
+                  "input_value": "\"replace\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [
+          "AS_CO_UT_isBlank"
+        ],
+        "called_by": [
+          "AS GSS TMG Task Action Audit",
+          "AS_CO_UT_captureMetadata"
+        ]
+      },
+      {
+        "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+        "name": "AS_CO_UT_isBlank",
+        "object_type": "Expression Rule",
+        "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+        "data": {
+          "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  length(a!flatten(ri!value)) = 0\n)",
+          "definition": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  length(a!flatten(ri!value)) = 0\n)",
+          "inputs": [
+            {
+              "name": "value",
+              "type": "http://www.appian.com/ae/types/2009:Variant",
+              "data_type": "http://www.appian.com/ae/types/2009:Variant",
+              "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "Empty String",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "=\"\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Null Integer",
+              "display_order": 1,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "=tointeger(null)",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Null",
+              "display_order": 2,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "null",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Null Group",
+              "display_order": 3,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "=togroup(null)",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "String",
+              "display_order": 4,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "=\"cats\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Integer",
+              "display_order": 5,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "3",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Empty Array",
+              "display_order": 6,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "={}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "List of Lists",
+              "display_order": 7,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "={{}}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Empty Dictionary",
+              "display_order": 8,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "cast('type!{http://www.appian.com/ae/types/2009}Dictionary', null)",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "List of Empty Dictionary",
+              "display_order": 9,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "{\n  cast('type!{http://www.appian.com/ae/types/2009}Dictionary', null),\n  cast('type!{http://www.appian.com/ae/types/2009}Dictionary', null),\n}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Empty Dictionary As Field",
+              "display_order": 10,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "{field1:{}}.field1",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Empty String Array",
+              "display_order": 11,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "=cast(typeof({\"a\",\"b\",\"c\"}),{})",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Array cast to Any Type with first value null",
+              "display_order": 12,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "cast(197, {null, 1, 2})",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Array of Null",
+              "display_order": 13,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "{null, null}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "String array",
+              "display_order": 14,
+              "test_inputs": [
+                {
+                  "input_name_ref": "value",
+                  "input_value": "{\"hi\", \"\", \"there\"}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [],
+        "called_by": [
+          "AS GSS TMG Task Action Audit",
+          "AS GSS TMG Update Task Details for Initiation",
+          "AS_CO_UT_replaceNull",
+          "AS_CO_UT_updateCdtFields"
+        ]
+      },
+      {
+        "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75800",
+        "name": "AS_CO_UT_filterCdtByField",
+        "object_type": "Expression Rule",
+        "description": "Filters a CDT by a matching a single value or list of values in a single field, if a list is passed, all matches are returned",
+        "data": {
+          "sail_code": "/*Take the input of a cdt, field, and value and returns the matching cdt data\n\nex. cdt of users, filter by field isActive and value of true to find your active users\n*/\ncast(\n  typeof(ri!cdt),\n  index(\n    a!flatten(ri!cdt),\n    rule!AS_CO_UT_returnCdtIndicesByField(\n      cdt: ri!cdt,\n      field: ri!field,\n      value: ri!value\n    ),\n    {}\n  )\n)",
+          "definition": "/*Take the input of a cdt, field, and value and returns the matching cdt data\n\nex. cdt of users, filter by field isActive and value of true to find your active users\n*/\ncast(\n  typeof(ri!cdt),\n  index(\n    a!flatten(ri!cdt),\n    rule!AS_CO_UT_returnCdtIndicesByField(\n      cdt: ri!cdt,\n      field: ri!field,\n      value: ri!value\n    ),\n    {}\n  )\n)",
+          "inputs": [
+            {
+              "name": "cdt",
+              "type": "http://www.appian.com/ae/types/2009:Variant",
+              "data_type": "http://www.appian.com/ae/types/2009:Variant",
+              "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            },
+            {
+              "name": "field",
+              "type": "http://www.w3.org/2001/XMLSchema:string",
+              "data_type": "http://www.w3.org/2001/XMLSchema:string",
+              "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 1
+            },
+            {
+              "name": "value",
+              "type": "http://www.appian.com/ae/types/2009:Variant",
+              "data_type": "http://www.appian.com/ae/types/2009:Variant",
+              "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 2
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "Non-Nested CDT",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "cdt",
+                  "input_value": "{\n  {a: 1},\n  {a: 2},\n  {a: 3}\n}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "field",
+                  "input_value": "\"a\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "value",
+                  "input_value": "2",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 2
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Nested CDT",
+              "display_order": 1,
+              "test_inputs": [
+                {
+                  "input_name_ref": "cdt",
+                  "input_value": "{\n  {a: {b: 1}},\n  {a: {b: 2}},\n  {a: {b: 3}},\n}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "field",
+                  "input_value": "\"a.b\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "value",
+                  "input_value": "2",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 2
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Non-Nested CDT, Array Filter",
+              "display_order": 2,
+              "test_inputs": [
+                {
+                  "input_name_ref": "cdt",
+                  "input_value": "{\n  {a: 1},\n  {a: 2},\n  {a: 3}\n}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "field",
+                  "input_value": "\"a\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "value",
+                  "input_value": "{1, 2}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 2
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Nested CDT, Array Filter",
+              "display_order": 3,
+              "test_inputs": [
+                {
+                  "input_name_ref": "cdt",
+                  "input_value": "{\n  {a: {b: 1}},\n  {a: {b: 2}},\n  {a: {b: 3}},\n}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "field",
+                  "input_value": "\"a.b\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "value",
+                  "input_value": "{1, 2}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 2
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Non-Nested CDT, Null Filter",
+              "display_order": 4,
+              "test_inputs": [
+                {
+                  "input_name_ref": "cdt",
+                  "input_value": "{\n  {a: 1},\n  {a: 2},\n  {a: 3},\n  {a: null},\n}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "field",
+                  "input_value": "\"a\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "value",
+                  "input_value": "null",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 2
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Non-Nested CDT, Empty Filter",
+              "display_order": 5,
+              "test_inputs": [
+                {
+                  "input_name_ref": "cdt",
+                  "input_value": "{\n  {a: 1},\n  {a: 2},\n  {a: 3},\n  {a: null},\n}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "field",
+                  "input_value": "\"a\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "value",
+                  "input_value": "{}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 2
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "No Results",
+              "display_order": 6,
+              "test_inputs": [
+                {
+                  "input_name_ref": "cdt",
+                  "input_value": "{\n  {a: 1, b: {c: 2}},\n  {a: 3, b: {c: 4}},\n  {a: 5, b: {c: 6}},\n}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "field",
+                  "input_value": "\"a\"",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                },
+                {
+                  "input_name_ref": "value",
+                  "input_value": "0",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 2
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [],
+        "called_by": [
+          "AS GSS TMG Update Task Details for Initiation"
+        ]
+      },
+      {
+        "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_194721-tmg-am-am",
+        "name": "AS_GSS_TMG_UT_initiateTasks",
+        "object_type": "Expression Rule",
+        "description": "Accepts a list of tasks and configures the fields for initiation, also updating \"modifiedBy\" metadata",
+        "data": {
+          "sail_code": "rule!AS_CO_UT_captureMetadata(\n  cdt: rule!AS_CO_UT_updateCdtFields(\n    cdt: ri!tasks,\n    fields: {\n      \"taskStatus.taskStatusId\",\n      \"availableDatetime\",\n      \"completedBy\",\n      \"completedDatetime\",\n      \"review\"\n    },\n    newValues: {\n      cons!AS_GSS_TMG_REF_ID_TASK_STATUS_ASSIGNED,\n      now(),\n      null,\n      null,\n      null\n    }\n  ),\n  modifiedBy: ri!initiator\n)",
+          "definition": "rule!AS_CO_UT_captureMetadata(\n  cdt: rule!AS_CO_UT_updateCdtFields(\n    cdt: ri!tasks,\n    fields: {\n      \"taskStatus.taskStatusId\",\n      \"availableDatetime\",\n      \"completedBy\",\n      \"completedDatetime\",\n      \"review\"\n    },\n    newValues: {\n      cons!AS_GSS_TMG_REF_ID_TASK_STATUS_ASSIGNED,\n      now(),\n      null,\n      null,\n      null\n    }\n  ),\n  modifiedBy: ri!initiator\n)",
+          "inputs": [
+            {
+              "name": "tasks",
+              "type": "urn:com:appian:types:AS:GSS:TMG:AS_GSS_TMG_Task?list",
+              "data_type": "urn:com:appian:types:AS:GSS:TMG:AS_GSS_TMG_Task?list",
+              "raw_type": "urn:com:appian:types:AS:GSS:TMG:AS_GSS_TMG_Task?list",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            },
+            {
+              "name": "initiator",
+              "type": "http://www.w3.org/2001/XMLSchema:string",
+              "data_type": "http://www.w3.org/2001/XMLSchema:string",
+              "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 1
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": []
+        },
+        "calls": [
+          "AS_CO_UT_captureMetadata",
+          "AS_CO_UT_updateCdtFields",
+          "AS_GSS_TMG_REF_ID_TASK_STATUS_ASSIGNED"
+        ],
+        "called_by": [
+          "AS GSS TMG Update Task Details for Initiation"
+        ]
+      },
+      {
+        "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_28158",
+        "name": "AS_CO_UT_captureMetadata",
+        "object_type": "Expression Rule",
+        "description": "Automatically sets the \"auditing\" fields on a CDT, including createdDatetime/createdBy/modifiedDatetime/modifiedBy/isActive/isDeleted",
+        "data": {
+          "sail_code": "cast(\n  typeof(ri!cdt),\n  with(\n    local!modifiedBy: rule!AS_CO_UT_replaceNull(\n      nullableValue: ri!modifiedBy,\n      replacementValue: loggedInUser()\n    ),\n    local!cdtFields: rule!AS_CO_UT_returnCdtFields(typeOf: ri!cdt),\n    local!possibleMetaDataFields: touniformstring(\n      /*These fields should always exist in any CDT for which metadata is captured*/\n      \"modifiedDatetime\",\n      \"modifiedBy\",\n      \"createdDatetime\",\n      \"createdBy\",\n      /*These fields may not exist in every CDT for which metadata is captured*/\n      \"isDeleted\",\n      \"isActive\"\n    ),\n    local!capturedMetadataFields: intersection(\n      local!cdtFields,\n      local!possibleMetaDataFields\n    ),\n    a!flatten(\n      #\"SYSTEM_SYSRULES_forEach\"(\n        items: ri!cdt,\n        expression: {\n          rule!AS_CO_UT_updateCdtFields(\n            cdt: fv!item,\n            fields: local!capturedMetadataFields,\n            newValues: rule!AS_CO_UT_displayValueMultiple(\n              values: local!capturedMetadataFields,\n              inArray: local!possibleMetaDataFields,\n              replacement: {\n                now(),\n                local!modifiedBy,\n                rule!AS_CO_UT_replaceNull(\n                  nullableValue: index(fv!item, \"createdDatetime\", null),\n                  replacementValue: now()\n                ),\n                rule!AS_CO_UT_replaceNull(\n                  nullableValue: index(fv!item, \"createdBy\", null),\n                  replacementValue: local!modifiedBy\n                ),\n                rule!AS_CO_UT_booleanDefaultFalse(\n                  boolean: index(fv!item, \"isDeleted\", null)\n                ),\n                rule!AS_CO_UT_booleanDefaultTrue(boolean: index(fv!item, \"isActive\", null))\n              }\n            )\n          )\n        }\n      )\n    )\n  )\n)",
+          "definition": "cast(\n  typeof(ri!cdt),\n  with(\n    local!modifiedBy: rule!AS_CO_UT_replaceNull(\n      nullableValue: ri!modifiedBy, \n      replacementValue: loggedInUser()\n    ),\n    local!cdtFields: rule!AS_CO_UT_returnCdtFields(typeOf: ri!cdt),\n    local!possibleMetaDataFields: touniformstring(\n      /*These fields should always exist in any CDT for which metadata is captured*/\n      \"modifiedDatetime\",\n      \"modifiedBy\",\n      \"createdDatetime\",\n      \"createdBy\",\n      /*These fields may not exist in every CDT for which metadata is captured*/\n      \"isDeleted\",\n      \"isActive\"\n    ),\n    local!capturedMetadataFields: intersection(\n      local!cdtFields,\n      local!possibleMetaDataFields\n    ),\n    a!flatten(\n      #\"SYSTEM_SYSRULES_forEach\"(\n        items: ri!cdt,\n        expression: {\n          rule!AS_CO_UT_updateCdtFields(\n            cdt: fv!item,\n            fields: local!capturedMetadataFields,\n            newValues: rule!AS_CO_UT_displayValueMultiple(\n              values: local!capturedMetadataFields,\n              inArray: local!possibleMetaDataFields,\n              replacement: {\n                now(),\n                local!modifiedBy,\n                rule!AS_CO_UT_replaceNull(\n                  nullableValue: index(fv!item, \"createdDatetime\", null),\n                  replacementValue: now()\n                ),\n                rule!AS_CO_UT_replaceNull(\n                  nullableValue: index(fv!item, \"createdBy\", null),\n                  replacementValue: local!modifiedBy\n                ),\n                rule!AS_CO_UT_booleanDefaultFalse(\n                  boolean: index(fv!item, \"isDeleted\", null)\n                ),\n                rule!AS_CO_UT_booleanDefaultTrue(boolean: index(fv!item, \"isActive\", null))\n              }\n            )\n          )\n        }\n      )\n    )\n  )\n)",
+          "inputs": [
+            {
+              "name": "cdt",
+              "type": "http://www.appian.com/ae/types/2009:Variant",
+              "data_type": "http://www.appian.com/ae/types/2009:Variant",
+              "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            },
+            {
+              "name": "modifiedBy",
+              "type": "http://www.w3.org/2001/XMLSchema:string",
+              "data_type": "http://www.w3.org/2001/XMLSchema:string",
+              "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 1
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "Null Inputs",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "cdt",
+                  "input_value": "{}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "modifiedBy",
+                  "input_value": null,
+                  "value_type": "string",
+                  "is_null": false,
+                  "input_order": 1
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Valid Inputs",
+              "display_order": 1,
+              "test_inputs": [
+                {
+                  "input_name_ref": "cdt",
+                  "input_value": "{\n  {field1: \"A\"},\n  {field1: \"B\"},\n}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "modifiedBy",
+                  "input_value": null,
+                  "value_type": "string",
+                  "is_null": false,
+                  "input_order": 1
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Cdt without metadata fields",
+              "display_order": 2,
+              "test_inputs": [
+                {
+                  "input_name_ref": "cdt",
+                  "input_value": "'type!{urn:com:appian:types:AS:CO}AS_CO_ApplicationVersion'()",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "modifiedBy",
+                  "input_value": null,
+                  "value_type": "string",
+                  "is_null": false,
+                  "input_order": 1
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": null,
+                  "is_null": true,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [
+          "AS_CO_UT_replaceNull",
+          "AS_CO_UT_updateCdtFields"
+        ],
+        "called_by": [
+          "AS_GSS_TMG_UT_initiateTasks"
+        ]
+      }
+    ],
+    "constants": [
+      {
+        "uuid": "_a-0000e460-9d93-8000-9bc1-011c48011c48_603236-tmg-am-am",
+        "name": "AS_GSS_TMG_REF_ID_TASK_STATUS_ASSIGNED",
+        "object_type": "Constant",
+        "description": "Value: 2",
+        "data": {
+          "value": "2",
+          "raw_value_type": "http://www.w3.org/2001/XMLSchema:int",
+          "value_type": "http://www.w3.org/2001/XMLSchema:int"
+        },
+        "calls": [],
+        "called_by": [
+          "AS_GSS_TMG_UT_initiateTasks"
+        ]
+      },
+      {
+        "uuid": "_a-0000e460-9d93-8000-9bc1-011c48011c48_602185-tmg-am-am",
+        "name": "AS_GSS_TMG_REF_ID_TASK_ACTION_ASSIGNED",
+        "object_type": "Constant",
+        "description": "Value: 5",
+        "data": {
+          "value": "5",
+          "raw_value_type": "http://www.w3.org/2001/XMLSchema:int",
+          "value_type": "http://www.w3.org/2001/XMLSchema:int"
+        },
+        "calls": [],
+        "called_by": [
+          "AS GSS TMG Update Task Details for Initiation"
+        ]
+      },
+      {
+        "uuid": "_a-0000e393-fbf1-8000-9ba2-011c48011c48_100868-tmg-am-am",
+        "name": "AS_GSS_TMG_ENT_TASK",
+        "object_type": "Constant",
+        "description": "Value: AS_GSS_TMG_Task",
+        "data": {
+          "raw_value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+          "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity"
+        },
+        "calls": [],
+        "called_by": [
+          "AS GSS TMG Update Task Details for Initiation"
+        ]
+      },
+      {
+        "uuid": "_a-0000e393-fbf1-8000-9ba2-011c48011c48_99629-tmg-am-am",
+        "name": "AS_GSS_TMG_ENUM_TASK_BEHAVIOR_TYPE_CODE_AUTOMATED",
+        "object_type": "Constant",
+        "description": "AUTOMATED - Tasks of this behavior type are completed automatically by Appian processes",
+        "data": {
+          "value": "AUTOMATED",
+          "raw_value_type": "http://www.w3.org/2001/XMLSchema:string",
+          "value_type": "http://www.w3.org/2001/XMLSchema:string"
+        },
+        "calls": [],
+        "called_by": [
+          "AS GSS TMG Update Task Details for Initiation"
+        ]
+      },
+      {
+        "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_185019-tmg-am-am",
+        "name": "AS_GSS_TMG_PM_START_AUTOMATED_TASK",
+        "object_type": "Constant",
+        "description": "Value: AS GSS TMG Start Automated Task",
+        "data": {
+          "value": "AS GSS TMG Start Automated Task",
+          "raw_value_type": "http://www.appian.com/ae/types/2009:ProcessModel",
+          "value_type": "http://www.appian.com/ae/types/2009:ProcessModel"
+        },
+        "calls": [],
+        "called_by": [
+          "AS GSS TMG Update Task Details for Initiation"
+        ]
+      },
+      {
+        "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_37385-tmg-am-am",
+        "name": "AS_GSS_TMG_ENT_TASK_ACTION_AUDIT",
+        "object_type": "Constant",
+        "description": "Value: AS_GSS_TMG_TaskActionAudit",
+        "data": {
+          "raw_value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+          "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity"
+        },
+        "calls": [],
+        "called_by": [
+          "AS GSS TMG Task Action Audit"
+        ]
+      }
+    ]
+  }
+}

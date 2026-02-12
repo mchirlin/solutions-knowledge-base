@@ -1,0 +1,709 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_object": {
+      "uuid": "0002ee7f-845b-8000-dd77-7f0000014e7a",
+      "name": "AS GSS Summarize With AI",
+      "object_type": "Process Model",
+      "parent_name": null
+    },
+    "total_objects": 4
+  },
+  "process": {
+    "process_model": {
+      "uuid": "0002ee7f-845b-8000-dd77-7f0000014e7a",
+      "name": "AS GSS Summarize With AI",
+      "object_type": "Process Model",
+      "description": "Process to summarize content using either Azure OpenAI or Appian AI Skills",
+      "data": {
+        "nodes": [
+          {
+            "node_id": "0000ee7f-845b-8000-dd77-7f0000014e7a",
+            "node_type": "core.0",
+            "node_name": "Start Node",
+            "gui_id": "0",
+            "node_type_name": "Start Event",
+            "node_category": "Core",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [],
+            "outputs": [],
+            "properties": {}
+          },
+          {
+            "node_id": "0001ee7f-845b-8000-dd77-7f0000014e7a",
+            "node_type": "core.1",
+            "node_name": "End Node",
+            "gui_id": "1",
+            "node_type_name": "End Event",
+            "node_category": "Core",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [],
+            "outputs": [],
+            "properties": {}
+          },
+          {
+            "node_id": "0001ee7f-89e3-8000-dd7a-7f0000014e7a",
+            "node_type": "internal.38",
+            "node_name": "Call Azure Summarizer",
+            "gui_id": "3",
+            "node_type_name": "Subprocess",
+            "node_category": "Activity",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": "AS GSS Summarize With Azure OpenAI",
+            "subprocess_config": {
+              "target_uuid": "0002ee7d-0147-8000-dd1d-7f0000014e7a",
+              "input_mappings": [
+                {
+                  "param_name": "assistantText",
+                  "expression": "=assistantText"
+                },
+                {
+                  "param_name": "input",
+                  "expression": "=input"
+                },
+                {
+                  "param_name": "prompt",
+                  "expression": "=prompt"
+                }
+              ]
+            },
+            "timer_config": null,
+            "inputs": [
+              {
+                "input_name": "assistantText",
+                "input_expression": "=assistantText"
+              },
+              {
+                "input_name": "input",
+                "input_expression": "=input"
+              },
+              {
+                "input_name": "prompt",
+                "input_expression": "=prompt"
+              }
+            ],
+            "outputs": [],
+            "properties": {}
+          },
+          {
+            "node_id": "0002ee7f-89e3-8000-dd7a-7f0000014e7a",
+            "node_type": "internal.38",
+            "node_name": "Call Appian AI Summarizer",
+            "gui_id": "4",
+            "node_type_name": "Subprocess",
+            "node_category": "Activity",
+            "gateway_conditions": [],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": "AS GSS Summarize With Native AI",
+            "subprocess_config": {
+              "target_uuid": "0002ee7f-7e38-8000-dd72-7f0000014e7a",
+              "input_mappings": [
+                {
+                  "param_name": "input",
+                  "expression": "=input"
+                },
+                {
+                  "param_name": "runtimePrompt",
+                  "expression": "=prompt"
+                }
+              ]
+            },
+            "timer_config": null,
+            "inputs": [
+              {
+                "input_name": "input",
+                "input_expression": "=input"
+              },
+              {
+                "input_name": "runtimePrompt",
+                "input_expression": "=prompt"
+              }
+            ],
+            "outputs": [],
+            "properties": {}
+          },
+          {
+            "node_id": "0003ee7f-89e3-8000-dd7a-7f0000014e7a",
+            "node_type": "core.4",
+            "node_name": "Which AI?",
+            "gui_id": "2",
+            "node_type_name": "XOR Gateway",
+            "node_category": "Gateway",
+            "gateway_conditions": [
+              {
+                "target_gui_id": "4",
+                "label": null,
+                "condition": "=pv!useNativeAi",
+                "is_default": false
+              },
+              {
+                "target_gui_id": "3",
+                "label": null,
+                "condition": null,
+                "is_default": true
+              }
+            ],
+            "form_expression": null,
+            "interface_uuid": null,
+            "interface_name": null,
+            "pre_triggers": [],
+            "subprocess_uuid": null,
+            "subprocess_config": null,
+            "timer_config": null,
+            "inputs": [],
+            "outputs": [],
+            "properties": {}
+          }
+        ],
+        "flows": [
+          {
+            "from_node_id": "0000ee7f-845b-8000-dd77-7f0000014e7a",
+            "to_node_id": "2",
+            "flow_label": null,
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0001ee7f-89e3-8000-dd7a-7f0000014e7a",
+            "to_node_id": "1",
+            "flow_label": null,
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0002ee7f-89e3-8000-dd7a-7f0000014e7a",
+            "to_node_id": "1",
+            "flow_label": null,
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0003ee7f-89e3-8000-dd7a-7f0000014e7a",
+            "to_node_id": "3",
+            "flow_label": "Azure",
+            "flow_condition": null
+          },
+          {
+            "from_node_id": "0003ee7f-89e3-8000-dd7a-7f0000014e7a",
+            "to_node_id": "4",
+            "flow_label": null,
+            "flow_condition": null
+          }
+        ],
+        "variables": [
+          {
+            "variable_name": "assistantText",
+            "variable_type": "xsd:string",
+            "is_parameter": true,
+            "default_value": null
+          },
+          {
+            "variable_name": "errorMap",
+            "variable_type": "a:Map",
+            "is_parameter": false,
+            "default_value": null
+          },
+          {
+            "variable_name": "input",
+            "variable_type": "xsd:string",
+            "is_parameter": true,
+            "default_value": null
+          },
+          {
+            "variable_name": "isSuccess",
+            "variable_type": "xsd:boolean",
+            "is_parameter": false,
+            "default_value": null
+          },
+          {
+            "variable_name": "prompt",
+            "variable_type": "xsd:string",
+            "is_parameter": true,
+            "default_value": null
+          },
+          {
+            "variable_name": "responseMap",
+            "variable_type": "a:Map",
+            "is_parameter": false,
+            "default_value": null
+          },
+          {
+            "variable_name": "useNativeAi",
+            "variable_type": "xsd:boolean",
+            "is_parameter": true,
+            "default_value": null
+          }
+        ],
+        "total_nodes": 5,
+        "total_flows": 5,
+        "complexity_score": 8.0
+      },
+      "calls": [
+        "AS GSS Summarize With Azure OpenAI",
+        "AS GSS Summarize With Native AI"
+      ],
+      "called_by": []
+    },
+    "subprocesses": [
+      {
+        "uuid": "0002ee7f-7e38-8000-dd72-7f0000014e7a",
+        "name": "AS GSS Summarize With Native AI",
+        "object_type": "Process Model",
+        "description": "Process to summarize content using Appian AI Skills",
+        "data": {
+          "nodes": [
+            {
+              "node_id": "0000ee7f-7e38-8000-dd72-7f0000014e7a",
+              "node_type": "core.0",
+              "node_name": "Start Node",
+              "gui_id": "0",
+              "node_type_name": "Start Event",
+              "node_category": "Core",
+              "gateway_conditions": [],
+              "form_expression": null,
+              "interface_uuid": null,
+              "interface_name": null,
+              "pre_triggers": [],
+              "subprocess_uuid": null,
+              "subprocess_config": null,
+              "timer_config": null,
+              "inputs": [],
+              "outputs": [],
+              "properties": {}
+            },
+            {
+              "node_id": "0001ee7f-7e38-8000-dd72-7f0000014e7a",
+              "node_type": "core.1",
+              "node_name": "End Node",
+              "gui_id": "1",
+              "node_type_name": "End Event",
+              "node_category": "Core",
+              "gateway_conditions": [],
+              "form_expression": null,
+              "interface_uuid": null,
+              "interface_name": null,
+              "pre_triggers": [],
+              "subprocess_uuid": null,
+              "subprocess_config": null,
+              "timer_config": null,
+              "inputs": [],
+              "outputs": [],
+              "properties": {}
+            },
+            {
+              "node_id": "0001ee7f-8081-8000-dd75-7f0000014e7a",
+              "node_type": "internal3.rs2_ai_skill_generative_ai2",
+              "node_name": "Execute Generative AI Skill",
+              "gui_id": "2",
+              "node_type_name": "Execute Generative AI Skill",
+              "node_category": "AI Skills",
+              "gateway_conditions": [],
+              "form_expression": null,
+              "interface_uuid": null,
+              "interface_name": null,
+              "pre_triggers": [],
+              "subprocess_uuid": null,
+              "subprocess_config": null,
+              "timer_config": null,
+              "inputs": [
+                {
+                  "input_name": "Input Text",
+                  "input_expression": "=pv!input"
+                },
+                {
+                  "input_name": "Runtime Prompt",
+                  "input_expression": "=pv!runtimePrompt"
+                }
+              ],
+              "outputs": [
+                {
+                  "save_into": "isSuccess",
+                  "output_expression": "AC!Success"
+                },
+                {
+                  "save_into": "responseMap",
+                  "output_expression": "if(\n  a!isNullOrEmpty(ac!Response),\n  {},\n  a!map(\n    \"Response\": { \"Chat Completions\": { ac!Response } }\n  )\n)"
+                },
+                {
+                  "save_into": "errorMap",
+                  "output_expression": "if(\n  a!isNullOrEmpty(ac!ErrorMessage),\n  {},\n  a!map(\n    title: \"Appian AI Skills Error\",\n    message: ac!ErrorMessage\n  )\n)"
+                }
+              ],
+              "properties": {}
+            }
+          ],
+          "flows": [
+            {
+              "from_node_id": "0000ee7f-7e38-8000-dd72-7f0000014e7a",
+              "to_node_id": "2",
+              "flow_label": null,
+              "flow_condition": null
+            },
+            {
+              "from_node_id": "0001ee7f-8081-8000-dd75-7f0000014e7a",
+              "to_node_id": "1",
+              "flow_label": null,
+              "flow_condition": null
+            }
+          ],
+          "variables": [
+            {
+              "variable_name": "errorMap",
+              "variable_type": "a:Map",
+              "is_parameter": false,
+              "default_value": null
+            },
+            {
+              "variable_name": "input",
+              "variable_type": "xsd:string",
+              "is_parameter": true,
+              "default_value": null
+            },
+            {
+              "variable_name": "isSuccess",
+              "variable_type": "xsd:boolean",
+              "is_parameter": false,
+              "default_value": null
+            },
+            {
+              "variable_name": "responseMap",
+              "variable_type": "a:Map",
+              "is_parameter": false,
+              "default_value": null
+            },
+            {
+              "variable_name": "runtimePrompt",
+              "variable_type": "xsd:string",
+              "is_parameter": true,
+              "default_value": null
+            }
+          ],
+          "total_nodes": 3,
+          "total_flows": 2,
+          "complexity_score": 3.0
+        },
+        "calls": [],
+        "called_by": [
+          "AS GSS Summarize With AI"
+        ]
+      },
+      {
+        "uuid": "0002ee7d-0147-8000-dd1d-7f0000014e7a",
+        "name": "AS GSS Summarize With Azure OpenAI",
+        "object_type": "Process Model",
+        "description": "Process to summarize content using Azure Open AI Chat Completion",
+        "data": {
+          "nodes": [
+            {
+              "node_id": "0000ee7d-0147-8000-dd1d-7f0000014e7a",
+              "node_type": "core.0",
+              "node_name": "Start Node",
+              "gui_id": "0",
+              "node_type_name": "Start Event",
+              "node_category": "Core",
+              "gateway_conditions": [],
+              "form_expression": null,
+              "interface_uuid": null,
+              "interface_name": null,
+              "pre_triggers": [],
+              "subprocess_uuid": null,
+              "subprocess_config": null,
+              "timer_config": null,
+              "inputs": [],
+              "outputs": [],
+              "properties": {}
+            },
+            {
+              "node_id": "0001ee7d-0147-8000-dd1d-7f0000014e7a",
+              "node_type": "core.1",
+              "node_name": "End Node",
+              "gui_id": "1",
+              "node_type_name": "End Event",
+              "node_category": "Core",
+              "gateway_conditions": [],
+              "form_expression": null,
+              "interface_uuid": null,
+              "interface_name": null,
+              "pre_triggers": [],
+              "subprocess_uuid": null,
+              "subprocess_config": null,
+              "timer_config": null,
+              "inputs": [],
+              "outputs": [],
+              "properties": {}
+            },
+            {
+              "node_id": "0001ee7d-0741-8000-dd22-7f0000014e7a",
+              "node_type": "internal3.integration",
+              "node_name": "Call Azure Open AI Chat Completion",
+              "gui_id": "2",
+              "node_type_name": "Call Integration",
+              "node_category": "Integration",
+              "gateway_conditions": [],
+              "form_expression": null,
+              "interface_uuid": null,
+              "interface_name": null,
+              "pre_triggers": [],
+              "subprocess_uuid": null,
+              "subprocess_config": null,
+              "timer_config": null,
+              "inputs": [
+                {
+                  "input_name": "responseFormattedText",
+                  "input_expression": "=pv!input"
+                },
+                {
+                  "input_name": "prompt",
+                  "input_expression": "=pv!prompt"
+                },
+                {
+                  "input_name": "assistantText",
+                  "input_expression": "=pv!assistantText"
+                }
+              ],
+              "outputs": [
+                {
+                  "save_into": "errorMap",
+                  "output_expression": "AC!Error"
+                },
+                {
+                  "save_into": "responseMap",
+                  "output_expression": "AC!Result"
+                },
+                {
+                  "save_into": "isSuccess",
+                  "output_expression": "AC!Success"
+                },
+                {
+                  "save_into": "response",
+                  "output_expression": "index(\n  rule!AS_GSS_UT_deepIndex(\n    item: ac!Result,\n    indexArray: { \"Response\", \"Chat Completions\" }\n  ),\n  1,\n  null\n)"
+                }
+              ],
+              "properties": {}
+            }
+          ],
+          "flows": [
+            {
+              "from_node_id": "0000ee7d-0147-8000-dd1d-7f0000014e7a",
+              "to_node_id": "2",
+              "flow_label": null,
+              "flow_condition": null
+            },
+            {
+              "from_node_id": "0001ee7d-0741-8000-dd22-7f0000014e7a",
+              "to_node_id": "1",
+              "flow_label": null,
+              "flow_condition": null
+            }
+          ],
+          "variables": [
+            {
+              "variable_name": "assistantText",
+              "variable_type": "xsd:string",
+              "is_parameter": true,
+              "default_value": null
+            },
+            {
+              "variable_name": "errorMap",
+              "variable_type": "a:Map",
+              "is_parameter": false,
+              "default_value": null
+            },
+            {
+              "variable_name": "input",
+              "variable_type": "xsd:string",
+              "is_parameter": true,
+              "default_value": null
+            },
+            {
+              "variable_name": "isSuccess",
+              "variable_type": "xsd:boolean",
+              "is_parameter": false,
+              "default_value": null
+            },
+            {
+              "variable_name": "prompt",
+              "variable_type": "xsd:string",
+              "is_parameter": true,
+              "default_value": null
+            },
+            {
+              "variable_name": "response",
+              "variable_type": "xsd:string",
+              "is_parameter": false,
+              "default_value": null
+            },
+            {
+              "variable_name": "responseMap",
+              "variable_type": "a:Map",
+              "is_parameter": false,
+              "default_value": null
+            }
+          ],
+          "total_nodes": 3,
+          "total_flows": 2,
+          "complexity_score": 3.0
+        },
+        "calls": [
+          "AS_GSS_UT_deepIndex"
+        ],
+        "called_by": [
+          "AS GSS Summarize With AI"
+        ]
+      }
+    ]
+  },
+  "interfaces": [],
+  "supporting_objects": {
+    "expression_rules": [
+      {
+        "uuid": "_a-0000eb16-753f-8000-9d01-011c48011c48_9518400",
+        "name": "AS_GSS_UT_deepIndex",
+        "object_type": "Expression Rule",
+        "description": "Rule to get the index value. It supports indexing nested CDT values.",
+        "data": {
+          "sail_code": "if(\n  a!isNullOrEmpty(value: ri!indexArray),\n  ri!item,\n  if(\n    a!isNullOrEmpty(value: ri!item),\n    {},\n    reduce(index(_, _, {}), ri!item, ri!indexArray)\n  )\n)",
+          "definition": "if(\n  a!isNullOrEmpty(value: ri!indexArray),\n  ri!item,\n  if(\n    a!isNullOrEmpty(value: ri!item),\n    {},\n    reduce(index(_, _, {}), ri!item, ri!indexArray)\n  )\n)",
+          "inputs": [
+            {
+              "name": "item",
+              "type": "http://www.appian.com/ae/types/2009:Variant",
+              "data_type": "http://www.appian.com/ae/types/2009:Variant",
+              "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 0
+            },
+            {
+              "name": "indexArray",
+              "type": "http://www.appian.com/ae/types/2009:Text?list",
+              "data_type": "http://www.appian.com/ae/types/2009:Text?list",
+              "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+              "required": false,
+              "description": null,
+              "default_value": null,
+              "display_order": 1
+            }
+          ],
+          "security": [
+            {
+              "role_name": "readers",
+              "permission_type": "VIEW",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "authors",
+              "permission_type": "EDIT",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "administrators",
+              "permission_type": "ADMIN",
+              "inherit": true,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyReaders",
+              "permission_type": "DENY_VIEW",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAuthors",
+              "permission_type": "DENY_EDIT",
+              "inherit": false,
+              "allow_for_all": false
+            },
+            {
+              "role_name": "denyAdministrators",
+              "permission_type": "DENY_ADMIN",
+              "inherit": false,
+              "allow_for_all": false
+            }
+          ],
+          "test_cases": [
+            {
+              "test_name": "Valid case",
+              "display_order": 0,
+              "test_inputs": [
+                {
+                  "input_name_ref": "item",
+                  "input_value": "{\n  a:{b:2}\n}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "indexArray",
+                  "input_value": "{\"a\",\"b\"}",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": "",
+                  "is_null": false,
+                  "display_order": 0
+                }
+              ]
+            },
+            {
+              "test_name": "Null",
+              "display_order": 1,
+              "test_inputs": [
+                {
+                  "input_name_ref": "item",
+                  "input_value": "null",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 0
+                },
+                {
+                  "input_name_ref": "indexArray",
+                  "input_value": "null",
+                  "value_type": "Expression",
+                  "is_null": false,
+                  "input_order": 1
+                }
+              ],
+              "assertions": [
+                {
+                  "assertion_value": null,
+                  "is_null": true,
+                  "display_order": 0
+                }
+              ]
+            }
+          ]
+        },
+        "calls": [],
+        "called_by": [
+          "AS GSS Summarize With Azure OpenAI"
+        ]
+      }
+    ]
+  }
+}

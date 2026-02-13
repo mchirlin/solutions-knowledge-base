@@ -1,0 +1,120 @@
+{
+  "uuid": "_a-0000e9b7-c1bc-8000-9bb2-011c48011c48_103123",
+  "name": "CMGT_PortalPage_CheckCaseStatus",
+  "type": "Interface",
+  "description": "Portal interface page for check status",
+  "sail_code": "a!localVariables(\n  local!portalConfig: rule!CMGT_INT_GET_PortalConfig(locale: \"en_US\"),\n  local!brandingMap: local!portalConfig.result.body.brandingMap,\n  local!searchText,\n  local!caseFriendlyId,\n  local!case: rule!CMGT_UTIL_QueryRecord(\n    recordType: recordType!CMGT_Case,\n    executeWhen: rule!CMGT_Portal_CaseIdentifierValidation(local!caseFriendlyId),\n    returnType: \"SINGLE_OBJECT\",\n    fields: {\n      recordType!CMGT_Case.status\n    },\n    filters: {\n      #\"SYSTEM_SYSRULES_queryFilter\"(\n        field: recordType!CMGT_Case.friendlyId,\n        operator: \"=\",\n        value: local!caseFriendlyId\n      )\n    }\n  ),\n  local!wideScreen: {\n    \"TABLET_LANDSCAPE\",\n    \"DESKTOP_NARROW\",\n    \"DESKTOP\",\n    \"DESKTOP_WIDE\"\n  },\n  local!isWide: if(\n    #\"SYSTEM_SYSRULES_isPageWidth\"(local!wideScreen),\n    true,\n    false\n  ),\n  local!isRecaptchaCheckFailed: false(),\n  rule!CMGT_PortalInterface_HeaderLayout(\n    height: \"SHORT_PLUS\",\n    title: #\"urn:appian:translation-string:v1:5d0874b1-27e8-40bd-ada7-f9b09e8cd0be\",\n    description: #\"urn:appian:translation-string:v1:acd8596a-cdd1-491e-b223-5ee9991fd69b\",\n    brandingMap: local!brandingMap,\n    contents: {\n      #\"SYSTEM_SYSRULES_columnsLayout\"(\n        columns: {\n          #\"SYSTEM_SYSRULES_columnLayout\"(\n            contents: {},\n            width:if(#\"SYSTEM_SYSRULES_isPageWidth\"({\"DESKTOP_NARROW\",\"TABLET_LANDSCAPE\"}),\"EXTRA_NARROW\", \"NARROW_PLUS\"),\n            showWhen: local!isWide\n          ),\n          #\"SYSTEM_SYSRULES_columnLayout\"(\n            contents: #\"SYSTEM_SYSRULES_cardLayout\"(\n              contents: {\n                #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n                  items: {\n                    #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                      item: #\"SYSTEM_SYSRULES_textField\"(\n                        label: #\"urn:appian:translation-string:v1:eacfd0e3-e8ce-4ef8-8ff0-6e9140eb2b07\",\n                        labelPosition: \"ABOVE\",\n                        placeholder: #\"urn:appian:translation-string:v1:5abef5e9-d48a-488b-9ce9-095a682e1cb5\",\n                        value: local!searchText,\n                        saveInto: {\n                          a!save(\n                            local!searchText,\n                            upper(trim(save!value))\n                          )\n                        },\n                        refreshAfter: \"UNFOCUS\",\n                        required: true,\n                        validations: {}\n                      )\n                    ),\n                    #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                      item: #\"SYSTEM_SYSRULES_ButtonArrayLayout\"(\n                        buttons: {\n                          #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n                            label: #\"urn:appian:translation-string:v1:d106a5d4-8d36-4667-af68-47d69ce6315e\",\n                            value: local!searchText,\n                            recaptchaSaveInto: rule!CMGT_UTIL_VerifyRecaptcha_SaveLogic(\n                              onSuccess: {\n                                a!save(local!caseFriendlyId, save!value)\n                              },\n                              onError: {\n                                a!save(local!isRecaptchaCheckFailed, true())\n                              }\n                            ),\n                            size: \"SMALL\",\n                            style: \"SOLID\"\n                          )\n                        },\n                        align: \"END\",\n                        marginBelow: \"NONE\"\n                      ),\n                      width: \"MINIMIZE\"\n                    )\n                  },\n                  alignVertical: \"BOTTOM\",\n                  marginAbove: \"EVEN_LESS\",\n                  spacing: \"STANDARD\",\n                  marginBelow: \"MORE\",\n\n                ),\n                /* Case Details */\n                #\"SYSTEM_SYSRULES_cardLayout\"(\n                  contents: {\n                    {\n                      #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                        label: rule!CMGT_UTIL_ReturnLabelGivenAutomationTestingSwitch(testingLabel: \"Case Details\"),\n                        labelPosition: \"COLLAPSED\",\n                        value: {\n                          #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                            text: local!case[recordType!CMGT_Case.title],\n                            size: \"MEDIUM\",\n                            style: \"STRONG\"\n                          )\n                        }\n                      ),\n                      rule!CMGT_UTIL_RichTextField(\n                        value: local!case[recordType!CMGT_Case.description],\n                        readOnly: true(),\n                        labelPosition: \"COLLAPSED\",\n                        showWhen: rule!CMGT_UTIL_IsNotBlank(\n                          local!case[recordType!CMGT_Case.description]\n                        )\n                      ),\n                      #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n                        items: {\n                          #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                            item: #\"SYSTEM_SYSRULES_tagField\"(\n                              labelPosition: \"COLLAPSED\",\n                              tags: #\"SYSTEM_SYSRULES_tagItem_v1\"(\n                                text: local!case[recordType!CMGT_Case.status.statusLabel],\n                                backgroundColor: rule!CMGT_UTIL_DisplayBranding(\n                                  brandingMap: local!brandingMap,\n                                  key: local!case[recordType!CMGT_Case.status.softColor]\n                                ),\n                                textColor: rule!CMGT_UTIL_DisplayBranding(\n                                  brandingMap: local!brandingMap,\n                                  key: local!case[recordType!CMGT_Case.status.textColor]\n                                )\n                              ),\n                              align: \"START\",\n                              marginBelow: \"NONE\"\n                            ),\n                            width: \"MINIMIZE\"\n                          ),\n                          #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                            item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                              label: rule!CMGT_UTIL_ReturnLabelGivenAutomationTestingSwitch(testingLabel: \"Submitted On\"),\n                              labelPosition: \"COLLAPSED\",\n                              value: #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                                text: char(9679),\n                                color: local!brandingMap.PrimaryTextColor\n                              ),\n                              marginBelow: \"NONE\"\n                            ),\n                            width: \"MINIMIZE\"\n                          ),\n                          #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                            item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                              label: rule!CMGT_UTIL_ReturnLabelGivenAutomationTestingSwitch(testingLabel: \"Submitted On\"),\n                              labelPosition: \"COLLAPSED\",\n                              value: #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                                text: #\"urn:appian:translation-string:v1:52b8af99-0a3a-4a9c-a08a-f173e98b38f8\"(\n                                  #\"urn:appian:translation-variable:v1:52204d54-9f8d-45e3-a930-c7137f818fa7\": rule!CMGT_UTIL_FormatDateTime(\n                                    dateTime: local!case[recordType!CMGT_Case.createdOn],\n                                    includeTime: false\n                                  )\n                                ),\n                                color: local!brandingMap.PrimaryTextColor\n                              ),\n                              marginBelow: \"NONE\"\n                            ),\n                            width: \"MINIMIZE\"\n                          )\n                        },\n                        alignVertical: \"MIDDLE\"\n                      )\n                    }\n                  },\n                  shape: \"SQUARED\",\n                  padding: \"NONE\",\n                  showBorder: false,\n                  showWhen: and(\n                    rule!CMGT_UTIL_IsNotBlank(local!caseFriendlyId),\n                    not(local!isRecaptchaCheckFailed),\n                    rule!CMGT_UTIL_IsNotBlank(local!case)\n                  )\n                ),\n                /*Showing warning banner for the recaptcha fails and no results found */\n                rule!CMGT_UTIL_Portal_WarningBanner(\n                  alertStyle: \"ERROR\",\n                  warningLabel: if(\n                    local!isRecaptchaCheckFailed,\n                    #\"urn:appian:translation-string:v1:3a8c82d7-223c-4a14-8aff-72e8cbc54866\",\n                    #\"urn:appian:translation-string:v1:ea2c8a7b-a08a-4009-a221-efdb0883d0a4\"\n                  ),\n                  showWhen: or(\n                    and(\n                      rule!CMGT_UTIL_IsNotBlank(local!caseFriendlyId),\n                      not(local!isRecaptchaCheckFailed),\n                      rule!CMGT_UTIL_IsBlank(local!case)\n                    ),\n                    local!isRecaptchaCheckFailed\n                  ),\n                  padding: \"STANDARD\"\n                )\n              },\n              showBorder: false(),\n              showShadow: local!brandingMap.CardShowShadow,\n              style: local!brandingMap.CardBackgroundColor,\n              shape: local!brandingMap.CardShape,\n              padding: \"STANDARD\"\n            )\n          ),\n          #\"SYSTEM_SYSRULES_columnLayout\"(\n            contents: {},\n            width:if(#\"SYSTEM_SYSRULES_isPageWidth\"({\"DESKTOP_NARROW\",\"TABLET_LANDSCAPE\"}),\"EXTRA_NARROW\", \"NARROW_PLUS\"),\n            showWhen: local!isWide\n          )\n        }\n      ),\n      #\"SYSTEM_SYSRULES_columnsLayout\"(\n        marginAbove: \"MORE\",\n        columns: {\n          #\"SYSTEM_SYSRULES_columnLayout\"(width: \"EXTRA_NARROW\",showWhen: local!isWide),\n          #\"SYSTEM_SYSRULES_columnLayout\"(\n            contents: rule!CMGT_PortalPage_FAQ(brandingMap: local!brandingMap)\n          ),\n          #\"SYSTEM_SYSRULES_columnLayout\"(width: \"EXTRA_NARROW\",showWhen: local!isWide)\n        }\n      )\n    }\n  )\n)",
+  "calls": [
+    {
+      "name": "CMGT_INT_GET_PortalConfig",
+      "type": "Integration",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_Portal_CaseIdentifierValidation",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_PortalInterface_HeaderLayout",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_VerifyRecaptcha_SaveLogic",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_ReturnLabelGivenAutomationTestingSwitch",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_RichTextField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_IsNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_DisplayBranding",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_FormatDateTime",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_Portal_WarningBanner",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_PortalPage_FAQ",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_Case",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

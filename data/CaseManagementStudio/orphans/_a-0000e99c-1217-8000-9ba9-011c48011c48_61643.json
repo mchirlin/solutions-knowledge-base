@@ -1,0 +1,30 @@
+{
+  "uuid": "_a-0000e99c-1217-8000-9ba9-011c48011c48_61643",
+  "name": "CMGT_UTIL_AddWorkingDays",
+  "type": "Expression Rule",
+  "description": "This rule adds working days to the given dateTime and retains the time",
+  "sail_code": "if(\n  a!isNotNullOrEmpty(ri!dateTime),\n  a!localVariables(\n    local!sysTimeZone: rule!CMGT_UTIL_SystemTimezone(),\n    local!dateTimeInSystemTimeZone: rule!CMGT_UTIL_ConvertDateTimeToTimezone(\n      dateTime: ri!dateTime,\n      timezone: local!sysTimeZone\n    ),\n    local!dateInSystemTimeZone: rule!CMGT_UTIL_GetDateFromDateTime(\n      dateTimeValue: local!dateTimeInSystemTimeZone\n    ),\n    /*Getting the next working date by adding ri!workingDays    */\n    local!nextWorkingDateInSystemTimeZone: rule!CMGT_UTIL_AddBusinessDays(\n      dateTime: local!dateTimeInSystemTimeZone,\n      duration: a!defaultValue(value: ri!workingDays, default: 0)\n    ),\n    /*Adding the days difference to ri!dateTime    */\n    ri!dateTime + (\n      local!nextWorkingDateInSystemTimeZone - local!dateInSystemTimeZone\n    )\n  ),\n  {}\n)",
+  "calls": [
+    {
+      "name": "CMGT_UTIL_SystemTimezone",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_ConvertDateTimeToTimezone",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_GetDateFromDateTime",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_AddBusinessDays",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

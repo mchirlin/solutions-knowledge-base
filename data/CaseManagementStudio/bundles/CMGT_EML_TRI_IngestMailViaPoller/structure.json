@@ -1,0 +1,798 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "CMGT_EML_TRI_IngestMailViaPoller",
+    "parent_name": null,
+    "total_objects": 49
+  },
+  "entry_point": {
+    "complexity_score": 25.0,
+    "total_nodes": 13,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "CMGT_EML_TRI_IngestMailViaPoller",
+      "complexity_score": 25.0,
+      "total_nodes": 13,
+      "nodes": [
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Set Parent Process ID"
+          ]
+        },
+        {
+          "name": "End Event",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Query Polled Emails and Create batches",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Are Polled Emails Empty?"
+          ]
+        },
+        {
+          "name": "Retry",
+          "type": "Timer/Rule/Receive Message",
+          "next": [
+            "Has the subprocess completed?"
+          ]
+        },
+        {
+          "name": "Set Parent Process ID",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Process allowance"
+          ]
+        },
+        {
+          "name": "Process allowance",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Allow polling?"
+          ]
+        },
+        {
+          "name": "Wait?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node",
+            "Retry (yes)"
+          ]
+        },
+        {
+          "name": "Has the subprocess completed?",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Wait?"
+          ]
+        },
+        {
+          "name": "MS Graph Mail Poller",
+          "type": "msgraphmailpoller.MSGraphMailPollerV20240926",
+          "next": [
+            "Query Polled Emails and Create batches"
+          ]
+        },
+        {
+          "name": "Allow polling?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Event",
+            "MS Graph Mail Poller"
+          ]
+        },
+        {
+          "name": "Are Polled Emails Empty?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node (Yes)",
+            "Start Migration (No)"
+          ]
+        },
+        {
+          "name": "Start Migration",
+          "type": "Start Process",
+          "next": [
+            "Has the subprocess completed?"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290169-msg-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_CO_ENUM_QE_RETURN_TYPE_AGGREGATION",
+      "type": "Constant",
+      "description": "AGGREGATION - Returns an array of Dictionary when passed to rule `CMGT_EML_TRI_CO_UT_queryEntity`",
+      "value": "AGGREGATION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_CO_CONS_QE_RETURN_TYPES",
+        "CMGT_EML_TRI_CO_UT_zInternal_queryEntity_determineSort",
+        "CMGT_EML_TRI_UTIL_QueryEntity"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290131-msg-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+      "type": "Constant",
+      "description": "DATA_SUBSET - Returns a type of DataSubset when passed to rule `CMGT_EML_TRI_CO_UT_queryEntity`",
+      "value": "DATA_SUBSET",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_CO_CONS_QE_RETURN_TYPES",
+        "CMGT_EML_TRI_CO_UT_zInternal_queryEntity_determineSort",
+        "CMGT_EML_TRI_GetEmailsAndBatchForProcessing",
+        "CMGT_EML_TRI_QE_GetPolledMailDetails",
+        "CMGT_EML_TRI_UTIL_QueryEntity"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290163-msg-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "description": "OBJECT_ARRAY - Returns an array type of the CDT when passed to rule `CMGT_EML_TRI_CO_UT_queryEntity`",
+      "value": "OBJECT_ARRAY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_CO_CONS_QE_RETURN_TYPES",
+        "CMGT_EML_TRI_CO_UT_zInternal_queryEntity_determineSort",
+        "CMGT_EML_TRI_QE_GetPolledMailDetails",
+        "CMGT_EML_TRI_UTIL_QueryEntity"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290157-msg-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "description": "SINGLE_OBJECT - Returns a single type of the CDT when passed to rule `CMGT_EML_TRI_CO_UT_queryEntity`",
+      "value": "SINGLE_OBJECT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_CO_CONS_QE_RETURN_TYPES",
+        "CMGT_EML_TRI_CO_UT_zInternal_queryEntity_determineSort",
+        "CMGT_EML_TRI_UTIL_QueryEntity"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290175-msg-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+      "type": "Constant",
+      "description": "TOTAL_MSGUNT - Returns an Integer when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "TOTAL_COUNT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_CO_CONS_QE_RETURN_TYPES",
+        "CMGT_EML_TRI_CO_UT_zInternal_queryEntity_determineSort",
+        "CMGT_EML_TRI_UTIL_QueryEntity"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_225990-msg-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_CO_INT_QUERY_MAX_BATCH_SIZE",
+      "type": "Constant",
+      "description": "Value: 1000 - The maximum size to pass to all queries to avoid accidentally querying too much data",
+      "value": "1000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_UTIL_QueryEntity"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb1-795b-8000-9cf4-011c48011c48_3178694",
+      "name": "CMGT_EML_TRI_DATABASE_JNDI_NAME",
+      "type": "Constant",
+      "description": "Database name to post email to tables",
+      "value": null,
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_IngestMailViaPoller"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb1-795b-8000-9cf4-011c48011c48_3178674",
+      "name": "CMGT_EML_TRI_EMAIL_MAX_BATCH_SIZE",
+      "type": "Constant",
+      "description": "Max batch size for number of emails that can be pulled",
+      "value": "50",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_GetEmailsAndBatchForProcessing",
+        "CMGT_EML_TRI_IngestMailViaPoller"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb5-acf8-8000-9cf6-011c48011c48_3214651",
+      "name": "CMGT_EML_TRI_ENABLE_MAIL_POLLER",
+      "type": "Constant",
+      "description": "Constant to drive whether the poller is on or off",
+      "value": null,
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_AutomatedProcessDecisionLogic"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb5-acf8-8000-9cf6-011c48011c48_3190520",
+      "name": "CMGT_EML_TRI_ENT_POLLED_MAIL",
+      "type": "Constant",
+      "description": "Contains entity - CMGT_EML_TRI_APP_MailPoller",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_QE_GetPolledMailDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb1-795b-8000-9cf4-011c48011c48_3178688",
+      "name": "CMGT_EML_TRI_INCOMING_EMAIL_ATTACHMENT_FOLDER",
+      "type": "Constant",
+      "description": null,
+      "value": "_a-0000ecb1-795b-8000-9cf4-011c48011c48_3178680",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationFolder",
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_IngestMailViaPoller"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb1-795b-8000-9cf4-011c48011c48_3178662",
+      "name": "CMGT_EML_TRI_MAILBOX_EMAIL_ADDRESS",
+      "type": "Constant",
+      "description": "The email address from which the poller is looking to pull emails",
+      "value": null,
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_IngestMailViaPoller"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb5-acf8-8000-9cf6-011c48011c48_3214509",
+      "name": "CMGT_EML_TRI_MAX_BATCHES_PER_EMAIL_PROCESS",
+      "type": "Constant",
+      "description": "Default: 5",
+      "value": "5",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_GetEmailsAndBatchForProcessing"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb5-acf8-8000-9cf6-011c48011c48_3222188",
+      "name": "CMGT_EML_TRI_PM_INGEST_MAIL_VIA_POLLER",
+      "type": "Constant",
+      "description": "CMGT_EML_TRI_IngestMailViaPoller",
+      "value": "CMGT_EML_TRI_IngestMailViaPoller",
+      "value_type": "http://www.appian.com/ae/types/2009:ProcessModel",
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_AutomatedProcessDecisionLogic",
+        "CMGT_EML_TRI_QPA_GetMigrateBatchEmailsReport"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb5-acf8-8000-9cf6-011c48011c48_3206953",
+      "name": "CMGT_EML_TRI_PM_MIGRATE_BATCH_EMAILS",
+      "type": "Constant",
+      "description": "CMGT_EML_TRI_MigrateBatchEmails",
+      "value": "CMGT_EML_TRI_MigrateBatchEmails",
+      "value_type": "http://www.appian.com/ae/types/2009:ProcessModel",
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_IngestMailViaPoller"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecbe-e702-8000-9cf8-011c48011c48_3227836",
+      "name": "CMGT_EML_TRI_RPT_INGEST_EMAIL",
+      "type": "Constant",
+      "description": "Report for checking the ingest email process",
+      "value": "_a-0000ecb5-acf8-8000-9cf6-011c48011c48_3222027",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_QPA_GetMigrateBatchEmailsReport"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb1-795b-8000-9cf4-011c48011c48_3178668",
+      "name": "CMGT_EML_TRI_THIRD_PARTY_CREDENTIALS_KEY",
+      "type": "Constant",
+      "description": "The key of the third party credential to be used for the poller",
+      "value": null,
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_IngestMailViaPoller"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb5-acf8-8000-9cf6-011c48011c48_3209184",
+      "name": "CMGT_EML_TRI_TXT_INCOMING_EMAIL_INGESTION_OPEN",
+      "type": "Constant",
+      "description": "text: OPEN",
+      "value": "OPEN",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_GetEmailsAndBatchForProcessing"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9d3-70bf-8000-9bbd-011c48011c48_178662",
+      "name": "CMGT_INT_BATCH_SIZE_MEDIUM",
+      "type": "Constant",
+      "description": "Page size for medium display - 10",
+      "value": "10",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_QE_GetPolledMailDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb5-acf8-8000-9cf6-011c48011c48_3221948",
+      "name": "CMGT_EML_TRI_AutomatedProcessDecisionLogic",
+      "type": "Expression Rule",
+      "description": "Logic to track if process is allowed to run",
+      "parameters": [],
+      "calls": [
+        "CMGT_EML_TRI_ENABLE_MAIL_POLLER",
+        "CMGT_EML_TRI_PM_INGEST_MAIL_VIA_POLLER",
+        "CMGT_EML_TRI_QPA_GetMigrateBatchEmailsReport",
+        "CMGT_UTIL_IsNotBlank",
+        "Unknown"
+      ],
+      "called_by": [
+        "CMGT_EML_TRI_IngestMailViaPoller"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_291284-msg-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_CO_CONS_PRIMITIVE_TYPE_ARRAY",
+      "type": "Expression Rule",
+      "description": "Array of type numbers of primitive types (1 text, 2 int, 3 dec, 4 boolean, 5 date, 6 datetime, 7 time, 8 user, 9 group, 10 user or group, 11 document, 12 folder)",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_CO_UT_zINTERNAL_returnCdtFields_primitiveTypeCheckHandler"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290200-msg-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_CO_CONS_QE_RETURN_TYPES",
+      "type": "Expression Rule",
+      "description": "All available query entity return types, used by rule `CMGT_EML_TRI_CO_UT_queryEntity`",
+      "parameters": [],
+      "calls": [
+        "CMGT_EML_TRI_CO_ENUM_QE_RETURN_TYPE_AGGREGATION",
+        "CMGT_EML_TRI_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "CMGT_EML_TRI_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "CMGT_EML_TRI_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "CMGT_EML_TRI_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT"
+      ],
+      "called_by": [
+        "CMGT_EML_TRI_UTIL_QueryEntity"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157603-msg-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_CO_UT_cast",
+      "type": "Expression Rule",
+      "description": "Casts a variable to the type of either the input `type`, or the typeof of the input `typeof`, and properly handles for null inputs",
+      "parameters": [],
+      "calls": [
+        "CMGT_EML_TRI_CO_UT_checkIfSingleType",
+        "CMGT_EML_TRI_CO_UT_isNotBlank",
+        "CMGT_EML_TRI_CO_UT_returnTypeNumber"
+      ],
+      "called_by": [
+        "CMGT_EML_TRI_CO_UT_returnArrayTypeNumber",
+        "CMGT_EML_TRI_UTIL_QueryEntity"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157548-msg-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_CO_UT_checkIfSingleType",
+      "type": "Expression Rule",
+      "description": "Returns true if the `type` or `typeOf` inputs represent a singular, non-array type",
+      "parameters": [],
+      "calls": [
+        "CMGT_EML_TRI_CO_UT_returnSingleTypeObject",
+        "CMGT_EML_TRI_CO_UT_returnTypeNumber"
+      ],
+      "called_by": [
+        "CMGT_EML_TRI_CO_UT_cast"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_280802-msg-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_CO_UT_chooseWherecontainsHelper",
+      "type": "Expression Rule",
+      "description": "Helps when combining choose() and wherecontains(), returns 1 if no match found, or else returns the index + 1",
+      "parameters": [],
+      "calls": [
+        "CMGT_EML_TRI_CO_UT_replaceNull",
+        "CMGT_EML_TRI_CO_UT_whereContains"
+      ],
+      "called_by": [
+        "CMGT_EML_TRI_UTIL_QueryEntity"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_187421-msg-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_CO_UT_displayValue",
+      "type": "Expression Rule",
+      "description": "Executes displayValue, but allows setting the default to either the first or last value of the replacement list, or a custom value",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_UTIL_QueryEntity"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536-msg-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_CO_UT_isNotBlank",
+        "CMGT_EML_TRI_CO_UT_replaceNull",
+        "CMGT_EML_TRI_CO_UT_whereContains",
+        "CMGT_EML_TRI_CO_UT_zInternal_queryEntity_determineSort",
+        "CMGT_EML_TRI_UTIL_QueryEntity"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782-msg-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around CMGT_EML_TRI_CO_UT_isBlank",
+      "parameters": [],
+      "calls": [
+        "CMGT_EML_TRI_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "CMGT_EML_TRI_CO_UT_cast",
+        "CMGT_EML_TRI_UTIL_QueryEntity"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367-msg-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_IsBlank"
+      ],
+      "called_by": [
+        "CMGT_EML_TRI_GetEmailsAndBatchForProcessing"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73980-msg-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "description": "Returns nullableValue only if it is not null. Else returns replacementValue.",
+      "parameters": [],
+      "calls": [
+        "CMGT_EML_TRI_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "CMGT_EML_TRI_CO_UT_chooseWherecontainsHelper",
+        "CMGT_EML_TRI_UTIL_QueryEntity"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39610-msg-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_CO_UT_returnArrayTypeNumber",
+      "type": "Expression Rule",
+      "description": "Returns the array type number from the input type. If type number being passed is already that of a array, returns the same number.",
+      "parameters": [],
+      "calls": [
+        "CMGT_EML_TRI_CO_UT_cast"
+      ],
+      "called_by": [
+        "CMGT_EML_TRI_UTIL_QueryEntity"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75660-msg-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_CO_UT_returnCdtFields",
+      "type": "Expression Rule",
+      "description": "Returns an array of a CDTs fields. Note that this only works on Appian CDTs, not Dictionary or List of Variant",
+      "parameters": [],
+      "calls": [
+        "CMGT_EML_TRI_CO_UT_returnSingleTypeObject",
+        "CMGT_EML_TRI_CO_UT_zINTERNAL_returnCdtFields_handler",
+        "CMGT_EML_TRI_CO_UT_zINTERNAL_returnCdtFields_primitiveTypeCheckHandler"
+      ],
+      "called_by": [
+        "CMGT_EML_TRI_CO_UT_zInternal_queryEntity_determineSort",
+        "CMGT_EML_TRI_UTIL_QueryEntity"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75842-msg-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_CO_UT_returnSingleTypeObject",
+      "type": "Expression Rule",
+      "description": "Takes in either an array type or a primitive type and returns the singular type object, works for CDTs or primitive types",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_CO_UT_checkIfSingleType",
+        "CMGT_EML_TRI_CO_UT_returnCdtFields",
+        "CMGT_EML_TRI_CO_UT_zINTERNAL_returnCdtFields_handler"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157503-msg-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_CO_UT_returnTypeNumber",
+      "type": "Expression Rule",
+      "description": "Returns the typeNumber of either `type` or `typeOf`",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_CO_UT_cast",
+        "CMGT_EML_TRI_CO_UT_checkIfSingleType"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_162769-msg-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_CO_UT_typeCompare",
+      "type": "Expression Rule",
+      "description": "Returns true if the two input types match",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_CO_UT_whereContains",
+        "CMGT_EML_TRI_CO_UT_zINTERNAL_returnCdtFields_primitiveTypeCheckHandler"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_272151-msg-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_CO_UT_whereContains",
+      "type": "Expression Rule",
+      "description": "Enhanced wherecontains() which avoids type-casting issues and properly handles for document and group types",
+      "parameters": [],
+      "calls": [
+        "CMGT_EML_TRI_CO_UT_isBlank",
+        "CMGT_EML_TRI_CO_UT_typeCompare"
+      ],
+      "called_by": [
+        "CMGT_EML_TRI_CO_UT_chooseWherecontainsHelper"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_291236-msg-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_CO_UT_zINTERNAL_returnCdtFields_handler",
+      "type": "Expression Rule",
+      "description": "Used by rule `CMGT_EML_TRI_CO_UT_returnCdtFields`",
+      "parameters": [],
+      "calls": [
+        "CMGT_EML_TRI_CO_UT_returnSingleTypeObject"
+      ],
+      "called_by": [
+        "CMGT_EML_TRI_CO_UT_returnCdtFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e36c-7599-8000-9ba2-011c48011c48_64438-msg-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_CO_UT_zINTERNAL_returnCdtFields_primitiveTypeCheckHandler",
+      "type": "Expression Rule",
+      "description": "Used by rule `CMGT_EML_TRI_CO_UT_returnCdtFields`",
+      "parameters": [],
+      "calls": [
+        "CMGT_EML_TRI_CO_CONS_PRIMITIVE_TYPE_ARRAY",
+        "CMGT_EML_TRI_CO_UT_typeCompare"
+      ],
+      "called_by": [
+        "CMGT_EML_TRI_CO_UT_returnCdtFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e52f-5316-8000-9bac-011c48011c48_303936-msg-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_CO_UT_zInternal_queryEntity_determineSort",
+      "type": "Expression Rule",
+      "description": "Used by rule `CMGT_EML_TRI_CO_UT_queryEntity `",
+      "parameters": [],
+      "calls": [
+        "CMGT_EML_TRI_CO_ENUM_QE_RETURN_TYPE_AGGREGATION",
+        "CMGT_EML_TRI_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "CMGT_EML_TRI_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "CMGT_EML_TRI_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "CMGT_EML_TRI_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+        "CMGT_EML_TRI_CO_UT_isBlank",
+        "CMGT_EML_TRI_CO_UT_returnCdtFields"
+      ],
+      "called_by": [
+        "CMGT_EML_TRI_UTIL_QueryEntity"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb5-acf8-8000-9cf6-011c48011c48_3214468",
+      "name": "CMGT_EML_TRI_GetEmailsAndBatchForProcessing",
+      "type": "Expression Rule",
+      "description": "Gets emails that have been added and batch them for processing",
+      "parameters": [],
+      "calls": [
+        "CMGT_EML_TRI_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "CMGT_EML_TRI_CO_UT_rejectNullValuesFromArray",
+        "CMGT_EML_TRI_EMAIL_MAX_BATCH_SIZE",
+        "CMGT_EML_TRI_MAX_BATCHES_PER_EMAIL_PROCESS",
+        "CMGT_EML_TRI_QE_GetPolledMailDetails",
+        "CMGT_EML_TRI_TXT_INCOMING_EMAIL_INGESTION_OPEN",
+        "CMGT_UTIL_IsBlank"
+      ],
+      "called_by": [
+        "CMGT_EML_TRI_IngestMailViaPoller"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb5-acf8-8000-9cf6-011c48011c48_3190514",
+      "name": "CMGT_EML_TRI_QE_GetPolledMailDetails",
+      "type": "Expression Rule",
+      "description": "QE to get the polled mail details",
+      "parameters": [],
+      "calls": [
+        "CMGT_EML_TRI_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "CMGT_EML_TRI_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "CMGT_EML_TRI_ENT_POLLED_MAIL",
+        "CMGT_EML_TRI_UTIL_QueryEntity",
+        "CMGT_INT_BATCH_SIZE_MEDIUM"
+      ],
+      "called_by": [
+        "CMGT_EML_TRI_GetEmailsAndBatchForProcessing"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecbe-e702-8000-9cf8-011c48011c48_3242655",
+      "name": "CMGT_EML_TRI_QPA_GetMigrateBatchEmailsReport",
+      "type": "Expression Rule",
+      "description": "QPA to get the details of MigrateBatchEmails. Returns true if the process is still active else false",
+      "parameters": [],
+      "calls": [
+        "CMGT_EML_TRI_PM_INGEST_MAIL_VIA_POLLER",
+        "CMGT_EML_TRI_RPT_INGEST_EMAIL",
+        "CMGT_UTIL_IsNotBlank"
+      ],
+      "called_by": [
+        "CMGT_EML_TRI_AutomatedProcessDecisionLogic",
+        "CMGT_EML_TRI_IngestMailViaPoller"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157870-msg-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_UTIL_QueryEntity",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "CMGT_EML_TRI_CO_CONS_QE_RETURN_TYPES",
+        "CMGT_EML_TRI_CO_ENUM_QE_RETURN_TYPE_AGGREGATION",
+        "CMGT_EML_TRI_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "CMGT_EML_TRI_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "CMGT_EML_TRI_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "CMGT_EML_TRI_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+        "CMGT_EML_TRI_CO_INT_QUERY_MAX_BATCH_SIZE",
+        "CMGT_EML_TRI_CO_UT_cast",
+        "CMGT_EML_TRI_CO_UT_chooseWherecontainsHelper",
+        "CMGT_EML_TRI_CO_UT_displayValue",
+        "CMGT_EML_TRI_CO_UT_isBlank",
+        "CMGT_EML_TRI_CO_UT_isNotBlank",
+        "CMGT_EML_TRI_CO_UT_replaceNull",
+        "CMGT_EML_TRI_CO_UT_returnArrayTypeNumber",
+        "CMGT_EML_TRI_CO_UT_returnCdtFields",
+        "CMGT_EML_TRI_CO_UT_zInternal_queryEntity_determineSort"
+      ],
+      "called_by": [
+        "CMGT_EML_TRI_QE_GetPolledMailDetails"
+      ]
+    },
+    {
+      "uuid": "af326a29-a1c8-4399-a28d-996f85819d9e",
+      "name": "CMGT_UTIL_Filter",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_IngestMailViaPoller"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_25890",
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_CO_UT_rejectNullValuesFromArray",
+        "CMGT_EML_TRI_GetEmailsAndBatchForProcessing",
+        "CMGT_EML_TRI_IngestMailViaPoller",
+        "CMGT_UTIL_IsNotBlank"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9d3-70bf-8000-9bbd-011c48011c48_180568",
+      "name": "CMGT_UTIL_IsNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around CMGT_UTIL_IsBlank",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_IsBlank"
+      ],
+      "called_by": [
+        "CMGT_EML_TRI_AutomatedProcessDecisionLogic",
+        "CMGT_EML_TRI_IngestMailViaPoller",
+        "CMGT_EML_TRI_QPA_GetMigrateBatchEmailsReport"
+      ]
+    },
+    {
+      "uuid": "0003ecb3-c4cc-8000-1889-7f0000014e7a",
+      "name": "CMGT_EML_TRI_IngestMailViaPoller",
+      "type": "Process Model",
+      "description": "Runs the poller once",
+      "calls": [
+        "CMGT_EML_TRI_AutomatedProcessDecisionLogic",
+        "CMGT_EML_TRI_DATABASE_JNDI_NAME",
+        "CMGT_EML_TRI_EMAIL_MAX_BATCH_SIZE",
+        "CMGT_EML_TRI_GetEmailsAndBatchForProcessing",
+        "CMGT_EML_TRI_INCOMING_EMAIL_ATTACHMENT_FOLDER",
+        "CMGT_EML_TRI_MAILBOX_EMAIL_ADDRESS",
+        "CMGT_EML_TRI_PM_MIGRATE_BATCH_EMAILS",
+        "CMGT_EML_TRI_QPA_GetMigrateBatchEmailsReport",
+        "CMGT_EML_TRI_THIRD_PARTY_CREDENTIALS_KEY",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_IsNotBlank"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "8bc43189-2f94-4e1b-8614-fe350cb8fab1",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_AutomatedProcessDecisionLogic"
+      ]
+    },
+    {
+      "uuid": "51c23e09-71eb-417e-bec3-c3bb42a1e1a2",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Text for when an execution of email ingestion is occurring",
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_AutomatedProcessDecisionLogic"
+      ]
+    }
+  ]
+}

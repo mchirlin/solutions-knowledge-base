@@ -1,0 +1,1092 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "CMGT_WorkflowPath_CreateUpdate",
+    "parent_name": null,
+    "total_objects": 60
+  },
+  "entry_point": {
+    "complexity_score": 10.0,
+    "total_nodes": 6,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "CMGT_WorkflowPath_CreateUpdate",
+      "complexity_score": 10.0,
+      "total_nodes": 6,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Write to Path and Path Mapping"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Is Context \"CREATE\"?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Query Inactive Path and Path Mappings (No)",
+            "End Node (Yes)"
+          ]
+        },
+        {
+          "name": "Paths and Path Mappings To Be Deleted",
+          "type": "Delete from Data Store",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Write to Path and Path Mapping",
+          "type": "Write to Multiple DSE",
+          "next": [
+            "Is Context \"CREATE\"?"
+          ]
+        },
+        {
+          "name": "Query Inactive Path and Path Mappings",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Paths and Path Mappings To Be Deleted"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ed9c-71ef-8000-9d58-011c48011c48_3993433",
+      "name": "CMGT_CFG_TXT_ACT_WORKFLOW_ROUTING",
+      "type": "Constant",
+      "description": "Action context: WORKFLOW_ROUTING",
+      "value": "WORKFLOW_ROUTING",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_WorkflowPath_ReturnWorkflowPathForTasks"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed12-0330-8000-9d27-011c48011c48_3499337",
+      "name": "CMGT_ENT_WORKFLOW_PATH",
+      "type": "Constant",
+      "description": "Constant for Entity CMGT_WorkflowPath",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "CMGT_QE_GetWorkflowPath",
+        "CMGT_WorkflowPath_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed12-0330-8000-9d27-011c48011c48_3500038",
+      "name": "CMGT_ENT_WORKFLOW_PATH_MAPPING",
+      "type": "Constant",
+      "description": "Constant for Entity CMGT_WorkflowPathMapping",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "CMGT_QE_GetWorkflowPathMapping",
+        "CMGT_WorkflowPath_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed12-0330-8000-9d27-011c48011c48_3499518",
+      "name": "CMGT_ENUM_QE_RETURN_TYPE_AGGREGATION",
+      "type": "Constant",
+      "description": "AGGREGATION - Returns a type of DataSubset when passed to rule `CMGT_UTIL_QueryEntity`",
+      "value": "AGGREGATION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_QE_RETURN_TYPES",
+        "CMGT_UTIL_QueryEntity",
+        "CMGT_zInternal_QueryEntity_DetermineSort"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed12-0330-8000-9d27-011c48011c48_3499500",
+      "name": "CMGT_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+      "type": "Constant",
+      "description": "DATA_SUBSET - Returns a type of DataSubset when passed to rule `CMGT_UTIL_QueryEntity`",
+      "value": "DATA_SUBSET",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_QE_GetWorkflowPath",
+        "CMGT_QE_GetWorkflowPathMapping",
+        "CMGT_QE_RETURN_TYPES",
+        "CMGT_UTIL_QueryEntity",
+        "CMGT_WFL_QE_GetCaseTypeTaskWorkflowPath",
+        "CMGT_zInternal_QueryEntity_DetermineSort"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed12-0330-8000-9d27-011c48011c48_3499512",
+      "name": "CMGT_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "description": "OBJECT_ARRAY - Returns a type of DataSubset when passed to rule `CMGT_UTIL_QueryEntity`",
+      "value": "OBJECT_ARRAY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_QE_GetWorkflowPath",
+        "CMGT_QE_GetWorkflowPathMapping",
+        "CMGT_QE_RETURN_TYPES",
+        "CMGT_UTIL_QueryEntity",
+        "CMGT_WFL_Case_GenerateWorkflowPathAndMapping_Logic",
+        "CMGT_WFL_QE_GetCaseTypeTaskWorkflowPath",
+        "CMGT_WorkflowPath_CreateUpdate",
+        "CMGT_zInternal_QueryEntity_DetermineSort"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed12-0330-8000-9d27-011c48011c48_3499506",
+      "name": "CMGT_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "description": "SINGLE_OBJECT - Returns a type of DataSubset when passed to rule `CMGT_UTIL_QueryEntity`",
+      "value": "SINGLE_OBJECT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_QE_RETURN_TYPES",
+        "CMGT_UTIL_QueryEntity",
+        "CMGT_zInternal_QueryEntity_DetermineSort"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed12-0330-8000-9d27-011c48011c48_3499524",
+      "name": "CMGT_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+      "type": "Constant",
+      "description": "TOTAL_COUNT - Returns a type of DataSubset when passed to rule `CMGT_UTIL_QueryEntity`",
+      "value": "TOTAL_COUNT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_QE_RETURN_TYPES",
+        "CMGT_UTIL_QueryEntity",
+        "CMGT_zInternal_QueryEntity_DetermineSort"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9d3-70bf-8000-9bbd-011c48011c48_178662",
+      "name": "CMGT_INT_BATCH_SIZE_MEDIUM",
+      "type": "Constant",
+      "description": "Page size for medium display - 10",
+      "value": "10",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_QE_GetWorkflowPath",
+        "CMGT_QE_GetWorkflowPathMapping",
+        "CMGT_WFL_QE_GetCaseTypeTaskWorkflowPath"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed12-0330-8000-9d27-011c48011c48_3501315",
+      "name": "CMGT_INT_QUERY_MAX_BATCH_SIZE",
+      "type": "Constant",
+      "description": "Value: 1000 - The maximum size to pass to all queries to avoid accidentally querying too much data",
+      "value": "1000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_UTIL_QueryEntity"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec87-8877-8000-9ce8-011c48011c48_3011428",
+      "name": "CMGT_REFID_TASK_BEHAVIOR_TYPE_AUTOMATION",
+      "type": "Constant",
+      "description": "4 - Automation",
+      "value": "4",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_WorkflowPath_ReturnWorkflowPathForTasks"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea03-1fde-8000-9be1-011c48011c48_375054",
+      "name": "CMGT_REFID_TASK_BEHAVIOR_TYPE_DECISION",
+      "type": "Constant",
+      "description": "2 - Decision",
+      "value": "2",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_WorkflowPath_ReturnWorkflowPathForTasks"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed1b-3d9b-8000-9d29-011c48011c48_3505517",
+      "name": "CMGT_WFL_CASE_TYPE_TASK_INTENTION_CODE_WORKFLOW",
+      "type": "Constant",
+      "description": "value: WORKFLOW",
+      "value": "WORKFLOW",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_Case_ConstructWorkflowPathWithMappings_Logic",
+        "CMGT_QR_GetTask",
+        "CMGT_WFL_QR_GetCaseTypeWorkflowTask",
+        "CMGT_WorkflowPathMapping_GetDependentTasks_Reducer",
+        "CMGT_WorkflowPathMapping_ReturnWorkflowPathMappingsForGivenPath",
+        "CMGT_WorkflowPath_ReturnWorkflowPathForTasks"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed12-0330-8000-9d27-011c48011c48_3500024",
+      "name": "CMGT_WFL_ENT_CASE_TYPE_TASK_WORKFLOW_PATH",
+      "type": "Constant",
+      "description": "Constant for Entity CMGT_WFL_CaseTypeTaskWorkflowPath",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_QE_GetCaseTypeTaskWorkflowPath"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed12-0330-8000-9d27-011c48011c48_3500635",
+      "name": "CMGT_CONS_PRIMITIVE_TYPE_ARRAY",
+      "type": "Expression Rule",
+      "description": "Array of type numbers of primitive types (1 text, 2 int, 3 dec, 4 boolean, 5 date, 6 datetime, 7 time, 8 user, 9 group, 10 user or group, 11 document, 12 folder)",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_zINTERNAL_ReturnCdtFields_PrimitiveTypeCheckHandler"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed1b-3d9b-8000-9d29-011c48011c48_3503082",
+      "name": "CMGT_Case_ConstructWorkflowPathWithMappings_Logic",
+      "type": "Expression Rule",
+      "description": "Construct workflow path and path mappings for the case's tasks",
+      "parameters": [],
+      "calls": [
+        "CMGT_QE_GetWorkflowPath",
+        "CMGT_QR_GetTask",
+        "CMGT_Task",
+        "CMGT_TaskBranch",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_IsNotBlank",
+        "CMGT_UTIL_RejectBlank",
+        "CMGT_WFL_CASE_TYPE_TASK_INTENTION_CODE_WORKFLOW",
+        "CMGT_WorkflowPathMapping_ConstructPathMappingForExistingPath",
+        "CMGT_WorkflowPath_ReturnWorkflowPathForTasks"
+      ],
+      "called_by": [
+        "CMGT_WorkflowPath_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed20-1ca4-8000-9d2b-011c48011c48_3518562",
+      "name": "CMGT_QE_GetWorkflowPath",
+      "type": "Expression Rule",
+      "description": "QE to get the workflow path details",
+      "parameters": [],
+      "calls": [
+        "CMGT_ENT_WORKFLOW_PATH",
+        "CMGT_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "CMGT_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "CMGT_INT_BATCH_SIZE_MEDIUM",
+        "CMGT_UTIL_QueryEntity"
+      ],
+      "called_by": [
+        "CMGT_Case_ConstructWorkflowPathWithMappings_Logic",
+        "CMGT_WorkflowPath_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed24-7935-8000-9d2d-011c48011c48_3533730",
+      "name": "CMGT_QE_GetWorkflowPathMapping",
+      "type": "Expression Rule",
+      "description": "QE to get the workflow path mapping details",
+      "parameters": [],
+      "calls": [
+        "CMGT_ENT_WORKFLOW_PATH_MAPPING",
+        "CMGT_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "CMGT_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "CMGT_INT_BATCH_SIZE_MEDIUM",
+        "CMGT_UTIL_IsNotBlank",
+        "CMGT_UTIL_QueryEntity"
+      ],
+      "called_by": [
+        "CMGT_WorkflowPath_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed12-0330-8000-9d27-011c48011c48_3499492",
+      "name": "CMGT_QE_RETURN_TYPES",
+      "type": "Expression Rule",
+      "description": "All available query entity return types, used by rule `CMGT_UTIL_QueryEntity`",
+      "parameters": [],
+      "calls": [
+        "CMGT_ENUM_QE_RETURN_TYPE_AGGREGATION",
+        "CMGT_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "CMGT_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "CMGT_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "CMGT_ENUM_QE_RETURN_TYPE_TOTAL_COUNT"
+      ],
+      "called_by": [
+        "CMGT_UTIL_QueryEntity"
+      ]
+    },
+    {
+      "uuid": "_a-0000e98b-cfe0-8000-9ba5-011c48011c48_19509",
+      "name": "CMGT_QR_GetCase",
+      "type": "Expression Rule",
+      "description": "Queries the CMGT_Case record",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_WFL_Case_GenerateWorkflowPathAndMapping_Logic"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_29411",
+      "name": "CMGT_QR_GetTask",
+      "type": "Expression Rule",
+      "description": "Queries the CMGT_Task record",
+      "parameters": [],
+      "calls": [
+        "CMGT_Task",
+        "CMGT_UTIL_QueryRecord",
+        "CMGT_WFL_CASE_TYPE_TASK_INTENTION_CODE_WORKFLOW"
+      ],
+      "called_by": [
+        "CMGT_Case_ConstructWorkflowPathWithMappings_Logic",
+        "CMGT_Task",
+        "CMGT_WFL_Case_GenerateWorkflowPathAndMapping_Logic",
+        "CMGT_WorkflowPathMapping_GetDependentTasks_Reducer",
+        "CMGT_WorkflowPathMapping_ReturnWorkflowPathMappingsForGivenPath",
+        "CMGT_WorkflowPath_ReturnWorkflowPathForTasks"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed12-0330-8000-9d27-011c48011c48_3500657",
+      "name": "CMGT_UTIL_ChooseWhereContainsHelper",
+      "type": "Expression Rule",
+      "description": "Helps when combining choose() and wherecontains(), returns 1 if no match found, or else returns the index + 1",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_ReplaceNull",
+        "CMGT_UTIL_WhereContains"
+      ],
+      "called_by": [
+        "CMGT_UTIL_QueryEntity"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed12-0330-8000-9d27-011c48011c48_3500538",
+      "name": "CMGT_UTIL_DisplayValue",
+      "type": "Expression Rule",
+      "description": "Executes displayValue, but allows setting the default to either the first or last value of the replacement list, or a custom value",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_UTIL_QueryEntity"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9ca-3659-8000-9bb8-011c48011c48_145917",
+      "name": "CMGT_UTIL_Distinct",
+      "type": "Expression Rule",
+      "description": "Returns the distinct values from a list",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_WorkflowPathMapping_GetDependentTasks_Reducer"
+      ]
+    },
+    {
+      "uuid": "af326a29-a1c8-4399-a28d-996f85819d9e",
+      "name": "CMGT_UTIL_Filter",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case"
+      ],
+      "called_by": [
+        "CMGT_Case_ConstructWorkflowPathWithMappings_Logic",
+        "CMGT_WFL_Case_GenerateWorkflowPathAndMapping_Logic",
+        "CMGT_WorkflowPathMapping_ConstructPathMappingForExistingPath",
+        "CMGT_WorkflowPathMapping_GetDependentTasks_Reducer",
+        "CMGT_WorkflowPath_ReturnWorkflowPathForTasks"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_25890",
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_Case_ConstructWorkflowPathWithMappings_Logic",
+        "CMGT_UTIL_IsNotBlank",
+        "CMGT_UTIL_QueryEntity",
+        "CMGT_UTIL_ReplaceNull",
+        "CMGT_UTIL_SetRecordFields",
+        "CMGT_UTIL_WhereContains",
+        "CMGT_WorkflowPathMapping_ConstructPathMappingForExistingPath",
+        "CMGT_WorkflowPathMapping_GetDependentTasks_Reducer",
+        "CMGT_WorkflowPath_ReturnWorkflowPathForTasks",
+        "CMGT_zInternal_QueryEntity_DetermineSort"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9d3-70bf-8000-9bbd-011c48011c48_180568",
+      "name": "CMGT_UTIL_IsNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around CMGT_UTIL_IsBlank",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_IsBlank"
+      ],
+      "called_by": [
+        "CMGT_Case_ConstructWorkflowPathWithMappings_Logic",
+        "CMGT_QE_GetWorkflowPathMapping",
+        "CMGT_Task",
+        "CMGT_UTIL_QueryEntity",
+        "CMGT_UTIL_cast",
+        "CMGT_WFL_Case_GenerateWorkflowPathAndMapping_Logic",
+        "CMGT_WorkflowPathMapping_ReturnWorkflowPathMappingsForGivenPath"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed12-0330-8000-9d27-011c48011c48_3499484",
+      "name": "CMGT_UTIL_QueryEntity",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "CMGT_ENUM_QE_RETURN_TYPE_AGGREGATION",
+        "CMGT_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "CMGT_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "CMGT_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "CMGT_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+        "CMGT_INT_QUERY_MAX_BATCH_SIZE",
+        "CMGT_QE_RETURN_TYPES",
+        "CMGT_UTIL_ChooseWhereContainsHelper",
+        "CMGT_UTIL_DisplayValue",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_IsNotBlank",
+        "CMGT_UTIL_ReplaceNull",
+        "CMGT_UTIL_ReturnArrayTypeNumber",
+        "CMGT_UTIL_ReturnCdtFields",
+        "CMGT_UTIL_cast",
+        "CMGT_zInternal_QueryEntity_DetermineSort"
+      ],
+      "called_by": [
+        "CMGT_QE_GetWorkflowPath",
+        "CMGT_QE_GetWorkflowPathMapping",
+        "CMGT_WFL_QE_GetCaseTypeTaskWorkflowPath"
+      ]
+    },
+    {
+      "uuid": "_a-0000e98b-cfe0-8000-9ba5-011c48011c48_22352",
+      "name": "CMGT_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "description": "Enhanced wrapper rule around a!queryRecord()",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case"
+      ],
+      "called_by": [
+        "CMGT_QR_GetCase",
+        "CMGT_QR_GetTask",
+        "CMGT_WFL_QR_GetCaseTypeWorkflowTask"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9d3-70bf-8000-9bbd-011c48011c48_180481",
+      "name": "CMGT_UTIL_RejectBlank",
+      "type": "Expression Rule",
+      "description": "Rule to removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_Case_ConstructWorkflowPathWithMappings_Logic",
+        "CMGT_UTIL_SetRecordFields",
+        "CMGT_WFL_Case_GenerateWorkflowPathAndMapping_Logic",
+        "CMGT_WorkflowPathMapping_ConstructPathMappingForExistingPath",
+        "CMGT_WorkflowPath_ReturnWorkflowPathForTasks"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed12-0330-8000-9d27-011c48011c48_3500546",
+      "name": "CMGT_UTIL_ReplaceNull",
+      "type": "Expression Rule",
+      "description": "Returns nullableValue only if it is not null. Else returns replacementValue.",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_IsBlank"
+      ],
+      "called_by": [
+        "CMGT_UTIL_ChooseWhereContainsHelper",
+        "CMGT_UTIL_QueryEntity"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed12-0330-8000-9d27-011c48011c48_3500695",
+      "name": "CMGT_UTIL_ReturnArrayTypeNumber",
+      "type": "Expression Rule",
+      "description": "Returns the array type number from the input type. If type number being passed is already that of a array, returns the same number.",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_cast"
+      ],
+      "called_by": [
+        "CMGT_UTIL_QueryEntity"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed12-0330-8000-9d27-011c48011c48_3500589",
+      "name": "CMGT_UTIL_ReturnCdtFields",
+      "type": "Expression Rule",
+      "description": "Returns an array of a CDTs fields. Note that this only works on Appian CDTs, not Dictionary or List of Variant",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_returnSingleTypeObject",
+        "CMGT_zINTERNAL_ReturnCdtFields_Handler",
+        "CMGT_zINTERNAL_ReturnCdtFields_PrimitiveTypeCheckHandler"
+      ],
+      "called_by": [
+        "CMGT_UTIL_QueryEntity",
+        "CMGT_zInternal_QueryEntity_DetermineSort"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_33778",
+      "name": "CMGT_UTIL_SetRecordFields",
+      "type": "Expression Rule",
+      "description": "Runs a bulk update on a record object, setting new values for its fields",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_RejectBlank"
+      ],
+      "called_by": [
+        "CMGT_WorkflowPathMapping_SetMetaData",
+        "CMGT_WorkflowPath_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed12-0330-8000-9d27-011c48011c48_3500627",
+      "name": "CMGT_UTIL_TypeCompare",
+      "type": "Expression Rule",
+      "description": "Returns true if the two input types match",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_UTIL_WhereContains",
+        "CMGT_zINTERNAL_ReturnCdtFields_PrimitiveTypeCheckHandler"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed12-0330-8000-9d27-011c48011c48_3500665",
+      "name": "CMGT_UTIL_WhereContains",
+      "type": "Expression Rule",
+      "description": "Enhanced wherecontains() which avoids type-casting issues and properly handles for document and group types",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_TypeCompare"
+      ],
+      "called_by": [
+        "CMGT_UTIL_ChooseWhereContainsHelper"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9d3-70bf-8000-9bbd-011c48011c48_180552",
+      "name": "CMGT_UTIL_cast",
+      "type": "Expression Rule",
+      "description": "Casts a variable to the type of either the input `type`, or the typeof of the input `typeof`, and properly handles for null inputs",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_IsNotBlank",
+        "CMGT_UTIL_checkIfSingleType",
+        "CMGT_UTIL_returnTypeNumber"
+      ],
+      "called_by": [
+        "CMGT_UTIL_QueryEntity",
+        "CMGT_UTIL_ReturnArrayTypeNumber"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9d3-70bf-8000-9bbd-011c48011c48_180583",
+      "name": "CMGT_UTIL_checkIfSingleType",
+      "type": "Expression Rule",
+      "description": "Returns true if the `type` or `typeOf` inputs represent a singular, non-array type",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_returnSingleTypeObject",
+        "CMGT_UTIL_returnTypeNumber"
+      ],
+      "called_by": [
+        "CMGT_UTIL_cast"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9d3-70bf-8000-9bbd-011c48011c48_180598",
+      "name": "CMGT_UTIL_returnSingleTypeObject",
+      "type": "Expression Rule",
+      "description": "Takes in either an array type or a primitive type and returns the singular type object, works for CDTs or primitive types",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_UTIL_ReturnCdtFields",
+        "CMGT_UTIL_checkIfSingleType",
+        "CMGT_zINTERNAL_ReturnCdtFields_Handler"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9d3-70bf-8000-9bbd-011c48011c48_180560",
+      "name": "CMGT_UTIL_returnTypeNumber",
+      "type": "Expression Rule",
+      "description": "Returns the typeNumber of either `type` or `typeOf`",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_UTIL_cast",
+        "CMGT_UTIL_checkIfSingleType"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed24-7935-8000-9d2d-011c48011c48_3534834",
+      "name": "CMGT_WFL_Case_GenerateWorkflowPathAndMapping_Logic",
+      "type": "Expression Rule",
+      "description": "Generate workflow path and mapping for case creation from wfl",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_ConditionSet",
+        "CMGT_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "CMGT_QR_GetCase",
+        "CMGT_QR_GetTask",
+        "CMGT_Task",
+        "CMGT_TaskResponseOption",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_IsNotBlank",
+        "CMGT_UTIL_RejectBlank",
+        "CMGT_WFL_CFG_CaseTypeWorkflowTask",
+        "CMGT_WFL_QE_GetCaseTypeTaskWorkflowPath",
+        "CMGT_WFL_QR_GetCaseTypeWorkflowTask"
+      ],
+      "called_by": [
+        "CMGT_WorkflowPath_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed24-7935-8000-9d2d-011c48011c48_3532252",
+      "name": "CMGT_WFL_QE_GetCaseTypeTaskWorkflowPath",
+      "type": "Expression Rule",
+      "description": "QE to get the Case Type task workflow paths",
+      "parameters": [],
+      "calls": [
+        "CMGT_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "CMGT_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "CMGT_INT_BATCH_SIZE_MEDIUM",
+        "CMGT_UTIL_QueryEntity",
+        "CMGT_WFL_ENT_CASE_TYPE_TASK_WORKFLOW_PATH"
+      ],
+      "called_by": [
+        "CMGT_WFL_Case_GenerateWorkflowPathAndMapping_Logic"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb60-4595-8000-9c6e-011c48011c48_1742745",
+      "name": "CMGT_WFL_QR_GetCaseTypeWorkflowTask",
+      "type": "Expression Rule",
+      "description": "Queries the CMGT_WFL_CFG_CaseTypeWorkflowTask record",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_QueryRecord",
+        "CMGT_WFL_CASE_TYPE_TASK_INTENTION_CODE_WORKFLOW",
+        "CMGT_WFL_CFG_CaseTypeWorkflowTask",
+        "CMGT_WFL_CFG_CaseTypeWorkflowTaskResponseOption"
+      ],
+      "called_by": [
+        "CMGT_WFL_CFG_CaseTypeWorkflowTask",
+        "CMGT_WFL_Case_GenerateWorkflowPathAndMapping_Logic"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed20-1ca4-8000-9d2b-011c48011c48_3518067",
+      "name": "CMGT_WorkflowPathMapping_ConstructPathMappingForExistingPath",
+      "type": "Expression Rule",
+      "description": "Rule to return path mapping for the existing paths",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_RejectBlank"
+      ],
+      "called_by": [
+        "CMGT_Case_ConstructWorkflowPathWithMappings_Logic"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed1b-3d9b-8000-9d29-011c48011c48_3503111",
+      "name": "CMGT_WorkflowPathMapping_GetDependentTasks_Reducer",
+      "type": "Expression Rule",
+      "description": "Based on input of current task instance uuid this rule returns all possible dependent tasks.",
+      "parameters": [],
+      "calls": [
+        "CMGT_QR_GetTask",
+        "CMGT_Task",
+        "CMGT_TaskBranch",
+        "CMGT_UTIL_Distinct",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_WFL_CASE_TYPE_TASK_INTENTION_CODE_WORKFLOW"
+      ],
+      "called_by": [
+        "CMGT_WorkflowPathMapping_ReturnWorkflowPathMappingsForGivenPath"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed1b-3d9b-8000-9d29-011c48011c48_3503092",
+      "name": "CMGT_WorkflowPathMapping_ReturnWorkflowPathMappingsForGivenPath",
+      "type": "Expression Rule",
+      "description": "Return all path mappings for decision/automation task in case",
+      "parameters": [],
+      "calls": [
+        "CMGT_QR_GetTask",
+        "CMGT_Task",
+        "CMGT_TaskBranch",
+        "CMGT_UTIL_IsNotBlank",
+        "CMGT_WFL_CASE_TYPE_TASK_INTENTION_CODE_WORKFLOW",
+        "CMGT_WorkflowPathMapping_GetDependentTasks_Reducer"
+      ],
+      "called_by": [
+        "CMGT_WorkflowPath_ReturnWorkflowPathForTasks"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed24-7935-8000-9d2d-011c48011c48_3527657",
+      "name": "CMGT_WorkflowPathMapping_SetMetaData",
+      "type": "Expression Rule",
+      "description": "Set metadata for CMGT_WORKFLOW_PATH_MAPPING",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_SetRecordFields"
+      ],
+      "called_by": [
+        "CMGT_WorkflowPath_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed1b-3d9b-8000-9d29-011c48011c48_3503101",
+      "name": "CMGT_WorkflowPath_ReturnWorkflowPathForTasks",
+      "type": "Expression Rule",
+      "description": "This rule returns the workflow path for given tasks",
+      "parameters": [],
+      "calls": [
+        "CMGT_CFG_TXT_ACT_WORKFLOW_ROUTING",
+        "CMGT_ConditionSet",
+        "CMGT_QR_GetTask",
+        "CMGT_REFID_TASK_BEHAVIOR_TYPE_AUTOMATION",
+        "CMGT_REFID_TASK_BEHAVIOR_TYPE_DECISION",
+        "CMGT_Task",
+        "CMGT_TaskBranch",
+        "CMGT_TaskResponseOption",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_RejectBlank",
+        "CMGT_WFL_CASE_TYPE_TASK_INTENTION_CODE_WORKFLOW",
+        "CMGT_WorkflowPathMapping_ReturnWorkflowPathMappingsForGivenPath"
+      ],
+      "called_by": [
+        "CMGT_Case_ConstructWorkflowPathWithMappings_Logic"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed24-7935-8000-9d2d-011c48011c48_3526562",
+      "name": "CMGT_WorkflowPath_SetMetaData",
+      "type": "Expression Rule",
+      "description": "Set metadata for CMGT_WorkflowPath a",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_SetRecordFields",
+        "CMGT_WorkflowPathMapping_SetMetaData"
+      ],
+      "called_by": [
+        "CMGT_WorkflowPath_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed12-0330-8000-9d27-011c48011c48_3500604",
+      "name": "CMGT_zINTERNAL_ReturnCdtFields_Handler",
+      "type": "Expression Rule",
+      "description": "Used by rule `CMGT_UTIL_returnCdtFields`",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_returnSingleTypeObject"
+      ],
+      "called_by": [
+        "CMGT_UTIL_ReturnCdtFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed12-0330-8000-9d27-011c48011c48_3500619",
+      "name": "CMGT_zINTERNAL_ReturnCdtFields_PrimitiveTypeCheckHandler",
+      "type": "Expression Rule",
+      "description": "Used by rule `CMGT_UTIL_returnCdtFields`",
+      "parameters": [],
+      "calls": [
+        "CMGT_CONS_PRIMITIVE_TYPE_ARRAY",
+        "CMGT_UTIL_TypeCompare"
+      ],
+      "called_by": [
+        "CMGT_UTIL_ReturnCdtFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed12-0330-8000-9d27-011c48011c48_3500561",
+      "name": "CMGT_zInternal_QueryEntity_DetermineSort",
+      "type": "Expression Rule",
+      "description": "Used by rule `CMGT_UTIL_QueryEntity `",
+      "parameters": [],
+      "calls": [
+        "CMGT_ENUM_QE_RETURN_TYPE_AGGREGATION",
+        "CMGT_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "CMGT_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "CMGT_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "CMGT_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_ReturnCdtFields"
+      ],
+      "called_by": [
+        "CMGT_UTIL_QueryEntity"
+      ]
+    },
+    {
+      "uuid": "0007ed25-f47f-8000-1c78-7f0000014e7a",
+      "name": "CMGT_WorkflowPath_CreateUpdate",
+      "type": "Process Model",
+      "description": "Creates or updates the path and mappings of decision tasks and automations in the modify workflow",
+      "calls": [
+        "CMGT_Case_ConstructWorkflowPathWithMappings_Logic",
+        "CMGT_ENT_WORKFLOW_PATH",
+        "CMGT_ENT_WORKFLOW_PATH_MAPPING",
+        "CMGT_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "CMGT_QE_GetWorkflowPath",
+        "CMGT_QE_GetWorkflowPathMapping",
+        "CMGT_WFL_Case_GenerateWorkflowPathAndMapping_Logic",
+        "CMGT_WorkflowPath_SetMetaData"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "d81cdd0e-c54d-4b8e-beec-b7ae37fefe7f",
+      "name": "CMGT_Case",
+      "type": "Record Type",
+      "description": "MODIFIED FOR 2.0 KB , EML MODULE RELEASE , SMART SEARCH - Cases.",
+      "actions": [
+        "createCase",
+        "bulkUpdateCases",
+        "updateCase",
+        "updateProperty",
+        "addEntityToCase",
+        "updateRelatedCases",
+        "manageAssignee",
+        "manageWatcher",
+        "addTags",
+        "uploadDocuments",
+        "addComment",
+        "modifyWorkflow",
+        "updateContact",
+        "composeEmail"
+      ],
+      "views": [
+        "#\"urn:appian:translation-string:v1:a3a3c015-e0c6-4bd2-b78a-aaf392495bdd\"",
+        "#\"urn:appian:translation-string:v1:2f4f2cde-9986-47cb-ac2a-1ecfeeddc693\"",
+        "#\"urn:appian:translation-string:v1:455edb96-9d9a-4038-b43e-d10aa9a3a811\"",
+        "#\"urn:appian:translation-string:v1:6f32eac5-d5de-4502-9a1f-4d3184aac8d2\"",
+        "#\"urn:appian:translation-string:v1:86481b57-9608-4720-9198-578bfd8b8385\"",
+        "#\"urn:appian:translation-string:v1:297cf25d-abb6-4d91-b9ed-ab0139f56398\"",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_QR_GetCase",
+        "CMGT_Task"
+      ],
+      "called_by": [
+        "CMGT_QR_GetCase",
+        "CMGT_Task",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_QueryRecord",
+        "CMGT_UTIL_SetRecordFields",
+        "CMGT_WFL_Case_GenerateWorkflowPathAndMapping_Logic"
+      ]
+    },
+    {
+      "uuid": "3bc7d120-7da6-4b42-a9c7-945967e6000b",
+      "name": "CMGT_ConditionSet",
+      "type": "Record Type",
+      "description": "Record Type for CMGT_CONDITION_SET table",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Task",
+        "CMGT_TaskBranch"
+      ],
+      "called_by": [
+        "CMGT_Task",
+        "CMGT_WFL_Case_GenerateWorkflowPathAndMapping_Logic",
+        "CMGT_WorkflowPath_ReturnWorkflowPathForTasks"
+      ]
+    },
+    {
+      "uuid": "ee5aa46d-0228-430f-a794-1134a11fbcc0",
+      "name": "CMGT_Task",
+      "type": "Record Type",
+      "description": "MODIFIED FOR 2.0 SMART SEARCH RELEASE - Tasks",
+      "actions": [
+        "manageAssignee",
+        "open",
+        "reopen",
+        "addComment",
+        "updateDueDate",
+        "complete",
+        "markNotNeeded",
+        "viewWorkflow",
+        "updateDescription",
+        "updateStatus",
+        "updateTaskName",
+        "updateEmail"
+      ],
+      "views": [
+        "#\"urn:appian:translation-string:v1:a3a3c015-e0c6-4bd2-b78a-aaf392495bdd\"",
+        "#\"urn:appian:translation-string:v1:6f32eac5-d5de-4502-9a1f-4d3184aac8d2\"",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_ConditionSet",
+        "CMGT_QR_GetTask",
+        "CMGT_TaskBranch",
+        "CMGT_TaskResponseOption",
+        "CMGT_UTIL_IsNotBlank"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_Case_ConstructWorkflowPathWithMappings_Logic",
+        "CMGT_ConditionSet",
+        "CMGT_QR_GetTask",
+        "CMGT_TaskBranch",
+        "CMGT_TaskResponseOption",
+        "CMGT_WFL_Case_GenerateWorkflowPathAndMapping_Logic",
+        "CMGT_WorkflowPathMapping_GetDependentTasks_Reducer",
+        "CMGT_WorkflowPathMapping_ReturnWorkflowPathMappingsForGivenPath",
+        "CMGT_WorkflowPath_ReturnWorkflowPathForTasks"
+      ]
+    },
+    {
+      "uuid": "f00f5631-1637-49bc-8c94-9ea3217339d1",
+      "name": "CMGT_TaskBranch",
+      "type": "Record Type",
+      "description": "Task Branches",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Task",
+        "CMGT_TaskResponseOption"
+      ],
+      "called_by": [
+        "CMGT_Case_ConstructWorkflowPathWithMappings_Logic",
+        "CMGT_ConditionSet",
+        "CMGT_Task",
+        "CMGT_WorkflowPathMapping_GetDependentTasks_Reducer",
+        "CMGT_WorkflowPathMapping_ReturnWorkflowPathMappingsForGivenPath",
+        "CMGT_WorkflowPath_ReturnWorkflowPathForTasks"
+      ]
+    },
+    {
+      "uuid": "edd304df-4737-44ce-8168-861b39cb44c4",
+      "name": "CMGT_TaskResponseOption",
+      "type": "Record Type",
+      "description": "Task Response Options",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Task"
+      ],
+      "called_by": [
+        "CMGT_Task",
+        "CMGT_TaskBranch",
+        "CMGT_WFL_Case_GenerateWorkflowPathAndMapping_Logic",
+        "CMGT_WorkflowPath_ReturnWorkflowPathForTasks"
+      ]
+    },
+    {
+      "uuid": "d6ebee27-6e86-47e3-a9b8-71fdd0348854",
+      "name": "CMGT_WFL_CFG_CaseTypeWorkflowTask",
+      "type": "Record Type",
+      "description": "Case Type Workflow Tasks",
+      "actions": [
+        "createAutomationRule",
+        "inactivate",
+        "updateAutomationRule"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_WFL_CFG_CaseTypeWorkflowTaskResponseOption",
+        "CMGT_WFL_QR_GetCaseTypeWorkflowTask"
+      ],
+      "called_by": [
+        "CMGT_WFL_CFG_CaseTypeWorkflowTaskResponseOption",
+        "CMGT_WFL_Case_GenerateWorkflowPathAndMapping_Logic",
+        "CMGT_WFL_QR_GetCaseTypeWorkflowTask"
+      ]
+    },
+    {
+      "uuid": "13e00053-06c2-4501-9a78-0a3f0f888851",
+      "name": "CMGT_WFL_CFG_CaseTypeWorkflowTaskResponseOption",
+      "type": "Record Type",
+      "description": "Case type workflow task response options",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_WFL_CFG_CaseTypeWorkflowTask"
+      ],
+      "called_by": [
+        "CMGT_WFL_CFG_CaseTypeWorkflowTask",
+        "CMGT_WFL_QR_GetCaseTypeWorkflowTask"
+      ]
+    }
+  ]
+}

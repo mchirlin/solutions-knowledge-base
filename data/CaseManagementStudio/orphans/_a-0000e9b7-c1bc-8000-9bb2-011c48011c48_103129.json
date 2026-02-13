@@ -1,0 +1,90 @@
+{
+  "uuid": "_a-0000e9b7-c1bc-8000-9bb2-011c48011c48_103129",
+  "name": "CMGT_PortalPage_Home",
+  "type": "Interface",
+  "description": "Portal interface page for home",
+  "sail_code": "a!localVariables(\n  local!portalConfig: rule!CMGT_INT_GET_PortalConfig(locale: \"en_US\"),\n  local!brandingMap: local!portalConfig.result.body.brandingMap,\n  local!stampScheme: touniformstring(\n    split(local!brandingMap.StampSchemeA, \",\")\n  ),\n  local!portalUrl: local!portalConfig.result.body.urlInfo.portalPath,\n  local!portalPages: {\n    a!map(\n      pageType: \"SubmitCase\",\n      label: #\"urn:appian:translation-string:v1:dccad5ee-f64c-4507-9f7a-0a57b8155d3a\",\n      link: local!portalUrl & \"/page/\" & cons!CMGT_PORTAL_TXT_SUBMIT_A_CASE_URL_STUB,\n      icon: \"clipboard-list\",\n      backgroundColor: local!stampScheme[1],\n      description: #\"urn:appian:translation-string:v1:b68420b6-9ec8-4f66-a7ea-0a916d8e9ef0\"\n    ),\n    a!map(\n      pageType: \"CheckStatus\",\n      label: #\"urn:appian:translation-string:v1:5d0874b1-27e8-40bd-ada7-f9b09e8cd0be\",\n      link: local!portalUrl & \"/page/\" & cons!CMGT_PORTAL_TXT_CHECK_STATUS_URL_STUB,\n      icon: \"tasks-alt\",\n      backgroundColor: local!stampScheme[2],\n      description: #\"urn:appian:translation-string:v1:f9123fdf-add9-4621-91ed-cb5fb40964b8\"\n    ),\n    a!map(\n      pageType: \"SignUp\",\n      label: #\"urn:appian:translation-string:v1:624d9976-905d-4e2a-8b27-39a4749a5f53\",\n      link: local!portalUrl & \"/page/\" & cons!CMGT_SELF_TXT_SIGN_UP_PORTAL_URL_STUB,\n      icon: \"user-plus\",\n      backgroundColor: local!stampScheme[3],\n      description: #\"urn:appian:translation-string:v1:0c575c22-89c1-4d0a-8c5d-0b86886a9663\"\n    ),\n    /*Any new pages should be added here*/\n\n  },\n  rule!CMGT_PortalInterface_HeaderLayout(\n    title: #\"urn:appian:translation-string:v1:e40fc4b2-4a46-46bb-aa7d-d0c40de42455\",\n    contents: {\n      #\"SYSTEM_SYSRULES_headingField\"(\n        text: #\"urn:appian:translation-string:v1:05d30528-dd7b-41f9-916a-3df09634ff66\",\n        color: local!brandingMap.StandardTextColor,\n        align: \"CENTER\",\n        size: local!brandingMap.H2Size,\n        fontWeight: local!brandingMap.H2Weight,\n        marginAbove: \"LESS\",\n        marginBelow: \"LESS\"\n      ),\n      #\"SYSTEM_SYSRULES_columnsLayout\"(\n        columns: {\n          #\"SYSTEM_SYSRULES_columnLayout\"(width: \"EXTRA_NARROW\"),\n          #\"SYSTEM_SYSRULES_columnLayout\"(\n            contents: #\"SYSTEM_SYSRULES_cardGroupLayout\"(\n              cards: #\"SYSTEM_SYSRULES_forEach\"(\n                items: local!portalPages,\n                expression: #\"SYSTEM_SYSRULES_cardLayout\"(\n                  contents: {\n                    #\"SYSTEM_SYSRULES_stampField\"(\n                      icon: fv!item.icon,\n                      backgroundColor: fv!item.backgroundColor,\n                      shape: local!brandingMap.StandardStampShape,\n                      size: \"TINY\",\n                      contentColor: local!brandingMap.WhiteColor\n                    ),\n                    #\"SYSTEM_SYSRULES_headingField\"(\n                      text: fv!item.label,\n                      color: local!brandingMap.StandardTextColor,\n                      size: local!brandingMap.H2Size,\n                      fontWeight: local!brandingMap.H2Weight,\n                      marginBelow: \"EVEN_LESS\"\n                    ),\n                    #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                      label: rule!CMGT_UTIL_ReturnLabelGivenAutomationTestingSwitch(testingLabel: \"Description\"),\n                      labelPosition: \"COLLAPSED\",\n                      value: {\n                        #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                          text: fv!item.description,\n                          color: local!brandingMap.TertiaryTextColor,\n                          size: \"STANDARD\"\n                        )\n                      }\n                    )\n                  },\n                  padding: \"STANDARD\",\n                  shape: local!brandingMap.CardShape,\n                  /* Link to be enabled after individual screens are built */\n                  link: #\"SYSTEM_SYSRULES_safeLink\"(\n                    label: rule!CMGT_UTIL_ReturnLabelGivenAutomationTestingSwitch(testingLabel: \"Link\" & fv!index),\n                    uri: fv!item.link,\n                    openLinkIn: \"SAME_TAB\"\n                  ),\n                  showBorder: local!brandingMap.CardShowBorder,\n                  showShadow: local!brandingMap.CardShowShadow,\n                  style: local!brandingMap.CardBackgroundColor\n                )\n              )\n            )\n          ),\n          #\"SYSTEM_SYSRULES_columnLayout\"(width: \"EXTRA_NARROW\")\n        }\n      ),\n      #\"SYSTEM_SYSRULES_columnsLayout\"(\n        columns: {\n          #\"SYSTEM_SYSRULES_columnLayout\"(width: \"EXTRA_NARROW\"),\n          #\"SYSTEM_SYSRULES_columnLayout\"(\n            contents: {\n              rule!CMGT_PortalPage_FAQ(brandingMap: local!brandingMap)\n            }\n          ),\n          #\"SYSTEM_SYSRULES_columnLayout\"(width: \"EXTRA_NARROW\")\n        }\n      )\n    },\n    description: #\"urn:appian:translation-string:v1:3e338114-2801-4c76-93c1-c4da056ad02c\",\n    brandingMap: local!brandingMap,\n    showHeader: true(),\n    headerImage: local!brandingMap.HomeHeaderImage\n  )\n)",
+  "calls": [
+    {
+      "name": "CMGT_INT_GET_PortalConfig",
+      "type": "Integration",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_PortalInterface_HeaderLayout",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_ReturnLabelGivenAutomationTestingSwitch",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_PortalPage_FAQ",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_PORTAL_TXT_SUBMIT_A_CASE_URL_STUB",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_PORTAL_TXT_CHECK_STATUS_URL_STUB",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_SELF_TXT_SIGN_UP_PORTAL_URL_STUB",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

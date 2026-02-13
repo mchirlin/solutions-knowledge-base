@@ -1,0 +1,921 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "CMGT_RelatedEntityMap_Create",
+    "parent_name": null,
+    "total_objects": 44
+  },
+  "entry_point": {
+    "complexity_score": 16.0,
+    "total_nodes": 9,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "CMGT_RelatedEntityMap_Create",
+      "complexity_score": 16.0,
+      "total_nodes": 9,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Filter out existing relationships"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Set Meta Data",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write Related Entity Maps"
+          ]
+        },
+        {
+          "name": "Generate Permutations",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Set Meta Data"
+          ]
+        },
+        {
+          "name": "Set Cases Document Security",
+          "type": "SUBPROCESS",
+          "next": [
+            "End Node"
+          ],
+          "subprocess": "CMGT_SUB_SetCaseFolderSecurity"
+        },
+        {
+          "name": "Write Related Entity Maps",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write Entity Event History"
+          ]
+        },
+        {
+          "name": "Write Entity Event History",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Set Cases Document Security"
+          ]
+        },
+        {
+          "name": "Related Entity Maps?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node",
+            "Generate Permutations"
+          ]
+        },
+        {
+          "name": "Filter out existing relationships",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Related Entity Maps?"
+          ]
+        }
+      ]
+    },
+    "subprocesses": [
+      {
+        "name": "CMGT_SUB_SetCaseFolderSecurity",
+        "complexity_score": 10.0,
+        "total_nodes": 6,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Get Cases Details"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Changes to make?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Set Folder Security",
+              "End Node"
+            ]
+          },
+          {
+            "name": "Determine Folder Security Changes",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Changes to make?"
+            ]
+          },
+          {
+            "name": "Set Folder Security",
+            "type": "com.appiancorp.ps.plugins.contenttools.SetFolderSecurity",
+            "next": [
+              "End Node"
+            ]
+          },
+          {
+            "name": "Get Cases Details",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Determine Folder Security Changes"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e9ae-873e-8000-9baf-011c48011c48_101319",
+      "name": "CMGT_GRP_INTERNAL_USERS",
+      "type": "Constant",
+      "description": "Group: Internal Users",
+      "value": "CMGT Internal Users",
+      "value_type": "http://www.appian.com/ae/types/2009:Group",
+      "calls": [],
+      "called_by": [
+        "CMGT_SUB_SetCaseFolderSecurity_Logic"
+      ]
+    },
+    {
+      "uuid": "_a-0000eaab-5303-8000-9c24-011c48011c48_994744",
+      "name": "CMGT_GRP_SERVICE_ACCOUNTS",
+      "type": "Constant",
+      "description": "Points to the service account group",
+      "value": "CMGT Service Accounts",
+      "value_type": "http://www.appian.com/ae/types/2009:Group",
+      "calls": [],
+      "called_by": [
+        "CMGT_formatEventInitiator"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9fd-9441-8000-9bdc-011c48011c48_313266",
+      "name": "CMGT_REFID_EVENT_TYPE_ENTITY_ADD_RELATED_ENTITY",
+      "type": "Constant",
+      "description": "4 - Added Related Entity",
+      "value": "4",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_RelatedEntityMap_SetEvents"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9fd-9441-8000-9bdc-011c48011c48_313257",
+      "name": "CMGT_REFID_EVENT_TYPE_ENTITY_REMOVE_RELATED_ENTITY",
+      "type": "Constant",
+      "description": "5 - Removed Related Entity",
+      "value": "5",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_RelatedEntityMap_SetEvents"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea95-307e-8000-9c1a-011c48011c48_925412",
+      "name": "CMGT_TXT_AUTOMATED_SYSTEM",
+      "type": "Constant",
+      "description": "Value: Automated System",
+      "value": "Automated System",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_formatEventInitiator"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9e5-e5dd-8000-9bc7-011c48011c48_232739",
+      "name": "CMGT_TXT_CASE_SUB_FOLDERS",
+      "type": "Constant",
+      "description": "Returns the list of sub-folders for a case. 1 - PRIVATE, 2 - PUBLIC.",
+      "value": "\n                ",
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "CMGT_SUB_SetCaseFolderSecurity_Logic"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9fd-9441-8000-9bdc-011c48011c48_312992",
+      "name": "CMGT_EntityEventHistory_Constructor",
+      "type": "Expression Rule",
+      "description": "Construct entity event history",
+      "parameters": [],
+      "calls": [
+        "CMGT_EventHistory_Entity",
+        "CMGT_formatEventInitiator"
+      ],
+      "called_by": [
+        "CMGT_RelatedEntityMap_SetEvents"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea26-2ced-8000-9bf1-011c48011c48_568470",
+      "name": "CMGT_PLUGIN_ReturnContentRoleMap",
+      "type": "Expression Rule",
+      "description": "Runs returncontentrolemap() of Content Tools plugin",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_SUB_SetCaseFolderSecurity_Logic"
+      ]
+    },
+    {
+      "uuid": "_a-0000e98b-cfe0-8000-9ba5-011c48011c48_19509",
+      "name": "CMGT_QR_GetCase",
+      "type": "Expression Rule",
+      "description": "Queries the CMGT_Case record",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_CaseEntityMap",
+        "CMGT_Role",
+        "CMGT_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_SUB_SetCaseFolderSecurity"
+      ]
+    },
+    {
+      "uuid": "_a-0000e98b-cfe0-8000-9ba5-011c48011c48_20922",
+      "name": "CMGT_QR_GetCaseEntityMap",
+      "type": "Expression Rule",
+      "description": "Queries the CMGT_CaseEntityMap record type",
+      "parameters": [],
+      "calls": [
+        "CMGT_CaseEntityMap",
+        "CMGT_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "CMGT_RelatedEntityMap_Create"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_25474",
+      "name": "CMGT_QR_GetRelatedEntityMap",
+      "type": "Expression Rule",
+      "description": "Queries the CMGT_RelatedEntityMap record",
+      "parameters": [],
+      "calls": [
+        "CMGT_RelatedEntityMap",
+        "CMGT_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "CMGT_RelatedEntityMap_GenerateRelationshipPermutations_Logic"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_24901",
+      "name": "CMGT_QR_GetRelationshipMapType",
+      "type": "Expression Rule",
+      "description": "Queries the CMGT_CFG_RelationshipMapType record",
+      "parameters": [],
+      "calls": [
+        "CMGT_CFG_RelationshipMapType",
+        "CMGT_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "CMGT_RelatedEntityMap_GenerateRelationshipPermutations_Logic"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_24762",
+      "name": "CMGT_QR_GetRole",
+      "type": "Expression Rule",
+      "description": "Queries the CMGT_CFG_CaseType record",
+      "parameters": [],
+      "calls": [
+        "CMGT_Role",
+        "CMGT_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_SUB_SetCaseFolderSecurity"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9ae-873e-8000-9baf-011c48011c48_97439",
+      "name": "CMGT_QR_GetUser",
+      "type": "Expression Rule",
+      "description": "Queries the User record",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "CMGT_formatEventInitiator"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_25724",
+      "name": "CMGT_RelatedEntityMap_GenerateRelationshipPermutations_Logic",
+      "type": "Expression Rule",
+      "description": "Generates the relationship permutations",
+      "parameters": [],
+      "calls": [
+        "CMGT_CFG_RelationshipMapType",
+        "CMGT_QR_GetRelatedEntityMap",
+        "CMGT_QR_GetRelationshipMapType",
+        "CMGT_RelatedEntityMap",
+        "CMGT_UTIL_Distinct",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_IsNotBlank"
+      ],
+      "called_by": [
+        "CMGT_RelatedEntityMap_Create"
+      ]
+    },
+    {
+      "uuid": "_a-0000eaba-1e20-8000-9c2a-011c48011c48_1039881",
+      "name": "CMGT_RelatedEntityMap_SetEvents",
+      "type": "Expression Rule",
+      "description": "Rule to construct all related entity map events",
+      "parameters": [],
+      "calls": [
+        "CMGT_EntityEventHistory_Constructor",
+        "CMGT_REFID_EVENT_TYPE_ENTITY_ADD_RELATED_ENTITY",
+        "CMGT_REFID_EVENT_TYPE_ENTITY_REMOVE_RELATED_ENTITY",
+        "CMGT_RelatedEntityMap"
+      ],
+      "called_by": [
+        "CMGT_RelatedEntityMap_Create"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_25707",
+      "name": "CMGT_RelatedEntityMap_SetMetaData",
+      "type": "Expression Rule",
+      "description": "Set meta data fields for CMGT_RelatedEntityMap",
+      "parameters": [],
+      "calls": [
+        "CMGT_RelatedEntityMap",
+        "CMGT_UTIL_SetRecordFields"
+      ],
+      "called_by": [
+        "CMGT_RelatedEntityMap_Create"
+      ]
+    },
+    {
+      "uuid": "_a-0000eaba-1e20-8000-9c2a-011c48011c48_1039920",
+      "name": "CMGT_RelatedEntityMap_WriteRecordsProperties",
+      "type": "Expression Rule",
+      "description": "Defines what relationships should be stripped before writing and what child FKs should be reattached after writing for: RelatedEntityMap",
+      "parameters": [],
+      "calls": [
+        "CMGT_RelatedEntityMap",
+        "CMGT_UTIL_DropNonWritableRelationshipsFromRecord",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ],
+      "called_by": [
+        "CMGT_RelatedEntityMap_Create"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9ef-12e0-8000-9bce-011c48011c48_258837",
+      "name": "CMGT_SUB_SetCaseFolderSecurity_Logic",
+      "type": "Expression Rule",
+      "description": "Does the logic that determines what changes to make to a case's folder structure",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_GRP_INTERNAL_USERS",
+        "CMGT_PLUGIN_ReturnContentRoleMap",
+        "CMGT_TXT_CASE_SUB_FOLDERS",
+        "CMGT_UTIL_GetSubFolderByType"
+      ],
+      "called_by": [
+        "CMGT_SUB_SetCaseFolderSecurity"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9ca-3659-8000-9bb8-011c48011c48_145917",
+      "name": "CMGT_UTIL_Distinct",
+      "type": "Expression Rule",
+      "description": "Returns the distinct values from a list",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_RelatedEntityMap_GenerateRelationshipPermutations_Logic"
+      ]
+    },
+    {
+      "uuid": "_a-0000eab0-e049-8000-9c27-011c48011c48_1011527",
+      "name": "CMGT_UTIL_DropNonWritableRelationshipsFromRecord",
+      "type": "Expression Rule",
+      "description": "The main rule to drop non-writeable relationships from a record before writing in the case the child record is considered changed, which would break the write",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_CaseEntityMap",
+        "CMGT_Milestone",
+        "CMGT_Task"
+      ],
+      "called_by": [
+        "CMGT_RelatedEntityMap_WriteRecordsProperties"
+      ]
+    },
+    {
+      "uuid": "af326a29-a1c8-4399-a28d-996f85819d9e",
+      "name": "CMGT_UTIL_Filter",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_Role"
+      ],
+      "called_by": [
+        "CMGT_RelatedEntityMap_Create",
+        "CMGT_RelatedEntityMap_GenerateRelationshipPermutations_Logic",
+        "CMGT_SUB_SetCaseFolderSecurity",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9e5-e5dd-8000-9bc7-011c48011c48_232566",
+      "name": "CMGT_UTIL_GetSubFolderByType",
+      "type": "Expression Rule",
+      "description": "Returns the sub-folder by its type, based on naming conventions. Searches for any child folder of the parentFolderId that contains the input folderType, and returns the parentFolderId if no child is found.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_SUB_SetCaseFolderSecurity_Logic"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_25890",
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_SUB_SetCaseFolderSecurity",
+        "CMGT_UTIL_IsNotBlank",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable",
+        "CMGT_UTIL_SetRecordFields",
+        "CMGT_formatEventInitiator"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9d3-70bf-8000-9bbd-011c48011c48_180568",
+      "name": "CMGT_UTIL_IsNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around CMGT_UTIL_IsBlank",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_IsBlank"
+      ],
+      "called_by": [
+        "CMGT_RelatedEntityMap_Create",
+        "CMGT_RelatedEntityMap_GenerateRelationshipPermutations_Logic",
+        "CMGT_Task"
+      ]
+    },
+    {
+      "uuid": "_a-0000eaa7-a5c0-8000-9c22-011c48011c48_973190",
+      "name": "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable",
+      "type": "Expression Rule",
+      "description": "The main rule to merge the ID-output of a write records nodes to the input process variable (including all child FKs). IMPORTANT NOTES in comments in the rule.",
+      "parameters": [],
+      "calls": [
+        "CMGT_CFG_CaseType",
+        "CMGT_Case",
+        "CMGT_Comment",
+        "CMGT_CommentUserTag",
+        "CMGT_Document",
+        "CMGT_Milestone",
+        "CMGT_Task",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_RemoveRecordRelationshipsWithSingleKey_Reducer",
+        "CMGT_UTIL_SetRecordFields"
+      ],
+      "called_by": [
+        "CMGT_RelatedEntityMap_WriteRecordsProperties"
+      ]
+    },
+    {
+      "uuid": "_a-0000e98b-cfe0-8000-9ba5-011c48011c48_22352",
+      "name": "CMGT_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "description": "Enhanced wrapper rule around a!queryRecord()",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case"
+      ],
+      "called_by": [
+        "CMGT_QR_GetCase",
+        "CMGT_QR_GetCaseEntityMap",
+        "CMGT_QR_GetRelatedEntityMap",
+        "CMGT_QR_GetRelationshipMapType",
+        "CMGT_QR_GetRole",
+        "CMGT_QR_GetUser"
+      ]
+    },
+    {
+      "uuid": "9248008e-2c2c-4eea-bb28-4a3c89838403",
+      "name": "CMGT_UTIL_RemoveRecordRelationshipsWithSingleKey_Reducer",
+      "type": "Expression Rule",
+      "description": null,
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_33778",
+      "name": "CMGT_UTIL_SetRecordFields",
+      "type": "Expression Rule",
+      "description": "Runs a bulk update on a record object, setting new values for its fields",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_UTIL_IsBlank"
+      ],
+      "called_by": [
+        "CMGT_RelatedEntityMap_SetMetaData",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "_a-0000eaab-5303-8000-9c24-011c48011c48_994738",
+      "name": "CMGT_formatEventInitiator",
+      "type": "Expression Rule",
+      "description": "if the initiator is a service account then save \"Automated System\" otherwise save the username",
+      "parameters": [],
+      "calls": [
+        "CMGT_GRP_SERVICE_ACCOUNTS",
+        "CMGT_QR_GetUser",
+        "CMGT_TXT_AUTOMATED_SYSTEM",
+        "CMGT_UTIL_IsBlank"
+      ],
+      "called_by": [
+        "CMGT_EntityEventHistory_Constructor"
+      ]
+    },
+    {
+      "uuid": "bbdef440-99fd-470f-b188-bcf11184a141",
+      "name": "CMGT_RelatedEntityMap_Create",
+      "type": "Process Model",
+      "description": "Create a new CMGT_RelatedEntityMap",
+      "calls": [
+        "CMGT_CaseEntityMap",
+        "CMGT_EventHistory_Entity",
+        "CMGT_QR_GetCaseEntityMap",
+        "CMGT_RelatedEntityMap",
+        "CMGT_RelatedEntityMap_GenerateRelationshipPermutations_Logic",
+        "CMGT_RelatedEntityMap_SetEvents",
+        "CMGT_RelatedEntityMap_SetMetaData",
+        "CMGT_RelatedEntityMap_WriteRecordsProperties",
+        "CMGT_SUB_SetCaseFolderSecurity",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_IsNotBlank"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "000be9f1-c02b-8000-fff7-7f0000014e7a",
+      "name": "CMGT_SUB_SetCaseFolderSecurity",
+      "type": "Process Model",
+      "description": "Sub-process to refresh the folder security of cases anytime any change is made that would impact the security",
+      "calls": [
+        "CMGT_Case",
+        "CMGT_QR_GetCase",
+        "CMGT_QR_GetRole",
+        "CMGT_Role",
+        "CMGT_SUB_SetCaseFolderSecurity_Logic",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_IsBlank"
+      ],
+      "called_by": [
+        "CMGT_RelatedEntityMap_Create"
+      ]
+    },
+    {
+      "uuid": "82aa3b28-94c2-4d3c-a403-bb813bd76155",
+      "name": "CMGT_CFG_CaseType",
+      "type": "Record Type",
+      "description": "MODIFIED FOR 2.0 KB AND EML MODULE RELEASE - Case Types",
+      "actions": [
+        "updateMetadata",
+        "editWorkflow",
+        "editMilestones",
+        "editWorkflowEmptyState",
+        "editWorkflowEmptyState2",
+        "createAutomationRule",
+        "addResource"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_Task",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "00f5d5ba-e85d-4f1e-b903-cf14a09847f1",
+      "name": "CMGT_CFG_RelationshipMapType",
+      "type": "Record Type",
+      "description": "Relationships types between cases and entities and each other",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "CMGT_QR_GetRelationshipMapType",
+        "CMGT_RelatedEntityMap",
+        "CMGT_RelatedEntityMap_GenerateRelationshipPermutations_Logic"
+      ]
+    },
+    {
+      "uuid": "d81cdd0e-c54d-4b8e-beec-b7ae37fefe7f",
+      "name": "CMGT_Case",
+      "type": "Record Type",
+      "description": "MODIFIED FOR 2.0 KB , EML MODULE RELEASE , SMART SEARCH - Cases.",
+      "actions": [
+        "createCase",
+        "bulkUpdateCases",
+        "updateCase",
+        "updateProperty",
+        "addEntityToCase",
+        "updateRelatedCases",
+        "manageAssignee",
+        "manageWatcher",
+        "addTags",
+        "uploadDocuments",
+        "addComment",
+        "modifyWorkflow",
+        "updateContact",
+        "composeEmail"
+      ],
+      "views": [
+        "#\"urn:appian:translation-string:v1:a3a3c015-e0c6-4bd2-b78a-aaf392495bdd\"",
+        "#\"urn:appian:translation-string:v1:2f4f2cde-9986-47cb-ac2a-1ecfeeddc693\"",
+        "#\"urn:appian:translation-string:v1:455edb96-9d9a-4038-b43e-d10aa9a3a811\"",
+        "#\"urn:appian:translation-string:v1:6f32eac5-d5de-4502-9a1f-4d3184aac8d2\"",
+        "#\"urn:appian:translation-string:v1:86481b57-9608-4720-9198-578bfd8b8385\"",
+        "#\"urn:appian:translation-string:v1:297cf25d-abb6-4d91-b9ed-ab0139f56398\"",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_CFG_CaseType",
+        "CMGT_CaseEntityMap",
+        "CMGT_Comment",
+        "CMGT_Document",
+        "CMGT_Milestone",
+        "CMGT_QR_GetCase",
+        "CMGT_QR_GetRole",
+        "CMGT_Role",
+        "CMGT_Task"
+      ],
+      "called_by": [
+        "CMGT_CaseEntityMap",
+        "CMGT_Comment",
+        "CMGT_Document",
+        "CMGT_Milestone",
+        "CMGT_QR_GetCase",
+        "CMGT_Role",
+        "CMGT_SUB_SetCaseFolderSecurity",
+        "CMGT_SUB_SetCaseFolderSecurity_Logic",
+        "CMGT_Task",
+        "CMGT_UTIL_DropNonWritableRelationshipsFromRecord",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable",
+        "CMGT_UTIL_QueryRecord",
+        "CMGT_UTIL_SetRecordFields"
+      ]
+    },
+    {
+      "uuid": "931ca90b-521a-4a47-8087-de2db5f6e4cc",
+      "name": "CMGT_CaseEntityMap",
+      "type": "Record Type",
+      "description": "Mapping of cases to entities",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Case"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_QR_GetCase",
+        "CMGT_QR_GetCaseEntityMap",
+        "CMGT_RelatedEntityMap_Create",
+        "CMGT_UTIL_DropNonWritableRelationshipsFromRecord"
+      ]
+    },
+    {
+      "uuid": "e57250b0-f216-4a23-afd9-39e7d532d302-cmgt",
+      "name": "CMGT_Comment",
+      "type": "Record Type",
+      "description": "Comments",
+      "actions": [
+        "updateComment",
+        "deleteComment",
+        "pin",
+        "unpin",
+        "updateMessage",
+        "deleteMessage"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_CommentUserTag",
+        "CMGT_Task"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_CommentUserTag",
+        "CMGT_Task",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "20ece1cc-b807-491b-9fa3-c042ef610b43-cmgt",
+      "name": "CMGT_CommentUserTag",
+      "type": "Record Type",
+      "description": "Comment User Tags",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Comment"
+      ],
+      "called_by": [
+        "CMGT_Comment",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "4fcbf8d2-f6f9-4a38-bbf1-d2722635282a",
+      "name": "CMGT_Document",
+      "type": "Record Type",
+      "description": "Documents",
+      "actions": [
+        "deleteDocument"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_Task"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_Task",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "27e37788-a66d-41e0-951b-01142993c782",
+      "name": "CMGT_EventHistory_Entity",
+      "type": "Record Type",
+      "description": "Business events for CMGT_Entity",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "CMGT_EntityEventHistory_Constructor",
+        "CMGT_RelatedEntityMap_Create"
+      ]
+    },
+    {
+      "uuid": "ae26b90f-13d6-48f8-86f3-eaa8ed4d2e17",
+      "name": "CMGT_Milestone",
+      "type": "Record Type",
+      "description": "Milestones for a case",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_Task"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_Task",
+        "CMGT_UTIL_DropNonWritableRelationshipsFromRecord",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "7e1ff3bb-42b9-41b4-ae43-17a50025da85",
+      "name": "CMGT_RelatedEntityMap",
+      "type": "Record Type",
+      "description": "Mapping to relate entities",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_CFG_RelationshipMapType"
+      ],
+      "called_by": [
+        "CMGT_QR_GetRelatedEntityMap",
+        "CMGT_RelatedEntityMap_Create",
+        "CMGT_RelatedEntityMap_GenerateRelationshipPermutations_Logic",
+        "CMGT_RelatedEntityMap_SetEvents",
+        "CMGT_RelatedEntityMap_SetMetaData",
+        "CMGT_RelatedEntityMap_WriteRecordsProperties"
+      ]
+    },
+    {
+      "uuid": "6799d796-883e-49ff-8975-297d87e40756",
+      "name": "CMGT_Role",
+      "type": "Record Type",
+      "description": "Roles",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_Task"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_QR_GetCase",
+        "CMGT_QR_GetRole",
+        "CMGT_SUB_SetCaseFolderSecurity",
+        "CMGT_Task",
+        "CMGT_UTIL_Filter"
+      ]
+    },
+    {
+      "uuid": "ee5aa46d-0228-430f-a794-1134a11fbcc0",
+      "name": "CMGT_Task",
+      "type": "Record Type",
+      "description": "MODIFIED FOR 2.0 SMART SEARCH RELEASE - Tasks",
+      "actions": [
+        "manageAssignee",
+        "open",
+        "reopen",
+        "addComment",
+        "updateDueDate",
+        "complete",
+        "markNotNeeded",
+        "viewWorkflow",
+        "updateDescription",
+        "updateStatus",
+        "updateTaskName",
+        "updateEmail"
+      ],
+      "views": [
+        "#\"urn:appian:translation-string:v1:a3a3c015-e0c6-4bd2-b78a-aaf392495bdd\"",
+        "#\"urn:appian:translation-string:v1:6f32eac5-d5de-4502-9a1f-4d3184aac8d2\"",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_CFG_CaseType",
+        "CMGT_Case",
+        "CMGT_Comment",
+        "CMGT_Document",
+        "CMGT_Milestone",
+        "CMGT_Role",
+        "CMGT_UTIL_IsNotBlank"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_Comment",
+        "CMGT_Document",
+        "CMGT_Milestone",
+        "CMGT_Role",
+        "CMGT_UTIL_DropNonWritableRelationshipsFromRecord",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    }
+  ]
+}

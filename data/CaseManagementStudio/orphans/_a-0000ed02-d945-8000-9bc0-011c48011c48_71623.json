@@ -1,0 +1,70 @@
+{
+  "uuid": "_a-0000ed02-d945-8000-9bc0-011c48011c48_71623",
+  "name": "CMGT_WFL_AutomationRule_Configure_Trigger",
+  "type": "Interface",
+  "description": "Interface used to configure a trigger",
+  "sail_code": "a!localVariables(\n  local!triggers: rule!CMGT_WFL_QR_GetTriggers(returnType: \"OBJECT_ARRAY\", group: cons!CMGT_WFL_TRIGGER_GROUP_CASE),\n  local!fieldPathJson: if(\n    rule!CMGT_UTIL_IsNotBlank(\n      ri!caseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.triggerContext]\n    ),\n    #\"SYSTEM_SYSRULES_fromJson_v1\"(\n      ri!caseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.triggerContext]\n    ),\n    null\n  ),\n  local!selectedField: if(\n    a!isNotNullOrEmpty(local!fieldPathJson),\n    /*for update we will need the selectedField to hold the choosen value instead of null*/\n    rule!CMGT_UTIL_Filter(\n      records: ri!availableFields,\n      filterType: \"FIRST_MATCH\",\n      fieldValuePairs: {\n        a!map(\n          field: \"uuid\",\n          value: touniformstring(local!fieldPathJson.uuid)\n        ),\n        a!map(\n          field: \"displayName\",\n          value: touniformString(local!fieldPathJson.displayName)\n        )\n      }\n    ),\n    null\n  ),\n  {\n    #\"SYSTEM_SYSRULES_columnsLayout\"(\n      columns: {\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          width: \"NARROW_PLUS\",\n          contents: {\n            #\"SYSTEM_SYSRULES_dropdownField_v1\"(\n              label: #\"urn:appian:translation-string:v1:3e03c896-0c99-4cca-bac1-299779e147a5\",\n              data: #\"SYSTEM_SYSRULES_recordData\"(\n                recordType: recordType!CMGT_CFG_Triggers,\n                filters: {#\"SYSTEM_SYSRULES_queryFilter\"(\n                  field: recordType!CMGT_CFG_Triggers.group,\n                  operator: \"=\",\n                  value: cons!CMGT_WFL_TRIGGER_GROUP_CASE\n                )}\n              ),\n              choiceLabels: recordType!CMGT_CFG_Triggers.triggerName,\n              choiceValues: recordType!CMGT_CFG_Triggers.triggerId,\n              value: ri!caseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.triggerId],\n              saveInto: {\n                ri!caseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.triggerId],\n                a!save(\n                  ri!caseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.automationTrigger],\n                  rule!CMGT_UTIL_Filter(\n                    records: local!triggers,\n                    field: recordType!CMGT_CFG_Triggers.triggerId,\n                    value: save!value\n                  )\n                ),\n                a!save(\n                  ri!caseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.triggerContext],\n                  null\n                )\n                },\n              placeholder: #\"urn:appian:translation-string:v1:89c6ca94-1299-4a79-af56-141fb9095827\"\n            )\n          }\n        ),\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: {\n            #\"SYSTEM_SYSRULES_dropdownField_v1\"(\n              choiceLabels: ri!availableFields.displayName,\n              choiceValues: ri!availableFields,\n              label: #\"urn:appian:translation-string:v1:44aca2fc-e228-4e5d-ad34-939f648f2d5f\",\n              labelPosition: \"ABOVE\",\n              placeholder: #\"urn:appian:translation-string:v1:1a75baba-50a5-4ba3-9372-1af063da50e9\",\n              value: local!selectedField,\n              saveInto: {\n                local!selectedField,\n                a!save(\n                  ri!caseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.triggerContext],\n                  #\"SYSTEM_SYSRULES_toJson_v1\"(\n                    value: rule!CMGT_Automation_constructSavedFieldMapping(selectedField: local!selectedField)\n                  )\n                )\n              },\n              searchDisplay: \"AUTO\",\n              validations: {}\n            )\n          },\n          width: \"NARROW_PLUS\",\n          showWhen: tointeger(\n            ri!caseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.triggerId]\n          ) = cons!CMGT_REFID_TRIGGER_CASE_FIELD_UPDATED\n        )\n      }\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "CMGT_WFL_QR_GetTriggers",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_IsNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_Filter",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_Automation_constructSavedFieldMapping",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_WFL_TRIGGER_GROUP_CASE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_TRIGGER_CASE_FIELD_UPDATED",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_WFL_CFG_CaseTypeWorkflowTask",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_CFG_Triggers",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

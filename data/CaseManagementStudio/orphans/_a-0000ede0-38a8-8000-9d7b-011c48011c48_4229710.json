@@ -1,0 +1,91 @@
+{
+  "uuid": "_a-0000ede0-38a8-8000-9d7b-011c48011c48_4229710",
+  "name": "CMGT_Portal_Case_CreateCase_FormDisplayWrapper",
+  "type": "Interface",
+  "description": "Create Case Form Display Wrapper for portal",
+  "sail_code": "a!localVariables(\n  local!width: if(\n    rule!CMGT_UTIL_IsMobileScreenSize(),\n    \"FILL\",\n    \"MINIMIZE\"\n  ),\n  #\"SYSTEM_SYSRULES_wizardLayout\"(\n    titleBar: rule!CMGT_PortalInterface_BillboardLayout(\n      title: #\"urn:appian:translation-string:v1:dccad5ee-f64c-4507-9f7a-0a57b8155d3a\",\n      description: #\"urn:appian:translation-string:v1:9e396e89-7bc5-4445-a3cb-5c6167da3fcc\",\n      showHeader: true(),\n      brandingMap: ri!brandingMap,\n      isWide: ri!isWide\n    ),\n    steps: {\n      #\"SYSTEM_SYSRULES_wizardStep\"(\n        label: #\"urn:appian:translation-string:v1:b4ac67c8-7796-4541-8f72-ad5d5818daf9\",\n        contents: {\n          #\"SYSTEM_SYSRULES_sectionLayout_v1\"(\n            contents: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n              value: {\n                #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                  text: #\"urn:appian:translation-string:v1:7b3f115a-d6ac-4da4-87a8-5c5c737156da\",\n                  style: \"STRONG\",\n                  size: \"STANDARD\"\n                ),\n                char(\n                  32\n                ),\n                #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                  text: \"*\",\n                  style: \"STRONG\",\n                  size: \"STANDARD\",\n                  color: ri!brandingMap.AccentColor\n                )\n              }\n            ),\n            marginAbove: \"NONE\",\n            marginBelow: \"NONE\"\n          ),\n          rule!CMGT_Portal_CaseTypes(\n            case: ri!case,\n            allCaseTypes: ri!allCaseTypes,\n            pagingInfo: ri!pagingInfo,\n            brandingMap: ri!brandingMap\n          )\n        },\n        disableNextButton: if(\n          a!isNullOrEmpty(\n            ri!case[recordType!CMGT_Case.caseType]\n          ),\n          true,\n          false\n        )\n      )/*Portal Intake Form*/\n      ,\n      #\"urn:appian:control-panel-interface-type:v1:1b82dc2b-d4df-44ed-ac7c-3cce3b4ee0e0/6322c57d-c4ee-4ab5-b868-c48368ca23bc\"(\n        record: ri!case,\n        controlPanelRecords: ri!data\n      ),\n\n    },\n    primaryButtons: {\n      #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n        label: #\"urn:appian:translation-string:v1:d3a45143-77d7-41aa-99e1-e562b4efd5ea\",\n        /*The Portal is intended to use recaptcha, however this isn't necessary.\n      On execution in a Portal, it runs the dynamic verifyRecaptcha rule below, with more information.*/\n        recaptchaSaveInto: rule!CMGT_UTIL_VerifyRecaptcha_SaveLogic(\n          onSuccess: {\n            #\"SYSTEM_SYSRULES_submitUploadedFiles\"(\n              documents: ri!case[recordType!CMGT_Case.documents.appianDocId]\n            ),\n            #\"SYSTEM_SYSRULES_startProcess3\"(\n              processModel: cons!CMGT_PM_CREATE_CASE,\n              processParameters: {\n                case: ri!case,\n                data: ri!data\n              },\n              onSuccess: {\n                a!save(\n                  ri!caseSubmissionSuccessful,\n                  true\n                )\n              }\n            )\n          },\n          onError: a!save(\n            ri!caseSubmissionSuccessful,\n            false\n          )\n        ),\n        submit: false,\n        style: \"SOLID\",\n        showWhen: fv!isLastStep,\n        validate: true,\n        width: local!width\n      )\n    },\n    contentsWidth: \"FULL\",\n    showStepHeadings: true,\n    showButtonDivider: true(),\n    isButtonFooterFixed: true(),\n    focusOnFirstInput: true(),\n    showTitleBarDivider: false(),\n    isTitleBarFixed: false(),\n    style: \"DOT_VERTICAL\"\n  )\n)",
+  "calls": [
+    {
+      "name": "CMGT_UTIL_IsMobileScreenSize",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_PortalInterface_BillboardLayout",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_Portal_CaseTypes",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_VerifyRecaptcha_SaveLogic",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_PM_CREATE_CASE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_Case",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_ControlPanel",
+      "type": "Control Panel",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_Portal_LoadBrandingMap",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_QR_GetCaseType",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_CFG_CaseType",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "CMGT_PortalPage_SubmitCase",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

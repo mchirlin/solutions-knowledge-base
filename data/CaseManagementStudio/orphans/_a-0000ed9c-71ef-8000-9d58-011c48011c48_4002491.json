@@ -1,0 +1,31 @@
+{
+  "uuid": "_a-0000ed9c-71ef-8000-9d58-011c48011c48_4002491",
+  "name": "CMGT_TaskAction_SetMetaData",
+  "type": "Expression Rule",
+  "description": "Set metadata for CMGT_TASK_ACTIONS",
+  "sail_code": "#\"SYSTEM_SYSRULES_forEach\"(\n  items: ri!taskAction,\n  expression: rule!CMGT_UTIL_SetRecordFields(\n    record: fv!item,\n    /*Always set these fields with each update*/\n    alwaysOverwrite: {\n      a!map(\n        field: recordType!CMGT_TaskActions.modifiedOn,\n        value: now()\n      ),\n      a!map(\n        field: recordType!CMGT_TaskActions.modifedBy,\n        value: ri!initiator\n      )\n    },\n    /*Only modify these fields if they are currently null*/\n    neverOverwrite: {\n      a!map(\n        field: recordType!CMGT_TaskActions.createdBy,\n        value: ri!initiator\n      ),\n      a!map(\n        field: recordType!CMGT_TaskActions.createdOn,\n        value: now()\n      ),\n      a!map(\n        field: recordType!CMGT_TaskActions.isActive,\n        value: true\n      )\n    },\n    childRelationships:  {\n      a!map(\n        field: recordType!CMGT_TaskActions.associatedAssignmentRule,\n        value: rule!CMGT_AssociatedAssignmentRule_SetMetaData(\n          assignmentRules: fv!item[recordType!CMGT_TaskActions.associatedAssignmentRule],\n          initiator: ri!initiator\n        )\n      ),\n\n    }\n  )\n)",
+  "calls": [
+    {
+      "name": "CMGT_UTIL_SetRecordFields",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_AssociatedAssignmentRule_SetMetaData",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_TaskActions",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "CMGT_Task_SetMetaData",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

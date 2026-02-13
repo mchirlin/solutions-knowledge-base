@@ -1,0 +1,36 @@
+{
+  "uuid": "_a-0000ed40-282d-8000-9d33-011c48011c48_3577495",
+  "name": "CMGT_EVAL_returnCaseAssignmentHistoryForRoles",
+  "type": "Expression Rule",
+  "description": "Returns assignment history updated to the role",
+  "sail_code": "if(\n  or(\n    a!isNotNullOrEmpty(ri!assignedGroup),\n    a!isNotNullOrEmpty(ri!assignedUser)\n  ),\n  #\"urn:appian:function:v1:a:update\"(\n    recordType!CMGT_Role(\n      recordType!CMGT_Role.groupId: ri!assignedGroup,\n      recordType!CMGT_Role.roleTypeId: ri!assigneeTypeId,\n      recordType!CMGT_Role.username: ri!assignedUser,\n      recordType!CMGT_Role.caseId: ri!caseId\n    ),\n    recordType!CMGT_Role.caseAssignmentHistory,\n    recordType!CMGT_CaseAssignmentHistory(\n      recordType!CMGT_CaseAssignmentHistory.assignmentRuleId: ri!applicableAssignmentRule[recordType!CMGT_AssignmentRule.assignmentRuleId],\n      recordType!CMGT_CaseAssignmentHistory.assignmentVersion: ri!applicableAssignmentRule[recordType!CMGT_AssignmentRule.assignmentVersion],\n      recordType!CMGT_CaseAssignmentHistory.routingType: ri!applicableAssignmentRule[recordType!CMGT_AssignmentRule.routingType],\n      recordType!CMGT_CaseAssignmentHistory.createdBy: ri!initiator,\n      recordType!CMGT_CaseAssignmentHistory.createdOn: now()\n    )\n  ),\n  {}\n)",
+  "calls": [
+    {
+      "name": "CMGT_Role",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_CaseAssignmentHistory",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_AssignmentRule",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_GRP_CASE_MANAGERS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "CMGT_AUTO_EVAL_CaseAssignment_RouteCaseToUserOrGroup",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

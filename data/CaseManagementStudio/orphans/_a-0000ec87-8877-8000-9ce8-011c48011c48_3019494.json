@@ -1,0 +1,46 @@
+{
+  "uuid": "_a-0000ec87-8877-8000-9ce8-011c48011c48_3019494",
+  "name": "CMGT_WFL_Automation_FormatConditionSet",
+  "type": "Interface",
+  "description": "Interface to show the conditions in text format",
+  "sail_code": "if(\n  ri!isAnyInvalidCondition > 0,\n  #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n    value: {\n      #\"SYSTEM_SYSRULES_richTextIcon\"(\n        icon: \"warning\",\n        linkStyle: \"STANDALONE\",\n        color: ri!brandingMap.WarningAccentColor,\n        size: \"MEDIUM\"\n      ),\n      char(32),\n      #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n        text: #\"urn:appian:translation-string:v1:b2fa9c04-a5a2-4d27-9a30-8d6774fe5b2d\"\n      )\n    },\n    align: \"LEFT\",\n    marginBelow: \"LESS\"\n  ),\n  #\"SYSTEM_SYSRULES_forEach\"(\n    items: ri!conditions,\n    expression: {\n      #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n        labelPosition: \"COLLAPSED\",\n        marginBelow: \"NONE\",\n        value: {\n          #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n            text: #\"urn:appian:translation-string:v1:b767a631-0a07-423f-9bf1-fa6b6bd96ddc\"\n          ),\n          \" \",\n          rule!CMGT_Automation_FormatCondition(\n            fieldPathJson: fv!item[recordType!CMGT_CFG_Condition.fieldPathJson],\n            textSize: \"STANDARD\",\n            valueJson: fv!item[recordType!CMGT_CFG_Condition.valueJson],\n            operator: fv!item[recordType!CMGT_CFG_Condition.operator],\n            fieldDetails: ri!fieldDetails\n          )\n        }\n      ),\n      #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n        marginAbove: \"LESS\",\n        value: {\n          #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n            text: ri!conditionSet[recordType!CMGT_CFG_ConditionSet.operatorCode],\n            style: \"STRONG\",\n            showWhen: fv!index < count(ri!conditions)\n          )\n        }\n      )\n    }\n  )\n)",
+  "calls": [
+    {
+      "name": "CMGT_Automation_FormatCondition",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_CFG_Condition",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_CFG_ConditionSet",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_returnAvailableFields",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "CMGT_WFL_Automation_RuleSection",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

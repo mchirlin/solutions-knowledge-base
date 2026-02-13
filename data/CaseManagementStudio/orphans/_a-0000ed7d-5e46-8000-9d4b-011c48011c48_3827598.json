@@ -1,0 +1,145 @@
+{
+  "uuid": "_a-0000ed7d-5e46-8000-9d4b-011c48011c48_3827598",
+  "name": "CMGT_AutomationRule_Configure_AssignmentLogic",
+  "type": "Interface",
+  "description": "Assignment Logic for the Assignment Action",
+  "sail_code": "a!localVariables(\n  local!assigneeType: if(\n    a!isNullOrEmpty(\n      ri!automationRuleTaskAction[recordType!CMGT_TaskActions.associatedAssignmentRule.assigneeType]\n    ),\n    \"GROUP\",\n    ri!automationRuleTaskAction[recordType!CMGT_TaskActions.associatedAssignmentRule.assigneeType]\n  ),\n  local!roleTypes: rule!CMGT_QR_GetRoleType(\n    returnType: \"OBJECT_ARRAY\",\n    roleTypeId: {\n      cons!CMGT_WFL_REFID_ROLE_TYPE_SUBMITTER,\n      cons!CMGT_REFID_ROLE_TYPE_USER_ASSIGNEE\n    }\n  ),\n  local!assignmentJson: if(\n    rule!CMGT_UTIL_IsBlank(\n      ri!automationRuleTaskAction[recordType!CMGT_TaskActions.associatedAssignmentRule.assignmentJson]\n    ),\n    {},\n    #\"SYSTEM_SYSRULES_fromJson_v1\"(\n      ri!automationRuleTaskAction[recordType!CMGT_TaskActions.associatedAssignmentRule.assignmentJson]\n    )\n  ),\n  local!selectedGroup: if(\n    rule!CMGT_UTIL_IsBlank(index(local!assignmentJson,\"groups\",null)),\n    {},\n    local!assignmentJson.groups.id\n  ),\n  local!selectedRoles: index(local!assignmentJson,\"roles\",null),\n  local!selectedUsers: if(\n    rule!CMGT_UTIL_IsBlank(index(local!assignmentJson,\"users\",null)),\n    {},\n    local!assignmentJson.users.id\n  ),\n  #\"SYSTEM_SYSRULES_sectionLayout_v1\"(\n    contents: {\n      #\"SYSTEM_SYSRULES_columnsLayout\"(\n        columns: {\n          /*Assigned team- group picker*/\n          #\"SYSTEM_SYSRULES_columnLayout\"(\n            contents: {\n              #\"SYSTEM_SYSRULES_radioButtonField_v1\"(\n                choiceLabels: {\n                  #\"urn:appian:translation-string:v1:64bf7660-8738-4162-81c8-166d776a7324\",\n                  #\"urn:appian:translation-string:v1:290c92d6-5fc9-4bb2-96b9-1b0b216488d7\",\n                  #\"urn:appian:translation-string:v1:0698e0da-27c8-4e13-9005-c899baa073a1\"\n                },\n                choiceValues: { \"GROUP\", \"ROLE\", \"USER\" },\n                label: #\"urn:appian:translation-string:v1:004863d9-a4a1-4b4a-b510-92dab074fbbf\",\n                value: local!assigneeType,\n                saveInto: {\n                  ri!automationRuleTaskAction[recordType!CMGT_TaskActions.associatedAssignmentRule.assigneeType],\n                  a!save(\n                    ri!automationRuleTaskAction[recordType!CMGT_TaskActions.associatedAssignmentRule.assignmentJson],\n                    #\"SYSTEM_SYSRULES_toJson_v1\"({ groups: null, roles: null, users: null })\n                  ),\n                  a!save(\n                    {\n                      local!selectedGroup,\n                      local!selectedRoles,\n                      local!selectedUsers\n                    },\n                    null\n                  ),\n                  a!save(\n                    {\n                      ri!automationRuleTaskAction[recordType!CMGT_TaskActions.associatedAssignmentRule.routingType],\n                      ri!automationRuleTaskAction[recordType!CMGT_TaskActions.associatedAssignmentRule]\n                    },\n                    null\n                  )\n                },\n                choiceLayout: \"COMPACT\"\n              )\n            },\n            width: \"MEDIUM\"\n          ),\n          /*Column for spacing*/\n          #\"SYSTEM_SYSRULES_columnLayout\"(contents: {}, width: \"MEDIUM\")\n        }\n      ),\n      /*Routing Types selection*/\n      /*Group Assignee Type Fields */\n      if(\n        local!assigneeType = \"GROUP\",\n        {\n          #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n            items: {\n              #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                item: #\"SYSTEM_SYSRULES_pickerFieldGroups\"(\n                  label: #\"urn:appian:translation-string:v1:64bf7660-8738-4162-81c8-166d776a7324\",\n                  instructions: #\"urn:appian:translation-string:v1:fb1bd82b-43eb-4f27-80b7-fc6aa54e07c0\",\n                  maxSelections: 1,\n                  groupFilter: cons!CMGT_GRP_BUSINESS_GROUPS,\n                  value: local!selectedGroup,\n                  saveInto: {\n                    if(\n                      a!isNullOrEmpty(\n                        ri!automationRuleTaskAction[recordType!CMGT_TaskActions.associatedAssignmentRule.assigneeType]\n                      ),\n                      a!save(\n                        ri!automationRuleTaskAction[recordType!CMGT_TaskActions.associatedAssignmentRule.assigneeType],\n                        \"GROUP\"\n                      ),\n                      {}\n                    ),\n                    a!save(\n                      ri!automationRuleTaskAction[recordType!CMGT_TaskActions.associatedAssignmentRule.assignmentJson],\n                      #\"SYSTEM_SYSRULES_toJson_v1\"(\n                        a!map(groups: { save!value }, roles: {}, users: {})\n                      )\n                    ),\n                    /*nulling out the excluded users when the assigned group changes*/\n                    a!save(\n                      ri!automationRuleTaskAction[recordType!CMGT_TaskActions.associatedAssignmentRule],\n                      null\n                    ),\n                    a!save(\n                      {local!selectedRoles, local!selectedUsers},\n                      null\n                    )\n                  },\n                  required: true,\n                  validationGroup: ri!validationGroup\n                )\n              ),\n              #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                item: #\"SYSTEM_SYSRULES_pickerFieldUsers\"(\n                  label: #\"urn:appian:translation-string:v1:24bb57dc-d0fa-4da5-aac6-2840225ade59\",\n                  maxSelections: 10,\n                  groupFilter: local!selectedGroup,\n                  value: ri!automationRuleTaskAction[recordType!CMGT_TaskActions.associatedAssignmentRule.caseAssignmentUsersToExclude.username],\n                  /*save distinct values to avoid duplicate users*/\n                  saveInto: a!save(\n                    ri!automationRuleTaskAction[recordType!CMGT_TaskActions.associatedAssignmentRule],\n                    #\"SYSTEM_SYSRULES_forEach\"(\n                      items: rule!CMGT_UTIL_Distinct(value: save!value),\n                      expression: recordType!CMGT_CaseAssignmentUsersToExclude(\n                        recordType!CMGT_CaseAssignmentUsersToExclude.username: fv!item\n                      )\n                    )\n                  ),\n                  /*shouldn't allow users to exclude users if routing type is Shared queue or if assigned group is not selected*/\n                  disabled: or(\n                    a!isNullOrEmpty(local!selectedGroup),\n                    ri!automationRuleTaskAction[recordType!CMGT_TaskActions.associatedAssignmentRule.routingType] = cons!CMGT_WFL_TXT_ROUTING_SHARED_QUEUE\n                  )\n                )\n              )\n            }\n          ),\n          #\"SYSTEM_SYSRULES_cardChoiceField\"(\n            label: #\"urn:appian:translation-string:v1:00fc26b2-8613-4817-a24f-a572b4694429\",\n            data: rule!CMGT_WFL_ENUM_ROUTING_TYPES(),\n            cardTemplate: #\"SYSTEM_SYSRULES_cardTemplateBarTextStacked\"(\n              id: fv!data.routingTypeCode,\n              primaryText: fv!data.label,\n              secondaryText: fv!data.description,\n              icon: fv!data.icon,\n              iconColor: ri!brandingMap.StandardStampContentColor\n            ),\n            value: if(\n              a!isNullOrEmpty(\n                ri!automationRuleTaskAction[recordType!CMGT_TaskActions.associatedAssignmentRule.routingType]\n              ),\n              {},\n              ri!automationRuleTaskAction[recordType!CMGT_TaskActions.associatedAssignmentRule.routingType]\n            ),\n            saveInto: {\n              ri!automationRuleTaskAction[recordType!CMGT_TaskActions.associatedAssignmentRule.routingType],\n              /*if shared queue routing type is selected, nulling out excluded users */\n              if(\n                ri!automationRuleTaskAction[recordType!CMGT_TaskActions.associatedAssignmentRule.routingType] = cons!CMGT_WFL_TXT_ROUTING_SHARED_QUEUE,\n                a!save(\n                  ri!automationRuleTaskAction[recordType!CMGT_TaskActions.associatedAssignmentRule],\n                  null\n                ),\n                {}\n              )\n            },\n            maxSelections: 1,\n            align: \"START\",\n            required: true,\n            requiredMessage: #\"urn:appian:translation-string:v1:6af3009f-2393-4f4f-bd53-b60b8bf57096\",\n            validationGroup: ri!validationGroup\n          )\n        },\n        {}\n      ),\n      /*Role Assignee Type Fields */\n      #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n        items: {\n          /*Excluded Users - user picker*/\n          #\"SYSTEM_SYSRULES_sideBySideItem\"(\n            item:\n              #\"SYSTEM_SYSRULES_multipleDropdownField_v1\"(\n                label: #\"urn:appian:translation-string:v1:f28dd9e4-5d3a-432e-a02b-741c0a80f46e\",\n                placeholder: #\"urn:appian:translation-string:v1:6fdd5685-5369-401e-971b-c2fdba27987f\",\n                choiceLabels: if(\n                  contains(\n                    {\n                      cons!CMGT_CFG_TXT_ACT_ASSIGN_TASK,\n                      cons!CMGT_CFG_TXT_ACT_REASSIGN_TASK\n                    },\n                    ri!automationRuleTaskAction[recordType!CMGT_TaskActions.actionCode]\n                  ),\n                  #\"SYSTEM_SYSRULES_forEach\"(\n                    items: local!roleTypes[recordType!CMGT_CFG_RoleType.label],\n                    expression: concat(\"Case \", fv!item)\n                  ),\n                  local!roleTypes[recordType!CMGT_CFG_RoleType.label],\n\n                ),\n                choiceValues: local!roleTypes[recordType!CMGT_CFG_RoleType.roleTypeId],\n                value: a!defaultValue(local!selectedRoles, null),\n                /*save distinct values to avoid duplicate users*/\n                saveInto: {\n                  a!save(\n                    local!selectedRoles,\n                    rule!CMGT_UTIL_Distinct(value: save!value)\n                  ),\n                  a!save(\n                    ri!automationRuleTaskAction[recordType!CMGT_TaskActions.associatedAssignmentRule.assignmentJson],\n                    #\"SYSTEM_SYSRULES_toJson_v1\"(\n                      a!map(\n                        groups: {},\n                        roles: { local!selectedRoles },\n                        users: {}\n                      )\n                    )\n                  ),\n                  a!save(\n                    {local!selectedGroup, local!selectedUsers},\n                    null\n                  )\n                },\n                required: true,\n                validationGroup: ri!validationGroup\n              ),\n\n          ),\n          /*Column for spacing*/\n          #\"SYSTEM_SYSRULES_sideBySideItem\"()\n        },\n        showWhen: local!assigneeType = \"ROLE\"\n      ),\n      /*User Assignee Type Fields */\n      #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n        items: {\n          #\"SYSTEM_SYSRULES_sideBySideItem\"(\n            item: #\"SYSTEM_SYSRULES_pickerFieldUsers\"(\n              label: #\"urn:appian:translation-string:v1:929d8700-8f24-4bde-b13d-5bca1703ac0a\",\n              placeholder: #\"urn:appian:translation-string:v1:f94463ce-ff90-4c69-955e-7fba10417a0e\",\n              maxSelections: 10,\n              value: local!selectedUsers,\n              /*save distinct values to avoid duplicate users*/\n              saveInto: {\n                a!save(\n                  local!selectedUsers,\n                  rule!CMGT_UTIL_Distinct(value: save!value)\n                ),\n                a!save(\n                  ri!automationRuleTaskAction[recordType!CMGT_TaskActions.associatedAssignmentRule.assignmentJson],\n                  #\"SYSTEM_SYSRULES_toJson_v1\"(\n                    a!map(\n                      groups: {},\n                      roles: {},\n                      users: { local!selectedUsers }\n                    )\n                  )\n                ),\n                a!save(\n                  {local!selectedRoles, local!selectedGroup},\n                  null\n                )\n              },\n              required: true,\n              validationGroup: ri!validationGroup,\n              groupFilter: cons!CMGT_GRP_INTERNAL_USERS\n            )\n          ),\n          /*Column for spacing*/\n          #\"SYSTEM_SYSRULES_sideBySideItem\"()\n        },\n        showWhen: local!assigneeType = \"USER\"\n      )\n    }\n  )\n)",
+  "calls": [
+    {
+      "name": "CMGT_QR_GetRoleType",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_Distinct",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_WFL_ENUM_ROUTING_TYPES",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_WFL_REFID_ROLE_TYPE_SUBMITTER",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_ROLE_TYPE_USER_ASSIGNEE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_GRP_BUSINESS_GROUPS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_WFL_TXT_ROUTING_SHARED_QUEUE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_CFG_TXT_ACT_ASSIGN_TASK",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_CFG_TXT_ACT_REASSIGN_TASK",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_GRP_INTERNAL_USERS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_TaskActions",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_CaseAssignmentUsersToExclude",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_CFG_RoleType",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_CB_UTIL_LoadBrandingMap",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

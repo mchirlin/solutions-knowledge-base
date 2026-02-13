@@ -1,0 +1,31 @@
+{
+  "uuid": "_a-0000eb95-8dff-8000-9c95-011c48011c48_2027612",
+  "name": "CMGT_CB_Case_WriteRecordsProperties",
+  "type": "Expression Rule",
+  "description": "Defines what relationships should be stripped before writing and what child FKs should be reattached after writing",
+  "sail_code": "if(\n  ri!isInput,\n  rule!CMGT_UTIL_DropNonWritableRelationshipsFromRecord(\n    records: ri!cases,\n    relationships: {\n      recordType!CMGT_Case.caseEntityMap,\n      recordType!CMGT_Case.documents,\n      \n    }\n  ),\n  rule!CMGT_UTIL_MergeWriteRecordIdsToProcessVariable(\n    processData: ri!cases,\n    recordsUpdated: ri!recordsUpdated,\n    fksToParent: {\n      recordType!CMGT_Case.caseEntityMap.caseId,\n      recordType!CMGT_Case.comments.caseId,\n      recordType!CMGT_Case.documents.caseId,\n      recordType!CMGT_Case.milestones.caseId,\n      recordType!CMGT_Case.relatedCaseMap.caseId,\n      recordType!CMGT_Case.roles.caseId,\n      recordType!CMGT_Case.tagMap.caseId\n    }\n  )\n)",
+  "calls": [
+    {
+      "name": "CMGT_UTIL_DropNonWritableRelationshipsFromRecord",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_Case",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "CMGT_CB_Case_SetMetaData",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

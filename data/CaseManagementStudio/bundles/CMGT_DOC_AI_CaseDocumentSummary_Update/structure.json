@@ -1,0 +1,263 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "CMGT_DOC_AI_CaseDocumentSummary_Update",
+    "parent_name": null,
+    "total_objects": 15
+  },
+  "entry_point": {
+    "complexity_score": 13.0,
+    "total_nodes": 7,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "CMGT_DOC_AI_CaseDocumentSummary_Update",
+      "complexity_score": 13.0,
+      "total_nodes": 7,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "is Doc present and no summary?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "isPDF and size less than 25 MB?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Generate Document Summary (Yes)",
+            "End Node"
+          ]
+        },
+        {
+          "name": "Generate Document Summary",
+          "type": "internal3.rs2_ai_skill_generative_ai",
+          "next": [
+            "Update Summary"
+          ]
+        },
+        {
+          "name": "is Doc present and no summary?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Write Summary (Yes)",
+            "End Node (No)"
+          ]
+        },
+        {
+          "name": "Update Summary",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Write Summary",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "isPDF and size less than 25 MB?"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ea9e-6ae8-8000-9c1d-011c48011c48_967525",
+      "name": "CMGT_INT_MAX_CHAR_LIMIT_EXTRA_LARGE",
+      "type": "Constant",
+      "description": "Value: 4000",
+      "value": "4000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_DOC_AI_CaseDocumentSummary_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee14-5ca0-8000-9d88-011c48011c48_4336209",
+      "name": "CMGT_DOC_AI_CaseDocumentSummary_SetMetaData",
+      "type": "Expression Rule",
+      "description": "Set meta data fields for CMGT_DOC_AI_CASE_DOCUMENT_SUMMARY",
+      "parameters": [],
+      "calls": [
+        "CMGT_DOC_AI_CaseDocumentSummary",
+        "CMGT_INT_MAX_CHAR_LIMIT_EXTRA_LARGE",
+        "CMGT_UTIL_SetRecordFields",
+        "CMGT_UTIL_TruncateText"
+      ],
+      "called_by": [
+        "CMGT_DOC_AI_CaseDocumentSummary_Update"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec06-54a3-8000-9cca-011c48011c48_2473340",
+      "name": "CMGT_DOC_AI_QR_GetDocumentSummary",
+      "type": "Expression Rule",
+      "description": "Query record rule for CMGT_DOC_AI_CaseDocumentSummary",
+      "parameters": [],
+      "calls": [
+        "CMGT_DOC_AI_CaseDocumentSummary",
+        "CMGT_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "CMGT_DOC_AI_CaseDocumentSummary_Update"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec18-c982-8000-9cd0-011c48011c48_2575774",
+      "name": "CMGT_DOC_AI_constructDocumentSummary",
+      "type": "Expression Rule",
+      "description": "Constructs CMGT_DOC_AI_CaseDocumentSummary ",
+      "parameters": [],
+      "calls": [
+        "CMGT_DOC_AI_CaseDocumentSummary",
+        "CMGT_Document",
+        "Unknown"
+      ],
+      "called_by": [
+        "CMGT_DOC_AI_CaseDocumentSummary_Update"
+      ]
+    },
+    {
+      "uuid": "_a-0000e98b-cfe0-8000-9ba5-011c48011c48_22352",
+      "name": "CMGT_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "description": "Enhanced wrapper rule around a!queryRecord()",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_DOC_AI_QR_GetDocumentSummary"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_33778",
+      "name": "CMGT_UTIL_SetRecordFields",
+      "type": "Expression Rule",
+      "description": "Runs a bulk update on a record object, setting new values for its fields",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_DOC_AI_CaseDocumentSummary_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e99c-1217-8000-9ba9-011c48011c48_58807",
+      "name": "CMGT_UTIL_TruncateText",
+      "type": "Expression Rule",
+      "description": "Truncates given text to a specified number of characters",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_DOC_AI_CaseDocumentSummary_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "0006ec09-33af-8000-11fe-7f0000014e7a",
+      "name": "CMGT_DOC_AI_CaseDocumentSummary_Update",
+      "type": "Process Model",
+      "description": "Process model to summarize documents",
+      "calls": [
+        "CMGT_DOC_AI_CaseDocumentSummary",
+        "CMGT_DOC_AI_CaseDocumentSummary_SetMetaData",
+        "CMGT_DOC_AI_QR_GetDocumentSummary",
+        "CMGT_DOC_AI_constructDocumentSummary",
+        "CMGT_Document",
+        "Unknown"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "41934702-e4f1-4867-867e-4a1ea7365e32",
+      "name": "CMGT_DOC_AI_CaseDocumentSummary",
+      "type": "Record Type",
+      "description": "Case Document Summary ",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "CMGT_DOC_AI_CaseDocumentSummary_SetMetaData",
+        "CMGT_DOC_AI_CaseDocumentSummary_Update",
+        "CMGT_DOC_AI_QR_GetDocumentSummary",
+        "CMGT_DOC_AI_constructDocumentSummary"
+      ]
+    },
+    {
+      "uuid": "4fcbf8d2-f6f9-4a38-bbf1-d2722635282a",
+      "name": "CMGT_Document",
+      "type": "Record Type",
+      "description": "Documents",
+      "actions": [
+        "deleteDocument"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "CMGT_DOC_AI_CaseDocumentSummary_Update",
+        "CMGT_DOC_AI_constructDocumentSummary"
+      ]
+    },
+    {
+      "uuid": "bd3a9a3f-db04-400b-b784-cc3f94d244a4",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "An error message returned by the generate summary process used to help create invalid summary reasoning data",
+      "calls": [],
+      "called_by": [
+        "CMGT_DOC_AI_CaseDocumentSummary_Update"
+      ]
+    },
+    {
+      "uuid": "d3bcf25f-9fbe-4965-a82f-a61fa79320f2",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Validation message to display in the summary if the uploaded document's file size is more than 25MB\n\n",
+      "calls": [],
+      "called_by": [
+        "CMGT_DOC_AI_constructDocumentSummary"
+      ]
+    },
+    {
+      "uuid": "84e85539-8d85-4776-b499-d7589c853c6e",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Validation message to display in the summary if the AI Prompt Builder errors out\n\n",
+      "calls": [],
+      "called_by": [
+        "CMGT_DOC_AI_CaseDocumentSummary_Update"
+      ]
+    },
+    {
+      "uuid": "4f041579-8b2e-4d69-b56d-090f348d5c71",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Validation to display in the summary if the uploaded documents are more than 100 pages",
+      "calls": [],
+      "called_by": [
+        "CMGT_DOC_AI_CaseDocumentSummary_Update"
+      ]
+    },
+    {
+      "uuid": "8b73943f-aad3-4dd8-934a-af8c84d233dd",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Validation message to display in the summary if the uploaded documents are not PDF",
+      "calls": [],
+      "called_by": [
+        "CMGT_DOC_AI_constructDocumentSummary"
+      ]
+    }
+  ]
+}

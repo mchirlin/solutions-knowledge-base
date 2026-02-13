@@ -1,0 +1,50 @@
+{
+  "uuid": "_a-0000e9dc-ab93-8000-9bc2-011c48011c48_207798",
+  "name": "CMGT_PortalPage_SubmitCase",
+  "type": "Interface",
+  "description": "Portal interface page for selecting a case type",
+  "sail_code": "a!localVariables(\n  local!wideScreen: {\n    \"TABLET_LANDSCAPE\",\n    \"DESKTOP_NARROW\",\n    \"DESKTOP\",\n    \"DESKTOP_WIDE\"\n  },\n  local!triggerRefresh:a!refreshVariable(value:now()),\n  local!isWide: if(\n    #\"SYSTEM_SYSRULES_isPageWidth\"(local!wideScreen),\n    true,\n    false\n  ),\n  local!portalConfig: rule!CMGT_INT_GET_PortalConfig(locale: \"en_US\"),\n  local!brandingMap: local!portalConfig.result.body.brandingMap,\n  local!portalUrl: local!portalConfig.result.body.urlInfo.portalPath,\n  local!case,\n  local!caseSubmissionSuccessful,\n  local!caseTypeUuid: local!case[recordType!CMGT_Case.caseTypeUuid],\n  local!data: a!refreshVariable(\n    value: #\"SYSTEM_SYSRULES_controlPanelRecords\"(\n      controlPanel: #\"urn:appian:control-panel:v1:1b82dc2b-d4df-44ed-ac7c-3cce3b4ee0e0\",\n      record: local!case\n    ),\n    refreshOnVarChange: local!caseTypeUuid,\n    refreshOnReferencedVarChange: false\n  ),\n  local!pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n    startIndex: 1,\n    batchSize: cons!CMGT_PORTAL_INT_BATCH_SIZE_MEDIUM_PLUS,\n    sort: #\"SYSTEM_SYSRULES_sortInfo\"(\n      field: recordType!CMGT_CFG_CaseType.fullLabel,\n      ascending: true\n    )\n  ),\n  local!allCaseTypes: rule!CMGT_QR_GetCaseType(\n    returnType: \"DATA_SUBSET\",\n    triggerRefresh: local!triggerRefresh,\n    fields: recordType!CMGT_CFG_CaseType.parentCaseType,\n    isCaseCategory: false(),\n    pagingInfo: local!pagingInfo\n  ),\n  if(\n    a!isNullOrEmpty(local!caseSubmissionSuccessful),\n    rule!CMGT_Portal_Case_CreateCase_FormDisplayWrapper(\n      case: local!case,\n      data: local!data,\n      brandingMap: local!brandingMap,\n      isWide: local!isWide,\n      allCaseTypes: local!allCaseTypes,\n      caseSubmissionSuccessful: local!caseSubmissionSuccessful,\n      pagingInfo: local!pagingInfo\n    ),\n    rule!CMGT_Portal_Sub_CreateCase_Confirmation(\n      case: local!case,\n      brandingMap: local!brandingMap,\n      isCaseSubmissionSuccessful: local!caseSubmissionSuccessful,\n      redirectUrl: local!portalUrl\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "CMGT_INT_GET_PortalConfig",
+      "type": "Integration",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_QR_GetCaseType",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_Portal_Case_CreateCase_FormDisplayWrapper",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_Portal_Sub_CreateCase_Confirmation",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_PORTAL_INT_BATCH_SIZE_MEDIUM_PLUS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_Case",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_CFG_CaseType",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_ControlPanel",
+      "type": "Control Panel",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

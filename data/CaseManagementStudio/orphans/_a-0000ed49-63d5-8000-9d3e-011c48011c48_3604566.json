@@ -1,0 +1,85 @@
+{
+  "uuid": "_a-0000ed49-63d5-8000-9d3e-011c48011c48_3604566",
+  "name": "CMGT_WFL_EmailTemplate_Delete",
+  "type": "Interface",
+  "description": "Interface for confirming the deletion of an email template record",
+  "sail_code": "a!localVariables(\n  local!brandingMap: rule!CMGT_CB_UTIL_LoadBrandingMap(),\n  local!emailTemplateReferenceTasks: rule!CMGT_WFL_QR_GetSendEmailReferenceTasks(\n    returnType: \"TOTAL_COUNT\",\n    emailTemplateUuid: ri!emailTemplate[recordType!CMGT_WFL_CFG_EmailTemplate.emailTemplateUuid]\n  ),\n  local!emailTemplateTaskBlocks: rule!CMGT_WFL_QR_GetSendEmailTaskBlockTasks(\n    returnType: \"TOTAL_COUNT\",\n    emailTemplateUuid: ri!emailTemplate[recordType!CMGT_WFL_CFG_EmailTemplate.emailTemplateUuid]\n  ),\n  local!emailTemplateCaseTypeWorkflowTasks: rule!CMGT_WFL_QR_GetSendEmailCaseTypeWorkflowTasks(\n    returnType: \"TOTAL_COUNT\",\n    emailTemplateUuid: ri!emailTemplate[recordType!CMGT_WFL_CFG_EmailTemplate.emailTemplateUuid]\n  ),\n  local!isEmailTemplateNotReferred: and(\n    tointeger(local!emailTemplateReferenceTasks) = 0,\n    tointeger(local!emailTemplateTaskBlocks) = 0,\n    tointeger(\n      local!emailTemplateCaseTypeWorkflowTasks\n    ) = 0\n  ),\n  #\"SYSTEM_SYSRULES_formLayout_v2\"(\n    titleBar: #\"SYSTEM_SYSRULES_cardLayout\"(\n      contents: {\n        #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n          items: {\n            #\"SYSTEM_SYSRULES_sideBySideItem\"(\n              item: #\"SYSTEM_SYSRULES_stampField\"(\n                icon: \"envelope-open-text\",\n                contentColor: local!brandingMap.StandardStampContentColor,\n                backgroundColor: local!brandingMap.StandardStampBackgroundColor,\n                size: \"TINY\",\n                shape: local!brandingMap.StandardStampShape\n              ),\n              width: \"MINIMIZE\"\n            ),\n            #\"SYSTEM_SYSRULES_sideBySideItem\"(\n              item: #\"SYSTEM_SYSRULES_headingField\"(\n                text: #\"urn:appian:translation-string:v1:02e23d53-2d17-423e-8a88-1cd704f5594f\"(\n                  #\"urn:appian:translation-variable:v1:23dd63bc-a38b-49f7-b1ac-13b0a4abb1cc\": ri!emailTemplate[recordType!CMGT_WFL_CFG_EmailTemplate.templateName]\n                ),\n                size: local!brandingMap.H1Size,\n                headingTag: \"H1\",\n                fontWeight: \"SEMI_BOLD\",\n                marginAbove: \"STANDARD\"\n              )\n            )\n          },\n          alignVertical: \"MIDDLE\",\n          spacing: \"STANDARD\"\n        )\n      },\n      padding: \"STANDARD\",\n      showBorder: false()\n    ),\n    showTitleBarDivider: true(),\n    contents: {\n      #\"SYSTEM_SYSRULES_columnsLayout\"(\n        columns: {\n          #\"SYSTEM_SYSRULES_columnLayout\"(\n            contents: {\n              rule!CMGT_UTIL_DeleteConfirmation(\n                primaryMessage: if(\n                  local!isEmailTemplateNotReferred,\n                  #\"urn:appian:translation-string:v1:6d29f7d9-b6df-42bd-9037-874f34ea553b\",\n                  #\"urn:appian:translation-string:v1:2fa3d3d1-4cde-49a5-b2a0-b0be170daa18\"\n                ),\n                secondaryMessage: if(\n                  local!isEmailTemplateNotReferred,\n                  #\"urn:appian:translation-string:v1:5395a91a-1ead-47d4-8255-138cb24d2295\",\n                  #\"urn:appian:translation-string:v1:86a15c90-6dfa-469c-a8c1-49ca5f3df6eb\"\n                ),\n                stampIcon: \"WARNING\",\n                brandingMap: local!brandingMap,\n                stampColor: local!brandingMap.WarningAccentColor\n              )\n            },\n\n          )\n        }\n      )\n    },\n    isButtonFooterFixed: true,\n    showButtonDivider: true,\n    buttons: #\"SYSTEM_SYSRULES_ButtonLayout\"(\n      primaryButtons: {\n        #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n          label: #\"urn:appian:translation-string:v1:6551b07e-c4d9-47f9-a928-142e557bf898\",\n          style: \"SOLID\",\n          submit: true,\n          showWhen: local!isEmailTemplateNotReferred\n        ),\n        #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n          label: #\"urn:appian:translation-string:v1:5fff53df-8d97-4610-a492-2c37db32f302\",\n          style: \"SOLID\",\n          submit: true,\n          validate: false,\n          saveInto: a!save(ri!emailTemplate, null),\n          showWhen: not(local!isEmailTemplateNotReferred)\n        )\n      },\n      secondaryButtons: {\n        #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n          label: #\"urn:appian:translation-string:v1:651cf177-f30b-485b-900f-8aaf47805737\",\n          style: \"OUTLINE\",\n          submit: true,\n          validate: false,\n          saveInto: a!save(ri!emailTemplate, null),\n          showWhen: local!isEmailTemplateNotReferred\n        )\n      }\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "CMGT_CB_UTIL_LoadBrandingMap",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_WFL_QR_GetSendEmailReferenceTasks",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_WFL_QR_GetSendEmailTaskBlockTasks",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_WFL_QR_GetSendEmailCaseTypeWorkflowTasks",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_DeleteConfirmation",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_WFL_CFG_EmailTemplate",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_WFL_QR_GetEmailTemplates",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

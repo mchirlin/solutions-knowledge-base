@@ -1,0 +1,204 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "CMGT_EXT_RelatedCaseMap_Create",
+    "parent_name": null,
+    "total_objects": 11
+  },
+  "entry_point": {
+    "complexity_score": 8.0,
+    "total_nodes": 5,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "CMGT_EXT_RelatedCaseMap_Create",
+      "complexity_score": 8.0,
+      "total_nodes": 5,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Is Related Cases Null?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Write Case Event History",
+          "type": "internal3.write_records_with_events_to_source",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Write Related Cases Map",
+          "type": "internal3.write_records_with_events_to_source",
+          "next": [
+            "Write Case Event History"
+          ]
+        },
+        {
+          "name": "Is Related Cases Null?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Write Related Cases Map",
+            "End Node"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000eaab-5303-8000-9c24-011c48011c48_994744",
+      "name": "CMGT_GRP_SERVICE_ACCOUNTS",
+      "type": "Constant",
+      "description": "Points to the service account group",
+      "value": "CMGT Service Accounts",
+      "value_type": "http://www.appian.com/ae/types/2009:Group",
+      "calls": [],
+      "called_by": [
+        "CMGT_formatEventInitiator"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9fa-aa45-8000-9bda-011c48011c48_296223",
+      "name": "CMGT_REFID_EVENT_TYPE_CASE_ADD_RELATED_CASE",
+      "type": "Constant",
+      "description": "16 - Added Related Case",
+      "value": "16",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_EXT_RelatedCaseMap_Create"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea95-307e-8000-9c1a-011c48011c48_925412",
+      "name": "CMGT_TXT_AUTOMATED_SYSTEM",
+      "type": "Constant",
+      "description": "Value: Automated System",
+      "value": "Automated System",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_formatEventInitiator"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9fa-aa45-8000-9bda-011c48011c48_293777",
+      "name": "CMGT_CaseEventHistory_Constructor",
+      "type": "Expression Rule",
+      "description": "Construct case event history",
+      "parameters": [],
+      "calls": [
+        "CMGT_EventHistory_Case",
+        "CMGT_formatEventInitiator"
+      ],
+      "called_by": [
+        "CMGT_EXT_RelatedCaseMap_Create"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9ae-873e-8000-9baf-011c48011c48_97439",
+      "name": "CMGT_QR_GetUser",
+      "type": "Expression Rule",
+      "description": "Queries the User record",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "CMGT_formatEventInitiator"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_25890",
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_EXT_RelatedCaseMap_Create",
+        "CMGT_formatEventInitiator"
+      ]
+    },
+    {
+      "uuid": "_a-0000e98b-cfe0-8000-9ba5-011c48011c48_22352",
+      "name": "CMGT_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "description": "Enhanced wrapper rule around a!queryRecord()",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_QR_GetUser"
+      ]
+    },
+    {
+      "uuid": "_a-0000eaab-5303-8000-9c24-011c48011c48_994738",
+      "name": "CMGT_formatEventInitiator",
+      "type": "Expression Rule",
+      "description": "if the initiator is a service account then save \"Automated System\" otherwise save the username",
+      "parameters": [],
+      "calls": [
+        "CMGT_GRP_SERVICE_ACCOUNTS",
+        "CMGT_QR_GetUser",
+        "CMGT_TXT_AUTOMATED_SYSTEM",
+        "CMGT_UTIL_IsBlank"
+      ],
+      "called_by": [
+        "CMGT_CaseEventHistory_Constructor"
+      ]
+    },
+    {
+      "uuid": "0006ec12-a85e-8000-fa57-7f0000014e7a",
+      "name": "CMGT_EXT_RelatedCaseMap_Create",
+      "type": "Process Model",
+      "description": "Create a new CMGT_RelatedCaseMap",
+      "calls": [
+        "CMGT_CaseEventHistory_Constructor",
+        "CMGT_EventHistory_Case",
+        "CMGT_REFID_EVENT_TYPE_CASE_ADD_RELATED_CASE",
+        "CMGT_RelatedCaseMap",
+        "CMGT_UTIL_IsBlank"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "bd89a86f-fdb2-4f93-be3e-6109517f0356",
+      "name": "CMGT_EventHistory_Case",
+      "type": "Record Type",
+      "description": "Business events for CMGT_Case",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "CMGT_CaseEventHistory_Constructor",
+        "CMGT_EXT_RelatedCaseMap_Create"
+      ]
+    },
+    {
+      "uuid": "8b23967a-59c3-40c2-aee1-c961648774b2",
+      "name": "CMGT_RelatedCaseMap",
+      "type": "Record Type",
+      "description": "Maps cases to cases",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "CMGT_EXT_RelatedCaseMap_Create"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "uuid": "_a-0001ed77-88a5-8000-9d49-011c48011c48_3810359",
+  "name": "CMGT_WFL_CaseType_RecordAction_NonCategoryCreateEdit_CreateTasks_SlaSection",
+  "type": "Interface",
+  "description": "Interface for sla section for create new tasks",
+  "sail_code": "a!localVariables(\n  local!sla: rule!CMGT_UTIL_ContructSLAMap(\n    slaJson: index(\n      ri!newReferenceTask,\n      recordType!CMGT_WFL_CFG_ReferenceTask.defaultSla,\n      null\n    )\n  ),\n  local!isEmptySla: rule!CMGT_UTIL_isEmptySLA(slaMap: local!sla),\n  {\n    #\"SYSTEM_SYSRULES_columnsLayout\"(\n      columns: {\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: {\n            #\"SYSTEM_SYSRULES_textField\"(\n              label: #\"urn:appian:translation-string:v1:4794decc-5e8c-4cb6-bf94-0696d49b4fa5\",\n              labelPosition: \"ABOVE\",\n              value: index(local!sla, \"days\", \"\"),\n              saveInto: {\n                /*We are storing the value of Business Days to be false if atleast one\n                                  of the value is given*/\n                a!save(\n                  local!sla,\n                  rule!CMGT_UTIL_ContructSLAMap(\n                    hours: index(local!sla, \"hours\", \"\"),\n                    minutes: index(local!sla, \"minutes\", \"\"),\n                    days: save!value,\n                    isBusinessDays: index(local!sla, \"isBusinessDays\", \"\")\n                  )\n                ),\n                if(\n                  rule!CMGT_UTIL_isEmptySLA(local!sla),\n                  a!save(local!sla, null),\n                  {}\n                ),\n                a!save(\n                  ri!newReferenceTask[recordType!CMGT_WFL_CFG_ReferenceTask.defaultSla],\n                  if(\n                    rule!CMGT_UTIL_IsNotBlank(local!sla),\n                    #\"SYSTEM_SYSRULES_toJson_v1\"(local!sla),\n                    null\n                  )\n                )\n              },\n              validations: rule!CMGT_UTIL_ValidateSLA(value: index(local!sla, \"days\", \"\"))\n            )\n          }\n        ),\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: {\n            #\"SYSTEM_SYSRULES_textField\"(\n              label: #\"urn:appian:translation-string:v1:befd59bf-3568-4c2b-9afd-71b7d6f7060a\",\n              labelPosition: \"ABOVE\",\n              value: index(local!sla, \"hours\", \"\"),\n              saveInto: {\n                /*We are storing the value of Business Days to be false if atleast one\n                                  of the value is given*/\n                a!save(\n                  local!sla,\n                  rule!CMGT_UTIL_ContructSLAMap(\n                    hours: save!value,\n                    minutes: index(local!sla, \"minutes\", \"\"),\n                    days: index(local!sla, \"days\", \"\"),\n                    isBusinessDays: index(local!sla, \"isBusinessDays\", \"\")\n                  )\n                ),\n                if(\n                  rule!CMGT_UTIL_isEmptySLA(local!sla),\n                  a!save(local!sla, null),\n                  {}\n                ),\n                a!save(\n                  ri!newReferenceTask[recordType!CMGT_WFL_CFG_ReferenceTask.defaultSla],\n                  if(\n                    rule!CMGT_UTIL_IsNotBlank(local!sla),\n                    #\"SYSTEM_SYSRULES_toJson_v1\"(local!sla),\n                    null\n                  )\n                )\n              },\n              validations: rule!CMGT_UTIL_ValidateSLA(value: index(local!sla, \"hours\", \"\"))\n            )\n          }\n        ),\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: {\n            #\"SYSTEM_SYSRULES_textField\"(\n              label: #\"urn:appian:translation-string:v1:8011a7b9-c1f3-45f4-9f16-99471296e83d\",\n              labelPosition: \"ABOVE\",\n              value: index(local!sla, \"minutes\", \"\"),\n              saveInto: {\n                /*We are storing the value of Business Days to be false if atleast one\n                                  of the value is given*/\n                a!save(\n                  local!sla,\n                  rule!CMGT_UTIL_ContructSLAMap(\n                    hours: index(local!sla, \"hours\", \"\"),\n                    minutes: save!value,\n                    days: index(local!sla, \"days\", \"\"),\n                    isBusinessDays: index(local!sla, \"isBusinessDays\", \"\")\n                  )\n                ),\n                if(\n                  rule!CMGT_UTIL_isEmptySLA(local!sla),\n                  a!save(local!sla, null),\n                  {}\n                ),\n                a!save(\n                  ri!newReferenceTask[recordType!CMGT_WFL_CFG_ReferenceTask.defaultSla],\n                  if(\n                    rule!CMGT_UTIL_IsNotBlank(local!sla),\n                    #\"SYSTEM_SYSRULES_toJson_v1\"(local!sla),\n                    null\n                  )\n                )\n              },\n              validations: rule!CMGT_UTIL_ValidateSLA(value: index(local!sla, \"minutes\", \"\"))\n            )\n          }\n        )\n      }\n    ),\n    #\"SYSTEM_SYSRULES_checkboxField_v1\"(\n      choiceLabels: #\"urn:appian:translation-string:v1:759245e6-9b85-4710-831f-f11ad593d08a\",\n      choiceValues: true(),\n      labelPosition: \"COLLAPSED\",\n      value: if(\n        rule!CMGT_UTIL_IsNotBlank(\n          input: index(local!sla, \"isBusinessDays\", null)\n        ),\n        if(\n          index(local!sla, \"isBusinessDays\", null),\n          true(),\n          null\n        ),\n        null\n      ),\n      saveInto: {\n        a!save(\n          local!sla,\n          rule!CMGT_UTIL_ContructSLAMap(\n            hours: index(local!sla, \"hours\", \"\"),\n            minutes: index(local!sla, \"minutes\", \"\"),\n            days: index(local!sla, \"days\", \"\"),\n            isBusinessDays: save!value\n          )\n        ),\n        a!save(\n          ri!newReferenceTask[recordType!CMGT_WFL_CFG_ReferenceTask.defaultSla],\n          if(\n            rule!CMGT_UTIL_IsNotBlank(local!sla),\n            #\"SYSTEM_SYSRULES_toJson_v1\"(local!sla),\n            null\n          )\n        )\n      },\n      disabled: local!isEmptySla\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "CMGT_UTIL_ContructSLAMap",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_isEmptySLA",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_IsNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_ValidateSLA",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_WFL_CFG_ReferenceTask",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

@@ -1,0 +1,166 @@
+{
+  "uuid": "_a-0000ed52-9ecc-8000-9d40-011c48011c48_3655604",
+  "name": "CMGT_WFL_SendEmail_Recipients",
+  "type": "Interface",
+  "description": "Contains recipient section for send email task in workflow configuration",
+  "sail_code": "a!localVariables(\n  local!recipientsRoleChoices: #\"SYSTEM_SYSRULES_forEach\"(\n    rule!CMGT_EVAL_ReturnDataForCaseRole_SendEmailRecipients(\n      recordTypeUuid: ri!caseType[recordType!CMGT_CFG_CaseType.uuid],\n      parentRecordTypeUuid: ri!caseType[recordType!CMGT_CFG_CaseType.parentUuid]\n    ),\n    a!map(\n      label: fv!item.displayName,\n      value: joinarray(\n        {\n          fv!item.uuid,\n          if(\n            a!isNullOrEmpty(fv!item.customFieldCode),\n            \"NA\",\n            fv!item.customFieldCode\n          )\n        },\n        \"#\"\n      )\n    )\n  ),\n  local!showAddEmailAddressButton: if(\n    rule!CMGT_UTIL_IsBlank(\n      ri!selectedCaseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.sendEmailCaseTypeWorkflowTask.recipientEmailJson]\n    ),\n    true,\n    false\n  ),\n  {\n    /*Recipients Section of Email template type*/\n    #\"SYSTEM_SYSRULES_textField\"(\n      label: #\"urn:appian:translation-string:v1:7c753d28-92a6-40c3-91ed-7f767274d767\",\n      labelPosition: \"JUSTIFIED\",\n      helpTooltip: #\"urn:appian:translation-string:v1:5d7ada52-391a-4f05-bdad-902a8d49cc3e\",\n      value: \" \",\n      required: true,\n      readOnly: true\n    ),\n    #\"SYSTEM_SYSRULES_cardLayout\"(\n      contents: {\n        #\"SYSTEM_SYSRULES_columnsLayout\"(\n          columns: {\n            #\"SYSTEM_SYSRULES_columnLayout\"(\n              contents: {\n                #\"SYSTEM_SYSRULES_columnsLayout\"(\n                  columns: {\n                    /*Fields*/\n                    #\"SYSTEM_SYSRULES_columnLayout\"(\n                      contents: {\n                        /*Case Roles*/\n                        #\"SYSTEM_SYSRULES_multipleDropdownField_v1\"(\n                          choiceLabels: local!recipientsRoleChoices.label,\n                          choiceValues: local!recipientsRoleChoices.value,\n                          label: #\"urn:appian:translation-string:v1:9948ecfd-269a-41eb-a84f-5825bed32a5d\",\n                          placeholder: #\"urn:appian:translation-string:v1:29aa7fc4-892b-481c-959a-e32641ba77c3\",\n                          value: if(\n                            rule!CMGT_UTIL_IsBlank(\n                              ri!selectedCaseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.sendEmailCaseTypeWorkflowTask.recipientRoleJson]\n                            ),\n                            null,\n                            touniformstring(\n                              #\"SYSTEM_SYSRULES_forEach\"(\n                                items: rule!CMGT_UTIL_ConstructRecipientsMap(\n                                  recipientsJson: ri!selectedCaseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.sendEmailCaseTypeWorkflowTask.recipientRoleJson]\n                                ),\n                                expression: joinarray(\n                                  {\n                                    fv!item.uuid,\n                                    fv!item.customFieldCode\n                                  },\n                                  \"#\"\n                                )\n                              )\n                            )\n                          ),\n                          saveInto: {\n                            a!save(\n                              ri!selectedCaseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.sendEmailCaseTypeWorkflowTask.recipientRoleJson],\n                              if(\n                                rule!CMGT_UTIL_IsBlank(save!value),\n                                null,\n                                #\"SYSTEM_SYSRULES_toJson_v1\"(\n                                  #\"SYSTEM_SYSRULES_forEach\"(\n                                    items: save!value,\n                                    expression: rule!CMGT_UTIL_ConstructRecipientsMap(\n                                      value: {},\n                                      role: index(split(fv!item, \"#\"), 1, null),\n                                      customFieldCode: index(split(fv!item, \"#\"), 2, null)\n                                    )\n                                  )\n                                )\n                              )\n                            ),\n                            a!save(\n                              ri!caseType[recordType!CMGT_CFG_CaseType.caseTypeWorkflowTask],\n                              #\"urn:appian:function:v1:a:update\"(\n                                ri!caseType[recordType!CMGT_CFG_CaseType.caseTypeWorkflowTask],\n                                /*Index of the case type workflow task that we want to update in the ri!caseTypeWorkflowTasks array*/\n                                wherecontains(\n                                  ri!selectedCaseTypeWorkflowTaskUuid,\n                                  ri!caseType[recordType!CMGT_CFG_CaseType.caseTypeWorkflowTask][recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.caseTypeWorkflowTaskUuid]\n                                ),\n                                /*The updated case type workflow task*/\n                                #\"urn:appian:function:v1:a:update\"(\n                                  ri!selectedCaseTypeWorkflowTask,\n                                  recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.sendEmailCaseTypeWorkflowTask.recipientRoleJson,\n                                  ri!selectedCaseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.sendEmailCaseTypeWorkflowTask.recipientRoleJson]\n                                )\n                              )\n                            )\n                          }\n                        ),\n                        /*Groups*/\n                        #\"SYSTEM_SYSRULES_pickerFieldGroups\"(\n                          label: #\"urn:appian:translation-string:v1:0ac44454-e2f2-4068-ba21-2dcc5b89168d\",\n                          placeholder: #\"urn:appian:translation-string:v1:5ac2b928-0f42-4868-9946-fa965f658f89\",\n                          maxSelections: 20,\n                          groupFilter: cons!CMGT_GRP_BUSINESS_GROUPS,\n                          value: a!defaultValue(\n                            #\"SYSTEM_SYSRULES_forEach\"(\n                              items: rule!CMGT_UTIL_ConstructRecipientsMap(\n                                recipientsJson: ri!selectedCaseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.sendEmailCaseTypeWorkflowTask.recipientGroupJson]\n                              ),\n                              expression: fv!item.id\n                            ),\n                            null\n                          ),\n                          saveInto: {\n                            a!save(\n                              ri!selectedCaseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.sendEmailCaseTypeWorkflowTask.recipientGroupJson],\n                              if(\n                                rule!CMGT_UTIL_IsBlank(save!value),\n                                null,\n                                #\"SYSTEM_SYSRULES_toJson_v1\"(rule!CMGT_UTIL_Distinct(save!value))\n                              )\n                            ),\n                            a!save(\n                              ri!caseType[recordType!CMGT_CFG_CaseType.caseTypeWorkflowTask],\n                              #\"urn:appian:function:v1:a:update\"(\n                                ri!caseType[recordType!CMGT_CFG_CaseType.caseTypeWorkflowTask],\n                                /*Index of the case type workflow task that we want to update in the ri!caseTypeWorkflowTasks array*/\n                                wherecontains(\n                                  ri!selectedCaseTypeWorkflowTaskUuid,\n                                  ri!caseType[recordType!CMGT_CFG_CaseType.caseTypeWorkflowTask][recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.caseTypeWorkflowTaskUuid]\n                                ),\n                                #\"urn:appian:function:v1:a:update\"(\n                                  ri!selectedCaseTypeWorkflowTask,\n                                  recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.sendEmailCaseTypeWorkflowTask.recipientGroupJson,\n                                  ri!selectedCaseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.sendEmailCaseTypeWorkflowTask.recipientGroupJson]\n                                )\n                              )\n                            )\n                          }\n                        ),\n                        /*Users*/\n                        #\"SYSTEM_SYSRULES_pickerFieldUsers\"(\n                          label: #\"urn:appian:translation-string:v1:929d8700-8f24-4bde-b13d-5bca1703ac0a\",\n                          placeholder: #\"urn:appian:translation-string:v1:4b6c46ad-5b7d-4fbb-93b5-5241f87d3879\",\n                          maxSelections: 20,\n                          groupFilter: cons!CMGT_GRP_INTERNAL_USERS,\n                          value: a!defaultValue(\n                            #\"SYSTEM_SYSRULES_forEach\"(\n                              items: rule!CMGT_UTIL_ConstructRecipientsMap(\n                                recipientsJson: ri!selectedCaseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.sendEmailCaseTypeWorkflowTask.recipientUserJson]\n                              ),\n                              expression: fv!item.id\n                            ),\n                            null\n                          ),\n                          saveInto: {\n                            a!save(\n                              ri!selectedCaseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.sendEmailCaseTypeWorkflowTask.recipientUserJson],\n                              if(\n                                rule!CMGT_UTIL_IsBlank(save!value),\n                                null,\n                                #\"SYSTEM_SYSRULES_toJson_v1\"(rule!CMGT_UTIL_Distinct(save!value))\n                              )\n                            ),\n                            a!save(\n                              ri!caseType[recordType!CMGT_CFG_CaseType.caseTypeWorkflowTask],\n                              #\"urn:appian:function:v1:a:update\"(\n                                ri!caseType[recordType!CMGT_CFG_CaseType.caseTypeWorkflowTask],\n                                /*Index of the case type workflow task that we want to update in the ri!caseTypeWorkflowTasks array*/\n                                wherecontains(\n                                  ri!selectedCaseTypeWorkflowTaskUuid,\n                                  ri!caseType[recordType!CMGT_CFG_CaseType.caseTypeWorkflowTask][recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.caseTypeWorkflowTaskUuid]\n                                ),\n                                /*The updated case type workflow task*/\n                                #\"urn:appian:function:v1:a:update\"(\n                                  ri!selectedCaseTypeWorkflowTask,\n                                  recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.sendEmailCaseTypeWorkflowTask.recipientUserJson,\n                                  ri!selectedCaseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.sendEmailCaseTypeWorkflowTask.recipientUserJson]\n                                )\n                              )\n                            )\n                          }\n                        ),\n                        /*Add Email Address*/\n                        #\"SYSTEM_SYSRULES_ButtonArrayLayout\"(\n                          buttons: #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n                            label: #\"urn:appian:translation-string:v1:237f8861-2f2b-4a63-ba6b-ceff58550097\",\n                            icon: \"plus-circle\",\n                            saveInto: a!save(local!showAddEmailAddressButton, false),\n                            style: \"LINK\"\n                          ),\n                          showWhen: local!showAddEmailAddressButton,\n                          align: \"START\",\n                          marginBelow: \"NONE\"\n                        ),\n                        #\"SYSTEM_SYSRULES_textField\"(\n                          label: #\"urn:appian:translation-string:v1:f006cc14-8023-457f-8ed8-5a2dbe7548ae\",\n                          instructions: #\"urn:appian:translation-string:v1:9820f1a3-1b8a-4540-9784-4a7b5748f331\",\n                          placeholder: #\"urn:appian:translation-string:v1:10bcb581-d441-465c-a873-a3c03fc17c84\",\n                          value: a!defaultValue(\n                            joinarray(\n                              #\"SYSTEM_SYSRULES_forEach\"(\n                                items: rule!CMGT_UTIL_ConstructRecipientsMap(\n                                  recipientsJson: ri!selectedCaseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.sendEmailCaseTypeWorkflowTask.recipientEmailJson]\n                                ),\n                                expression: fv!item.id\n                              ),\n                              \",\"\n                            ),\n                            null\n                          ),\n                          saveInto: {\n                            a!save(\n                              ri!selectedCaseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.sendEmailCaseTypeWorkflowTask.recipientEmailJson],\n                              if(\n                                rule!CMGT_UTIL_IsBlank(save!value),\n                                null,\n                                #\"SYSTEM_SYSRULES_toJson_v1\"(\n                                  #\"SYSTEM_SYSRULES_forEach\"(\n                                    items: split(save!value, \",\"),\n                                    expression: rule!CMGT_UTIL_ConstructRecipientsMap(id: fv!item),\n\n                                  )\n                                )\n                              )\n                            ),\n                            a!save(\n                              ri!caseType[recordType!CMGT_CFG_CaseType.caseTypeWorkflowTask],\n                              #\"urn:appian:function:v1:a:update\"(\n                                ri!caseType[recordType!CMGT_CFG_CaseType.caseTypeWorkflowTask],\n                                /*Index of the case type workflow task that we want to update in the ri!caseTypeWorkflowTasks array*/\n                                wherecontains(\n                                  ri!selectedCaseTypeWorkflowTaskUuid,\n                                  ri!caseType[recordType!CMGT_CFG_CaseType.caseTypeWorkflowTask][recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.caseTypeWorkflowTaskUuid]\n                                ),\n                                /*The updated case type workflow task*/\n                                #\"urn:appian:function:v1:a:update\"(\n                                  ri!selectedCaseTypeWorkflowTask,\n                                  recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.sendEmailCaseTypeWorkflowTask.recipientEmailJson,\n                                  ri!selectedCaseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.sendEmailCaseTypeWorkflowTask.recipientEmailJson]\n                                )\n                              )\n                            ),\n                            a!save(\n                              local!showAddEmailAddressButton,\n                              if(\n                                rule!CMGT_UTIL_IsBlank(save!value),\n                                true,\n                                false\n                              )\n                            )\n                          },\n                          characterLimit: cons!CMGT_INT_MAX_CHAR_LIMIT_EXTRA_LARGE,\n                          showCharacterCount: false,\n                          showWhen: not(local!showAddEmailAddressButton),\n                          validations: if(\n                            rule!CMGT_UTIL_IsNotBlank(\n                              input: #\"SYSTEM_SYSRULES_forEach\"(\n                                items: rule!CMGT_UTIL_ConstructRecipientsMap(\n                                  recipientsJson: ri!selectedCaseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.sendEmailCaseTypeWorkflowTask.recipientEmailJson]\n                                ),\n                                expression: rule!CMGT_UTIL_ValidateEmail(textInput: fv!item.id)\n                              )\n                            ),\n                            #\"urn:appian:translation-string:v1:2e42156d-f514-47e3-b81d-c6b6d69f9ecd\",\n                            {},\n\n                          ),\n                          validationGroup: cons!CMGT_TXT_EMAIL_ADDRESSES_VALIDATION_GROUP\n                        )\n                      },\n                      width: \"MEDIUM_PLUS\"\n                    )\n                  },\n                  alignVertical: \"TOP\",\n                  marginBelow: \"NONE\",\n                  spacing: \"NONE\"\n                )\n              }\n            )\n          },\n          alignVertical: \"BOTTOM\",\n          marginBelow: \"NONE\",\n          spacing: \"NONE\"\n        )\n      },\n      height: \"AUTO\",\n      style: ri!brandingMap.ConfigBackgroundColor,\n      shape: \"SEMI_ROUNDED\",\n      padding: \"LESS\",\n      marginBelow: \"NONE\",\n      showBorder: false\n    ),\n    #\"SYSTEM_SYSRULES_sectionLayout_v1\"(\n      validations: {\n        #\"SYSTEM_SYSRULES_validationMessage\"(\n          message: #\"urn:appian:translation-string:v1:b37f791b-ed82-4209-b6b4-ae06ed92a355\",\n          validateAfter: \"SUBMIT\"\n        )\n      },\n      marginAbove: \"LESS\",\n      marginBelow: \"NONE\",\n      showWhen: and(\n        rule!CMGT_UTIL_IsBlank(\n          ri!selectedCaseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.sendEmailCaseTypeWorkflowTask.recipientRoleJson]\n        ),\n        rule!CMGT_UTIL_IsBlank(\n          ri!selectedCaseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.sendEmailCaseTypeWorkflowTask.recipientGroupJson]\n        ),\n        rule!CMGT_UTIL_IsBlank(\n          ri!selectedCaseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.sendEmailCaseTypeWorkflowTask.recipientUserJson]\n        ),\n        rule!CMGT_UTIL_IsBlank(\n          ri!selectedCaseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.sendEmailCaseTypeWorkflowTask.recipientEmailJson]\n        )\n      )\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "CMGT_EVAL_ReturnDataForCaseRole_SendEmailRecipients",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_ConstructRecipientsMap",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_Distinct",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_IsNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_ValidateEmail",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_GRP_BUSINESS_GROUPS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_GRP_INTERNAL_USERS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_INT_MAX_CHAR_LIMIT_EXTRA_LARGE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_TXT_EMAIL_ADDRESSES_VALIDATION_GROUP",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_CFG_CaseType",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_WFL_CFG_CaseTypeWorkflowTask",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_LoadBrandingMap",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_WFL_CFG_ReferenceTask",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_WFL_CFG_SendEmailReferenceTask",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_WFL_CFG_SendEmailCaseTypeWorkflowTask",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "CMGT_WFL_CaseType_ConfigureTask_Task_SendEmailSection",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

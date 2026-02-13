@@ -1,0 +1,210 @@
+{
+  "uuid": "_a-0001ed77-88a5-8000-9d49-011c48011c48_3813509",
+  "name": "CMGT_Task_RecordAction_WorkflowEdit_CreateNewTasks_TaskDetailsSection",
+  "type": "Interface",
+  "description": "sub interface form for capturing Task details of the New Task from Modify Workflow ",
+  "sail_code": "a!localVariables(\n  local!defaultDecisionResponseOption: recordType!CMGT_TaskResponseOption(\n    recordType!CMGT_TaskResponseOption.isActive: true,\n    recordType!CMGT_TaskResponseOption.label: \"\"\n  ),\n  {\n    #\"SYSTEM_SYSRULES_textField\"(\n      label: #\"urn:appian:translation-string:v1:570e1c7d-29de-4357-8d92-a79bcbf922e0\",\n      value: ri!currentNewTask[recordType!CMGT_Task.title],\n      saveInto: ri!currentNewTask[recordType!CMGT_Task.title],\n      characterLimit: cons!CMGT_INT_MAX_CHAR_LIMIT_MEDIUM,\n      showCharacterCount: false,\n      required: true,\n      requiredMessage: #\"urn:appian:translation-string:v1:4fab94dc-fcb1-427a-af9f-1239079b2897\"(\n        #\"urn:appian:translation-variable:v1:3e31b6d5-df20-4d17-80a7-81f3c83ff370\": #\"urn:appian:translation-string:v1:570e1c7d-29de-4357-8d92-a79bcbf922e0\"\n      )\n    ),\n    /* Description */\n    rule!CMGT_UTIL_RichTextField(\n      value: ri!currentNewTask[recordType!CMGT_Task.description],\n      readOnly: false(),\n      label: #\"urn:appian:translation-string:v1:6ae27e88-ca52-4cde-831a-a6e6c2cd57e9\",\n      helpTooltip: #\"urn:appian:translation-string:v1:1540dd99-3992-4217-b534-43440de2fc7f\"\n    ),\n    #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n      items: {\n        #\"SYSTEM_SYSRULES_sideBySideItem\"(\n          item: #\"SYSTEM_SYSRULES_dropdownField_v1\"(\n            data: #\"SYSTEM_SYSRULES_recordData\"(\n              recordType: recordType!CMGT_CFG_TaskBehaviorType,\n              filters: #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n                operator: \"AND\",\n                filters: #\"SYSTEM_SYSRULES_queryFilter\"(\n                  field: recordType!CMGT_CFG_TaskBehaviorType.taskBehaviorTypeId,\n                  operator: \"<>\",\n                  value: cons!CMGT_REFID_TASK_BEHAVIOR_TYPE_AUTOMATION\n                )\n              )\n            ),\n            choiceLabels: recordType!CMGT_CFG_TaskBehaviorType.label,\n            choiceValues: recordType!CMGT_CFG_TaskBehaviorType.taskBehaviorTypeId,\n            label: #\"urn:appian:translation-string:v1:87b80513-1e00-457f-92aa-c7df18190cd5\",\n            placeholder: #\"urn:appian:translation-string:v1:88737b77-6273-41ec-bcc3-c41bacb44d4a\",\n            value: ri!currentNewTask[recordType!CMGT_Task.taskBehaviorType.taskBehaviorTypeId],\n            saveInto: {\n              ri!currentNewTask[recordType!CMGT_Task.taskBehaviorType.taskBehaviorTypeId],\n              ri!currentNewTask[recordType!CMGT_Task.taskBehaviorTypeId],\n              a!save(\n                ri!currentNewTask[recordType!CMGT_Task.taskBehaviorType],\n                rule!CMGT_QR_GetTaskBehaviorType(\n                  returnType: \"SINGLE_OBJECT\",\n                  additionalFilters: #\"SYSTEM_SYSRULES_queryFilter\"(\n                    field: recordType!CMGT_CFG_TaskBehaviorType.taskBehaviorTypeId,\n                    operator: \"=\",\n                    value: ri!currentNewTask[recordType!CMGT_Task.taskBehaviorType.taskBehaviorTypeId]\n                  )\n                )\n              ),\n              a!save(\n                ri!currentNewTask[recordType!CMGT_Task.taskResponseOptions],\n                if(\n                  ri!currentNewTask[recordType!CMGT_Task.taskBehaviorType.taskBehaviorTypeId] = cons!CMGT_REFID_TASK_BEHAVIOR_TYPE_DECISION,\n                  append(\n                    ri!currentNewTask[recordType!CMGT_Task.taskResponseOptions],\n                    #\"SYSTEM_SYSRULES_forEach\"(\n                      items: enumerate(2) + 1,\n                      expression: #\"urn:appian:function:v1:a:update\"(\n                        local!defaultDecisionResponseOption,\n                        {\n                          recordType!CMGT_TaskResponseOption.sortOrder,\n                          recordType!CMGT_TaskResponseOption.taskResponseOptionUuid\n                        },\n                        {\n                          fv!index,\n                          rule!CMGT_UTIL_GenerateUuid_NonPlugin()\n                        }\n                      )\n                    ),\n\n                  ),\n                  {}\n                )\n              ),\n              /*Clear the question out if the task type is not decision*/\n              if(\n                ri!currentNewTask[recordType!CMGT_Task.taskBehaviorType.taskBehaviorTypeId] <> cons!CMGT_REFID_TASK_BEHAVIOR_TYPE_DECISION,\n                a!save(\n                  ri!currentNewTask[recordType!CMGT_Task.questionLabel],\n                  null\n                ),\n                {}\n              ),\n              /*Clear the group assignee out if the task type is automated*/\n              a!save(\n                ri!currentNewTask[recordType!CMGT_Task.roles],\n                if(\n                  ri!currentNewTask[recordType!CMGT_Task.taskBehaviorType.isAutomated],\n                  null,\n                  ri!currentNewTask[recordType!CMGT_Task.roles],\n\n                )\n              ),\n              /*Clear the SLA days out if the task type is automated*/\n              a!save(\n                ri!currentNewTask[recordType!CMGT_Task.sla],\n                if(\n                  ri!currentNewTask[recordType!CMGT_Task.taskBehaviorType.isAutomated],\n                  null,\n                  ri!currentNewTask[recordType!CMGT_Task.sla],\n\n                )\n              ),\n              /*Clear the case type & relationship field if the task type dropdown is changed*/\n              a!save(\n                ri!currentNewTask[recordType!CMGT_Task.createCaseTask],\n                null\n              ),\n              /*Clear the Send Email task if the task type dropdown is changed*/\n              a!save(\n                ri!currentNewTask[recordType!CMGT_Task.sendEmailTask],\n                null\n              )\n            },\n            required: true,\n            requiredMessage: #\"urn:appian:translation-string:v1:4fab94dc-fcb1-427a-af9f-1239079b2897\"(\n              #\"urn:appian:translation-variable:v1:3e31b6d5-df20-4d17-80a7-81f3c83ff370\": #\"urn:appian:translation-string:v1:87b80513-1e00-457f-92aa-c7df18190cd5\"\n            )\n          )\n        ),\n        #\"SYSTEM_SYSRULES_sideBySideItem\"(\n          item: #\"SYSTEM_SYSRULES_dropdownField_v1\"(\n            choiceLabels: ri!activeMilestones[recordType!CMGT_Milestone.label],\n            choiceValues: ri!activeMilestones[recordType!CMGT_Milestone.referenceMilestoneUuid],\n            label: #\"urn:appian:translation-string:v1:c29825ed-83d5-4ac7-9f29-775ca7c372a9\",\n            placeholder: #\"urn:appian:translation-string:v1:b071927f-f35c-480c-b24e-2113ee671aed\",\n            value: ri!currentNewTask[recordType!CMGT_Task.milestone.referenceMilestoneUuid],\n            saveInto: {\n              a!save(\n                ri!currentNewTask[recordType!CMGT_Task.milestone],\n                rule!CMGT_UTIL_Filter(\n                  records: ri!activeMilestones,\n                  field: recordType!CMGT_Milestone.referenceMilestoneUuid,\n                  value: save!value\n                )\n              ),\n\n            }\n          ),\n          showWhen: rule!CMGT_UTIL_IsNotBlank(ri!activeMilestones)\n        )\n      },\n      marginBelow: a!match(\n        value: ri!currentNewTask[recordType!CMGT_Task.taskBehaviorType.taskBehaviorTypeId],\n        whenTrue: a!isNullOrEmpty(fv!value),\n        then: \"EVEN_LESS\",\n        equals: cons!CMGT_REFID_TASK_BEHAVIOR_TYPE_DOCUMENT_UPLOAD,\n        then: \"EVEN_LESS\",\n        equals: cons!CMGT_REFID_TASK_BEHAVIOR_TYPE_DECISION,\n        then: \"STANDARD\",\n        equals: cons!CMGT_REFID_TASK_BEHAVIOR_TYPE_CONFIRMATION,\n        then: \"EVEN_LESS\",\n        equals: cons!CMGT_REFID_TASK_BEHAVIOR_TYPE_CREATE_CASE,\n        then: \"STANDARD\",\n        equals: cons!CMGT_REFID_TASK_BEHAVIOR_TYPE_SEND_EMAIL,\n        then: \"STANDARD\",\n        default: \"EVEN_LESS\"\n      )\n    ),\n    #\"SYSTEM_SYSRULES_columnsLayout\"(\n      columns: {\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: {\n            a!match(\n              value: ri!currentNewTask[recordType!CMGT_Task.taskBehaviorType.taskBehaviorTypeId],\n              /*Document Upload*/\n              equals: cons!CMGT_REFID_TASK_BEHAVIOR_TYPE_DOCUMENT_UPLOAD,\n              then: {},\n              equals: cons!CMGT_REFID_TASK_BEHAVIOR_TYPE_DECISION,\n              then: {\n                #\"SYSTEM_SYSRULES_textField\"(\n                  label: #\"urn:appian:translation-string:v1:1d75c2e0-04ea-4b38-97fd-62fb1a14f0f4\",\n                  helpTooltip: #\"urn:appian:translation-string:v1:2d58f145-74bd-433d-b33b-2d4f0568704b\",\n                  value: ri!currentNewTask[recordType!CMGT_Task.questionLabel],\n                  saveInto: ri!currentNewTask[recordType!CMGT_Task.questionLabel],\n                  characterLimit: cons!CMGT_INT_MAX_CHAR_LIMIT_MEDIUM,\n                  required: true,\n                  requiredMessage: #\"urn:appian:translation-string:v1:4fab94dc-fcb1-427a-af9f-1239079b2897\"(\n                    #\"urn:appian:translation-variable:v1:3e31b6d5-df20-4d17-80a7-81f3c83ff370\": #\"urn:appian:translation-string:v1:1d75c2e0-04ea-4b38-97fd-62fb1a14f0f4\"\n                  )\n                ),\n                #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                  value: #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                    text: #\"urn:appian:translation-string:v1:773c4e60-8a60-4dbf-834c-bb4ef201b786\",\n                    style: \"STRONG\"\n                  )\n                ),\n                #\"SYSTEM_SYSRULES_forEach\"(\n                  items: ri!currentNewTask[recordType!CMGT_Task.taskResponseOptions],\n                  expression: {\n                    #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n                      alignVertical: \"MIDDLE\",\n                      items: {\n                        #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                          width: \"MINIMIZE\",\n                          item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                            value: #\"SYSTEM_SYSRULES_richTextItem_v1\"(text: fv!index, style: \"STRONG\")\n                          )\n                        ),\n                        #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                          item: #\"SYSTEM_SYSRULES_textField\"(\n                            label: #\"urn:appian:translation-string:v1:9731a5c4-f9d3-439e-9256-2bead6cb98b7\"(\n                              #\"urn:appian:translation-variable:v1:e5dab292-88a7-4032-b649-3c55fcb88189\": fv!index\n                            ),\n                            labelPosition: \"COLLAPSED\",\n                            requiredMessage: #\"urn:appian:translation-string:v1:91314f57-1a7a-4999-88b8-7e6bab124c67\",\n                            value: fv!item[recordType!CMGT_TaskResponseOption.label],\n                            saveInto: fv!item[recordType!CMGT_TaskResponseOption.label],\n                            characterLimit: cons!CMGT_INT_MAX_CHAR_LIMIT_MEDIUM\n                          )\n                        ),\n                        #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                          item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                            labelPosition: \"COLLAPSED\",\n                            value: {\n                              #\"SYSTEM_SYSRULES_richTextIcon\"(\n                                showWhen: rule!CMGT_UTIL_IsBlank(\n                                  fv!item[recordType!CMGT_TaskResponseOption.taskResponseOptionId]\n                                ),\n                                icon: \"times\",\n                                color: \"NEGATIVE\",\n                                size: \"MEDIUM\",\n                                linkStyle: \"STANDALONE\",\n                                link: #\"SYSTEM_SYSRULES_dynamicLink\"(\n                                  saveInto: if(\n                                    a!isNullOrEmpty(\n                                      fv!item[recordType!CMGT_TaskResponseOption.taskResponseOptionId]\n                                    ),\n                                    a!save(\n                                      ri!currentNewTask[recordType!CMGT_Task.taskResponseOptions],\n                                      remove(\n                                        ri!currentNewTask[recordType!CMGT_Task.taskResponseOptions],\n                                        fv!index\n                                      )\n                                    ),\n                                    a!save(\n                                      fv!item,\n                                      #\"urn:appian:function:v1:a:update\"(\n                                        fv!item,\n                                        recordType!CMGT_TaskResponseOption.isActive,\n                                        false\n                                      )\n                                    )\n                                  )\n                                ),\n                                altText: #\"urn:appian:translation-string:v1:2a483bf9-c1f6-41dc-9d02-b9e65747a006\"(\n                                  #\"urn:appian:translation-variable:v1:ee534079-3e08-4c59-ae4d-ef3d8cfb6155\": fv!index\n                                )\n                              )\n                            }\n                          ),\n                          width: \"MINIMIZE\"\n                        )\n                      }\n                    )\n                  }\n                ),\n                #\"SYSTEM_SYSRULES_ButtonArrayLayout\"(\n                  showWhen: count(\n                    ri!currentNewTask[recordType!CMGT_Task.taskResponseOptions]\n                  ) < 5,\n                  buttons: #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n                    style: \"LINK\",\n                    size: \"SMALL\",\n                    icon: \"plus-circle\",\n                    label: #\"urn:appian:translation-string:v1:3efef77c-5d03-4add-b1a2-6fdf7f39d690\",\n                    saveInto: {\n                      a!save(\n                        ri!currentNewTask[recordType!CMGT_Task.taskResponseOptions],\n                        append(\n                          ri!currentNewTask[recordType!CMGT_Task.taskResponseOptions],\n                          #\"urn:appian:function:v1:a:update\"(\n                            local!defaultDecisionResponseOption,\n                            {\n                              recordType!CMGT_TaskResponseOption.sortOrder,\n                              recordType!CMGT_TaskResponseOption.taskResponseOptionUuid\n                            },\n                            {\n                              count(\n                                ri!currentNewTask[recordType!CMGT_Task.taskResponseOptions]\n                              ) + 1,\n                              rule!CMGT_UTIL_GenerateUuid_NonPlugin()\n                            }\n                          )\n                        )\n                      ),\n\n                    },\n                    accessibilityText: #\"urn:appian:translation-string:v1:9e159048-eba6-486b-9a68-0a8e9f01b555\"\n                  ),\n                  align: \"START\",\n                  marginAbove: \"NONE\",\n                  marginBelow: \"NONE\"\n                )\n              },\n              equals: cons!CMGT_REFID_TASK_BEHAVIOR_TYPE_CONFIRMATION,\n              then: {},\n              equals: cons!CMGT_REFID_TASK_BEHAVIOR_TYPE_CREATE_CASE,\n              then: {\n                #\"SYSTEM_SYSRULES_dropdownField_v1\"(\n                  label: #\"urn:appian:translation-string:v1:28ea68dc-457f-4863-9e77-b36020dbeb4b\",\n                  data: #\"SYSTEM_SYSRULES_recordData\"(\n                    recordType: recordType!CMGT_CFG_CaseType,\n                    filters: #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n                      operator: \"AND\",\n                      filters: {\n                        #\"SYSTEM_SYSRULES_queryFilter\"(\n                          field: recordType!CMGT_CFG_CaseType.isCategory,\n                          operator: \"=\",\n                          value: false()\n                        ),\n                        #\"SYSTEM_SYSRULES_queryFilter\"(\n                          field: recordType!CMGT_CFG_CaseType.isActive,\n                          operator: \"=\",\n                          value: true()\n                        ),\n                        #\"SYSTEM_SYSRULES_queryFilter\"(\n                          field: recordType!CMGT_CFG_CaseType.parentCaseType.isActive,\n                          operator: \"=\",\n                          value: true()\n                        )\n                      }\n                    )\n                  ),\n                  placeholder: #\"urn:appian:translation-string:v1:d91269ae-78f6-4736-b22a-ea742a59e80d\",\n                  choiceLabels: recordType!CMGT_CFG_CaseType.fullLabel,\n                  choiceValues: recordType!CMGT_CFG_CaseType.uuid,\n                  value: ri!currentNewTask[recordType!CMGT_Task.createCaseTask.caseTypeUuid],\n                  saveInto: ri!currentNewTask[recordType!CMGT_Task.createCaseTask.caseTypeUuid],\n                  required: true(),\n                  requiredMessage: #\"urn:appian:translation-string:v1:4fab94dc-fcb1-427a-af9f-1239079b2897\"(#\"urn:appian:translation-variable:v1:3e31b6d5-df20-4d17-80a7-81f3c83ff370\": #\"urn:appian:translation-string:v1:28ea68dc-457f-4863-9e77-b36020dbeb4b\")\n                ),\n                #\"SYSTEM_SYSRULES_dropdownField_v1\"(\n                  label: #\"urn:appian:translation-string:v1:f967743d-71a3-4f23-8107-b8f1ebc38396\",\n                  data: #\"SYSTEM_SYSRULES_recordData\"(\n                    recordType: recordType!CMGT_CFG_RelationshipMapType,\n                    filters: #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n                      operator: \"AND\",\n                      filters: {\n                        #\"SYSTEM_SYSRULES_queryFilter\"(\n                          field: recordType!CMGT_CFG_RelationshipMapType.type,\n                          operator: \"=\",\n                          value: \"CASE_TO_CASE\"\n                        ),\n                        #\"SYSTEM_SYSRULES_queryFilter\"(\n                          field: recordType!CMGT_CFG_RelationshipMapType.isActive,\n                          operator: \"=\",\n                          value: true()\n                        )\n                      }\n                    )\n                  ),\n                  placeholder: #\"urn:appian:translation-string:v1:3831f890-1fc6-41e0-8732-dedfe0749174\",\n                  choiceLabels: recordType!CMGT_CFG_RelationshipMapType.relationship.label,\n                  choiceValues: recordType!CMGT_CFG_RelationshipMapType.relationshipMapTypeId,\n                  value: ri!currentNewTask[recordType!CMGT_Task.createCaseTask.relationshipToOriginalCase],\n                  saveInto: ri!currentNewTask[recordType!CMGT_Task.createCaseTask.relationshipToOriginalCase]\n                )\n              },\n              equals: cons!CMGT_REFID_TASK_BEHAVIOR_TYPE_SEND_EMAIL,\n              then: {\n                rule!CMGT_Task_RecordAction_WorkflowEdit_CreateNewSendEmailTasks(\n                  currentNewTask: ri!currentNewTask,\n                  selectedEmailTemplate: ri!selectedEmailTemplate,\n                  isEmailTemplatePreview: ri!isEmailTemplatePreview,\n                  sendEmailTaskSelection: ri!sendEmailTaskSelection\n                )\n              },\n              default: {}\n            )\n          }\n        )\n      },\n      marginBelow: a!match(\n        value: ri!currentNewTask[recordType!CMGT_Task.taskBehaviorType.taskBehaviorTypeId],\n        whenTrue: a!isNullOrEmpty(fv!value),\n        then: \"NONE\",\n        equals: cons!CMGT_REFID_TASK_BEHAVIOR_TYPE_DOCUMENT_UPLOAD,\n        then: \"NONE\",\n        equals: cons!CMGT_REFID_TASK_BEHAVIOR_TYPE_DECISION,\n        then: \"NONE\",\n        equals: cons!CMGT_REFID_TASK_BEHAVIOR_TYPE_CONFIRMATION,\n        then: \"NONE\",\n        equals: cons!CMGT_REFID_TASK_BEHAVIOR_TYPE_CREATE_CASE,\n        then: \"EVEN_LESS\",\n        equals: cons!CMGT_REFID_TASK_BEHAVIOR_TYPE_SEND_EMAIL,\n        then: \"EVEN_LESS\",\n        default: \"EVEN_LESS\"\n      )\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "CMGT_UTIL_RichTextField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_QR_GetTaskBehaviorType",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_GenerateUuid_NonPlugin",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_Filter",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_IsNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_Task_RecordAction_WorkflowEdit_CreateNewSendEmailTasks",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_INT_MAX_CHAR_LIMIT_MEDIUM",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_TASK_BEHAVIOR_TYPE_AUTOMATION",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_TASK_BEHAVIOR_TYPE_DECISION",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_TASK_BEHAVIOR_TYPE_DOCUMENT_UPLOAD",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_TASK_BEHAVIOR_TYPE_CONFIRMATION",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_TASK_BEHAVIOR_TYPE_CREATE_CASE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_TASK_BEHAVIOR_TYPE_SEND_EMAIL",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_TaskResponseOption",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_Task",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_CFG_TaskBehaviorType",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_Milestone",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_CFG_CaseType",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_CFG_RelationshipMapType",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

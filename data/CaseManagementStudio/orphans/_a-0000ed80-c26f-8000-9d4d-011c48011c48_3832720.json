@@ -1,0 +1,26 @@
+{
+  "uuid": "_a-0000ed80-c26f-8000-9d4d-011c48011c48_3832720",
+  "name": "CMGT_QR_getTaskAssignmentHistory",
+  "type": "Expression Rule",
+  "description": "QR to get task assignment history",
+  "sail_code": "rule!CMGT_UTIL_QueryRecord(\n  recordType: recordType!CMGT_TaskAssignmentHistory,\n  returnType: ri!returnType,\n  triggerRefresh: ri!triggerRefresh,\n  executeWhen: ri!executeWhen,\n  pagingInfo: ri!pagingInfo,\n  sort: a!defaultValue(\n    ri!sortInfo,\n    #\"SYSTEM_SYSRULES_sortInfo\"(\n      field: recordType!CMGT_TaskAssignmentHistory.createdOn,\n      ascending: false()\n    )\n  ),\n  filters: {\n    ri!additionalFilters,\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!CMGT_TaskAssignmentHistory.assignmentRuleId,\n      operator: \"in\",\n      value: ri!assignmentRuleId,\n      applyWhen: a!isNotNullOrEmpty(ri!assignmentRuleId)\n    ),\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!CMGT_TaskAssignmentHistory.assignmentVersion,\n      operator: \"=\",\n      value: ri!assignmentVersion,\n      applyWhen: a!isNotNullOrEmpty(ri!assignmentVersion)\n    ),\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!CMGT_TaskAssignmentHistory.role.roleTypeId,\n      operator: \"=\",\n      value: ri!roleTypeId,\n      applyWhen: a!isNotNullOrEmpty(ri!roleTypeId)\n    ),\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!CMGT_TaskAssignmentHistory.taskBehaviorTypeId,\n      operator: \"=\",\n      value: ri!taskBehaviorTypeId,\n      applyWhen: a!isNotNullOrEmpty(ri!taskBehaviorTypeId)\n    ),\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!CMGT_TaskAssignmentHistory.routingType,\n      operator: \"=\",\n      value: ri!routingType,\n      applyWhen: a!isNotNullOrEmpty(ri!routingType)\n    )\n  },\n  fields: {\n    ri!fields,\n    recordType!CMGT_TaskAssignmentHistory.role\n  },\n  logicalExpressions: ri!additionalLogicalExpressions,\n  groupByFields: ri!groupByFields,\n  relatedRecordData: ri!relatedRecordData\n)",
+  "calls": [
+    {
+      "name": "CMGT_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_TaskAssignmentHistory",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "CMGT_AUTO_EVAL_TaskAssignment_RouteTaskToUserOrGroup",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

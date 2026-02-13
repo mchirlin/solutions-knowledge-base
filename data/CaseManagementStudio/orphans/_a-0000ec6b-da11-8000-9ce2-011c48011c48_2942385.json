@@ -1,0 +1,61 @@
+{
+  "uuid": "_a-0000ec6b-da11-8000-9ce2-011c48011c48_2942385",
+  "name": "CMGT_Task_ModifyWorkflowEventConstructor",
+  "type": "Expression Rule",
+  "description": "construct the events that should be written during the modify workflow action",
+  "sail_code": "a!match(\n  value: ri!isNewOccurrence,\n  equals: true(),\n  then: rule!CMGT_UTIL_RejectBlank(\n    array: {\n      /*    Task creation      */\n      rule!CMGT_TaskEventHistory_Constructor(\n        taskId: ri!task[recordType!CMGT_Task.taskId],\n        initiator: cons!CMGT_TXT_PROCESS_AUTOMATION,\n        eventTypeId: cons!CMGT_REFID_EVENT_TYPE_TASK_CREATE,\n        details: a!map(\n          taskBehaviorType: ri!task[recordType!CMGT_Task.taskBehaviorType.label]\n        )\n      ),\n      /*Check status*/\n      if(\n        ri!task[recordType!CMGT_Task.statusId] <> ri!previousTaskOccurrence[recordType!CMGT_Task.statusId],\n        rule!CMGT_TaskEventHistory_Constructor(\n          taskId: ri!task[recordType!CMGT_Task.taskId],\n          initiator: ri!initiator,\n          eventTypeId: cons!CMGT_REFID_EVENT_TYPE_TASK_UPDATE_STATUS,\n          details: a!map(\n            value: ri!task[recordType!CMGT_Task.status.statusLabel],\n            taskBehaviorType: ri!task[recordType!CMGT_Task.taskBehaviorType.label]\n          )\n        ),\n        null\n      ),\n      /*Check name(title) */\n      if(\n        ri!task[recordType!CMGT_Task.title] <> ri!previousTaskOccurrence[recordType!CMGT_Task.title],\n        rule!CMGT_TaskEventHistory_Constructor(\n          taskId: ri!task[recordType!CMGT_Task.taskId],\n          initiator: ri!initiator,\n          eventTypeId: cons!CMGT_REFID_EVENT_TYPE_TASK_UPDATE_NAME,\n          details: a!map(\n            originalValue: ri!previousTaskOccurrence[recordType!CMGT_Task.title],\n            newValue: ri!task[recordType!CMGT_Task.title],\n            taskBehaviorType: ri!task[recordType!CMGT_Task.taskBehaviorType.label]\n          )\n        ),\n        null\n      ),\n      /*Check description*/\n      if(\n        ri!task[recordType!CMGT_Task.description] <> ri!previousTaskOccurrence[recordType!CMGT_Task.description],\n        rule!CMGT_TaskEventHistory_Constructor(\n          taskId: ri!task[recordType!CMGT_Task.taskId],\n          initiator: ri!initiator,\n          eventTypeId: cons!CMGT_REFID_EVENT_TYPE_TASK_UPDATE_ACTIVITY,\n          details: a!map(\n            taskBehaviorType: ri!task[recordType!CMGT_Task.taskBehaviorType.label]\n          )\n        ),\n        null\n      )\n    }\n  ),\n  default: if(\n    rule!CMGT_UTIL_IsBlank(ri!originalTask),\n    rule!CMGT_TaskEventHistory_Constructor(\n      taskId: ri!task[recordType!CMGT_Task.taskId],\n      initiator: ri!initiator,\n      eventTypeId: cons!CMGT_REFID_EVENT_TYPE_TASK_CREATE,\n      details: a!map(\n        taskBehaviorType: ri!task[recordType!CMGT_Task.taskBehaviorType.label]\n      )\n    ),\n    rule!CMGT_UTIL_RejectBlank(\n      {\n        /*Check status*/\n        if(\n          ri!task[recordType!CMGT_Task.statusId] <> ri!originalTask[recordType!CMGT_Task.statusId],\n          rule!CMGT_TaskEventHistory_Constructor(\n            taskId: ri!task[recordType!CMGT_Task.taskId],\n            initiator: ri!initiator,\n            eventTypeId: cons!CMGT_REFID_EVENT_TYPE_TASK_UPDATE_STATUS,\n            details: a!map(\n              value: ri!task[recordType!CMGT_Task.status.statusLabel],\n              taskBehaviorType: ri!task[recordType!CMGT_Task.taskBehaviorType.label]\n            )\n          ),\n          null\n        ),\n        /*Check name(title) */\n        if(\n          ri!task[recordType!CMGT_Task.title] <> ri!originalTask[recordType!CMGT_Task.title],\n          rule!CMGT_TaskEventHistory_Constructor(\n            taskId: ri!task[recordType!CMGT_Task.taskId],\n            initiator: ri!initiator,\n            eventTypeId: cons!CMGT_REFID_EVENT_TYPE_TASK_UPDATE_NAME,\n            details: a!map(\n              originalValue: ri!originalTask[recordType!CMGT_Task.title],\n              newValue: ri!task[recordType!CMGT_Task.title],\n              taskBehaviorType: ri!task[recordType!CMGT_Task.taskBehaviorType.label]\n            )\n          ),\n          null\n        ),\n        /*Check description*/\n        if(\n          ri!task[recordType!CMGT_Task.description] <> ri!originalTask[recordType!CMGT_Task.description],\n          rule!CMGT_TaskEventHistory_Constructor(\n            taskId: ri!task[recordType!CMGT_Task.taskId],\n            initiator: ri!initiator,\n            eventTypeId: cons!CMGT_REFID_EVENT_TYPE_TASK_UPDATE_ACTIVITY,\n            details: a!map(\n              taskBehaviorType: ri!task[recordType!CMGT_Task.taskBehaviorType.label]\n            )\n          ),\n          null\n        )\n      }\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "CMGT_UTIL_RejectBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_TaskEventHistory_Constructor",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_TXT_PROCESS_AUTOMATION",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_EVENT_TYPE_TASK_CREATE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_EVENT_TYPE_TASK_UPDATE_STATUS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_EVENT_TYPE_TASK_UPDATE_NAME",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_EVENT_TYPE_TASK_UPDATE_ACTIVITY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_Task",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "CMGT_Task_SetEvents",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

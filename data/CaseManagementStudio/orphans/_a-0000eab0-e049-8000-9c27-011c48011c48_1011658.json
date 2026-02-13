@@ -1,0 +1,226 @@
+{
+  "uuid": "_a-0000eab0-e049-8000-9c27-011c48011c48_1011658",
+  "name": "CMGT_Task_SetEvents",
+  "type": "Expression Rule",
+  "description": "Rule to construct all task events",
+  "sail_code": "/*Only one not listed is tasks because they have separate sub processes that include audit capture*/\n#\"SYSTEM_SYSRULES_forEach\"(\n  items: ri!tasks,\n  expression: a!localVariables(\n    local!originalTask: rule!CMGT_UTIL_Filter(\n      records: ri!originalTasks,\n      field: recordType!CMGT_Task.taskInstanceUuid,\n      value: fv!item[recordType!CMGT_Task.taskInstanceUuid]\n    ),\n    local!isNewOccurrence: and(\n      rule!CMGT_UTIL_IsBlank(\n        fv!item[recordType!CMGT_Task.taskId]\n      ),\n      tointeger(\n        fv!item[recordType!CMGT_Task.instanceCount]\n      ) > 1\n    ),\n    local!previousTaskOccurrence: rule!CMGT_UTIL_Filter(\n      records: ri!originalTasks,\n      field: recordType!CMGT_Task.taskUuid,\n      value: fv!item[recordType!CMGT_Task.taskUuid]\n    ),\n    local!conditionSets: a!match(\n      value: fv!item[recordType!CMGT_Task.taskBehaviorTypeId],\n      equals: cons!CMGT_REFID_TASK_BEHAVIOR_TYPE_AUTOMATION,\n      then: if(\n        rule!CMGT_UTIL_IsBlank(\n          fv!item[recordType!CMGT_Task.conditionSet]\n        ),\n        rule!CMGT_QR_GetConditionSet(\n          additionalFilters: #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: recordType!CMGT_ConditionSet.taskId,\n            operator: \"in\",\n            value: {\n              fv!item[recordType!CMGT_Task.taskId]\n            },\n            applyWhen: rule!CMGT_UTIL_IsNotBlank(\n              fv!item[recordType!CMGT_Task.taskId]\n            )\n          )\n        ),\n        fv!item[recordType!CMGT_Task.conditionSet]\n      ),\n      default: {}\n    ),\n    /*check on any conditions failed to evaluate in the automation rule*/\n    local!inValidConditions: if(\n      rule!CMGT_UTIL_IsNotBlank(local!conditionSets),\n      rule!CMGT_UTIL_Filter(\n        records: rule!CMGT_UTIL_Filter(\n          records: a!flatten(\n            local!conditionSets[recordType!CMGT_ConditionSet.childConditionSet]\n          ),\n          field: recordType!CMGT_ConditionSet.isActive,\n          value: true\n        )[recordType!CMGT_ConditionSet.condition],\n        fieldValuePairs: {\n          a!map(\n            field: recordType!CMGT_Condition.isActive,\n            value: true\n          ),\n          a!map(\n            field: recordType!CMGT_Condition.isValid,\n            value: false\n          )\n        }\n      ),\n      {}\n    ),\n    local!isInValidConditions: if(\n      rule!CMGT_UTIL_IsNotBlank(local!inValidConditions),\n      if(\n        contains(\n          touniformstring(\n            #\"SYSTEM_SYSRULES_forEach\"(\n              items: a!flatten(local!inValidConditions),\n              expression: if(\n                rule!CMGT_UTIL_IsNotBlank(\n                  fv!item[recordType!CMGT_Condition.fieldPathJson]\n                ),\n                #\"SYSTEM_SYSRULES_fromJson_v1\"(\n                  fv!item[recordType!CMGT_Condition.fieldPathJson]\n                ).fieldType,\n                false\n              )\n            )\n          ),\n          \"CHOICE_LIST\"\n        ),\n        true,\n        false\n      ),\n      {}\n    ),\n    local!isAutomationTask: tointeger(\n      fv!item[recordType!CMGT_Task.taskBehaviorTypeId]\n    ) = cons!CMGT_REFID_TASK_BEHAVIOR_TYPE_AUTOMATION,\n    local!automationType: if(\n      local!isAutomationTask,\n      index(\n        rule!CMGT_UTIL_Filter(\n          records: rule!CMGT_CFG_ENUM_ACTIONS(),\n          field: \"actionCode\",\n          value: fv!item[recordType!CMGT_Task.automationTaskAction.actionCode]\n        ),\n        \"name\",\n        null\n      ),\n      {}\n    ),\n    #\"urn:appian:function:v1:a:update\"(\n      fv!item,\n      recordType!CMGT_Task.eventHistory,\n      a!flatten(\n        {\n          /*EVENTS THAT ARE PROCESS-SPECIFIC (based on \"eventType\" input)*/\n          /*- For specific event types, look at the CMGT_CFG_EVENT_TYPE_TASK table*/\n          a!match(\n            value: ri!eventType,\n            equals: \"CREATE\",\n            then: rule!CMGT_TaskEventHistory_Constructor(\n              taskId: fv!item[recordType!CMGT_Task.taskId],\n              initiator: ri!initiator,\n              eventTypeId: if(\n                local!isAutomationTask,\n                cons!CMGT_REFID_EVENT_TYPE_TASK_ADD_ACTIVITY,\n                cons!CMGT_REFID_EVENT_TYPE_TASK_CREATE\n              ),\n              details: if(\n                local!isAutomationTask,\n                a!map(\n                  automationType: local!automationType,\n                  taskBehaviorType: fv!item[recordType!CMGT_Task.taskBehaviorType.label]\n                ),\n                a!map(\n                  taskBehaviorType: fv!item[recordType!CMGT_Task.taskBehaviorType.label]\n                )\n              )\n            ),\n            equals: \"OPEN\",\n            then: {\n              if(\n                local!isNewOccurrence,\n                rule!CMGT_TaskEventHistory_Constructor(\n                  taskId: fv!item[recordType!CMGT_Task.taskId],\n                  initiator: ri!initiator,\n                  eventTypeId: if(\n                    local!isAutomationTask,\n                    cons!CMGT_REFID_EVENT_TYPE_TASK_ADD_ACTIVITY,\n                    cons!CMGT_REFID_EVENT_TYPE_TASK_CREATE\n                  ),\n                  details: if(\n                    local!isAutomationTask,\n                    a!map(\n                      automationType: local!automationType,\n                      taskBehaviorType: fv!item[recordType!CMGT_Task.taskBehaviorType.label]\n                    ),\n                    a!map(\n                      taskBehaviorType: fv!item[recordType!CMGT_Task.taskBehaviorType.label]\n                    )\n                  )\n                ),\n                {}\n              ),\n              if(\n                fv!item[recordType!CMGT_Task.statusId] = cons!CMGT_REFID_STATUS_TASK_READY,\n                rule!CMGT_TaskEventHistory_Constructor(\n                  taskId: fv!item[recordType!CMGT_Task.taskId],\n                  initiator: ri!initiator,\n                  eventTypeId: cons!CMGT_REFID_EVENT_TYPE_TASK_MARKED_ACTIVITY_AS_READY,\n                  details: if(\n                    local!isAutomationTask,\n                    a!map(\n                      automationType: local!automationType,\n                      taskBehaviorType: fv!item[recordType!CMGT_Task.taskBehaviorType.label]\n                    ),\n                    a!map(\n                      taskBehaviorType: fv!item[recordType!CMGT_Task.taskBehaviorType.label]\n                    )\n                  )\n                ),\n                {}\n              )\n            },\n            equals: \"OPEN_NEXT_TASK\",\n            then: {\n              if(\n                local!isNewOccurrence,\n                rule!CMGT_TaskEventHistory_Constructor(\n                  taskId: fv!item[recordType!CMGT_Task.taskId],\n                  initiator: ri!initiator,\n                  eventTypeId: if(\n                    local!isAutomationTask,\n                    cons!CMGT_REFID_EVENT_TYPE_TASK_ADD_ACTIVITY,\n                    cons!CMGT_REFID_EVENT_TYPE_TASK_CREATE\n                  ),\n                  details: if(\n                    local!isAutomationTask,\n                    a!map(\n                      automationType: local!automationType,\n                      taskBehaviorType: fv!item[recordType!CMGT_Task.taskBehaviorType.label]\n                    ),\n                    a!map(\n                      taskBehaviorType: fv!item[recordType!CMGT_Task.taskBehaviorType.label]\n                    )\n                  )\n                ),\n                {}\n              ),\n              if(\n                fv!item[recordType!CMGT_Task.statusId] = cons!CMGT_REFID_STATUS_TASK_READY,\n                rule!CMGT_TaskEventHistory_Constructor(\n                  taskId: fv!item[recordType!CMGT_Task.taskId],\n                  initiator: ri!initiator,\n                  eventTypeId: cons!CMGT_REFID_EVENT_TYPE_TASK_MARKED_ACTIVITY_AS_READY,\n                  details: if(\n                    local!isAutomationTask,\n                    a!map(\n                      automationType: local!automationType,\n                      taskBehaviorType: fv!item[recordType!CMGT_Task.taskBehaviorType.label]\n                    ),\n                    a!map(\n                      taskBehaviorType: fv!item[recordType!CMGT_Task.taskBehaviorType.label]\n                    )\n                  )\n                ),\n                /*In smart workflow when the task(decision or automation) completed is looped to same task then\n                all the tasks in the path will be reopened if already completed. So only the first task will be marked as\n                ready and dependent task will be marked as queued*/\n                if(\n                  fv!item[recordType!CMGT_Task.statusId] = cons!CMGT_REFID_STATUS_TASK_QUEUED,\n                  rule!CMGT_TaskEventHistory_Constructor(\n                    taskId: fv!item[recordType!CMGT_Task.taskId],\n                    initiator: ri!initiator,\n                    eventTypeId: cons!CMGT_REFID_EVENT_TYPE_TASK_UPDATE_STATUS,\n                    details: a!map(\n                      value: rule!CMGT_QR_GetStatus(\n                        statusId: fv!item[recordType!CMGT_Task.statusId],\n                        fields: recordType!CMGT_CFG_Status.statusLabel\n                      )[recordType!CMGT_CFG_Status.statusLabel],\n                      taskBehaviorType: fv!item[recordType!CMGT_Task.taskBehaviorType.label]\n                    )\n                  ),\n                  {}\n                )\n              )\n            },\n            equals: \"UPDATE_STATUS\",\n            then: rule!CMGT_TaskEventHistory_Constructor(\n              taskId: fv!item[recordType!CMGT_Task.taskId],\n              initiator: ri!initiator,\n              eventTypeId: cons!CMGT_REFID_EVENT_TYPE_TASK_UPDATE_STATUS,\n              details: a!map(\n                value: fv!item[recordType!CMGT_Task.status.statusLabel],\n                taskBehaviorType: fv!item[recordType!CMGT_Task.taskBehaviorType.label]\n              )\n            ),\n            equals: \"SET_DUE_ON\",\n            then: rule!CMGT_TaskEventHistory_Constructor(\n              taskId: fv!item[recordType!CMGT_Task.taskId],\n              initiator: ri!initiator,\n              eventTypeId: cons!CMGT_REFID_EVENT_TYPE_TASK_UPDATE_DUE_DATE,\n              details: a!map(\n                taskBehaviorType: fv!item[recordType!CMGT_Task.taskBehaviorType.label]\n              )\n            ),\n            equals: \"UPDATE_NAME\",\n            then: rule!CMGT_TaskEventHistory_Constructor(\n              taskId: fv!item[recordType!CMGT_Task.taskId],\n              initiator: ri!initiator,\n              eventTypeId: cons!CMGT_REFID_EVENT_TYPE_TASK_UPDATE_NAME,\n              details: if(\n                local!isAutomationTask,\n                a!map(\n                  originalValue: local!originalTask[recordType!CMGT_Task.title],\n                  newValue: fv!item[recordType!CMGT_Task.title],\n                  automationType: local!automationType,\n                  taskBehaviorType: fv!item[recordType!CMGT_Task.taskBehaviorType.label]\n                ),\n                a!map(\n                  originalValue: local!originalTask[recordType!CMGT_Task.title],\n                  newValue: fv!item[recordType!CMGT_Task.title],\n                  taskBehaviorType: fv!item[recordType!CMGT_Task.taskBehaviorType.label]\n                )\n              )\n            ),\n            equals: \"COMPLETE\",\n            then: {\n              if(\n                local!isInValidConditions,\n                rule!CMGT_TaskEventHistory_Constructor(\n                  taskId: fv!item[recordType!CMGT_Task.taskId],\n                  initiator: cons!CMGT_TXT_PROCESS_AUTOMATION,\n                  eventTypeId: cons!CMGT_REFID_EVENT_TYPE_TASK_FAILED_TO_EVALUATE_RULE,\n                  details: a!map(\n                    value: #\"urn:appian:translation-string:v1:960ea924-89e5-4006-bc5c-2719ad9d6a7e\"\n                  )\n                ),\n                {}\n              ),\n              rule!CMGT_TaskEventHistory_Constructor(\n                taskId: fv!item[recordType!CMGT_Task.taskId],\n                initiator: if(\n                  local!isAutomationTask,\n                  cons!CMGT_TXT_PROCESS_AUTOMATION,\n                  ri!initiator\n                ),\n                eventTypeId: if(\n                  fv!item[recordType!CMGT_Task.statusId] = cons!CMGT_REFID_STATUS_TASK_NOT_NEEDED,\n                  cons!CMGT_REFID_EVENT_TYPE_TASK_NOT_NEEDED,\n                  cons!CMGT_REFID_EVENT_TYPE_TASK_COMPLETE\n                ),\n                details: if(\n                  fv!item[recordType!CMGT_Task.statusId] = cons!CMGT_REFID_STATUS_TASK_NOT_NEEDED,\n                  if(\n                    local!isAutomationTask,\n                    a!map(\n                      automationType: local!automationType,\n                      taskBehaviorType: fv!item[recordType!CMGT_Task.taskBehaviorType.label]\n                    ),\n                    a!map(\n                      taskBehaviorType: fv!item[recordType!CMGT_Task.taskBehaviorType.label]\n                    )\n                  ),\n                  a!match(\n                    value: fv!item[recordType!CMGT_Task.taskBehaviorTypeId],\n                    equals: cons!CMGT_REFID_TASK_BEHAVIOR_TYPE_DECISION,\n                    then: a!map(\n                      taskBehaviorType: fv!item[recordType!CMGT_Task.taskBehaviorType.label],\n                      taskResponseOptionLabelKey: displayvalue(\n                        fv!item[recordType!CMGT_Task.taskResponseOptionId],\n                        fv!item[recordType!CMGT_Task.taskResponseOptions.taskResponseOptionId],\n                        fv!item[recordType!CMGT_Task.taskResponseOptions.label],\n                        null\n                      )\n                    ),\n                    equals: cons!CMGT_REFID_TASK_BEHAVIOR_TYPE_DOCUMENT_UPLOAD,\n                    then: a!map(\n                      taskBehaviorType: fv!item[recordType!CMGT_Task.taskBehaviorType.label],\n                      value: joinarray(\n                        #\"SYSTEM_SYSRULES_forEach\"(\n                          items: fv!item[recordType!CMGT_Task.documents],\n                          expression: document(\n                            documentId: fv!item[recordType!CMGT_Document.appianDocId],\n                            property: \"name\"\n                          ) & \".\" & lower(\n                            document(\n                              documentId: fv!item[recordType!CMGT_Document.appianDocId],\n                              property: \"extension\"\n                            )\n                          )\n                        ),\n                        \",\"\n                      )\n                    ),\n                    equals: cons!CMGT_REFID_TASK_BEHAVIOR_TYPE_CREATE_CASE,\n                    then: a!map(\n                      taskBehaviorType: fv!item[recordType!CMGT_Task.taskBehaviorType.label],\n                      newCaseId: fv!item[recordType!CMGT_Task.taskCaseMap.caseId]\n                    ),\n                    equals: cons!CMGT_REFID_TASK_BEHAVIOR_TYPE_SEND_EMAIL,\n                    then: a!map(\n                      taskBehaviorType: fv!item[recordType!CMGT_Task.taskBehaviorType.label],\n                      subject: fv!item[recordType!CMGT_Task.sendEmailTask.subject]\n                    ),\n                    equals: cons!CMGT_REFID_TASK_BEHAVIOR_TYPE_AUTOMATION,\n                    then: if(\n                      fv!item[recordType!CMGT_Task.automationTaskAction.actionCode] = cons!CMGT_CFG_TXT_ACT_SEND_EMAIL,\n                      a!map(\n                        automationType: local!automationType,\n                        taskBehaviorType: fv!item[recordType!CMGT_Task.taskBehaviorType.label],\n                        subject: fv!item[recordType!CMGT_Task.sendEmailTask.subject]\n                      ),\n                      a!map(\n                        taskBehaviorType: fv!item[recordType!CMGT_Task.taskBehaviorType.label],\n                        automationType: local!automationType\n                      )\n                    ),\n                    default: a!map(\n                      taskBehaviorType: fv!item[recordType!CMGT_Task.taskBehaviorType.label]\n                    )\n                  )\n                )\n              )\n            },\n            equals: \"UPDATE\",\n            then: rule!CMGT_TaskEventHistory_Constructor(\n              taskId: fv!item[recordType!CMGT_Task.taskId],\n              initiator: ri!initiator,\n              eventTypeId: cons!CMGT_REFID_EVENT_TYPE_TASK_UPDATE_ACTIVITY,\n              details: if(\n                local!isAutomationTask,\n                a!map(\n                  automationType: local!automationType,\n                  taskBehaviorType: fv!item[recordType!CMGT_Task.taskBehaviorType.label]\n                ),\n                a!map(\n                  taskBehaviorType: fv!item[recordType!CMGT_Task.taskBehaviorType.label]\n                )\n              )\n            ),\n            equals: \"MODIFY_WORKFLOW\",\n            then: if(\n              local!isAutomationTask,\n              rule!CMGT_Automation_ModifyWorkflowEventConstructor(\n                task: fv!item,\n                originalTask: local!originalTask,\n                initiator: ri!initiator,\n                newAutomationGoToBranches: ri!taskBranches,\n                automationType: local!automationType\n              ),\n              rule!CMGT_Task_ModifyWorkflowEventConstructor(\n                task: fv!item,\n                originalTask: local!originalTask,\n                initiator: ri!initiator,\n                previousTaskOccurrence: local!previousTaskOccurrence,\n                isNewOccurrence: local!isNewOccurrence\n              )\n            ),\n            equals: \"INFINITE_AUTOMATION_EXIT\",\n            then: rule!CMGT_TaskEventHistory_Constructor(\n              taskId: fv!item[recordType!CMGT_Task.taskId],\n              initiator: ri!initiator,\n              eventTypeId: cons!CMGT_REFID_EVENT_TYPE_TASK_WORKFLOW_EXIT,\n              details: a!map(\n                value: #\"urn:appian:translation-string:v1:32779755-d4b4-423a-91e8-1921abf7710e\"(\n                  #\"urn:appian:translation-variable:v1:5ad77ebe-519e-4430-8581-788799022117\": local!automationType,\n                  #\"urn:appian:translation-variable:v1:408566a5-8a3b-4d35-82e5-98b62c733069\": cons!CMGT_INT_MAX_NUMBER_OF_AUTOMATION_EXECUTIONS\n                )\n              )\n            ),\n            equals: \"UPDATE_EMAIL\",\n            then: rule!CMGT_TaskEventHistory_Constructor(\n              taskId: fv!item[recordType!CMGT_Task.taskId],\n              initiator: ri!initiator,\n              details: a!map(\n                subject: fv!item[recordType!CMGT_Task.sendEmailTask.subject]\n              ),\n              eventTypeId: cons!CMGT_REFID_EVENT_TYPE_TASK_UPDATE_EMAIL\n            ),\n            default: {}\n          ),\n          /*EVENTS THAT ARE NON-PROCESS-SPECIFIC (based on \"what children are populated\")*/\n          /* - Roles*/\n          rule!CMGT_Role_SetEvents(\n            roles: fv!item[recordType!CMGT_Task.roles],\n            initiator: ri!initiator,\n            context: \"TASK\",\n            originalRoles: local!originalTask[recordType!CMGT_Task.roles]\n          ),\n          /*- Documents*/\n          rule!CMGT_Document_SetEvents(\n            documents: fv!item[recordType!CMGT_Task.documents],\n            initiator: ri!initiator\n          ),\n          /* - Comments*/\n          rule!CMGT_Comment_SetEvents(\n            comments: fv!item[recordType!CMGT_Task.comments],\n            initiator: ri!initiator,\n            context: \"TASK\"\n          ),\n          \n        }\n      )\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "CMGT_UTIL_Filter",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_QR_GetConditionSet",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_IsNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_CFG_ENUM_ACTIONS",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_TaskEventHistory_Constructor",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_QR_GetStatus",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_Automation_ModifyWorkflowEventConstructor",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_Task_ModifyWorkflowEventConstructor",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_Role_SetEvents",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_Document_SetEvents",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_Comment_SetEvents",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_REFID_TASK_BEHAVIOR_TYPE_AUTOMATION",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_EVENT_TYPE_TASK_ADD_ACTIVITY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_EVENT_TYPE_TASK_CREATE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_STATUS_TASK_READY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_EVENT_TYPE_TASK_MARKED_ACTIVITY_AS_READY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_STATUS_TASK_QUEUED",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_EVENT_TYPE_TASK_UPDATE_STATUS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_EVENT_TYPE_TASK_UPDATE_DUE_DATE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_EVENT_TYPE_TASK_UPDATE_NAME",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_TXT_PROCESS_AUTOMATION",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_EVENT_TYPE_TASK_FAILED_TO_EVALUATE_RULE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_STATUS_TASK_NOT_NEEDED",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_EVENT_TYPE_TASK_NOT_NEEDED",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_EVENT_TYPE_TASK_COMPLETE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_TASK_BEHAVIOR_TYPE_DECISION",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_TASK_BEHAVIOR_TYPE_DOCUMENT_UPLOAD",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_TASK_BEHAVIOR_TYPE_CREATE_CASE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_TASK_BEHAVIOR_TYPE_SEND_EMAIL",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_CFG_TXT_ACT_SEND_EMAIL",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_EVENT_TYPE_TASK_UPDATE_ACTIVITY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_EVENT_TYPE_TASK_WORKFLOW_EXIT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_INT_MAX_NUMBER_OF_AUTOMATION_EXECUTIONS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_EVENT_TYPE_TASK_UPDATE_EMAIL",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_Task",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_ConditionSet",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_Condition",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_CFG_Status",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_Document",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "CMGT_Task_SetMetaData",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

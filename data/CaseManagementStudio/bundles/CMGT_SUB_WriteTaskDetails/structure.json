@@ -1,0 +1,689 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "CMGT_SUB_WriteTaskDetails",
+    "parent_name": null,
+    "total_objects": 25
+  },
+  "entry_point": {
+    "complexity_score": 21.0,
+    "total_nodes": 11,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "CMGT_SUB_WriteTaskDetails",
+      "complexity_score": 21.0,
+      "total_nodes": 11,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Is Tasks Empty?"
+          ]
+        },
+        {
+          "name": "End Event",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Set Meta Data",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write Tasks"
+          ]
+        },
+        {
+          "name": "Write Tasks",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Has Branches?"
+          ]
+        },
+        {
+          "name": "Is Tasks Empty?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Set Meta Data (No)",
+            "End Event (Yes)"
+          ]
+        },
+        {
+          "name": "Write Task Branches",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Send Email Task Available?"
+          ]
+        },
+        {
+          "name": "Has Branches?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Send Email Task Available?",
+            "Write Task Branches"
+          ]
+        },
+        {
+          "name": "Get Email templates To be Copied",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Copy Documents"
+          ]
+        },
+        {
+          "name": "Copy Documents",
+          "type": "SUBPROCESS",
+          "next": [
+            "End Node"
+          ],
+          "subprocess": "CMGT_SUB_CopyAndUpdateEmailAttachments"
+        },
+        {
+          "name": "Send Email Task Available?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Get Email templates To be Copied",
+            "End Node"
+          ]
+        }
+      ]
+    },
+    "subprocesses": [
+      {
+        "name": "CMGT_SUB_CopyAndUpdateEmailAttachments",
+        "complexity_score": 24.0,
+        "total_nodes": 12,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Is Attachments Empty?"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Create Sub Folder inside Case Folder",
+            "type": "Create Folder",
+            "next": [
+              "Move documents Empty?"
+            ]
+          },
+          {
+            "name": "End Event",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Move documents Empty?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Move Documents (No)",
+              "Copy documents Empty? (Yes)"
+            ]
+          },
+          {
+            "name": "is Folder Empty?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Create Sub Folder inside Case Folder (Yes)",
+              "Move documents Empty? (No)"
+            ]
+          },
+          {
+            "name": "Copy documents Empty?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Copy Document & Update Email Attachments (No)",
+              "End Event (Yes)"
+            ]
+          },
+          {
+            "name": "Copy Document & Update Email Attachments",
+            "type": "com.appiancorp.ps.solutions.copydocumentsmartservice",
+            "next": [
+              "Write Email Template Attachments"
+            ]
+          },
+          {
+            "name": "Move Documents",
+            "type": "Move Document",
+            "next": [
+              "Copy documents Empty?"
+            ]
+          },
+          {
+            "name": "Is Attachments Empty?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Get Folder Id (No)",
+              "End Node"
+            ]
+          },
+          {
+            "name": "Write Email Template Attachments",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "End Event"
+            ]
+          },
+          {
+            "name": "Get Folder Id",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "is Folder Empty?"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ed52-9ecc-8000-9d40-011c48011c48_3646859",
+      "name": "CMGT_TXT_EMAIL_TEMPLATE_ATTACHMENTS",
+      "type": "Constant",
+      "description": "Constant to store - Email Template Attachments",
+      "value": "Email Template Attachments",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_SUB_CopyAndUpdateEmailAttachments"
+      ]
+    },
+    {
+      "uuid": "_a-0000eae8-3efb-8000-9c3d-011c48011c48_1186062",
+      "name": "CMGT_TXT_PROCESS_AUTOMATION",
+      "type": "Constant",
+      "description": "Value: Process  Automation",
+      "value": "Process Automation",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_SUB_WriteTaskDetails",
+        "CMGT_Task_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e98b-cfe0-8000-9ba5-011c48011c48_19509",
+      "name": "CMGT_QR_GetCase",
+      "type": "Expression Rule",
+      "description": "Queries the CMGT_Case record",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_SUB_WriteTaskDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_25461",
+      "name": "CMGT_Task_SetMetaData",
+      "type": "Expression Rule",
+      "description": "Set meta data fields for CMGT_Task",
+      "parameters": [],
+      "calls": [
+        "CMGT_Comment",
+        "CMGT_Document",
+        "CMGT_TXT_PROCESS_AUTOMATION",
+        "CMGT_Task",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_IsNotBlank",
+        "CMGT_UTIL_SetRecordFields"
+      ],
+      "called_by": [
+        "CMGT_SUB_WriteTaskDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000eab0-e049-8000-9c27-011c48011c48_1007763",
+      "name": "CMGT_Task_WriteRecordsProperties",
+      "type": "Expression Rule",
+      "description": "Defines what relationships should be stripped before writing and what child FKs should be reattached after writing",
+      "parameters": [],
+      "calls": [
+        "CMGT_Task",
+        "CMGT_UTIL_DropNonWritableRelationshipsFromRecord",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ],
+      "called_by": [
+        "CMGT_SUB_WriteTaskDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000eab0-e049-8000-9c27-011c48011c48_1011527",
+      "name": "CMGT_UTIL_DropNonWritableRelationshipsFromRecord",
+      "type": "Expression Rule",
+      "description": "The main rule to drop non-writeable relationships from a record before writing in the case the child record is considered changed, which would break the write",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_Milestone",
+        "CMGT_Task",
+        "CMGT_TaskBranch"
+      ],
+      "called_by": [
+        "CMGT_Task_WriteRecordsProperties"
+      ]
+    },
+    {
+      "uuid": "af326a29-a1c8-4399-a28d-996f85819d9e",
+      "name": "CMGT_UTIL_Filter",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case"
+      ],
+      "called_by": [
+        "CMGT_SUB_WriteTaskDetails",
+        "CMGT_Task_SetMetaData",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9e5-e5dd-8000-9bc7-011c48011c48_232566",
+      "name": "CMGT_UTIL_GetSubFolderByType",
+      "type": "Expression Rule",
+      "description": "Returns the sub-folder by its type, based on naming conventions. Searches for any child folder of the parentFolderId that contains the input folderType, and returns the parentFolderId if no child is found.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_SUB_CopyAndUpdateEmailAttachments"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_25890",
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_SUB_CopyAndUpdateEmailAttachments",
+        "CMGT_SUB_WriteTaskDetails",
+        "CMGT_Task_SetMetaData",
+        "CMGT_UTIL_IsNotBlank",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable",
+        "CMGT_UTIL_SetRecordFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9d3-70bf-8000-9bbd-011c48011c48_180568",
+      "name": "CMGT_UTIL_IsNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around CMGT_UTIL_IsBlank",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_IsBlank"
+      ],
+      "called_by": [
+        "CMGT_SUB_CopyAndUpdateEmailAttachments",
+        "CMGT_SUB_WriteTaskDetails",
+        "CMGT_Task",
+        "CMGT_Task_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000eaa7-a5c0-8000-9c22-011c48011c48_973190",
+      "name": "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable",
+      "type": "Expression Rule",
+      "description": "The main rule to merge the ID-output of a write records nodes to the input process variable (including all child FKs). IMPORTANT NOTES in comments in the rule.",
+      "parameters": [],
+      "calls": [
+        "CMGT_CFG_CaseType",
+        "CMGT_Case",
+        "CMGT_Comment",
+        "CMGT_CommentUserTag",
+        "CMGT_Document",
+        "CMGT_Milestone",
+        "CMGT_Task",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_RemoveRecordRelationshipsWithSingleKey_Reducer",
+        "CMGT_UTIL_SetRecordFields"
+      ],
+      "called_by": [
+        "CMGT_Task_WriteRecordsProperties"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9d3-70bf-8000-9bbd-011c48011c48_180481",
+      "name": "CMGT_UTIL_RejectBlank",
+      "type": "Expression Rule",
+      "description": "Rule to removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_SUB_WriteTaskDetails",
+        "CMGT_UTIL_SetRecordFields"
+      ]
+    },
+    {
+      "uuid": "9248008e-2c2c-4eea-bb28-4a3c89838403",
+      "name": "CMGT_UTIL_RemoveRecordRelationshipsWithSingleKey_Reducer",
+      "type": "Expression Rule",
+      "description": null,
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_33778",
+      "name": "CMGT_UTIL_SetRecordFields",
+      "type": "Expression Rule",
+      "description": "Runs a bulk update on a record object, setting new values for its fields",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_RejectBlank"
+      ],
+      "called_by": [
+        "CMGT_Task_SetMetaData",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "0007ed56-f27b-8000-1f6f-7f0000014e7a",
+      "name": "CMGT_SUB_CopyAndUpdateEmailAttachments",
+      "type": "Process Model",
+      "description": "Process model to create subfolder, copy & update CMGT_EmailTemplateAttachments",
+      "calls": [
+        "CMGT_Case",
+        "CMGT_EmailTemplateAttachments",
+        "CMGT_TXT_EMAIL_TEMPLATE_ATTACHMENTS",
+        "CMGT_UTIL_GetSubFolderByType",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_IsNotBlank"
+      ],
+      "called_by": [
+        "CMGT_SUB_WriteTaskDetails"
+      ]
+    },
+    {
+      "uuid": "000fed8c-cc2c-8000-21af-7f0000014e7a",
+      "name": "CMGT_SUB_WriteTaskDetails",
+      "type": "Process Model",
+      "description": "This process model is used to write task and task branches",
+      "calls": [
+        "CMGT_Case",
+        "CMGT_EmailTemplateAttachments",
+        "CMGT_QR_GetCase",
+        "CMGT_SUB_CopyAndUpdateEmailAttachments",
+        "CMGT_TXT_PROCESS_AUTOMATION",
+        "CMGT_Task",
+        "CMGT_TaskBranch",
+        "CMGT_Task_SetMetaData",
+        "CMGT_Task_WriteRecordsProperties",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_IsNotBlank",
+        "CMGT_UTIL_RejectBlank"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "82aa3b28-94c2-4d3c-a403-bb813bd76155",
+      "name": "CMGT_CFG_CaseType",
+      "type": "Record Type",
+      "description": "MODIFIED FOR 2.0 KB AND EML MODULE RELEASE - Case Types",
+      "actions": [
+        "updateMetadata",
+        "editWorkflow",
+        "editMilestones",
+        "editWorkflowEmptyState",
+        "editWorkflowEmptyState2",
+        "createAutomationRule",
+        "addResource"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_Task",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "d81cdd0e-c54d-4b8e-beec-b7ae37fefe7f",
+      "name": "CMGT_Case",
+      "type": "Record Type",
+      "description": "MODIFIED FOR 2.0 KB , EML MODULE RELEASE , SMART SEARCH - Cases.",
+      "actions": [
+        "createCase",
+        "bulkUpdateCases",
+        "updateCase",
+        "updateProperty",
+        "addEntityToCase",
+        "updateRelatedCases",
+        "manageAssignee",
+        "manageWatcher",
+        "addTags",
+        "uploadDocuments",
+        "addComment",
+        "modifyWorkflow",
+        "updateContact",
+        "composeEmail"
+      ],
+      "views": [
+        "#\"urn:appian:translation-string:v1:a3a3c015-e0c6-4bd2-b78a-aaf392495bdd\"",
+        "#\"urn:appian:translation-string:v1:2f4f2cde-9986-47cb-ac2a-1ecfeeddc693\"",
+        "#\"urn:appian:translation-string:v1:455edb96-9d9a-4038-b43e-d10aa9a3a811\"",
+        "#\"urn:appian:translation-string:v1:6f32eac5-d5de-4502-9a1f-4d3184aac8d2\"",
+        "#\"urn:appian:translation-string:v1:86481b57-9608-4720-9198-578bfd8b8385\"",
+        "#\"urn:appian:translation-string:v1:297cf25d-abb6-4d91-b9ed-ab0139f56398\"",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_CFG_CaseType",
+        "CMGT_Comment",
+        "CMGT_Document",
+        "CMGT_Milestone",
+        "CMGT_QR_GetCase",
+        "CMGT_Task"
+      ],
+      "called_by": [
+        "CMGT_Comment",
+        "CMGT_Document",
+        "CMGT_Milestone",
+        "CMGT_QR_GetCase",
+        "CMGT_SUB_CopyAndUpdateEmailAttachments",
+        "CMGT_SUB_WriteTaskDetails",
+        "CMGT_Task",
+        "CMGT_UTIL_DropNonWritableRelationshipsFromRecord",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable",
+        "CMGT_UTIL_SetRecordFields"
+      ]
+    },
+    {
+      "uuid": "e57250b0-f216-4a23-afd9-39e7d532d302-cmgt",
+      "name": "CMGT_Comment",
+      "type": "Record Type",
+      "description": "Comments",
+      "actions": [
+        "updateComment",
+        "deleteComment",
+        "pin",
+        "unpin",
+        "updateMessage",
+        "deleteMessage"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_CommentUserTag",
+        "CMGT_Task"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_CommentUserTag",
+        "CMGT_Task",
+        "CMGT_Task_SetMetaData",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "20ece1cc-b807-491b-9fa3-c042ef610b43-cmgt",
+      "name": "CMGT_CommentUserTag",
+      "type": "Record Type",
+      "description": "Comment User Tags",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Comment"
+      ],
+      "called_by": [
+        "CMGT_Comment",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "4fcbf8d2-f6f9-4a38-bbf1-d2722635282a",
+      "name": "CMGT_Document",
+      "type": "Record Type",
+      "description": "Documents",
+      "actions": [
+        "deleteDocument"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_Task"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_Task",
+        "CMGT_Task_SetMetaData",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "ecfa3aa5-8852-4685-8d4c-f54e1a112163",
+      "name": "CMGT_EmailTemplateAttachments",
+      "type": "Record Type",
+      "description": "CMGT_EMAIL_TEMPLATE_ATTACHMENTS",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "CMGT_SUB_CopyAndUpdateEmailAttachments",
+        "CMGT_SUB_WriteTaskDetails"
+      ]
+    },
+    {
+      "uuid": "ae26b90f-13d6-48f8-86f3-eaa8ed4d2e17",
+      "name": "CMGT_Milestone",
+      "type": "Record Type",
+      "description": "Milestones for a case",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_Task"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_Task",
+        "CMGT_UTIL_DropNonWritableRelationshipsFromRecord",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "ee5aa46d-0228-430f-a794-1134a11fbcc0",
+      "name": "CMGT_Task",
+      "type": "Record Type",
+      "description": "MODIFIED FOR 2.0 SMART SEARCH RELEASE - Tasks",
+      "actions": [
+        "manageAssignee",
+        "open",
+        "reopen",
+        "addComment",
+        "updateDueDate",
+        "complete",
+        "markNotNeeded",
+        "viewWorkflow",
+        "updateDescription",
+        "updateStatus",
+        "updateTaskName",
+        "updateEmail"
+      ],
+      "views": [
+        "#\"urn:appian:translation-string:v1:a3a3c015-e0c6-4bd2-b78a-aaf392495bdd\"",
+        "#\"urn:appian:translation-string:v1:6f32eac5-d5de-4502-9a1f-4d3184aac8d2\"",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_CFG_CaseType",
+        "CMGT_Case",
+        "CMGT_Comment",
+        "CMGT_Document",
+        "CMGT_Milestone",
+        "CMGT_TaskBranch",
+        "CMGT_UTIL_IsNotBlank"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_Comment",
+        "CMGT_Document",
+        "CMGT_Milestone",
+        "CMGT_SUB_WriteTaskDetails",
+        "CMGT_TaskBranch",
+        "CMGT_Task_SetMetaData",
+        "CMGT_Task_WriteRecordsProperties",
+        "CMGT_UTIL_DropNonWritableRelationshipsFromRecord",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "f00f5631-1637-49bc-8c94-9ea3217339d1",
+      "name": "CMGT_TaskBranch",
+      "type": "Record Type",
+      "description": "Task Branches",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Task"
+      ],
+      "called_by": [
+        "CMGT_SUB_WriteTaskDetails",
+        "CMGT_Task",
+        "CMGT_UTIL_DropNonWritableRelationshipsFromRecord"
+      ]
+    }
+  ]
+}

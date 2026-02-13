@@ -1,0 +1,278 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "CMGT_SUB_SetCaseFolderSecurity",
+    "parent_name": null,
+    "total_objects": 13
+  },
+  "entry_point": {
+    "complexity_score": 10.0,
+    "total_nodes": 6,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "CMGT_SUB_SetCaseFolderSecurity",
+      "complexity_score": 10.0,
+      "total_nodes": 6,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Get Cases Details"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Changes to make?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Set Folder Security",
+            "End Node"
+          ]
+        },
+        {
+          "name": "Determine Folder Security Changes",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Changes to make?"
+          ]
+        },
+        {
+          "name": "Set Folder Security",
+          "type": "com.appiancorp.ps.plugins.contenttools.SetFolderSecurity",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Get Cases Details",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Determine Folder Security Changes"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e9ae-873e-8000-9baf-011c48011c48_101319",
+      "name": "CMGT_GRP_INTERNAL_USERS",
+      "type": "Constant",
+      "description": "Group: Internal Users",
+      "value": "CMGT Internal Users",
+      "value_type": "http://www.appian.com/ae/types/2009:Group",
+      "calls": [],
+      "called_by": [
+        "CMGT_SUB_SetCaseFolderSecurity_Logic"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9e5-e5dd-8000-9bc7-011c48011c48_232739",
+      "name": "CMGT_TXT_CASE_SUB_FOLDERS",
+      "type": "Constant",
+      "description": "Returns the list of sub-folders for a case. 1 - PRIVATE, 2 - PUBLIC.",
+      "value": "\n                ",
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "CMGT_SUB_SetCaseFolderSecurity_Logic"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea26-2ced-8000-9bf1-011c48011c48_568470",
+      "name": "CMGT_PLUGIN_ReturnContentRoleMap",
+      "type": "Expression Rule",
+      "description": "Runs returncontentrolemap() of Content Tools plugin",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_SUB_SetCaseFolderSecurity_Logic"
+      ]
+    },
+    {
+      "uuid": "_a-0000e98b-cfe0-8000-9ba5-011c48011c48_19509",
+      "name": "CMGT_QR_GetCase",
+      "type": "Expression Rule",
+      "description": "Queries the CMGT_Case record",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_Role",
+        "CMGT_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_SUB_SetCaseFolderSecurity"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_24762",
+      "name": "CMGT_QR_GetRole",
+      "type": "Expression Rule",
+      "description": "Queries the CMGT_CFG_CaseType record",
+      "parameters": [],
+      "calls": [
+        "CMGT_Role",
+        "CMGT_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_SUB_SetCaseFolderSecurity"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9ef-12e0-8000-9bce-011c48011c48_258837",
+      "name": "CMGT_SUB_SetCaseFolderSecurity_Logic",
+      "type": "Expression Rule",
+      "description": "Does the logic that determines what changes to make to a case's folder structure",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_GRP_INTERNAL_USERS",
+        "CMGT_PLUGIN_ReturnContentRoleMap",
+        "CMGT_TXT_CASE_SUB_FOLDERS",
+        "CMGT_UTIL_GetSubFolderByType"
+      ],
+      "called_by": [
+        "CMGT_SUB_SetCaseFolderSecurity"
+      ]
+    },
+    {
+      "uuid": "af326a29-a1c8-4399-a28d-996f85819d9e",
+      "name": "CMGT_UTIL_Filter",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_Role"
+      ],
+      "called_by": [
+        "CMGT_SUB_SetCaseFolderSecurity"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9e5-e5dd-8000-9bc7-011c48011c48_232566",
+      "name": "CMGT_UTIL_GetSubFolderByType",
+      "type": "Expression Rule",
+      "description": "Returns the sub-folder by its type, based on naming conventions. Searches for any child folder of the parentFolderId that contains the input folderType, and returns the parentFolderId if no child is found.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_SUB_SetCaseFolderSecurity_Logic"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_25890",
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_SUB_SetCaseFolderSecurity"
+      ]
+    },
+    {
+      "uuid": "_a-0000e98b-cfe0-8000-9ba5-011c48011c48_22352",
+      "name": "CMGT_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "description": "Enhanced wrapper rule around a!queryRecord()",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case"
+      ],
+      "called_by": [
+        "CMGT_QR_GetCase",
+        "CMGT_QR_GetRole"
+      ]
+    },
+    {
+      "uuid": "000be9f1-c02b-8000-fff7-7f0000014e7a",
+      "name": "CMGT_SUB_SetCaseFolderSecurity",
+      "type": "Process Model",
+      "description": "Sub-process to refresh the folder security of cases anytime any change is made that would impact the security",
+      "calls": [
+        "CMGT_Case",
+        "CMGT_QR_GetCase",
+        "CMGT_QR_GetRole",
+        "CMGT_Role",
+        "CMGT_SUB_SetCaseFolderSecurity_Logic",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_IsBlank"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "d81cdd0e-c54d-4b8e-beec-b7ae37fefe7f",
+      "name": "CMGT_Case",
+      "type": "Record Type",
+      "description": "MODIFIED FOR 2.0 KB , EML MODULE RELEASE , SMART SEARCH - Cases.",
+      "actions": [
+        "createCase",
+        "bulkUpdateCases",
+        "updateCase",
+        "updateProperty",
+        "addEntityToCase",
+        "updateRelatedCases",
+        "manageAssignee",
+        "manageWatcher",
+        "addTags",
+        "uploadDocuments",
+        "addComment",
+        "modifyWorkflow",
+        "updateContact",
+        "composeEmail"
+      ],
+      "views": [
+        "#\"urn:appian:translation-string:v1:a3a3c015-e0c6-4bd2-b78a-aaf392495bdd\"",
+        "#\"urn:appian:translation-string:v1:2f4f2cde-9986-47cb-ac2a-1ecfeeddc693\"",
+        "#\"urn:appian:translation-string:v1:455edb96-9d9a-4038-b43e-d10aa9a3a811\"",
+        "#\"urn:appian:translation-string:v1:6f32eac5-d5de-4502-9a1f-4d3184aac8d2\"",
+        "#\"urn:appian:translation-string:v1:86481b57-9608-4720-9198-578bfd8b8385\"",
+        "#\"urn:appian:translation-string:v1:297cf25d-abb6-4d91-b9ed-ab0139f56398\"",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_QR_GetCase",
+        "CMGT_QR_GetRole",
+        "CMGT_Role"
+      ],
+      "called_by": [
+        "CMGT_QR_GetCase",
+        "CMGT_Role",
+        "CMGT_SUB_SetCaseFolderSecurity",
+        "CMGT_SUB_SetCaseFolderSecurity_Logic",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_QueryRecord"
+      ]
+    },
+    {
+      "uuid": "6799d796-883e-49ff-8975-297d87e40756",
+      "name": "CMGT_Role",
+      "type": "Record Type",
+      "description": "Roles",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Case"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_QR_GetCase",
+        "CMGT_QR_GetRole",
+        "CMGT_SUB_SetCaseFolderSecurity",
+        "CMGT_UTIL_Filter"
+      ]
+    }
+  ]
+}

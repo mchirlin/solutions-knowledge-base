@@ -1,0 +1,66 @@
+{
+  "uuid": "_a-0000eaa7-a5c0-8000-9c22-011c48011c48_974301",
+  "name": "CMGT_Portal_Sub_CreateCase_Confirmation",
+  "type": "Interface",
+  "description": "Confirmation screen for create case from portal",
+  "sail_code": "a!localVariables(\n  local!phoneScreen: { \"TABLET_PORTRAIT\", \"PHONE\" },\n  local!isMobile: if(\n    #\"SYSTEM_SYSRULES_isPageWidth\"(local!phoneScreen),\n    true,\n    false\n  ),\n  {\n    /* Use the call to action pattern as a landing page */\n    /* when your users have a single action to take */\n    #\"SYSTEM_SYSRULES_cardLayout\"(\n      /* Add whitespace above image */\n      height: if(local!isMobile, \"EXTRA_SHORT\", \"SHORT\"),\n      style: \"TRANSPARENT\",\n      showBorder: false\n    ),\n    #\"SYSTEM_SYSRULES_columnsLayout\"(\n      columns: {\n        /* Empty column layouts on both sides */\n        /* help to center the content */\n        #\"SYSTEM_SYSRULES_columnLayout\"(),\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: {\n            #\"SYSTEM_SYSRULES_imageField_v1\"(\n              labelPosition: \"COLLAPSED\",\n              images: {\n                #\"SYSTEM_SYSRULES_documentImage\"(\n                  document: if(\n                    ri!isCaseSubmissionSuccessful,\n                    ri!brandingMap.CaseConfirmationImage,\n                    ri!brandingMap.CaseFailureImage\n                  )\n                )\n              },\n              size: \"SMALL\",\n              align: \"CENTER\"\n            ),\n            #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n              labelPosition: \"COLLAPSED\",\n              value: {\n                #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                  text: {\n                    char(10),\n                    if(\n                      ri!isCaseSubmissionSuccessful,\n                      #\"urn:appian:translation-string:v1:db1d4ab7-3c78-4797-b429-f8d0c814d93d\",\n                      #\"urn:appian:translation-string:v1:ea2539ee-4dd0-4f72-a5e3-84d0c454b6ba\"\n                    )\n                  },\n                  color: ri!brandingMap.PortalHeaderLabelColor,\n                  size: \"LARGE\",\n                  style: \"STRONG\"\n                ),\n                char(10),\n                char(10),\n                #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                  text: {\n                    upper(\n                      #\"urn:appian:translation-string:v1:05f1177a-0ea3-4d28-ab8b-e8078f33d51c\"(\n                        #\"urn:appian:translation-variable:v1:4d24e7c1-84e7-48de-af48-71a1c19fcc19\": ri!case[recordType!CMGT_Case.friendlyId]\n                      )\n                    ),\n                    char(10),\n                    char(10)\n                  },\n                  showWhen: ri!isCaseSubmissionSuccessful,\n                  color: ri!brandingMap.PortalHeaderLabelColor,\n                  size: \"MEDIUM\"\n                ),\n                #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                  text: if(\n                    ri!isCaseSubmissionSuccessful,\n                    #\"urn:appian:translation-string:v1:93bc9d53-d6b6-4d82-8ef2-6290f260fdcb\",\n                    #\"urn:appian:translation-string:v1:3d4f9178-d9c0-49cb-a392-b68a75b0f594\"\n                  ),\n                  size: \"MEDIUM\"\n                ),\n                char(10),\n                char(10)\n              },\n              align: \"CENTER\"\n            ),\n            /* If your data is records-based, consider using a!recordActionField() */\n            /* with CALL_TO_ACTION style instead of a!buttonArrayLayout() */\n            #\"SYSTEM_SYSRULES_columnsLayout\"(\n              columns: {\n                #\"SYSTEM_SYSRULES_columnLayout\"(),\n                #\"SYSTEM_SYSRULES_columnLayout\"(\n                  contents: {\n                    #\"SYSTEM_SYSRULES_cardLayout\"(\n                      contents: {\n                        #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                          value: #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                            text: upper(\n                              #\"urn:appian:translation-string:v1:a27d6f43-5297-459d-94de-f42f6e7a8691\"\n                            ),\n                            size: \"STANDARD\"\n                          ),\n                          preventWrapping: true,\n                          align: \"CENTER\",\n                          marginBelow: \"EVEN_LESS\"\n                        )\n                      },\n                      link: #\"SYSTEM_SYSRULES_safeLink\"(\n                        label: rule!CMGT_UTIL_ReturnLabelGivenAutomationTestingSwitch(testingLabel: \"Back to Home\"),\n                        uri: ri!redirectUrl,\n                        openLinkIn: \"SAME_TAB\"\n                      ),\n                      style: ri!brandingMap.AccentColor,\n                      padding: \"LESS\",\n                      showBorder: false\n                    )\n                  },\n                  width: \"NARROW\"\n                ),\n                #\"SYSTEM_SYSRULES_columnLayout\"()\n              }\n            )\n          },\n          width: \"WIDE\"\n        ),\n        #\"SYSTEM_SYSRULES_columnLayout\"()\n      },\n      stackWhen: { \"PHONE\", \"TABLET_PORTRAIT\" }\n    ),\n    #\"SYSTEM_SYSRULES_cardLayout\"(\n      /* Add whitespace below button */\n      height: if(local!isMobile, \"EXTRA_SHORT\", \"SHORT\"),\n      style: \"TRANSPARENT\",\n      showBorder: false\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "CMGT_UTIL_ReturnLabelGivenAutomationTestingSwitch",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_Case",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_QR_GetCase",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_Portal_LoadBrandingMap",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "CMGT_PortalPage_SubmitCase",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

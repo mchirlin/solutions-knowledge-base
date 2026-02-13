@@ -1,0 +1,75 @@
+{
+  "uuid": "_a-0001ed77-88a5-8000-9d49-011c48011c48_3799285",
+  "name": "CMGT_Case_ConfigureTask_Task_AssignmentSection",
+  "type": "Interface",
+  "description": "UI components to configure the assignment of task",
+  "sail_code": "if(\n  /*Case task is an \"automated\" task*/\n  ri!isAutomated,\n  /*Assigned Group and Assignee is N/A for an automated task*/\n  #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n    items: {\n      #\"SYSTEM_SYSRULES_sideBySideItem\"(\n        item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n          label: #\"urn:appian:translation-string:v1:9ef20f7e-d182-48ed-8b39-7a5219d71816\",\n          labelPosition: \"ABOVE\",\n          value: #\"urn:appian:translation-string:v1:7ed3fef7-c6cd-4516-a123-9883ccf20ac6\",\n          marginAbove: \"EVEN_LESS\"\n        )\n      ),\n      #\"SYSTEM_SYSRULES_sideBySideItem\"(\n        item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n          label: #\"urn:appian:translation-string:v1:e4b1d453-add2-4441-a242-a5c4952c6f9e\",\n          labelPosition: \"ABOVE\",\n          value: #\"urn:appian:translation-string:v1:7ed3fef7-c6cd-4516-a123-9883ccf20ac6\",\n          marginAbove: \"EVEN_LESS\"\n        )\n      )\n    },\n    marginAbove: \"EVEN_LESS\",\n    marginBelow:\"EVEN_LESS\"\n  ),\n  if(\n    ri!selectedTask[recordType!CMGT_Task.statusId]=cons!CMGT_REFID_STATUS_TASK_QUEUED,\n    rule!CMGT_Case_ConfigureTask_Task_DefaultAssignmentSection(\n      selectedTask: ri!selectedTask,\n      isAutomated: ri!isAutomated,\n      case: ri!case,\n      selectedTaskInstanceUUID: ri!selectedTaskInstanceUUID,\n      brandingMap: ri!brandingMap,\n      disabled: ri!numOfAssociatedAutomationRules > 0,\n    ),\n  /*Picker field for Assigned Group and Assignee*/\n  rule!CMGT_Role_Sub_ManageUi(\n    roles: ri!case[recordType!CMGT_Case.tasks][rule!CMGT_UTIL_Filter(\n      records: ri!case[recordType!CMGT_Case.tasks],\n      field: recordType!CMGT_Task.taskInstanceUuid,\n      value: ri!selectedTaskInstanceUUID,\n      filterType: \"MATCH_INDICES\"\n    )][1][recordType!CMGT_Task.roles],\n    rolesToDelete: ri!rolesToDelete,\n    taskId: ri!selectedTask[recordType!CMGT_Task.taskId],\n    roleTypes: rule!CMGT_QR_GetRoleType(\n      roleTypeId: {\n        cons!CMGT_REFID_ROLE_TYPE_USER_ASSIGNEE,\n        cons!CMGT_REFID_ROLE_TYPE_GROUP_ASSIGNEE\n      }\n    ),\n    displayAsSideBySide: false()\n  )\n  )\n)",
+  "calls": [
+    {
+      "name": "CMGT_Case_ConfigureTask_Task_DefaultAssignmentSection",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_Role_Sub_ManageUi",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_Filter",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_QR_GetRoleType",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_REFID_STATUS_TASK_QUEUED",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_ROLE_TYPE_USER_ASSIGNEE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_ROLE_TYPE_GROUP_ASSIGNEE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_Task",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_Case",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_Role",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    }
+  ],
+  "called_by": []
+}

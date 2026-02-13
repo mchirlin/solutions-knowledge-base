@@ -1,0 +1,20 @@
+{
+  "uuid": "_a-0000ed40-282d-8000-9d33-011c48011c48_3577480",
+  "name": "CMGT_UTIL_returnUserInGroupList",
+  "type": "Expression Rule",
+  "description": "Called in a reduce(). Either returns the passed in username, or evaluates the next one.",
+  "sail_code": "/*this rule is intended to be run in a reduce to return the first username that is found in the group list*/\nif(\n  a!isNotNullOrEmpty(ri!username),\n  /*once the reduce returns a username, all subsequent evaluations of this expression should just return that username and avoid additional evaluation*/\n  ri!username,\n  /*if still no username has been found, then check the next one*/\n  if(\n    contains(ri!possibleUserAssignees, ri!usernameToEvaluate),\n    ri!usernameToEvaluate,\n    null\n  )\n)",
+  "calls": [],
+  "called_by": [
+    {
+      "name": "CMGT_AUTO_EVAL_TaskAssignment_RouteTaskToUserOrGroup",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_AUTO_EVAL_CaseAssignment_RouteCaseToUserOrGroup",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

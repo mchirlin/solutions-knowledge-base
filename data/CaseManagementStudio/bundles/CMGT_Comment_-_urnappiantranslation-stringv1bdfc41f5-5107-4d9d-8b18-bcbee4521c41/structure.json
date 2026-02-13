@@ -1,0 +1,881 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "CMGT_Comment - #\"urn:appian:translation-string:v1:bdfc41f5-5107-4d9d-8b18-bcbee4521c41\"",
+    "parent_name": "CMGT_Comment",
+    "total_objects": 43
+  },
+  "entry_point": {
+    "action_type": "RECORD_ACTION",
+    "record_type": "CMGT_Comment",
+    "target_process": "CMGT_LA_Message_Delete",
+    "form_interface": "CMGT_LA_Message_RecordAction_Delete",
+    "expressions": {
+      "TITLE": "#\"urn:appian:translation-string:v1:bdfc41f5-5107-4d9d-8b18-bcbee4521c41\"",
+      "DESCRIPTION": null,
+      "VISIBILITY": null,
+      "CONTEXT": "{\n comments: rule!CMGT_QR_GetComment(\n commentId: rv!identifier,\n includeUserTagsAndDocumentMaps: true\n )\n}"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "CMGT_LA_Message_Delete",
+      "complexity_score": 11.0,
+      "total_nodes": 7,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Cancel?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Set Metadata",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write Case History Records"
+          ]
+        },
+        {
+          "name": "End Event",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Cancel?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Set Metadata",
+            "End Event"
+          ]
+        },
+        {
+          "name": "Write Case History Records",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write Comment"
+          ]
+        },
+        {
+          "name": "Write Comment",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e9ae-873e-8000-9baf-011c48011c48_101319",
+      "name": "CMGT_GRP_INTERNAL_USERS",
+      "type": "Constant",
+      "description": "Group: Internal Users",
+      "value": "CMGT Internal Users",
+      "value_type": "http://www.appian.com/ae/types/2009:Group",
+      "calls": [],
+      "called_by": [
+        "CMGT_Comment_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000eaab-5303-8000-9c24-011c48011c48_994744",
+      "name": "CMGT_GRP_SERVICE_ACCOUNTS",
+      "type": "Constant",
+      "description": "Points to the service account group",
+      "value": "CMGT Service Accounts",
+      "value_type": "http://www.appian.com/ae/types/2009:Group",
+      "calls": [],
+      "called_by": [
+        "CMGT_formatEventInitiator"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec06-54a3-8000-9cca-011c48011c48_2500675",
+      "name": "CMGT_LA_REFID_EVENT_TYPE_CASE_CREATE_MESSAGE",
+      "type": "Constant",
+      "description": "33 - created a message",
+      "value": "33",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_LA_Message_SetEvents"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec06-54a3-8000-9cca-011c48011c48_2500668",
+      "name": "CMGT_LA_REFID_EVENT_TYPE_CASE_DELETE_MESSAGE",
+      "type": "Constant",
+      "description": "35 - deleted a message",
+      "value": "35",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_LA_Message_SetEvents"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec06-54a3-8000-9cca-011c48011c48_2500691",
+      "name": "CMGT_LA_REFID_EVENT_TYPE_CASE_REPLY_TO_MESSAGE",
+      "type": "Constant",
+      "description": "36 - replied to a message",
+      "value": "36",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_LA_Message_SetEvents"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec06-54a3-8000-9cca-011c48011c48_2500683",
+      "name": "CMGT_LA_REFID_EVENT_TYPE_CASE_UPDATE_MESSAGE",
+      "type": "Constant",
+      "description": "34 - updated a message",
+      "value": "34",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_LA_Message_SetEvents"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea95-307e-8000-9c1a-011c48011c48_925412",
+      "name": "CMGT_TXT_AUTOMATED_SYSTEM",
+      "type": "Constant",
+      "description": "Value: Automated System",
+      "value": "Automated System",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_formatEventInitiator"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9fa-aa45-8000-9bda-011c48011c48_293777",
+      "name": "CMGT_CaseEventHistory_Constructor",
+      "type": "Expression Rule",
+      "description": "Construct case event history",
+      "parameters": [],
+      "calls": [
+        "CMGT_EventHistory_Case",
+        "CMGT_formatEventInitiator"
+      ],
+      "called_by": [
+        "CMGT_LA_Message_SetEvents"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea03-1fde-8000-9be1-011c48011c48_390450",
+      "name": "CMGT_CommentDocumentMap_SetMetaData",
+      "type": "Expression Rule",
+      "description": "Set meta data fields for CMGT_CommentDocumentMap",
+      "parameters": [],
+      "calls": [
+        "CMGT_CommentDocumentMap",
+        "CMGT_UTIL_SetRecordFields"
+      ],
+      "called_by": [
+        "CMGT_Comment_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9c0-fc38-8000-9bb5-011c48011c48_118180",
+      "name": "CMGT_CommentUserTag_SetMetaData",
+      "type": "Expression Rule",
+      "description": "Set meta data fields for CMGT_CommentUserTag",
+      "parameters": [],
+      "calls": [
+        "CMGT_CommentUserTag",
+        "CMGT_UTIL_SetRecordFields"
+      ],
+      "called_by": [
+        "CMGT_Comment_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_29477-cmgt",
+      "name": "CMGT_Comment_SetMetaData",
+      "type": "Expression Rule",
+      "description": "Set meta data fields for CMGT_Comment",
+      "parameters": [],
+      "calls": [
+        "CMGT_Comment",
+        "CMGT_CommentDocumentMap_SetMetaData",
+        "CMGT_CommentUserTag_SetMetaData",
+        "CMGT_GRP_INTERNAL_USERS",
+        "CMGT_QR_GetComment",
+        "CMGT_UTIL_SetRecordFields"
+      ],
+      "called_by": [
+        "CMGT_LA_Message_Delete"
+      ]
+    },
+    {
+      "uuid": "_a-0000eaba-1e20-8000-9c2a-011c48011c48_1044297",
+      "name": "CMGT_Comment_WriteRecordsProperties",
+      "type": "Expression Rule",
+      "description": "Defines what relationships should be stripped before writing and what child FKs should be reattached after writing for: Comments",
+      "parameters": [],
+      "calls": [
+        "CMGT_Comment",
+        "CMGT_UTIL_DropNonWritableRelationshipsFromRecord",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ],
+      "called_by": [
+        "CMGT_LA_Message_Delete"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec18-c982-8000-9cd0-011c48011c48_2632030",
+      "name": "CMGT_LA_Message_SetEvents",
+      "type": "Expression Rule",
+      "description": "Rule to construct all message events",
+      "parameters": [],
+      "calls": [
+        "CMGT_CaseEventHistory_Constructor",
+        "CMGT_Comment",
+        "CMGT_CommentDocumentMap",
+        "CMGT_CommentUserTag",
+        "CMGT_Document",
+        "CMGT_LA_REFID_EVENT_TYPE_CASE_CREATE_MESSAGE",
+        "CMGT_LA_REFID_EVENT_TYPE_CASE_DELETE_MESSAGE",
+        "CMGT_LA_REFID_EVENT_TYPE_CASE_REPLY_TO_MESSAGE",
+        "CMGT_LA_REFID_EVENT_TYPE_CASE_UPDATE_MESSAGE",
+        "CMGT_QR_GetDocument",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_RejectBlank"
+      ],
+      "called_by": [
+        "CMGT_LA_Message_Delete"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_29424-cmgt",
+      "name": "CMGT_QR_GetComment",
+      "type": "Expression Rule",
+      "description": "Queries the CMGT_Comment record",
+      "parameters": [],
+      "calls": [
+        "CMGT_Comment",
+        "CMGT_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "CMGT_Comment",
+        "CMGT_Comment_SetMetaData",
+        "CMGT_LA_Message_RecordAction_Delete"
+      ]
+    },
+    {
+      "uuid": "_a-0000e98b-cfe0-8000-9ba5-011c48011c48_20741",
+      "name": "CMGT_QR_GetDocument",
+      "type": "Expression Rule",
+      "description": "Queries the CMGT_Document record",
+      "parameters": [],
+      "calls": [
+        "CMGT_Document",
+        "CMGT_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "CMGT_Document",
+        "CMGT_LA_Message_SetEvents"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9ae-873e-8000-9baf-011c48011c48_97439",
+      "name": "CMGT_QR_GetUser",
+      "type": "Expression Rule",
+      "description": "Queries the User record",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "CMGT_formatEventInitiator"
+      ]
+    },
+    {
+      "uuid": "_a-0000eab0-e049-8000-9c27-011c48011c48_1011527",
+      "name": "CMGT_UTIL_DropNonWritableRelationshipsFromRecord",
+      "type": "Expression Rule",
+      "description": "The main rule to drop non-writeable relationships from a record before writing in the case the child record is considered changed, which would break the write",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_Milestone",
+        "CMGT_Task"
+      ],
+      "called_by": [
+        "CMGT_Comment_WriteRecordsProperties"
+      ]
+    },
+    {
+      "uuid": "af326a29-a1c8-4399-a28d-996f85819d9e",
+      "name": "CMGT_UTIL_Filter",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case"
+      ],
+      "called_by": [
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_25890",
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_LA_Message_Delete",
+        "CMGT_LA_Message_SetEvents",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable",
+        "CMGT_UTIL_SetRecordFields",
+        "CMGT_formatEventInitiator"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9f4-1323-8000-9bd3-011c48011c48_267840",
+      "name": "CMGT_UTIL_LoadBrandingMap",
+      "type": "Expression Rule",
+      "description": "Returns branding map for Case Management",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_LA_Message_RecordAction_Delete",
+        "CMGT_UTIL_DeleteConfirmation"
+      ]
+    },
+    {
+      "uuid": "_a-0000eaa7-a5c0-8000-9c22-011c48011c48_973190",
+      "name": "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable",
+      "type": "Expression Rule",
+      "description": "The main rule to merge the ID-output of a write records nodes to the input process variable (including all child FKs). IMPORTANT NOTES in comments in the rule.",
+      "parameters": [],
+      "calls": [
+        "CMGT_CFG_CaseType",
+        "CMGT_Case",
+        "CMGT_Comment",
+        "CMGT_CommentUserTag",
+        "CMGT_Document",
+        "CMGT_Milestone",
+        "CMGT_Task",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_RemoveRecordRelationshipsWithSingleKey_Reducer",
+        "CMGT_UTIL_SetRecordFields"
+      ],
+      "called_by": [
+        "CMGT_Comment_WriteRecordsProperties"
+      ]
+    },
+    {
+      "uuid": "_a-0000e98b-cfe0-8000-9ba5-011c48011c48_22352",
+      "name": "CMGT_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "description": "Enhanced wrapper rule around a!queryRecord()",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case"
+      ],
+      "called_by": [
+        "CMGT_QR_GetComment",
+        "CMGT_QR_GetDocument",
+        "CMGT_QR_GetUser"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9d3-70bf-8000-9bbd-011c48011c48_180481",
+      "name": "CMGT_UTIL_RejectBlank",
+      "type": "Expression Rule",
+      "description": "Rule to removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_LA_Message_SetEvents",
+        "CMGT_UTIL_SetRecordFields"
+      ]
+    },
+    {
+      "uuid": "9248008e-2c2c-4eea-bb28-4a3c89838403",
+      "name": "CMGT_UTIL_RemoveRecordRelationshipsWithSingleKey_Reducer",
+      "type": "Expression Rule",
+      "description": null,
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_33778",
+      "name": "CMGT_UTIL_SetRecordFields",
+      "type": "Expression Rule",
+      "description": "Runs a bulk update on a record object, setting new values for its fields",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_RejectBlank"
+      ],
+      "called_by": [
+        "CMGT_CommentDocumentMap_SetMetaData",
+        "CMGT_CommentUserTag_SetMetaData",
+        "CMGT_Comment_SetMetaData",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "_a-0000eaab-5303-8000-9c24-011c48011c48_994738",
+      "name": "CMGT_formatEventInitiator",
+      "type": "Expression Rule",
+      "description": "if the initiator is a service account then save \"Automated System\" otherwise save the username",
+      "parameters": [],
+      "calls": [
+        "CMGT_GRP_SERVICE_ACCOUNTS",
+        "CMGT_QR_GetUser",
+        "CMGT_TXT_AUTOMATED_SYSTEM",
+        "CMGT_UTIL_IsBlank"
+      ],
+      "called_by": [
+        "CMGT_CaseEventHistory_Constructor"
+      ]
+    },
+    {
+      "uuid": "_a-0000ebea-a421-8000-9cc1-011c48011c48_2326172",
+      "name": "CMGT_LA_Message_RecordAction_Delete",
+      "type": "Interface",
+      "description": "Form interface for confirming the deletion of a message ",
+      "parameters": [
+        {
+          "name": "comment",
+          "type": "urn:com:appian:recordtype:datatype:e57250b0-f216-4a23-afd9-39e7d532d302-cmgt?list",
+          "raw_type": "urn:com:appian:recordtype:datatype:e57250b0-f216-4a23-afd9-39e7d532d302-cmgt?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        }
+      ],
+      "calls": [
+        "CMGT_QR_GetComment",
+        "CMGT_UTIL_DeleteConfirmation",
+        "CMGT_UTIL_LoadBrandingMap",
+        "Unknown"
+      ],
+      "called_by": [
+        "CMGT_LA_Message_Delete"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9ae-873e-8000-9baf-011c48011c48_97626",
+      "name": "CMGT_UTIL_DeleteConfirmation",
+      "type": "Interface",
+      "description": "Components for a delete confirmation screen",
+      "parameters": [
+        {
+          "name": "primaryMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "secondaryMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        },
+        {
+          "name": "stampIcon",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 2
+        },
+        {
+          "name": "stampSize",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 3
+        },
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "display_order": 4
+        },
+        {
+          "name": "stampColor",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 5
+        },
+        {
+          "name": "marginAboveConfirmation",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 6
+        }
+      ],
+      "calls": [
+        "CMGT_UTIL_LoadBrandingMap"
+      ],
+      "called_by": [
+        "CMGT_LA_Message_RecordAction_Delete"
+      ]
+    },
+    {
+      "uuid": "000cec1d-9d30-8000-132a-7f0000014e7a",
+      "name": "CMGT_LA_Message_Delete",
+      "type": "Process Model",
+      "description": "Process to soft delete a message",
+      "calls": [
+        "CMGT_Comment",
+        "CMGT_Comment_SetMetaData",
+        "CMGT_Comment_WriteRecordsProperties",
+        "CMGT_EventHistory_Case",
+        "CMGT_LA_Message_RecordAction_Delete",
+        "CMGT_LA_Message_SetEvents",
+        "CMGT_UTIL_IsBlank"
+      ],
+      "called_by": [
+        "CMGT_Comment"
+      ]
+    },
+    {
+      "uuid": "82aa3b28-94c2-4d3c-a403-bb813bd76155",
+      "name": "CMGT_CFG_CaseType",
+      "type": "Record Type",
+      "description": "MODIFIED FOR 2.0 KB AND EML MODULE RELEASE - Case Types",
+      "actions": [
+        "updateMetadata",
+        "editWorkflow",
+        "editMilestones",
+        "editWorkflowEmptyState",
+        "editWorkflowEmptyState2",
+        "createAutomationRule",
+        "addResource"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_Task",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "d81cdd0e-c54d-4b8e-beec-b7ae37fefe7f",
+      "name": "CMGT_Case",
+      "type": "Record Type",
+      "description": "MODIFIED FOR 2.0 KB , EML MODULE RELEASE , SMART SEARCH - Cases.",
+      "actions": [
+        "createCase",
+        "bulkUpdateCases",
+        "updateCase",
+        "updateProperty",
+        "addEntityToCase",
+        "updateRelatedCases",
+        "manageAssignee",
+        "manageWatcher",
+        "addTags",
+        "uploadDocuments",
+        "addComment",
+        "modifyWorkflow",
+        "updateContact",
+        "composeEmail"
+      ],
+      "views": [
+        "#\"urn:appian:translation-string:v1:a3a3c015-e0c6-4bd2-b78a-aaf392495bdd\"",
+        "#\"urn:appian:translation-string:v1:2f4f2cde-9986-47cb-ac2a-1ecfeeddc693\"",
+        "#\"urn:appian:translation-string:v1:455edb96-9d9a-4038-b43e-d10aa9a3a811\"",
+        "#\"urn:appian:translation-string:v1:6f32eac5-d5de-4502-9a1f-4d3184aac8d2\"",
+        "#\"urn:appian:translation-string:v1:86481b57-9608-4720-9198-578bfd8b8385\"",
+        "#\"urn:appian:translation-string:v1:297cf25d-abb6-4d91-b9ed-ab0139f56398\"",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_CFG_CaseType",
+        "CMGT_Comment",
+        "CMGT_Document",
+        "CMGT_EventHistory_Case",
+        "CMGT_Milestone",
+        "CMGT_Task"
+      ],
+      "called_by": [
+        "CMGT_Comment",
+        "CMGT_Document",
+        "CMGT_EventHistory_Case",
+        "CMGT_Milestone",
+        "CMGT_Task",
+        "CMGT_UTIL_DropNonWritableRelationshipsFromRecord",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable",
+        "CMGT_UTIL_QueryRecord",
+        "CMGT_UTIL_SetRecordFields"
+      ]
+    },
+    {
+      "uuid": "e57250b0-f216-4a23-afd9-39e7d532d302-cmgt",
+      "name": "CMGT_Comment",
+      "type": "Record Type",
+      "description": "Comments",
+      "actions": [
+        "updateComment",
+        "deleteComment",
+        "pin",
+        "unpin",
+        "updateMessage",
+        "deleteMessage"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_CommentDocumentMap",
+        "CMGT_CommentUserTag",
+        "CMGT_LA_Message_Delete",
+        "CMGT_QR_GetComment",
+        "CMGT_Task",
+        "Unknown"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_CommentDocumentMap",
+        "CMGT_CommentUserTag",
+        "CMGT_Comment_SetMetaData",
+        "CMGT_Comment_WriteRecordsProperties",
+        "CMGT_LA_Message_Delete",
+        "CMGT_LA_Message_SetEvents",
+        "CMGT_QR_GetComment",
+        "CMGT_Task",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "e4bc070b-f759-47d8-9dc1-3facad93abde",
+      "name": "CMGT_CommentDocumentMap",
+      "type": "Record Type",
+      "description": "Maps comments to documents",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Comment",
+        "CMGT_Document"
+      ],
+      "called_by": [
+        "CMGT_Comment",
+        "CMGT_CommentDocumentMap_SetMetaData",
+        "CMGT_Document",
+        "CMGT_LA_Message_SetEvents"
+      ]
+    },
+    {
+      "uuid": "20ece1cc-b807-491b-9fa3-c042ef610b43-cmgt",
+      "name": "CMGT_CommentUserTag",
+      "type": "Record Type",
+      "description": "Comment User Tags",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Comment"
+      ],
+      "called_by": [
+        "CMGT_Comment",
+        "CMGT_CommentUserTag_SetMetaData",
+        "CMGT_LA_Message_SetEvents",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "4fcbf8d2-f6f9-4a38-bbf1-d2722635282a",
+      "name": "CMGT_Document",
+      "type": "Record Type",
+      "description": "Documents",
+      "actions": [
+        "deleteDocument"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_CommentDocumentMap",
+        "CMGT_QR_GetDocument",
+        "CMGT_Task",
+        "Unknown"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_CommentDocumentMap",
+        "CMGT_LA_Message_SetEvents",
+        "CMGT_QR_GetDocument",
+        "CMGT_Task",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "bd89a86f-fdb2-4f93-be3e-6109517f0356",
+      "name": "CMGT_EventHistory_Case",
+      "type": "Record Type",
+      "description": "Business events for CMGT_Case",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Case"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_CaseEventHistory_Constructor",
+        "CMGT_LA_Message_Delete"
+      ]
+    },
+    {
+      "uuid": "ae26b90f-13d6-48f8-86f3-eaa8ed4d2e17",
+      "name": "CMGT_Milestone",
+      "type": "Record Type",
+      "description": "Milestones for a case",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_Task"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_Task",
+        "CMGT_UTIL_DropNonWritableRelationshipsFromRecord",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "ee5aa46d-0228-430f-a794-1134a11fbcc0",
+      "name": "CMGT_Task",
+      "type": "Record Type",
+      "description": "MODIFIED FOR 2.0 SMART SEARCH RELEASE - Tasks",
+      "actions": [
+        "manageAssignee",
+        "open",
+        "reopen",
+        "addComment",
+        "updateDueDate",
+        "complete",
+        "markNotNeeded",
+        "viewWorkflow",
+        "updateDescription",
+        "updateStatus",
+        "updateTaskName",
+        "updateEmail"
+      ],
+      "views": [
+        "#\"urn:appian:translation-string:v1:a3a3c015-e0c6-4bd2-b78a-aaf392495bdd\"",
+        "#\"urn:appian:translation-string:v1:6f32eac5-d5de-4502-9a1f-4d3184aac8d2\"",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_CFG_CaseType",
+        "CMGT_Case",
+        "CMGT_Comment",
+        "CMGT_Document",
+        "CMGT_Milestone"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_Comment",
+        "CMGT_Document",
+        "CMGT_Milestone",
+        "CMGT_UTIL_DropNonWritableRelationshipsFromRecord",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "6551b07e-c4d9-47f9-a928-142e557bf898",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Button label in all Delete actions",
+      "calls": [],
+      "called_by": [
+        "CMGT_Document",
+        "CMGT_LA_Message_RecordAction_Delete"
+      ]
+    },
+    {
+      "uuid": "651cf177-f30b-485b-900f-8aaf47805737",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Button Label in multiple screens",
+      "calls": [],
+      "called_by": [
+        "CMGT_LA_Message_RecordAction_Delete"
+      ]
+    },
+    {
+      "uuid": "bdfc41f5-5107-4d9d-8b18-bcbee4521c41",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "String used for Delete Message action name and Delete Message confirmation screen title",
+      "calls": [],
+      "called_by": [
+        "CMGT_Comment",
+        "CMGT_LA_Message_RecordAction_Delete"
+      ]
+    },
+    {
+      "uuid": "f28e25f1-7700-4aa7-a327-695f1d199ab6",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "String displayed in the confirmation screen while trying to delete a message",
+      "calls": [],
+      "called_by": [
+        "CMGT_LA_Message_RecordAction_Delete"
+      ]
+    },
+    {
+      "uuid": "7146e415-4efb-47aa-8a95-e661a92f5161",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "String displayed in the confirmation screen while trying to delete a message",
+      "calls": [],
+      "called_by": [
+        "CMGT_LA_Message_RecordAction_Delete"
+      ]
+    }
+  ]
+}

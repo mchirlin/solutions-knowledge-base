@@ -1,0 +1,105 @@
+{
+  "uuid": "_a-0000ecbe-e702-8000-9cf8-011c48011c48_3245193",
+  "name": "CMGT_Condition_EvaluationForDateTimeFields",
+  "type": "Expression Rule",
+  "description": "Evaluate for date and time fields",
+  "sail_code": "a!localVariables(\n  local!valueJson: if(\n    rule!CMGT_UTIL_IsBlank(\n      value: ri!condition[recordType!CMGT_Condition.valueJson]\n    ),\n    null,\n    index(\n      rule!CMGT_UTIL_CastJsonToMap(\n        jsonText: ri!condition[recordType!CMGT_Condition.valueJson]\n      ),\n      \"value\",\n      null\n    )\n  ),\n  local!runTimeValue: rule!CMGT_AUTO_EVAL_returnRuntimeValue(\n    data: ri!data,\n    field: ri!field\n  ),\n  local!isRunTimeValueBlank: rule!CMGT_UTIL_IsBlank(local!runTimeValue),\n  local!isOffsetOperators: contains(\n    {\n      cons!CMGT_TXT_AUTOMATION_OPERATOR_BEFORE_NOW_OFFSET,\n      cons!CMGT_TXT_AUTOMATION_OPERATOR_AFTER_NOW_OFFSET\n    },\n    ri!condition[recordType!CMGT_Condition.operator]\n  ),\n  local!offsetCalculation: if(\n    local!isOffsetOperators,\n    if(\n      sign(local!valueJson) =- 1,\n      a!subtractDateTime(\n        startDateTime: now(),\n        days: sqrt(sumsq(local!valueJson))\n      ),\n      a!addDateTime(\n        startDateTime: now(),\n        days: local!valueJson\n      )\n    ),\n    local!valueJson\n  ),\n  a!match(\n    value: ri!condition[recordType!CMGT_Condition.operator],\n    equals: cons!CMGT_TXT_AUTOMATION_OPERATOR_INCLUDES,\n    then: contains(local!runTimeValue, local!valueJson),\n    equals: cons!CMGT_TXT_AUTOMATION_OPERATOR_DOES_NOT_INCLUDE,\n    then: not(\n      contains(local!runTimeValue, local!valueJson)\n    ),\n    equals: cons!CMGT_TXT_AUTOMATION_OPERATOR_IS_NULL,\n    then: local!isRunTimeValueBlank,\n    equals: cons!CMGT_TXT_AUTOMATION_OPERATOR_IS_NOT_NULL,\n    then: rule!CMGT_UTIL_IsNotBlank(local!runTimeValue),\n    equals: cons!CMGT_TXT_AUTOMATION_OPERATOR_BEFORE_NOW,\n    then: if(\n      local!isRunTimeValueBlank,\n      false,\n      todatetime(local!runTimeValue) < now()\n    ),\n    equals: cons!CMGT_TXT_AUTOMATION_OPERATOR_BEFORE_NOW_OFFSET,\n    then: if(\n      local!isRunTimeValueBlank,\n      false,\n      todatetime(local!runTimeValue) < local!offsetCalculation\n    ),\n    equals: cons!CMGT_TXT_AUTOMATION_OPERATOR_BEFORE_TARGET_DATETIME,\n    then: if(\n      local!isRunTimeValueBlank,\n      false,\n      todatetime(local!runTimeValue) < todatetime(local!valueJson)\n    ),\n    equals: cons!CMGT_TXT_AUTOMATION_OPERATOR_AFTER_NOW,\n    then: todatetime(local!runTimeValue) > now(),\n    equals: cons!CMGT_TXT_AUTOMATION_OPERATOR_AFTER_NOW_OFFSET,\n    then: if(\n      local!isRunTimeValueBlank,\n      false,\n      local!runTimeValue > local!offsetCalculation\n    ),\n    equals: cons!CMGT_TXT_AUTOMATION_OPERATOR_AFTER_TARGET_DATETIME,\n    then: if(\n      local!isRunTimeValueBlank,\n      false,\n      todatetime(local!runTimeValue) > todatetime(local!valueJson)\n    ),\n    equals: cons!CMGT_TXT_AUTOMATION_OPERATOR_EQUAL_TO,\n    then: todatetime(local!runTimeValue) = todatetime(local!valueJson),\n    equals: cons!CMGT_TXT_AUTOMATION_OPERATOR_NOT_EQUAL_TO,\n    then: todatetime(local!runTimeValue) <> todatetime(local!valueJson),\n    default:false\n  ) \n)",
+  "calls": [
+    {
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_CastJsonToMap",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_AUTO_EVAL_returnRuntimeValue",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_IsNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_TXT_AUTOMATION_OPERATOR_BEFORE_NOW_OFFSET",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_TXT_AUTOMATION_OPERATOR_AFTER_NOW_OFFSET",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_TXT_AUTOMATION_OPERATOR_INCLUDES",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_TXT_AUTOMATION_OPERATOR_DOES_NOT_INCLUDE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_TXT_AUTOMATION_OPERATOR_IS_NULL",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_TXT_AUTOMATION_OPERATOR_IS_NOT_NULL",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_TXT_AUTOMATION_OPERATOR_BEFORE_NOW",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_TXT_AUTOMATION_OPERATOR_BEFORE_TARGET_DATETIME",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_TXT_AUTOMATION_OPERATOR_AFTER_NOW",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_TXT_AUTOMATION_OPERATOR_AFTER_TARGET_DATETIME",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_TXT_AUTOMATION_OPERATOR_EQUAL_TO",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_TXT_AUTOMATION_OPERATOR_NOT_EQUAL_TO",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_Condition",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_QR_GetCase",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_Case",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    }
+  ],
+  "called_by": []
+}

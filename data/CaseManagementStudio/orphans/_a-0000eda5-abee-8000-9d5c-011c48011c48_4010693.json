@@ -1,0 +1,50 @@
+{
+  "uuid": "_a-0000eda5-abee-8000-9d5c-011c48011c48_4010693",
+  "name": "CMGT_AUTO_EVAL_SendEmail_DetermineProcessParameters",
+  "type": "Expression Rule",
+  "description": "Rule to construct the parameters  for send email automation task",
+  "sail_code": "if(\n  rule!CMGT_UTIL_IsNotBlank(\n    input: ri!task[recordType!CMGT_Task.sendEmailTask.recipientRoleJson]\n  ),\n  a!localVariables(\n    local!case: rule!CMGT_QR_GetCase(\n      caseId: ri!task[recordType!CMGT_Task.caseId],\n      fields: {\n        recordType!CMGT_Case.caseType,\n        recordType!CMGT_Case.caseType\n      }\n    ),\n    local!caseType: local!case[recordType!CMGT_Case.caseType],\n    local!roleData: rule!CMGT_EVAL_ReturnDataForCaseRole_SendEmailRecipients(\n      recordTypeUuid: local!caseType[recordType!CMGT_CFG_CaseType.uuid],\n      parentRecordTypeUuid: local!caseType[recordType!CMGT_CFG_CaseType.parentUuid],\n      context: \"COMPLETE_SEND_EMAIL_TASK\",\n      caseId: ri!task[recordType!CMGT_Task.caseId]\n    ),\n    local!recipientRoleJsonOnCompletion: if(\n      rule!CMGT_UTIL_IsNotBlank(\n        input: ri!task[recordType!CMGT_Task.sendEmailTask.recipientRoleJson]\n      ),\n      a!flatten(\n        #\"SYSTEM_SYSRULES_forEach\"(\n          items: rule!CMGT_UTIL_ConstructRecipientsMap(\n            recipientsJson: ri!task[recordType!CMGT_Task.sendEmailTask.recipientRoleJson]\n          ),\n          expression: a!localVariables(\n            local!thisItem: fv!item,\n            #\"SYSTEM_SYSRULES_forEach\"(\n              items: rule!CMGT_UTIL_Filter(\n                records: local!roleData,\n                fieldValuePairs: {\n                  a!map(\n                    field: \"uuid\",\n                    value: local!thisItem.uuid\n                  ),\n                  a!map(\n                    field: \"customFieldCode\",\n                    value: if(\n                      local!thisItem.customFieldCode = \"NA\",\n                      \"\",\n                      local!thisItem.customFieldCode\n                    )\n                  )\n                }\n              ).value,\n              expression: if(\n                rule!CMGT_UTIL_IsNotBlank(input: fv!item),\n                #\"urn:appian:function:v1:a:update\"(\n                  local!thisItem,\n                  \"value\",\n                  tostring(fv!item)\n                ),\n                {}\n              )\n            )\n          )\n        )\n      ),\n      {}\n    ),\n    /*Final values must be the parameters to pass to the process model*/\n    a!map(\n      task: #\"urn:appian:function:v1:a:update\"(\n        ri!task,\n        recordType!CMGT_Task.sendEmailTask.recipientRoleJsonOnCompletion,\n        if(\n          rule!CMGT_UTIL_IsNotBlank(\n            input: local!recipientRoleJsonOnCompletion\n          ),\n          #\"SYSTEM_SYSRULES_toJson_v1\"(local!recipientRoleJsonOnCompletion),\n          \"\"\n        )\n      )\n    )\n  ),\n  a!map(task: ri!task)\n)",
+  "calls": [
+    {
+      "name": "CMGT_UTIL_IsNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_QR_GetCase",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_EVAL_ReturnDataForCaseRole_SendEmailRecipients",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_ConstructRecipientsMap",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_Filter",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_Task",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_Case",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_CFG_CaseType",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    }
+  ],
+  "called_by": []
+}

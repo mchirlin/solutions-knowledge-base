@@ -1,0 +1,798 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "CMGT_Task - #\"urn:appian:translation-string:v1:cfa941bc-aee8-480c-835a-c3e9cf0bd183\"",
+    "parent_name": "CMGT_Task",
+    "total_objects": 34
+  },
+  "entry_point": {
+    "action_type": "RECORD_ACTION",
+    "record_type": "CMGT_Task",
+    "target_process": "CMGT_Task_Update",
+    "form_interface": "CMGT_Task_RecordAction_Update",
+    "expressions": {
+      "TITLE": "#\"urn:appian:translation-string:v1:cfa941bc-aee8-480c-835a-c3e9cf0bd183\"",
+      "DESCRIPTION": null,
+      "VISIBILITY": null,
+      "CONTEXT": "{\n  tasks: rule!CMGT_QR_GetTask(\n    taskId: rv!identifier\n  )\n}"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "CMGT_Task_Update",
+      "complexity_score": 9.0,
+      "total_nodes": 6,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Cancel?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "End Event",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Cancel?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Set Metadata",
+            "End Event"
+          ]
+        },
+        {
+          "name": "Write Task",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Set Metadata",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write Task"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ea26-2ced-8000-9bf1-011c48011c48_576735",
+      "name": "CMGT_BOL_AUTOMATION_TESTING_LABEL_SWITCH",
+      "type": "Constant",
+      "description": "A constant that controls the Automation Testing label.\nAutomation Environment - TRUE\nOther Environments - FALSE",
+      "value": "false",
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "CMGT_UTIL_RichTextField"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea9e-6ae8-8000-9c1d-011c48011c48_967525",
+      "name": "CMGT_INT_MAX_CHAR_LIMIT_EXTRA_LARGE",
+      "type": "Constant",
+      "description": "Value: 4000",
+      "value": "4000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_UTIL_RichTextField"
+      ]
+    },
+    {
+      "uuid": "_a-ddaef780-a278-11ed-8f9d-9f8a821f3aed",
+      "name": "CMGT_REFID_STATUS_CASE_CLOSED",
+      "type": "Constant",
+      "description": "3 - Case Status: Closed",
+      "value": "3",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_Task_AutomationRuleGlobalLogicalExpression"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf6-527e-8000-9bbc-011c48011c48_62128",
+      "name": "CMGT_WFL_CASE_TYPE_TASK_INTENTION_CODE_TRIGGER",
+      "type": "Constant",
+      "description": "value: TRIGGER",
+      "value": "TRIGGER",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_Task_AutomationRuleGlobalLogicalExpression"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed1b-3d9b-8000-9d29-011c48011c48_3505517",
+      "name": "CMGT_WFL_CASE_TYPE_TASK_INTENTION_CODE_WORKFLOW",
+      "type": "Constant",
+      "description": "value: WORKFLOW",
+      "value": "WORKFLOW",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_QR_GetTask",
+        "CMGT_Task_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_29411",
+      "name": "CMGT_QR_GetTask",
+      "type": "Expression Rule",
+      "description": "Queries the CMGT_Task record",
+      "parameters": [],
+      "calls": [
+        "CMGT_Task",
+        "CMGT_Task_AutomationRuleGlobalLogicalExpression",
+        "CMGT_UTIL_ConvertDatetoDatetime",
+        "CMGT_UTIL_QueryRecord",
+        "CMGT_WFL_CASE_TYPE_TASK_INTENTION_CODE_WORKFLOW"
+      ],
+      "called_by": [
+        "CMGT_Task",
+        "CMGT_Task_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed80-c26f-8000-9d4d-011c48011c48_3837910",
+      "name": "CMGT_Task_AutomationRuleGlobalLogicalExpression",
+      "type": "Expression Rule",
+      "description": "The global rule for filtering the the automation tasks",
+      "parameters": [],
+      "calls": [
+        "CMGT_REFID_STATUS_CASE_CLOSED",
+        "CMGT_Task",
+        "CMGT_UTIL_IsNotBlank",
+        "CMGT_WFL_CASE_TYPE_TASK_INTENTION_CODE_TRIGGER"
+      ],
+      "called_by": [
+        "CMGT_QR_GetTask"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_25461",
+      "name": "CMGT_Task_SetMetaData",
+      "type": "Expression Rule",
+      "description": "Set meta data fields for CMGT_Task",
+      "parameters": [],
+      "calls": [
+        "CMGT_Comment",
+        "CMGT_Document",
+        "CMGT_QR_GetTask",
+        "CMGT_Task",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_IsNotBlank",
+        "CMGT_UTIL_SetRecordFields",
+        "CMGT_WFL_CASE_TYPE_TASK_INTENTION_CODE_WORKFLOW"
+      ],
+      "called_by": [
+        "CMGT_Task_Update"
+      ]
+    },
+    {
+      "uuid": "_a-0000eab0-e049-8000-9c27-011c48011c48_1007763",
+      "name": "CMGT_Task_WriteRecordsProperties",
+      "type": "Expression Rule",
+      "description": "Defines what relationships should be stripped before writing and what child FKs should be reattached after writing",
+      "parameters": [],
+      "calls": [
+        "CMGT_Task",
+        "CMGT_UTIL_DropNonWritableRelationshipsFromRecord",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ],
+      "called_by": [
+        "CMGT_Task_Update"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9a5-4cb8-8000-9bac-011c48011c48_71234",
+      "name": "CMGT_UTIL_ConvertDatetoDatetime",
+      "type": "Expression Rule",
+      "description": "Converts date to datetime",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_SystemTimezone"
+      ],
+      "called_by": [
+        "CMGT_QR_GetTask"
+      ]
+    },
+    {
+      "uuid": "_a-0000eab0-e049-8000-9c27-011c48011c48_1011527",
+      "name": "CMGT_UTIL_DropNonWritableRelationshipsFromRecord",
+      "type": "Expression Rule",
+      "description": "The main rule to drop non-writeable relationships from a record before writing in the case the child record is considered changed, which would break the write",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_Milestone",
+        "CMGT_Task"
+      ],
+      "called_by": [
+        "CMGT_Task_WriteRecordsProperties"
+      ]
+    },
+    {
+      "uuid": "af326a29-a1c8-4399-a28d-996f85819d9e",
+      "name": "CMGT_UTIL_Filter",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case"
+      ],
+      "called_by": [
+        "CMGT_Task_SetMetaData",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_25890",
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_Task_SetMetaData",
+        "CMGT_Task_Update",
+        "CMGT_UTIL_IsNotBlank",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable",
+        "CMGT_UTIL_RichTextField",
+        "CMGT_UTIL_SetRecordFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9d3-70bf-8000-9bbd-011c48011c48_180568",
+      "name": "CMGT_UTIL_IsNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around CMGT_UTIL_IsBlank",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_IsBlank"
+      ],
+      "called_by": [
+        "CMGT_Task",
+        "CMGT_Task_AutomationRuleGlobalLogicalExpression",
+        "CMGT_Task_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000eaa7-a5c0-8000-9c22-011c48011c48_973190",
+      "name": "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable",
+      "type": "Expression Rule",
+      "description": "The main rule to merge the ID-output of a write records nodes to the input process variable (including all child FKs). IMPORTANT NOTES in comments in the rule.",
+      "parameters": [],
+      "calls": [
+        "CMGT_CFG_CaseType",
+        "CMGT_Case",
+        "CMGT_Comment",
+        "CMGT_CommentUserTag",
+        "CMGT_Document",
+        "CMGT_Milestone",
+        "CMGT_Task",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_RemoveRecordRelationshipsWithSingleKey_Reducer",
+        "CMGT_UTIL_SetRecordFields"
+      ],
+      "called_by": [
+        "CMGT_Task_WriteRecordsProperties"
+      ]
+    },
+    {
+      "uuid": "_a-0000e98b-cfe0-8000-9ba5-011c48011c48_22352",
+      "name": "CMGT_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "description": "Enhanced wrapper rule around a!queryRecord()",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case"
+      ],
+      "called_by": [
+        "CMGT_QR_GetTask"
+      ]
+    },
+    {
+      "uuid": "9248008e-2c2c-4eea-bb28-4a3c89838403",
+      "name": "CMGT_UTIL_RemoveRecordRelationshipsWithSingleKey_Reducer",
+      "type": "Expression Rule",
+      "description": null,
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_33778",
+      "name": "CMGT_UTIL_SetRecordFields",
+      "type": "Expression Rule",
+      "description": "Runs a bulk update on a record object, setting new values for its fields",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_UTIL_IsBlank"
+      ],
+      "called_by": [
+        "CMGT_Task_SetMetaData",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "_a-0000eaf1-7a52-8000-9c42-011c48011c48_1227353",
+      "name": "CMGT_UTIL_StripHtmlTags",
+      "type": "Expression Rule",
+      "description": "Rule to strip html tags",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_UTIL_RichTextField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e99c-1217-8000-9ba9-011c48011c48_56355",
+      "name": "CMGT_UTIL_SystemTimezone",
+      "type": "Expression Rule",
+      "description": "Returns the system timezone",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_UTIL_ConvertDatetoDatetime"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb3b-5b04-8000-9c63-011c48011c48_1606577",
+      "name": "CMGT_Task_RecordAction_Update",
+      "type": "Interface",
+      "description": "Form interface for updating a Task",
+      "parameters": [
+        {
+          "name": "task",
+          "type": "urn:com:appian:recordtype:datatype:ee5aa46d-0228-430f-a794-1134a11fbcc0",
+          "raw_type": "urn:com:appian:recordtype:datatype:ee5aa46d-0228-430f-a794-1134a11fbcc0",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        }
+      ],
+      "calls": [
+        "CMGT_Task",
+        "CMGT_UTIL_RichTextField",
+        "Unknown"
+      ],
+      "called_by": [
+        "CMGT_Task_Update"
+      ]
+    },
+    {
+      "uuid": "bd8f3e49-406c-4eab-a3a4-ce119dfbb5ce",
+      "name": "CMGT_UTIL_RichTextField",
+      "type": "Interface",
+      "description": "A rich text component that resolves to paragraph field when on portal, but ensures that length requirements are met regardless of what component a user entered text in",
+      "parameters": [
+        {
+          "name": "value",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "readOnly",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        },
+        {
+          "name": "maxSize",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "display_order": 2
+        },
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 3
+        },
+        {
+          "name": "labelPosition",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 4
+        },
+        {
+          "name": "instructions",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 5
+        },
+        {
+          "name": "helpToolTip",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 6
+        },
+        {
+          "name": "required",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 7
+        },
+        {
+          "name": "disabled",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 8
+        },
+        {
+          "name": "validations",
+          "type": "http://www.appian.com/ae/types/2009:Text?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 9
+        },
+        {
+          "name": "height",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 10
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 11
+        },
+        {
+          "name": "placeholder",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 12
+        },
+        {
+          "name": "refreshAfter",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 13
+        },
+        {
+          "name": "additionalSaves",
+          "type": "http://www.appian.com/ae/types/2009:Save?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Save?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 14
+        },
+        {
+          "name": "requiredMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 15
+        }
+      ],
+      "calls": [
+        "CMGT_BOL_AUTOMATION_TESTING_LABEL_SWITCH",
+        "CMGT_INT_MAX_CHAR_LIMIT_EXTRA_LARGE",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_StripHtmlTags"
+      ],
+      "called_by": [
+        "CMGT_Task_RecordAction_Update"
+      ]
+    },
+    {
+      "uuid": "0009eb42-8883-8000-0ba6-7f0000014e7a",
+      "name": "CMGT_Task_Update",
+      "type": "Process Model",
+      "description": "Update Task",
+      "calls": [
+        "CMGT_Task",
+        "CMGT_Task_RecordAction_Update",
+        "CMGT_Task_SetMetaData",
+        "CMGT_Task_WriteRecordsProperties",
+        "CMGT_UTIL_IsBlank"
+      ],
+      "called_by": [
+        "CMGT_Task"
+      ]
+    },
+    {
+      "uuid": "82aa3b28-94c2-4d3c-a403-bb813bd76155",
+      "name": "CMGT_CFG_CaseType",
+      "type": "Record Type",
+      "description": "MODIFIED FOR 2.0 KB AND EML MODULE RELEASE - Case Types",
+      "actions": [
+        "updateMetadata",
+        "editWorkflow",
+        "editMilestones",
+        "editWorkflowEmptyState",
+        "editWorkflowEmptyState2",
+        "createAutomationRule",
+        "addResource"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_Task",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "d81cdd0e-c54d-4b8e-beec-b7ae37fefe7f",
+      "name": "CMGT_Case",
+      "type": "Record Type",
+      "description": "MODIFIED FOR 2.0 KB , EML MODULE RELEASE , SMART SEARCH - Cases.",
+      "actions": [
+        "createCase",
+        "bulkUpdateCases",
+        "updateCase",
+        "updateProperty",
+        "addEntityToCase",
+        "updateRelatedCases",
+        "manageAssignee",
+        "manageWatcher",
+        "addTags",
+        "uploadDocuments",
+        "addComment",
+        "modifyWorkflow",
+        "updateContact",
+        "composeEmail"
+      ],
+      "views": [
+        "#\"urn:appian:translation-string:v1:a3a3c015-e0c6-4bd2-b78a-aaf392495bdd\"",
+        "#\"urn:appian:translation-string:v1:2f4f2cde-9986-47cb-ac2a-1ecfeeddc693\"",
+        "#\"urn:appian:translation-string:v1:455edb96-9d9a-4038-b43e-d10aa9a3a811\"",
+        "#\"urn:appian:translation-string:v1:6f32eac5-d5de-4502-9a1f-4d3184aac8d2\"",
+        "#\"urn:appian:translation-string:v1:86481b57-9608-4720-9198-578bfd8b8385\"",
+        "#\"urn:appian:translation-string:v1:297cf25d-abb6-4d91-b9ed-ab0139f56398\"",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_CFG_CaseType",
+        "CMGT_Comment",
+        "CMGT_Document",
+        "CMGT_Milestone",
+        "CMGT_Task"
+      ],
+      "called_by": [
+        "CMGT_Comment",
+        "CMGT_Document",
+        "CMGT_Milestone",
+        "CMGT_Task",
+        "CMGT_UTIL_DropNonWritableRelationshipsFromRecord",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable",
+        "CMGT_UTIL_QueryRecord",
+        "CMGT_UTIL_SetRecordFields"
+      ]
+    },
+    {
+      "uuid": "e57250b0-f216-4a23-afd9-39e7d532d302-cmgt",
+      "name": "CMGT_Comment",
+      "type": "Record Type",
+      "description": "Comments",
+      "actions": [
+        "updateComment",
+        "deleteComment",
+        "pin",
+        "unpin",
+        "updateMessage",
+        "deleteMessage"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_CommentUserTag",
+        "CMGT_Task"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_CommentUserTag",
+        "CMGT_Task",
+        "CMGT_Task_SetMetaData",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "20ece1cc-b807-491b-9fa3-c042ef610b43-cmgt",
+      "name": "CMGT_CommentUserTag",
+      "type": "Record Type",
+      "description": "Comment User Tags",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Comment"
+      ],
+      "called_by": [
+        "CMGT_Comment",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "4fcbf8d2-f6f9-4a38-bbf1-d2722635282a",
+      "name": "CMGT_Document",
+      "type": "Record Type",
+      "description": "Documents",
+      "actions": [
+        "deleteDocument"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_Task"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_Task",
+        "CMGT_Task_SetMetaData",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "ae26b90f-13d6-48f8-86f3-eaa8ed4d2e17",
+      "name": "CMGT_Milestone",
+      "type": "Record Type",
+      "description": "Milestones for a case",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_Task"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_Task",
+        "CMGT_UTIL_DropNonWritableRelationshipsFromRecord",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "ee5aa46d-0228-430f-a794-1134a11fbcc0",
+      "name": "CMGT_Task",
+      "type": "Record Type",
+      "description": "MODIFIED FOR 2.0 SMART SEARCH RELEASE - Tasks",
+      "actions": [
+        "manageAssignee",
+        "open",
+        "reopen",
+        "addComment",
+        "updateDueDate",
+        "complete",
+        "markNotNeeded",
+        "viewWorkflow",
+        "updateDescription",
+        "updateStatus",
+        "updateTaskName",
+        "updateEmail"
+      ],
+      "views": [
+        "#\"urn:appian:translation-string:v1:a3a3c015-e0c6-4bd2-b78a-aaf392495bdd\"",
+        "#\"urn:appian:translation-string:v1:6f32eac5-d5de-4502-9a1f-4d3184aac8d2\"",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_CFG_CaseType",
+        "CMGT_Case",
+        "CMGT_Comment",
+        "CMGT_Document",
+        "CMGT_Milestone",
+        "CMGT_QR_GetTask",
+        "CMGT_Task_Update",
+        "CMGT_UTIL_IsNotBlank",
+        "Unknown"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_Comment",
+        "CMGT_Document",
+        "CMGT_Milestone",
+        "CMGT_QR_GetTask",
+        "CMGT_Task_AutomationRuleGlobalLogicalExpression",
+        "CMGT_Task_RecordAction_Update",
+        "CMGT_Task_SetMetaData",
+        "CMGT_Task_Update",
+        "CMGT_Task_WriteRecordsProperties",
+        "CMGT_UTIL_DropNonWritableRelationshipsFromRecord",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "6ae27e88-ca52-4cde-831a-a6e6c2cd57e9",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "CaseRecord.Summary.lbl.CaseDescription\nUploadDocument.lbl.Description",
+      "calls": [],
+      "called_by": [
+        "CMGT_Task_RecordAction_Update"
+      ]
+    },
+    {
+      "uuid": "651cf177-f30b-485b-900f-8aaf47805737",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Button Label in multiple screens",
+      "calls": [],
+      "called_by": [
+        "CMGT_Task_RecordAction_Update"
+      ]
+    },
+    {
+      "uuid": "06dbafc7-e085-40de-a68a-c83054c1d7ec",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Label text in Multiple places",
+      "calls": [],
+      "called_by": [
+        "CMGT_Task_RecordAction_Update"
+      ]
+    },
+    {
+      "uuid": "cfa941bc-aee8-480c-835a-c3e9cf0bd183",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Field name in Update case and update task action",
+      "calls": [],
+      "called_by": [
+        "CMGT_Task",
+        "CMGT_Task_RecordAction_Update"
+      ]
+    }
+  ]
+}

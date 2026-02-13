@@ -1,0 +1,296 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "CMGT_Tag - #\"urn:appian:translation-string:v1:da66a8b5-b687-43da-a63b-4317667678ae\"",
+    "parent_name": "CMGT_Tag",
+    "total_objects": 18
+  },
+  "entry_point": {
+    "action_type": "RECORD_ACTION",
+    "record_type": "CMGT_Tag",
+    "target_process": "CMGT_Tag_CreateUpdate",
+    "form_interface": "CMGT_Tag_RecordAction_CreateUpdate",
+    "expressions": {
+      "TITLE": "#\"urn:appian:translation-string:v1:da66a8b5-b687-43da-a63b-4317667678ae\"",
+      "DESCRIPTION": null,
+      "VISIBILITY": null,
+      "CONTEXT": "{\n  tags: rule!CMGT_QR_GetTag(\n    tagId: rv!identifier\n  )\n}"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "CMGT_Tag_CreateUpdate",
+      "complexity_score": 8.0,
+      "total_nodes": 5,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Cancel?"
+          ]
+        },
+        {
+          "name": "Cancel?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node",
+            "Set Meta Data"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Set Meta Data",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write Tag"
+          ]
+        },
+        {
+          "name": "Write Tag",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e99c-1217-8000-9ba9-011c48011c48_52088",
+      "name": "CMGT_INT_MAX_CHAR_LIMIT_MEDIUM",
+      "type": "Constant",
+      "description": "Value: 255",
+      "value": "255",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_Tag_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_26020",
+      "name": "CMGT_QR_GetTag",
+      "type": "Expression Rule",
+      "description": "Queries the CMGT_Tag record",
+      "parameters": [],
+      "calls": [
+        "CMGT_Tag",
+        "CMGT_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "CMGT_Tag",
+        "CMGT_Tag_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_44308",
+      "name": "CMGT_Tag_SetMetaData",
+      "type": "Expression Rule",
+      "description": "Set meta data fields for CMGT_Tag",
+      "parameters": [],
+      "calls": [
+        "CMGT_Tag",
+        "CMGT_UTIL_SetRecordFields"
+      ],
+      "called_by": [
+        "CMGT_Tag_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_25890",
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_Tag_CreateUpdate",
+        "CMGT_UTIL_SetRecordFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e98b-cfe0-8000-9ba5-011c48011c48_22352",
+      "name": "CMGT_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "description": "Enhanced wrapper rule around a!queryRecord()",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_QR_GetTag"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_33778",
+      "name": "CMGT_UTIL_SetRecordFields",
+      "type": "Expression Rule",
+      "description": "Runs a bulk update on a record object, setting new values for its fields",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_IsBlank"
+      ],
+      "called_by": [
+        "CMGT_Tag_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "5bcbce70-8a07-4a6b-b1c0-66fb2cdebbd4",
+      "name": "CMGT_Tag_RecordAction_CreateUpdate",
+      "type": "Interface",
+      "description": "Form interface for adding or updating the tag",
+      "parameters": [
+        {
+          "name": "tag",
+          "type": "urn:com:appian:recordtype:datatype:a00ce071-eb14-400f-9cd2-40c7ce357a7a",
+          "raw_type": "urn:com:appian:recordtype:datatype:a00ce071-eb14-400f-9cd2-40c7ce357a7a",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        }
+      ],
+      "calls": [
+        "CMGT_INT_MAX_CHAR_LIMIT_MEDIUM",
+        "CMGT_QR_GetTag",
+        "CMGT_Tag",
+        "Unknown"
+      ],
+      "called_by": [
+        "CMGT_Tag_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "42a98cb8-4746-48d0-9043-c4469f2861cf",
+      "name": "CMGT_Tag_CreateUpdate",
+      "type": "Process Model",
+      "description": "Update a new Tag",
+      "calls": [
+        "CMGT_Tag",
+        "CMGT_Tag_RecordAction_CreateUpdate",
+        "CMGT_Tag_SetMetaData",
+        "CMGT_UTIL_IsBlank"
+      ],
+      "called_by": [
+        "CMGT_Tag"
+      ]
+    },
+    {
+      "uuid": "a00ce071-eb14-400f-9cd2-40c7ce357a7a",
+      "name": "CMGT_Tag",
+      "type": "Record Type",
+      "description": "Tags",
+      "actions": [
+        "createTag",
+        "updateTag"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_QR_GetTag",
+        "CMGT_Tag_CreateUpdate",
+        "Unknown"
+      ],
+      "called_by": [
+        "CMGT_QR_GetTag",
+        "CMGT_Tag_CreateUpdate",
+        "CMGT_Tag_RecordAction_CreateUpdate",
+        "CMGT_Tag_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "33c1e371-5c93-48bd-98ae-3bb0c7821fd9",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Validation text for Duplicate Tag names",
+      "calls": [],
+      "called_by": [
+        "CMGT_Tag_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "da66a8b5-b687-43da-a63b-4317667678ae",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Case Record Related action label",
+      "calls": [],
+      "called_by": [
+        "CMGT_Tag"
+      ]
+    },
+    {
+      "uuid": "4fab94dc-fcb1-427a-af9f-1239079b2897",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Required message for fields validation",
+      "calls": [],
+      "called_by": [
+        "CMGT_Tag_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "a3271474-ac49-4629-84cc-846d399c1c9e",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Placeholder Label in Tag users - User Picker field",
+      "calls": [],
+      "called_by": [
+        "CMGT_Tag_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "651cf177-f30b-485b-900f-8aaf47805737",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Button Label in multiple screens",
+      "calls": [],
+      "called_by": [
+        "CMGT_Tag_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "a0a1f71c-facb-4518-b894-e522808d9517",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Field Label in Create or Update Tag Action",
+      "calls": [],
+      "called_by": [
+        "CMGT_Tag_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "06dbafc7-e085-40de-a68a-c83054c1d7ec",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Label text in Multiple places",
+      "calls": [],
+      "called_by": [
+        "CMGT_Tag_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "8109f456-b575-47d2-8f0f-097db1743e6b",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Text used in Form Titles of all Create Record Actions",
+      "calls": [],
+      "called_by": [
+        "CMGT_Tag_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "4e3597b2-e836-4b33-8f2a-2f101ca2712c",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "{ Create/Update } Tag - form name in the create/Update tag action",
+      "calls": [],
+      "called_by": [
+        "CMGT_Tag_RecordAction_CreateUpdate"
+      ]
+    }
+  ]
+}

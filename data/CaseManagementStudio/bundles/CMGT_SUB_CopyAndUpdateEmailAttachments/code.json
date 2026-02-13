@@ -1,0 +1,27 @@
+{
+  "_metadata": {
+    "bundle_id": "CMGT_SUB_CopyAndUpdateEmailAttachments"
+  },
+  "objects": {
+    "_a-0000e9d3-70bf-8000-9bbd-011c48011c48_180568": {
+      "name": "CMGT_UTIL_IsNotBlank",
+      "type": "Expression Rule",
+      "sail_code": "not(rule!CMGT_UTIL_IsBlank(ri!input))"
+    },
+    "0007ed56-f27b-8000-1f6f-7f0000014e7a": {
+      "name": "CMGT_SUB_CopyAndUpdateEmailAttachments",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n= pv!case[recordType!CMGT_Case.folderId]\n\n// Input: ?\n=\"Case \" & pv!case[recordType!CMGT_Case.friendlyId] & \" \" & cons!CMGT_TXT_EMAIL_TEMPLATE_ATTACHMENTS\n\n// Output: ?\nAC!NewFolder\n\n// Input: ?\n= index( pv!attachmentsToCopy[tp!instanceindex], recordType!CMGT_EmailTemplateAttachments.appianDocumentId, null())\n\n// Input: ?\n= pv!emailTemplateAttachmentsFolder\n\n// Output: ?\nappian:record-field:v1:ecfa3aa5-8852-4685-8d4c-f54e1a112163/dbc63d9c-19eb-4a09-9b69-bdd901e11974\"][tp!instanceindex]:document(ac!newDocument, \"id\")\n\n// Input: ?\n= index( pv!attachmentsToMove[tp!instanceindex], recordType!CMGT_EmailTemplateAttachments.appianDocumentId, null())\n\n// Input: ?\n=pv!emailTemplateAttachmentsFolder\n\n// Input: ?\n=pv!attachmentsToCopy\n\n// Input: ?\n=recordType!CMGT_EmailTemplateAttachments\n\n// Output: ?\na!localVariables(\n  local!folder: rule!CMGT_UTIL_GetSubFolderByType(\n    parentFolderId: pv!case[recordType!CMGT_Case.folderId],\n    folderType: cons!CMGT_TXT_EMAIL_TEMPLATE_ATTACHMENTS\n  ),\n  if(\n    tointeger(local!folder) = tointeger(\n      pv!case[recordType!CMGT_Case.folderId]\n    ),\n    null(),\n    local!folder\n  )\n)"
+    },
+    "_a-0000e990-c462-8000-9ba7-011c48011c48_25890": {
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "sail_code": "length(a!flatten(ri!value)) = 0"
+    },
+    "_a-0000e9e5-e5dd-8000-9bc7-011c48011c48_232566": {
+      "name": "CMGT_UTIL_GetSubFolderByType",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  a!isNullOrEmpty(ri!parentFolderId),\n  tofolder(null),\n  tofolder(\n    a!localVariables(\n      local!allFolders: #\"SYSTEM_SYSRULES_forEach\"(\n        items: {\n          ri!parentFolderId,\n          folder(ri!parentFolderId, \"folderChildren\")\n        },\n        expression: a!map(\n          name: folder(fv!item, \"name\"),\n          folderId: fv!item\n        )\n      ),\n      local!filterForType: index(\n        a!flatten(\n          #\"SYSTEM_SYSRULES_forEach\"(\n            items: local!allFolders,\n            expression: if(\n              search(ri!folderType, fv!item.name),\n              fv!item.folderId,\n              {}\n            )\n          )\n        ),\n        1,\n        null\n      ),\n      a!defaultValue(local!filterForType, ri!parentFolderId)\n    )\n  )\n)"
+    }
+  }
+}

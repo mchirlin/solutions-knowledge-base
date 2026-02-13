@@ -1,0 +1,214 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "CMGT_EXT_DemoData_Load_DocumentMap",
+    "parent_name": null,
+    "total_objects": 12
+  },
+  "entry_point": {
+    "complexity_score": 8.0,
+    "total_nodes": 5,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "CMGT_EXT_DemoData_Load_DocumentMap",
+      "complexity_score": 8.0,
+      "total_nodes": 5,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Find Mapped Reference Doc"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Copy Document",
+          "type": "com.appiancorp.ps.plugins.contenttools.copyDocument",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Documents Exist?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Copy Document",
+            "End Node"
+          ]
+        },
+        {
+          "name": "Find Mapped Reference Doc",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Documents Exist?"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ec34-7771-8000-9bb0-011c48011c48_109483",
+      "name": "CMGT_EXT_DATASET_FRAUDULENT_TRANSACTIONS",
+      "type": "Constant",
+      "description": "Constant for dataset name  Fraudulent Transactions",
+      "value": "Fraudulent Transactions (DEMO)",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_EXT_ENUM_DATASET",
+        "CMGT_EXT_initiateDocumentMaps"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec34-7771-8000-9bb0-011c48011c48_109471",
+      "name": "CMGT_EXT_DATASET_RESIDENTIAL_PERMIT",
+      "type": "Constant",
+      "description": "Constant for dataset name ",
+      "value": "Residential Permit (DEMO)",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_EXT_ENUM_DATASET",
+        "CMGT_EXT_UTIL_ReturnDatsetDetailsByDatasetName"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec0f-47ad-8000-9ba8-011c48011c48_16704",
+      "name": "CMGT_EXT_FLD_REFERENCE_DOCUMENTS",
+      "type": "Constant",
+      "description": "Constant holds the folder CMGT_EXT_Documents.",
+      "value": "_a-0000ec0f-47ad-8000-9ba8-011c48011c48_16967",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationFolder",
+      "calls": [],
+      "called_by": [
+        "CMGT_EXT_initiateDocumentMaps"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec50-281e-8000-9bb6-011c48011c48_935490",
+      "name": "CMGT_EXT_FLD_TEMP_DOCUMENTS",
+      "type": "Constant",
+      "description": "Holds the copied documents temporarily before process ",
+      "value": "_a-0000ec50-281e-8000-9bb6-011c48011c48_935484",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationFolder",
+      "calls": [],
+      "called_by": [
+        "CMGT_EXT_DemoData_Load_DocumentMap"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee1d-9667-8000-9d8a-011c48011c48_4379643",
+      "name": "CMGT_EXT_TXT_GENERATED_CASE_CATEGORY_UUIDS",
+      "type": "Constant",
+      "description": "The following is the order of the case type uuids: \n1. Residential Permit (DEMO) - dde50ead-6fb1-44ac-99fb-ef51f9f83751 \n2. Fraudulent Transactions (DEMO) - 4081e139-6648-41b0-bc54-e6d7b26fe59e ",
+      "value": "\n                ",
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "CMGT_EXT_ENUM_DATASET"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec34-7771-8000-9bb0-011c48011c48_101679",
+      "name": "CMGT_EXT_ENUM_DATASET",
+      "type": "Expression Rule",
+      "description": "Rule for the dataset details",
+      "parameters": [],
+      "calls": [
+        "CMGT_EXT_DATASET_FRAUDULENT_TRANSACTIONS",
+        "CMGT_EXT_DATASET_RESIDENTIAL_PERMIT",
+        "CMGT_EXT_TXT_GENERATED_CASE_CATEGORY_UUIDS"
+      ],
+      "called_by": [
+        "CMGT_EXT_UTIL_ReturnDatsetDetailsByDatasetName"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec0f-47ad-8000-9ba8-011c48011c48_16665",
+      "name": "CMGT_EXT_GetDocumentsFromFolder",
+      "type": "Expression Rule",
+      "description": "Rule to extract all the documents from a folder",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_EXT_initiateDocumentMaps"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec34-7771-8000-9bb0-011c48011c48_132003",
+      "name": "CMGT_EXT_UTIL_ReturnDatsetDetailsByDatasetName",
+      "type": "Expression Rule",
+      "description": "Rule to return dataset details given status code",
+      "parameters": [],
+      "calls": [
+        "CMGT_EXT_DATASET_RESIDENTIAL_PERMIT",
+        "CMGT_EXT_ENUM_DATASET",
+        "CMGT_UTIL_Filter"
+      ],
+      "called_by": [
+        "CMGT_EXT_initiateDocumentMaps"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec50-281e-8000-9bb6-011c48011c48_945123",
+      "name": "CMGT_EXT_initiateDocumentMaps",
+      "type": "Expression Rule",
+      "description": "Creates the initial documents maps for the data load process",
+      "parameters": [],
+      "calls": [
+        "CMGT_EXT_DATASET_FRAUDULENT_TRANSACTIONS",
+        "CMGT_EXT_FLD_REFERENCE_DOCUMENTS",
+        "CMGT_EXT_GetDocumentsFromFolder",
+        "CMGT_EXT_UTIL_ReturnDatsetDetailsByDatasetName",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_IsBlank"
+      ],
+      "called_by": [
+        "CMGT_EXT_DemoData_Load_DocumentMap"
+      ]
+    },
+    {
+      "uuid": "af326a29-a1c8-4399-a28d-996f85819d9e",
+      "name": "CMGT_UTIL_Filter",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_EXT_UTIL_ReturnDatsetDetailsByDatasetName",
+        "CMGT_EXT_initiateDocumentMaps"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_25890",
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_EXT_DemoData_Load_DocumentMap",
+        "CMGT_EXT_initiateDocumentMaps"
+      ]
+    },
+    {
+      "uuid": "0002ec56-5a5c-8000-ff87-7f0000014e7a",
+      "name": "CMGT_EXT_DemoData_Load_DocumentMap",
+      "type": "Process Model",
+      "description": "Creates the demo data load document map based on the reference documents",
+      "calls": [
+        "CMGT_EXT_FLD_TEMP_DOCUMENTS",
+        "CMGT_EXT_initiateDocumentMaps",
+        "CMGT_UTIL_IsBlank"
+      ],
+      "called_by": []
+    }
+  ]
+}

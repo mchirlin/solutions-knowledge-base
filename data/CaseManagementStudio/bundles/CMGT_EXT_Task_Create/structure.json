@@ -1,0 +1,1492 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "CMGT_EXT_Task_Create",
+    "parent_name": null,
+    "total_objects": 79
+  },
+  "entry_point": {
+    "complexity_score": 17.0,
+    "total_nodes": 9,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "CMGT_EXT_Task_Create",
+      "complexity_score": 17.0,
+      "total_nodes": 9,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Set MetaData"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Write Task Branches",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Determine Tasks to Open"
+          ]
+        },
+        {
+          "name": "Has branches?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Write Task Branches",
+            "Determine Tasks to Open"
+          ]
+        },
+        {
+          "name": "Set MetaData",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write Tasks"
+          ]
+        },
+        {
+          "name": "Has Task Update rule?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Write Updated Task Details (Yes)",
+            "End Node (No)"
+          ]
+        },
+        {
+          "name": "Write Updated Task Details",
+          "type": "Start Process (v2)",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Write Tasks",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Has branches?"
+          ]
+        },
+        {
+          "name": "Determine Tasks to Open",
+          "type": "SUBPROCESS",
+          "next": [
+            "Has Task Update rule?"
+          ],
+          "subprocess": "CMGT_EXT_SUB_OpenNextTasks"
+        }
+      ]
+    },
+    "subprocesses": [
+      {
+        "name": "CMGT_EXT_SUB_OpenNextTasks",
+        "complexity_score": 19.0,
+        "total_nodes": 10,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "From Completion or Creation?"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "End Event",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "From Completion or Creation?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Completion (From Completion)",
+              "Creation (From Creation)",
+              "End Event"
+            ]
+          },
+          {
+            "name": "Creation",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Tasks to open?"
+            ]
+          },
+          {
+            "name": "Completion",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Tasks to open?"
+            ]
+          },
+          {
+            "name": "Tasks to open?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "End Node",
+              "Set Meta Data"
+            ]
+          },
+          {
+            "name": "Complete Automated Task",
+            "type": "SUBPROCESS",
+            "next": [
+              "End Node"
+            ],
+            "subprocess": "CMGT_Task_Complete_AutomatedTask_Wrapper"
+          },
+          {
+            "name": "Set Meta Data",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Write Tasks"
+            ]
+          },
+          {
+            "name": "Write Tasks",
+            "type": "internal3.write_records_to_source",
+            "next": [
+              "Complete Automated Task"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "CMGT_Task_Complete_AutomatedTask_Wrapper",
+        "complexity_score": 16.0,
+        "total_nodes": 9,
+        "nodes": [
+          {
+            "name": "Start Event",
+            "type": "START_EVENT",
+            "next": [
+              "Get Automated Tasks"
+            ]
+          },
+          {
+            "name": "End Event",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Increment Index",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Done?"
+            ]
+          },
+          {
+            "name": "Done?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Start Action (No)",
+              "Task Complete"
+            ]
+          },
+          {
+            "name": "Get Automated Tasks",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Automated task exists?"
+            ]
+          },
+          {
+            "name": "End Event",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Automated task exists?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "End Event",
+              "Start Action"
+            ]
+          },
+          {
+            "name": "Start Action",
+            "type": "Start Process",
+            "next": [
+              "Increment Index"
+            ]
+          },
+          {
+            "name": "Task Complete",
+            "type": "Start Process",
+            "next": [
+              "End Event"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ed02-d945-8000-9bc0-011c48011c48_68861",
+      "name": "CMGT_CFG_TXT_ACT_ASSIGN_CASE",
+      "type": "Constant",
+      "description": "Constant used to store ASSIGN_CASE action text id",
+      "value": "ASSIGN_CASE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_ENUM_ACT_ASSIGN_CASE"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed02-d945-8000-9bc0-011c48011c48_68873",
+      "name": "CMGT_CFG_TXT_ACT_ASSIGN_TASK",
+      "type": "Constant",
+      "description": "Constant used to store ASSIGN_TASK action text id",
+      "value": "ASSIGN_TASK",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_ENUM_ACT_ASSIGN_TASK"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed9c-71ef-8000-9d58-011c48011c48_3988267",
+      "name": "CMGT_CFG_TXT_ACT_CONTEXT_AUTOMATION",
+      "type": "Constant",
+      "description": "Action context: AUTOMATION",
+      "value": "AUTOMATION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_ENUM_ACT_SEND_EMAIL",
+        "CMGT_CFG_ENUM_ACT_WORKFLOW_ROUTING"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed7d-5e46-8000-9d4b-011c48011c48_3821572",
+      "name": "CMGT_CFG_TXT_ACT_CONTEXT_CASE",
+      "type": "Constant",
+      "description": "Action context: CASE",
+      "value": "CASE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_ENUM_ACT_ASSIGN_CASE",
+        "CMGT_CFG_ENUM_ACT_REASSIGN_CASE"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed7d-5e46-8000-9d4b-011c48011c48_3821597",
+      "name": "CMGT_CFG_TXT_ACT_CONTEXT_TASK",
+      "type": "Constant",
+      "description": "Action context: TASK",
+      "value": "TASK",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_ENUM_ACT_ASSIGN_TASK",
+        "CMGT_CFG_ENUM_ACT_REASSIGN_TASK"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed49-63d5-8000-9d3e-011c48011c48_3626134",
+      "name": "CMGT_CFG_TXT_ACT_REASSIGN_CASE",
+      "type": "Constant",
+      "description": "Constant used to store REASSIGN_CASE action text id",
+      "value": "REASSIGN_CASE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_ENUM_ACT_REASSIGN_CASE"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed7d-5e46-8000-9d4b-011c48011c48_3821619",
+      "name": "CMGT_CFG_TXT_ACT_REASSIGN_TASK",
+      "type": "Constant",
+      "description": "Constant used to store REASSIGN_TASK action text id",
+      "value": "REASSIGN_TASK",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_ENUM_ACT_REASSIGN_TASK"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed9c-71ef-8000-9d58-011c48011c48_3988275",
+      "name": "CMGT_CFG_TXT_ACT_SEND_EMAIL",
+      "type": "Constant",
+      "description": "Action context: SEND_EMAIL",
+      "value": "SEND_EMAIL",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_ENUM_ACT_SEND_EMAIL"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed9c-71ef-8000-9d58-011c48011c48_3993433",
+      "name": "CMGT_CFG_TXT_ACT_WORKFLOW_ROUTING",
+      "type": "Constant",
+      "description": "Action context: WORKFLOW_ROUTING",
+      "value": "WORKFLOW_ROUTING",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_ENUM_ACT_WORKFLOW_ROUTING",
+        "CMGT_SUB_OpenNextTasks_Logic_FromCompletedTasks"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed9c-71ef-8000-9d58-011c48011c48_3988312",
+      "name": "CMGT_DOC_IMAGE_AUTOMATION_TYPE_SEND_EMAIL",
+      "type": "Constant",
+      "description": "Constant reference to the CMGT_AutomationType_SendEmail document",
+      "value": "_a-0000ed9c-71ef-8000-9d58-011c48011c48_3988306",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_ENUM_ACT_SEND_EMAIL"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed9c-71ef-8000-9d58-011c48011c48_3988294",
+      "name": "CMGT_DOC_IMAGE_AUTOMATION_TYPE_WORKFLOW_ROUTING",
+      "type": "Constant",
+      "description": "Constant reference to the CMGT_AutomationType_WorkflowRouting document",
+      "value": "_a-0000ed9c-71ef-8000-9d58-011c48011c48_3988288",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_ENUM_ACT_WORKFLOW_ROUTING"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec34-7771-8000-9bb0-011c48011c48_109483",
+      "name": "CMGT_EXT_DATASET_FRAUDULENT_TRANSACTIONS",
+      "type": "Constant",
+      "description": "Constant for dataset name  Fraudulent Transactions",
+      "value": "Fraudulent Transactions (DEMO)",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_EXT_ENUM_DATASET"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec34-7771-8000-9bb0-011c48011c48_109471",
+      "name": "CMGT_EXT_DATASET_RESIDENTIAL_PERMIT",
+      "type": "Constant",
+      "description": "Constant for dataset name ",
+      "value": "Residential Permit (DEMO)",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_EXT_ENUM_DATASET",
+        "CMGT_EXT_UTIL_ReturnDatsetDetailsByDatasetName"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee1d-9667-8000-9d8a-011c48011c48_4379643",
+      "name": "CMGT_EXT_TXT_GENERATED_CASE_CATEGORY_UUIDS",
+      "type": "Constant",
+      "description": "The following is the order of the case type uuids: \n1. Residential Permit (DEMO) - dde50ead-6fb1-44ac-99fb-ef51f9f83751 \n2. Fraudulent Transactions (DEMO) - 4081e139-6648-41b0-bc54-e6d7b26fe59e ",
+      "value": "\n                ",
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "CMGT_EXT_ENUM_DATASET"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf6-527e-8000-9bbc-011c48011c48_56687",
+      "name": "CMGT_PM_ROLE_MANAGE",
+      "type": "Constant",
+      "description": null,
+      "value": "CMGT_Role_Manage",
+      "value_type": "http://www.appian.com/ae/types/2009:ProcessModel",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_ENUM_ACT_ASSIGN_CASE",
+        "CMGT_CFG_ENUM_ACT_ASSIGN_TASK",
+        "CMGT_CFG_ENUM_ACT_REASSIGN_CASE",
+        "CMGT_CFG_ENUM_ACT_REASSIGN_TASK"
+      ]
+    },
+    {
+      "uuid": "_a-0000eda5-abee-8000-9d5c-011c48011c48_4010705",
+      "name": "CMGT_PM_TASK_COMPLETE_AUTOMATED_TASK_SEND_EMAIL",
+      "type": "Constant",
+      "description": "PM: CMGT_Task_Complete_AutomatedTask_SendEmail",
+      "value": "CMGT_Task_Complete_AutomatedTask_SendEmail",
+      "value_type": "http://www.appian.com/ae/types/2009:ProcessModel",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_ENUM_ACT_SEND_EMAIL"
+      ]
+    },
+    {
+      "uuid": "_a-0000edae-d8ef-8000-9d5e-011c48011c48_4026573",
+      "name": "CMGT_PM_TASK_COMPLETE_AUTOMATED_TASK_WORKFLOW_ROUTING",
+      "type": "Constant",
+      "description": "PM: CMGT_Task_Complete_AutomatedTask_WorkflowRouting",
+      "value": "CMGT_Task_Complete_AutomatedTask_WorkflowRouting",
+      "value_type": "http://www.appian.com/ae/types/2009:ProcessModel",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_ENUM_ACT_WORKFLOW_ROUTING"
+      ]
+    },
+    {
+      "uuid": "_a-ddaef784-a278-11ed-8f9d-9f8a821f3aed",
+      "name": "CMGT_REFID_STATUS_TASK_COMPLETED",
+      "type": "Constant",
+      "description": "4 - Task Status: Completed",
+      "value": "4",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_EXT_Task_SetMetaData",
+        "CMGT_Task",
+        "CMGT_Task_Complete_AutomatedTask_Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb69-802f-8000-9c71-011c48011c48_1763762",
+      "name": "CMGT_REFID_STATUS_TASK_IN_PROGRESS",
+      "type": "Constant",
+      "description": "8 - Task Status: In Progress",
+      "value": "8",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_EXT_Task_SetMetaData",
+        "CMGT_SUB_OpenNextTasks_Logic_FromCompletedTasks",
+        "CMGT_SUB_OpenNextTasks_Logic_FromCreatedTasks"
+      ]
+    },
+    {
+      "uuid": "_a-ddaef785-a278-11ed-8f9d-9f8a821f3aed",
+      "name": "CMGT_REFID_STATUS_TASK_NOT_NEEDED",
+      "type": "Constant",
+      "description": "5 - Task Status: Not Needed",
+      "value": "5",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_EXT_Task_SetMetaData",
+        "CMGT_Task"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9fd-9441-8000-9bdc-011c48011c48_329664",
+      "name": "CMGT_REFID_STATUS_TASK_QUEUED",
+      "type": "Constant",
+      "description": "7 - Task Status: Queued",
+      "value": "7",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_EXT_Task_SetMetaData",
+        "CMGT_SUB_OpenNextTasks_Logic_FromCreatedTasks"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9a5-4cb8-8000-9bac-011c48011c48_77904",
+      "name": "CMGT_REFID_STATUS_TASK_READY",
+      "type": "Constant",
+      "description": "6 - Task Status: Ready",
+      "value": "6",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_EXT_Task_SetMetaData",
+        "CMGT_SUB_OpenNextTasks_Logic_FromCompletedTasks",
+        "CMGT_SUB_OpenNextTasks_Logic_FromCreatedTasks"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec87-8877-8000-9ce8-011c48011c48_3011428",
+      "name": "CMGT_REFID_TASK_BEHAVIOR_TYPE_AUTOMATION",
+      "type": "Constant",
+      "description": "4 - Automation",
+      "value": "4",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_SUB_OpenNextTasks_Logic_FromCompletedTasks",
+        "CMGT_SUB_OpenNextTasks_Logic_FromCreatedTasks",
+        "CMGT_Task_Complete_AutomatedTask_Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea16-5aab-8000-9bec-011c48011c48_525754",
+      "name": "CMGT_REFID_TASK_BEHAVIOR_TYPE_CONFIRMATION",
+      "type": "Constant",
+      "description": "1 - Confirmation",
+      "value": "1",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_SUB_OpenNextTasks_Logic_FromCompletedTasks"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea03-1fde-8000-9be1-011c48011c48_375054",
+      "name": "CMGT_REFID_TASK_BEHAVIOR_TYPE_DECISION",
+      "type": "Constant",
+      "description": "2 - Decision",
+      "value": "2",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_SUB_OpenNextTasks_Logic_FromCompletedTasks"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea95-307e-8000-9c1a-011c48011c48_925412",
+      "name": "CMGT_TXT_AUTOMATED_SYSTEM",
+      "type": "Constant",
+      "description": "Value: Automated System",
+      "value": "Automated System",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_Task_Complete_AutomatedTask_Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec87-8877-8000-9ce8-011c48011c48_3023176",
+      "name": "CMGT_TXT_SET_OPERATOR_AND",
+      "type": "Constant",
+      "description": "AND",
+      "value": "AND",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_SUB_OpenNextTasks_Logic_FromCompletedTasks"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec87-8877-8000-9ce8-011c48011c48_3028306",
+      "name": "CMGT_TXT_SET_OPERATOR_OR",
+      "type": "Constant",
+      "description": "OR",
+      "value": "OR",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_SUB_OpenNextTasks_Logic_FromCompletedTasks"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf6-527e-8000-9bbc-011c48011c48_56681",
+      "name": "CMGT_CFG_ENUM_ACTIONS",
+      "type": "Expression Rule",
+      "description": "map of all actions associated with automation ",
+      "parameters": [],
+      "calls": [
+        "CMGT_CFG_ENUM_ACT_ASSIGN_CASE",
+        "CMGT_CFG_ENUM_ACT_ASSIGN_TASK",
+        "CMGT_CFG_ENUM_ACT_REASSIGN_CASE",
+        "CMGT_CFG_ENUM_ACT_REASSIGN_TASK",
+        "CMGT_CFG_ENUM_ACT_SEND_EMAIL",
+        "CMGT_CFG_ENUM_ACT_WORKFLOW_ROUTING"
+      ],
+      "called_by": [
+        "CMGT_Task_Complete_AutomatedTask_Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf6-527e-8000-9bbc-011c48011c48_59891",
+      "name": "CMGT_CFG_ENUM_ACT_ASSIGN_CASE",
+      "type": "Expression Rule",
+      "description": null,
+      "parameters": [],
+      "calls": [
+        "CMGT_CFG_TXT_ACT_ASSIGN_CASE",
+        "CMGT_CFG_TXT_ACT_CONTEXT_CASE",
+        "CMGT_PM_ROLE_MANAGE",
+        "Unknown"
+      ],
+      "called_by": [
+        "CMGT_CFG_ENUM_ACTIONS"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf6-527e-8000-9bbc-011c48011c48_59897",
+      "name": "CMGT_CFG_ENUM_ACT_ASSIGN_TASK",
+      "type": "Expression Rule",
+      "description": null,
+      "parameters": [],
+      "calls": [
+        "CMGT_CFG_TXT_ACT_ASSIGN_TASK",
+        "CMGT_CFG_TXT_ACT_CONTEXT_TASK",
+        "CMGT_PM_ROLE_MANAGE",
+        "Unknown"
+      ],
+      "called_by": [
+        "CMGT_CFG_ENUM_ACTIONS"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed49-63d5-8000-9d3e-011c48011c48_3626108",
+      "name": "CMGT_CFG_ENUM_ACT_REASSIGN_CASE",
+      "type": "Expression Rule",
+      "description": null,
+      "parameters": [],
+      "calls": [
+        "CMGT_CFG_TXT_ACT_CONTEXT_CASE",
+        "CMGT_CFG_TXT_ACT_REASSIGN_CASE",
+        "CMGT_PM_ROLE_MANAGE",
+        "Unknown"
+      ],
+      "called_by": [
+        "CMGT_CFG_ENUM_ACTIONS"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed7d-5e46-8000-9d4b-011c48011c48_3821612",
+      "name": "CMGT_CFG_ENUM_ACT_REASSIGN_TASK",
+      "type": "Expression Rule",
+      "description": null,
+      "parameters": [],
+      "calls": [
+        "CMGT_CFG_TXT_ACT_CONTEXT_TASK",
+        "CMGT_CFG_TXT_ACT_REASSIGN_TASK",
+        "CMGT_PM_ROLE_MANAGE",
+        "Unknown"
+      ],
+      "called_by": [
+        "CMGT_CFG_ENUM_ACTIONS"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed9c-71ef-8000-9d58-011c48011c48_3988340",
+      "name": "CMGT_CFG_ENUM_ACT_SEND_EMAIL",
+      "type": "Expression Rule",
+      "description": "Enum rule for send email automation task",
+      "parameters": [],
+      "calls": [
+        "CMGT_CFG_TXT_ACT_CONTEXT_AUTOMATION",
+        "CMGT_CFG_TXT_ACT_SEND_EMAIL",
+        "CMGT_DOC_IMAGE_AUTOMATION_TYPE_SEND_EMAIL",
+        "CMGT_PM_TASK_COMPLETE_AUTOMATED_TASK_SEND_EMAIL",
+        "Unknown"
+      ],
+      "called_by": [
+        "CMGT_CFG_ENUM_ACTIONS"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed9c-71ef-8000-9d58-011c48011c48_3988353",
+      "name": "CMGT_CFG_ENUM_ACT_WORKFLOW_ROUTING",
+      "type": "Expression Rule",
+      "description": "Enum rule for workflow routing",
+      "parameters": [],
+      "calls": [
+        "CMGT_CFG_TXT_ACT_CONTEXT_AUTOMATION",
+        "CMGT_CFG_TXT_ACT_WORKFLOW_ROUTING",
+        "CMGT_DOC_IMAGE_AUTOMATION_TYPE_WORKFLOW_ROUTING",
+        "CMGT_PM_TASK_COMPLETE_AUTOMATED_TASK_WORKFLOW_ROUTING",
+        "Unknown"
+      ],
+      "called_by": [
+        "CMGT_CFG_ENUM_ACTIONS"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec34-7771-8000-9bb0-011c48011c48_101679",
+      "name": "CMGT_EXT_ENUM_DATASET",
+      "type": "Expression Rule",
+      "description": "Rule for the dataset details",
+      "parameters": [],
+      "calls": [
+        "CMGT_EXT_DATASET_FRAUDULENT_TRANSACTIONS",
+        "CMGT_EXT_DATASET_RESIDENTIAL_PERMIT",
+        "CMGT_EXT_TXT_GENERATED_CASE_CATEGORY_UUIDS"
+      ],
+      "called_by": [
+        "CMGT_EXT_UTIL_ReturnDatsetDetailsByDatasetName"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec0f-47ad-8000-9ba8-011c48011c48_16255",
+      "name": "CMGT_EXT_Role_SetMetaData",
+      "type": "Expression Rule",
+      "description": "Set meta data fields for CMGT_Role",
+      "parameters": [],
+      "calls": [
+        "CMGT_Role",
+        "CMGT_UTIL_SetRecordFields"
+      ],
+      "called_by": [
+        "CMGT_EXT_Task_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec0f-47ad-8000-9ba8-011c48011c48_16248",
+      "name": "CMGT_EXT_Task_SetMetaData",
+      "type": "Expression Rule",
+      "description": "Set meta data fields for CMGT_Task",
+      "parameters": [],
+      "calls": [
+        "CMGT_EXT_Role_SetMetaData",
+        "CMGT_REFID_STATUS_TASK_COMPLETED",
+        "CMGT_REFID_STATUS_TASK_IN_PROGRESS",
+        "CMGT_REFID_STATUS_TASK_NOT_NEEDED",
+        "CMGT_REFID_STATUS_TASK_QUEUED",
+        "CMGT_REFID_STATUS_TASK_READY",
+        "CMGT_Task",
+        "CMGT_TaskBranch_SetMetaData",
+        "CMGT_UTIL_CalculateDueDateBasedOnSLA",
+        "CMGT_UTIL_GenerateUuid_NonPlugin",
+        "CMGT_UTIL_SetRecordFields"
+      ],
+      "called_by": [
+        "CMGT_EXT_SUB_OpenNextTasks",
+        "CMGT_EXT_Task_Create"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec34-7771-8000-9bb0-011c48011c48_132003",
+      "name": "CMGT_EXT_UTIL_ReturnDatsetDetailsByDatasetName",
+      "type": "Expression Rule",
+      "description": "Rule to return dataset details given status code",
+      "parameters": [],
+      "calls": [
+        "CMGT_EXT_DATASET_RESIDENTIAL_PERMIT",
+        "CMGT_EXT_ENUM_DATASET",
+        "CMGT_UTIL_Filter"
+      ],
+      "called_by": [
+        "CMGT_EXT_Task_Create"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_29411",
+      "name": "CMGT_QR_GetTask",
+      "type": "Expression Rule",
+      "description": "Queries the CMGT_Task record",
+      "parameters": [],
+      "calls": [
+        "CMGT_Task",
+        "CMGT_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "CMGT_EXT_Task_Create",
+        "CMGT_SUB_OpenNextTasks_Logic_FromCreatedTasks",
+        "CMGT_Task",
+        "CMGT_Task_Complete_AutomatedTask_Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9fd-9441-8000-9bdc-011c48011c48_345334",
+      "name": "CMGT_QR_GetTaskBranch",
+      "type": "Expression Rule",
+      "description": "Queries the CMGT_TaskBranch record",
+      "parameters": [],
+      "calls": [
+        "CMGT_TaskBranch",
+        "CMGT_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "CMGT_SUB_OpenNextTasks_Logic_FromCompletedTasks"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9fd-9441-8000-9bdc-011c48011c48_345321",
+      "name": "CMGT_SUB_OpenNextTasks_Logic_FromCompletedTasks",
+      "type": "Expression Rule",
+      "description": "Does the logic that determines what tasks are ready to be opened after any tasks are completed",
+      "parameters": [],
+      "calls": [
+        "CMGT_CFG_TXT_ACT_WORKFLOW_ROUTING",
+        "CMGT_Condition",
+        "CMGT_ConditionSet",
+        "CMGT_QR_GetTaskBranch",
+        "CMGT_REFID_STATUS_TASK_IN_PROGRESS",
+        "CMGT_REFID_STATUS_TASK_READY",
+        "CMGT_REFID_TASK_BEHAVIOR_TYPE_AUTOMATION",
+        "CMGT_REFID_TASK_BEHAVIOR_TYPE_CONFIRMATION",
+        "CMGT_REFID_TASK_BEHAVIOR_TYPE_DECISION",
+        "CMGT_TXT_SET_OPERATOR_AND",
+        "CMGT_TXT_SET_OPERATOR_OR",
+        "CMGT_Task",
+        "CMGT_TaskBranch",
+        "CMGT_UTIL_Distinct",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_RejectBlank"
+      ],
+      "called_by": [
+        "CMGT_EXT_SUB_OpenNextTasks"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9fd-9441-8000-9bdc-011c48011c48_345072",
+      "name": "CMGT_SUB_OpenNextTasks_Logic_FromCreatedTasks",
+      "type": "Expression Rule",
+      "description": "Does the logic that determines what tasks are ready to be opened after any tasks are created",
+      "parameters": [],
+      "calls": [
+        "CMGT_QR_GetTask",
+        "CMGT_REFID_STATUS_TASK_IN_PROGRESS",
+        "CMGT_REFID_STATUS_TASK_QUEUED",
+        "CMGT_REFID_STATUS_TASK_READY",
+        "CMGT_REFID_TASK_BEHAVIOR_TYPE_AUTOMATION",
+        "CMGT_Task",
+        "CMGT_TaskBranch",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_IsNotBlank"
+      ],
+      "called_by": [
+        "CMGT_EXT_SUB_OpenNextTasks"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9c0-fc38-8000-9bb5-011c48011c48_118173",
+      "name": "CMGT_TaskBranch_SetMetaData",
+      "type": "Expression Rule",
+      "description": "Set meta data fields for CMGT_TaskBranch",
+      "parameters": [],
+      "calls": [
+        "CMGT_TaskBranch",
+        "CMGT_UTIL_SetRecordFields"
+      ],
+      "called_by": [
+        "CMGT_EXT_Task_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000eab0-e049-8000-9c27-011c48011c48_1007763",
+      "name": "CMGT_Task_WriteRecordsProperties",
+      "type": "Expression Rule",
+      "description": "Defines what relationships should be stripped before writing and what child FKs should be reattached after writing",
+      "parameters": [],
+      "calls": [
+        "CMGT_Task",
+        "CMGT_UTIL_DropNonWritableRelationshipsFromRecord",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ],
+      "called_by": [
+        "CMGT_EXT_Task_Create"
+      ]
+    },
+    {
+      "uuid": "_a-0000ece2-0128-8000-9bb8-011c48011c48_37290",
+      "name": "CMGT_UTIL_CalculateDueDateBasedOnSLA",
+      "type": "Expression Rule",
+      "description": "Rule to Calculate the Due Date based on SLA",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_EXT_Task_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9ca-3659-8000-9bb8-011c48011c48_145917",
+      "name": "CMGT_UTIL_Distinct",
+      "type": "Expression Rule",
+      "description": "Returns the distinct values from a list",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_SUB_OpenNextTasks_Logic_FromCompletedTasks"
+      ]
+    },
+    {
+      "uuid": "_a-0000eab0-e049-8000-9c27-011c48011c48_1011527",
+      "name": "CMGT_UTIL_DropNonWritableRelationshipsFromRecord",
+      "type": "Expression Rule",
+      "description": "The main rule to drop non-writeable relationships from a record before writing in the case the child record is considered changed, which would break the write",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_Milestone",
+        "CMGT_Task",
+        "CMGT_TaskBranch"
+      ],
+      "called_by": [
+        "CMGT_Task_WriteRecordsProperties"
+      ]
+    },
+    {
+      "uuid": "af326a29-a1c8-4399-a28d-996f85819d9e",
+      "name": "CMGT_UTIL_Filter",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_Role"
+      ],
+      "called_by": [
+        "CMGT_EXT_UTIL_ReturnDatsetDetailsByDatasetName",
+        "CMGT_SUB_OpenNextTasks_Logic_FromCompletedTasks",
+        "CMGT_SUB_OpenNextTasks_Logic_FromCreatedTasks",
+        "CMGT_Task_Complete_AutomatedTask_Wrapper",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea1d-36f5-8000-9bef-011c48011c48_538451",
+      "name": "CMGT_UTIL_GenerateUuid_NonPlugin",
+      "type": "Expression Rule",
+      "description": "Generates random uuid",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_EXT_Task_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_25890",
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_EXT_SUB_OpenNextTasks",
+        "CMGT_EXT_Task_Create",
+        "CMGT_SUB_OpenNextTasks_Logic_FromCompletedTasks",
+        "CMGT_UTIL_IsNotBlank",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable",
+        "CMGT_UTIL_SetRecordFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9d3-70bf-8000-9bbd-011c48011c48_180568",
+      "name": "CMGT_UTIL_IsNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around CMGT_UTIL_IsBlank",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_IsBlank"
+      ],
+      "called_by": [
+        "CMGT_SUB_OpenNextTasks_Logic_FromCreatedTasks",
+        "CMGT_Task",
+        "CMGT_Task_Complete_AutomatedTask_Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000eaa7-a5c0-8000-9c22-011c48011c48_973190",
+      "name": "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable",
+      "type": "Expression Rule",
+      "description": "The main rule to merge the ID-output of a write records nodes to the input process variable (including all child FKs). IMPORTANT NOTES in comments in the rule.",
+      "parameters": [],
+      "calls": [
+        "CMGT_CFG_CaseType",
+        "CMGT_Case",
+        "CMGT_Comment",
+        "CMGT_CommentUserTag",
+        "CMGT_Document",
+        "CMGT_Milestone",
+        "CMGT_Task",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_RemoveRecordRelationshipsWithSingleKey_Reducer",
+        "CMGT_UTIL_SetRecordFields"
+      ],
+      "called_by": [
+        "CMGT_Task_WriteRecordsProperties"
+      ]
+    },
+    {
+      "uuid": "_a-0000e98b-cfe0-8000-9ba5-011c48011c48_22352",
+      "name": "CMGT_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "description": "Enhanced wrapper rule around a!queryRecord()",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case"
+      ],
+      "called_by": [
+        "CMGT_QR_GetTask",
+        "CMGT_QR_GetTaskBranch"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9d3-70bf-8000-9bbd-011c48011c48_180481",
+      "name": "CMGT_UTIL_RejectBlank",
+      "type": "Expression Rule",
+      "description": "Rule to removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_EXT_Task_Create",
+        "CMGT_SUB_OpenNextTasks_Logic_FromCompletedTasks",
+        "CMGT_UTIL_SetRecordFields"
+      ]
+    },
+    {
+      "uuid": "9248008e-2c2c-4eea-bb28-4a3c89838403",
+      "name": "CMGT_UTIL_RemoveRecordRelationshipsWithSingleKey_Reducer",
+      "type": "Expression Rule",
+      "description": null,
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_33778",
+      "name": "CMGT_UTIL_SetRecordFields",
+      "type": "Expression Rule",
+      "description": "Runs a bulk update on a record object, setting new values for its fields",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_RejectBlank"
+      ],
+      "called_by": [
+        "CMGT_EXT_Role_SetMetaData",
+        "CMGT_EXT_Task_SetMetaData",
+        "CMGT_TaskBranch_SetMetaData",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "000cec12-8268-8000-fa37-7f0000014e7a",
+      "name": "CMGT_EXT_SUB_OpenNextTasks",
+      "type": "Process Model",
+      "description": "Sub-process to open any \"next tasks\" anytime a task is created or modified",
+      "calls": [
+        "CMGT_EXT_Task_SetMetaData",
+        "CMGT_SUB_OpenNextTasks_Logic_FromCompletedTasks",
+        "CMGT_SUB_OpenNextTasks_Logic_FromCreatedTasks",
+        "CMGT_Task_Complete_AutomatedTask_Wrapper",
+        "CMGT_UTIL_IsBlank"
+      ],
+      "called_by": [
+        "CMGT_EXT_Task_Create"
+      ]
+    },
+    {
+      "uuid": "0009ec12-80d9-8000-fa34-7f0000014e7a",
+      "name": "CMGT_EXT_Task_Create",
+      "type": "Process Model",
+      "description": "Creates a CMGT_Task",
+      "calls": [
+        "CMGT_EXT_SUB_OpenNextTasks",
+        "CMGT_EXT_Task_SetMetaData",
+        "CMGT_EXT_UTIL_ReturnDatsetDetailsByDatasetName",
+        "CMGT_QR_GetTask",
+        "CMGT_Task",
+        "CMGT_TaskBranch",
+        "CMGT_Task_WriteRecordsProperties",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_RejectBlank"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "000beaeb-2dd9-8000-0981-7f0000014e7a",
+      "name": "CMGT_Task_Complete_AutomatedTask_Wrapper",
+      "type": "Process Model",
+      "description": "Wrapper Model for all Automated Tasks",
+      "calls": [
+        "CMGT_CFG_ENUM_ACTIONS",
+        "CMGT_QR_GetTask",
+        "CMGT_REFID_STATUS_TASK_COMPLETED",
+        "CMGT_REFID_TASK_BEHAVIOR_TYPE_AUTOMATION",
+        "CMGT_TXT_AUTOMATED_SYSTEM",
+        "CMGT_Task",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_IsNotBlank"
+      ],
+      "called_by": [
+        "CMGT_EXT_SUB_OpenNextTasks"
+      ]
+    },
+    {
+      "uuid": "82aa3b28-94c2-4d3c-a403-bb813bd76155",
+      "name": "CMGT_CFG_CaseType",
+      "type": "Record Type",
+      "description": "MODIFIED FOR 2.0 KB AND EML MODULE RELEASE - Case Types",
+      "actions": [
+        "updateMetadata",
+        "editWorkflow",
+        "editMilestones",
+        "editWorkflowEmptyState",
+        "editWorkflowEmptyState2",
+        "createAutomationRule",
+        "addResource"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_Task",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "d81cdd0e-c54d-4b8e-beec-b7ae37fefe7f",
+      "name": "CMGT_Case",
+      "type": "Record Type",
+      "description": "MODIFIED FOR 2.0 KB , EML MODULE RELEASE , SMART SEARCH - Cases.",
+      "actions": [
+        "createCase",
+        "bulkUpdateCases",
+        "updateCase",
+        "updateProperty",
+        "addEntityToCase",
+        "updateRelatedCases",
+        "manageAssignee",
+        "manageWatcher",
+        "addTags",
+        "uploadDocuments",
+        "addComment",
+        "modifyWorkflow",
+        "updateContact",
+        "composeEmail"
+      ],
+      "views": [
+        "#\"urn:appian:translation-string:v1:a3a3c015-e0c6-4bd2-b78a-aaf392495bdd\"",
+        "#\"urn:appian:translation-string:v1:2f4f2cde-9986-47cb-ac2a-1ecfeeddc693\"",
+        "#\"urn:appian:translation-string:v1:455edb96-9d9a-4038-b43e-d10aa9a3a811\"",
+        "#\"urn:appian:translation-string:v1:6f32eac5-d5de-4502-9a1f-4d3184aac8d2\"",
+        "#\"urn:appian:translation-string:v1:86481b57-9608-4720-9198-578bfd8b8385\"",
+        "#\"urn:appian:translation-string:v1:297cf25d-abb6-4d91-b9ed-ab0139f56398\"",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_CFG_CaseType",
+        "CMGT_Comment",
+        "CMGT_Document",
+        "CMGT_Milestone",
+        "CMGT_Role",
+        "CMGT_Task"
+      ],
+      "called_by": [
+        "CMGT_Comment",
+        "CMGT_Document",
+        "CMGT_Milestone",
+        "CMGT_Role",
+        "CMGT_Task",
+        "CMGT_UTIL_DropNonWritableRelationshipsFromRecord",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable",
+        "CMGT_UTIL_QueryRecord",
+        "CMGT_UTIL_SetRecordFields"
+      ]
+    },
+    {
+      "uuid": "e57250b0-f216-4a23-afd9-39e7d532d302-cmgt",
+      "name": "CMGT_Comment",
+      "type": "Record Type",
+      "description": "Comments",
+      "actions": [
+        "updateComment",
+        "deleteComment",
+        "pin",
+        "unpin",
+        "updateMessage",
+        "deleteMessage"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_CommentUserTag",
+        "CMGT_Task"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_CommentUserTag",
+        "CMGT_Task",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "20ece1cc-b807-491b-9fa3-c042ef610b43-cmgt",
+      "name": "CMGT_CommentUserTag",
+      "type": "Record Type",
+      "description": "Comment User Tags",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Comment"
+      ],
+      "called_by": [
+        "CMGT_Comment",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "4ad6e7d2-a288-4d8b-9b2b-405ceec01400",
+      "name": "CMGT_Condition",
+      "type": "Record Type",
+      "description": "Record Type for CMGT_CONDITION table",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "CMGT_ConditionSet",
+        "CMGT_SUB_OpenNextTasks_Logic_FromCompletedTasks"
+      ]
+    },
+    {
+      "uuid": "3bc7d120-7da6-4b42-a9c7-945967e6000b",
+      "name": "CMGT_ConditionSet",
+      "type": "Record Type",
+      "description": "Record Type for CMGT_CONDITION_SET table",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Condition",
+        "CMGT_Task",
+        "CMGT_TaskBranch"
+      ],
+      "called_by": [
+        "CMGT_SUB_OpenNextTasks_Logic_FromCompletedTasks",
+        "CMGT_Task"
+      ]
+    },
+    {
+      "uuid": "4fcbf8d2-f6f9-4a38-bbf1-d2722635282a",
+      "name": "CMGT_Document",
+      "type": "Record Type",
+      "description": "Documents",
+      "actions": [
+        "deleteDocument"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_Task"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_Task",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "ae26b90f-13d6-48f8-86f3-eaa8ed4d2e17",
+      "name": "CMGT_Milestone",
+      "type": "Record Type",
+      "description": "Milestones for a case",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_Task"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_Task",
+        "CMGT_UTIL_DropNonWritableRelationshipsFromRecord",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "6799d796-883e-49ff-8975-297d87e40756",
+      "name": "CMGT_Role",
+      "type": "Record Type",
+      "description": "Roles",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_Task"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_EXT_Role_SetMetaData",
+        "CMGT_Task",
+        "CMGT_UTIL_Filter"
+      ]
+    },
+    {
+      "uuid": "ee5aa46d-0228-430f-a794-1134a11fbcc0",
+      "name": "CMGT_Task",
+      "type": "Record Type",
+      "description": "MODIFIED FOR 2.0 SMART SEARCH RELEASE - Tasks",
+      "actions": [
+        "manageAssignee",
+        "open",
+        "reopen",
+        "addComment",
+        "updateDueDate",
+        "complete",
+        "markNotNeeded",
+        "viewWorkflow",
+        "updateDescription",
+        "updateStatus",
+        "updateTaskName",
+        "updateEmail"
+      ],
+      "views": [
+        "#\"urn:appian:translation-string:v1:a3a3c015-e0c6-4bd2-b78a-aaf392495bdd\"",
+        "#\"urn:appian:translation-string:v1:6f32eac5-d5de-4502-9a1f-4d3184aac8d2\"",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_CFG_CaseType",
+        "CMGT_Case",
+        "CMGT_Comment",
+        "CMGT_ConditionSet",
+        "CMGT_Document",
+        "CMGT_Milestone",
+        "CMGT_QR_GetTask",
+        "CMGT_REFID_STATUS_TASK_COMPLETED",
+        "CMGT_REFID_STATUS_TASK_NOT_NEEDED",
+        "CMGT_Role",
+        "CMGT_TaskBranch",
+        "CMGT_UTIL_IsNotBlank"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_Comment",
+        "CMGT_ConditionSet",
+        "CMGT_Document",
+        "CMGT_EXT_Task_Create",
+        "CMGT_EXT_Task_SetMetaData",
+        "CMGT_Milestone",
+        "CMGT_QR_GetTask",
+        "CMGT_Role",
+        "CMGT_SUB_OpenNextTasks_Logic_FromCompletedTasks",
+        "CMGT_SUB_OpenNextTasks_Logic_FromCreatedTasks",
+        "CMGT_TaskBranch",
+        "CMGT_Task_Complete_AutomatedTask_Wrapper",
+        "CMGT_Task_WriteRecordsProperties",
+        "CMGT_UTIL_DropNonWritableRelationshipsFromRecord",
+        "CMGT_UTIL_MergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "f00f5631-1637-49bc-8c94-9ea3217339d1",
+      "name": "CMGT_TaskBranch",
+      "type": "Record Type",
+      "description": "Task Branches",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Task"
+      ],
+      "called_by": [
+        "CMGT_ConditionSet",
+        "CMGT_EXT_Task_Create",
+        "CMGT_QR_GetTaskBranch",
+        "CMGT_SUB_OpenNextTasks_Logic_FromCompletedTasks",
+        "CMGT_SUB_OpenNextTasks_Logic_FromCreatedTasks",
+        "CMGT_Task",
+        "CMGT_TaskBranch_SetMetaData",
+        "CMGT_UTIL_DropNonWritableRelationshipsFromRecord"
+      ]
+    },
+    {
+      "uuid": "b6767c60-abdc-4042-8808-4caa75358eec",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Description for workflow routing automation task",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_ENUM_ACT_WORKFLOW_ROUTING"
+      ]
+    },
+    {
+      "uuid": "255ef9a9-837a-4a2c-aef4-2c578cfb4807",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "used as the action name reference within automation rules",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_ENUM_ACT_REASSIGN_CASE"
+      ]
+    },
+    {
+      "uuid": "5f11c5ad-d08d-4d59-86d6-c7464038329c",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_ENUM_ACT_ASSIGN_TASK"
+      ]
+    },
+    {
+      "uuid": "30808437-7386-42dc-8605-9d75e19508d3",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Label for Send Email Automation type selection display",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_ENUM_ACT_SEND_EMAIL"
+      ]
+    },
+    {
+      "uuid": "5efb7150-37e9-41f6-b9cc-ddbc1850e07d",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Description for send email automation task",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_ENUM_ACT_SEND_EMAIL"
+      ]
+    },
+    {
+      "uuid": "22b56237-493d-43a4-99d4-4849ebaa4861",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_ENUM_ACT_REASSIGN_TASK"
+      ]
+    },
+    {
+      "uuid": "340cf3dc-0483-4dd7-b199-d47e56259f94",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_ENUM_ACT_ASSIGN_CASE"
+      ]
+    },
+    {
+      "uuid": "d21a949c-ac2f-4bf6-96ae-cdbbb7c64355",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Label for Workflow Routing Automation type selection display",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_ENUM_ACT_WORKFLOW_ROUTING"
+      ]
+    }
+  ]
+}

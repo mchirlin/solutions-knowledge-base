@@ -1,0 +1,70 @@
+{
+  "uuid": "_a-0000ed7d-5e46-8000-9d4b-011c48011c48_3821826",
+  "name": "CMGT_AUTO_EVAL_TaskAssignment_DetermineProcessParameters",
+  "type": "Expression Rule",
+  "description": "Determine the process parameters for assigning task",
+  "sail_code": "/*This rule looks at the assignment json \nand depending on the assignment type, \nreturns a map of roles that will go into the process of adding roles\n*/\na!localVariables(\n  local!currentRoles: rule!CMGT_QR_GetRole(\n    taskId: ri!task[recordType!CMGT_Task.taskId],\n    roleTypeId: {\n      cons!CMGT_REFID_ROLE_TYPE_GROUP_ASSIGNEE,\n      cons!CMGT_REFID_ROLE_TYPE_USER_ASSIGNEE\n    }\n  ),\n  local!allRoles: #\"SYSTEM_SYSRULES_forEach\"(\n    items: ri!taskActions,\n    expression: a!localVariables(\n      local!assignmentInfo: #\"SYSTEM_SYSRULES_fromJson_v1\"(\n        fv!item[recordType!CMGT_TaskActions.associatedAssignmentRule.assignmentJson]\n      ),\n      local!rolesToAdd: a!match(\n        value: tostring(\n          fv!item[recordType!CMGT_TaskActions.associatedAssignmentRule.assigneeType]\n        ),\n        equals: \"USER\",\n        then: #\"SYSTEM_SYSRULES_forEach\"(\n          items: index(local!assignmentInfo, \"users\", \"id\", null),\n          expression: recordType!CMGT_Role(\n            recordType!CMGT_Role.taskId: ri!task[recordType!CMGT_Task.taskId],\n            recordType!CMGT_Role.username: fv!item,\n            recordType!CMGT_Role.roleTypeId: cons!CMGT_REFID_ROLE_TYPE_USER_ASSIGNEE\n          )\n        ),\n        equals: \"GROUP\",\n        then:\n        rule!CMGT_AUTO_EVAL_TaskAssignment_RouteTaskToUserOrGroup(\n          task: ri!task,\n          groupId: index(\n            local!assignmentInfo,\n            \"groups\",\n            \"id\",\n            null\n          ),\n          assignmentRule: fv!item[recordType!CMGT_TaskActions.associatedAssignmentRule]\n        ),\n        equals: \"ROLE\",\n        then: a!localVariables(\n          local!matchingRoles: rule!CMGT_QR_GetRole(\n            roleTypeId: index(local!assignmentInfo, \"roles\", null),\n            caseId: ri!task[recordType!CMGT_Task.caseId]\n          ),\n          #\"SYSTEM_SYSRULES_forEach\"(\n            items: rule!CMGT_UTIL_Distinct(\n              local!matchingRoles[recordType!CMGT_Role.username]\n            ),\n            expression: recordType!CMGT_Role(\n              recordType!CMGT_Role.taskId: ri!task[recordType!CMGT_Task.taskId],\n              recordType!CMGT_Role.username: fv!item,\n              recordType!CMGT_Role.roleTypeId: cons!CMGT_REFID_ROLE_TYPE_USER_ASSIGNEE\n            )\n          )\n        ),\n        default: {}\n      ),\n      /*filters out any roles that already exist on the task*/\n      local!filteredRolesToAdd: rule!CMGT_UTIL_RejectBlank(\n        #\"SYSTEM_SYSRULES_forEach\"(\n          items: local!rolesToAdd,\n          expression: if(\n            rule!CMGT_UTIL_Filter(\n              records: local!currentRoles,\n              fieldValuePairs: {\n                a!map(\n                  field: recordType!CMGT_Role.username,\n                  value: fv!item[recordType!CMGT_Role.username]\n                ),\n                a!map(\n                  field: recordType!CMGT_Role.groupId,\n                  value: fv!item[recordType!CMGT_Role.groupId]\n                ),\n                a!map(\n                  field: recordType!CMGT_Role.roleTypeId,\n                  value: fv!item[recordType!CMGT_Role.roleTypeId]\n                )\n              },\n              filterType: \"MATCH_COUNT\"\n            ) > 0,\n            null,\n            fv!item\n          )\n        )\n      ),\n      if(\n        ri!taskActions[recordType!CMGT_TaskActions.actionCode] = cons!CMGT_CFG_TXT_ACT_REASSIGN_TASK,\n        local!rolesToAdd,\n        local!filteredRolesToAdd\n      )\n    )\n  ),\n  /*Final values must be the parameters to pass to the process model*/\n  a!map(\n    roles: a!flatten(local!allRoles),\n    automationInitiator: cons!CMGT_TXT_PROCESS_AUTOMATION,\n    rolesToDelete: if(\n      ri!taskActions[recordType!CMGT_TaskActions.actionCode] = cons!CMGT_CFG_TXT_ACT_REASSIGN_TASK,\n      local!currentRoles,\n      null\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "CMGT_QR_GetRole",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_AUTO_EVAL_TaskAssignment_RouteTaskToUserOrGroup",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_Distinct",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_RejectBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_Filter",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_REFID_ROLE_TYPE_GROUP_ASSIGNEE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_ROLE_TYPE_USER_ASSIGNEE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_CFG_TXT_ACT_REASSIGN_TASK",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_TXT_PROCESS_AUTOMATION",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_Task",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_TaskActions",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_Role",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    }
+  ],
+  "called_by": []
+}

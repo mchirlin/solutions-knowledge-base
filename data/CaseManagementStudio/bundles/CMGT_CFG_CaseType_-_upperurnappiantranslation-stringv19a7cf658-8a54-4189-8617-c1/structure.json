@@ -1,0 +1,693 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "CMGT_CFG_CaseType - upper(#\"urn:appian:translation-string:v1:9a7cf658-8a54-4189-8617-c1a355c955ee\")",
+    "parent_name": "CMGT_CFG_CaseType",
+    "total_objects": 41
+  },
+  "entry_point": {
+    "action_type": "RECORD_ACTION",
+    "record_type": "CMGT_CFG_CaseType",
+    "target_process": "CMGT_CFG_CaseTypeMetadata_CreateEdit",
+    "form_interface": "CMGT_CFG_CaseType_RecordAction_CaseTypeMetaDataCreateEdit",
+    "expressions": {
+      "TITLE": "upper(#\"urn:appian:translation-string:v1:9a7cf658-8a54-4189-8617-c1a355c955ee\")",
+      "DESCRIPTION": null,
+      "VISIBILITY": null,
+      "CONTEXT": "{\n  caseType: rule!CMGT_QR_GetCaseType(\n    caseTypeUuid: rv!identifier,\n    fields: {recordType!CMGT_CFG_CaseType.caseTypeMetadata},\n    returnType: \"SINGLE_OBJECT\"\n  )\n}"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "CMGT_CFG_CaseTypeMetadata_CreateEdit",
+      "complexity_score": 9.0,
+      "total_nodes": 6,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Cancel?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "End Event",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Cancel?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Set Metadata",
+            "End Event"
+          ]
+        },
+        {
+          "name": "Write Case Type Meta Data",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Set Metadata",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write Case Type Meta Data"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ea67-0b43-8000-9c08-011c48011c48_843994",
+      "name": "CMGT_MAX_SLA_DAYS",
+      "type": "Constant",
+      "description": "Value: 750",
+      "value": "750",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_UTIL_ValidateSLA"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9c0-fc38-8000-9bb5-011c48011c48_109287",
+      "name": "CMGT_REFID_PRIORITY_NONE",
+      "type": "Constant",
+      "description": "5 - None",
+      "value": "5",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_CaseTypeMetadata_SetMetaData",
+        "CMGT_CFG_CaseType_RecordAction_CaseTypeMetaDataCreateEdit"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb88-676f-8000-9c81-011c48011c48_1925601",
+      "name": "CMGT_CB_UTIL_LoadBrandingMap",
+      "type": "Expression Rule",
+      "description": "Returns branding map for Case Management Studio Admin site",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_CaseTypeMetadata_Details",
+        "CMGT_CFG_CaseType_RecordAction_CaseTypeMetaDataCreateEdit"
+      ]
+    },
+    {
+      "uuid": "_a-0000edbd-1f9f-8000-9d6d-011c48011c48_4084639",
+      "name": "CMGT_CFG_CaseTypeMetadata_SetMetaData",
+      "type": "Expression Rule",
+      "description": "Set metadata for CMGT_CFG_CaseTypeMetadata",
+      "parameters": [],
+      "calls": [
+        "CMGT_CFG_CaseTypeMetadata",
+        "CMGT_REFID_PRIORITY_NONE",
+        "CMGT_UTIL_SetRecordFields",
+        "CMGT_setPrefixDefault"
+      ],
+      "called_by": [
+        "CMGT_CFG_CaseTypeMetadata_CreateEdit"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec06-54a3-8000-9cca-011c48011c48_2504116",
+      "name": "CMGT_CaseTypeActiveLogicalExpression",
+      "type": "Expression Rule",
+      "description": "Contains the logical expression to only get case types that are active and have an active category, if applicable",
+      "parameters": [],
+      "calls": [
+        "CMGT_CFG_CaseType"
+      ],
+      "called_by": [
+        "CMGT_QR_GetCaseType"
+      ]
+    },
+    {
+      "uuid": "_a-0000e98b-cfe0-8000-9ba5-011c48011c48_19651",
+      "name": "CMGT_QR_GetCaseType",
+      "type": "Expression Rule",
+      "description": "Queries the CMGT_CFG_CaseType record",
+      "parameters": [],
+      "calls": [
+        "CMGT_CFG_CaseType",
+        "CMGT_CaseTypeActiveLogicalExpression",
+        "CMGT_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "CMGT_CFG_CaseType"
+      ]
+    },
+    {
+      "uuid": "_a-0000edbd-1f9f-8000-9d6d-011c48011c48_4081638",
+      "name": "CMGT_QR_GetCaseTypeMetadata",
+      "type": "Expression Rule",
+      "description": "Queries the CMGT_WFL_CFG_CaseTypeMetadata record",
+      "parameters": [],
+      "calls": [
+        "CMGT_CFG_CaseTypeMetadata",
+        "CMGT_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "CMGT_CFG_CaseTypeMetadata_Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000ece2-0128-8000-9bb8-011c48011c48_40224",
+      "name": "CMGT_UTIL_ContructSLAMap",
+      "type": "Expression Rule",
+      "description": "Rule to Construct SLA Map with inputs",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_IsNotBlank"
+      ],
+      "called_by": [
+        "CMGT_CFG_CaseTypeMetadata_Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_25890",
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_CaseTypeMetadata_CreateEdit",
+        "CMGT_UTIL_IsNotBlank",
+        "CMGT_UTIL_SetRecordFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9d3-70bf-8000-9bbd-011c48011c48_180568",
+      "name": "CMGT_UTIL_IsNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around CMGT_UTIL_IsBlank",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_IsBlank"
+      ],
+      "called_by": [
+        "CMGT_CFG_CaseTypeMetadata_Details",
+        "CMGT_UTIL_ContructSLAMap"
+      ]
+    },
+    {
+      "uuid": "_a-0000e98b-cfe0-8000-9ba5-011c48011c48_22352",
+      "name": "CMGT_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "description": "Enhanced wrapper rule around a!queryRecord()",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_QR_GetCaseType",
+        "CMGT_QR_GetCaseTypeMetadata"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_33778",
+      "name": "CMGT_UTIL_SetRecordFields",
+      "type": "Expression Rule",
+      "description": "Runs a bulk update on a record object, setting new values for its fields",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_IsBlank"
+      ],
+      "called_by": [
+        "CMGT_CFG_CaseTypeMetadata_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea72-a399-8000-9c0d-011c48011c48_863909",
+      "name": "CMGT_UTIL_ValidateSLA",
+      "type": "Expression Rule",
+      "description": "Validates the SLA value",
+      "parameters": [],
+      "calls": [
+        "CMGT_MAX_SLA_DAYS",
+        "Unknown"
+      ],
+      "called_by": [
+        "CMGT_CFG_CaseTypeMetadata_Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000ece2-0128-8000-9bb8-011c48011c48_40321",
+      "name": "CMGT_UTIL_isEmptySLA",
+      "type": "Expression Rule",
+      "description": "Check for SLA is empty/0 or not",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_CaseTypeMetadata_Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb4d-d051-8000-9c68-011c48011c48_1673695",
+      "name": "CMGT_WFL_MTR_CaseTypeMetadataWrapper",
+      "type": "Expression Rule",
+      "description": "Wrapper rule containing create and edit case type metrics",
+      "parameters": [],
+      "calls": [
+        "CMGT_CFG_CaseTypeMetadata",
+        "CMGT_WFL_MTR_UserCreatesCasetypeMetadata",
+        "CMGT_WFL_MTR_UserEditsCasetypeMetadata"
+      ],
+      "called_by": [
+        "CMGT_CFG_CaseTypeMetadata_CreateEdit"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb4d-d051-8000-9c68-011c48011c48_1673368",
+      "name": "CMGT_WFL_MTR_UserCreatesCasetypeMetadata",
+      "type": "Expression Rule",
+      "description": "Metrics to track Number of case case types created ",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_MTR_CaseTypeMetadataWrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb4d-d051-8000-9c68-011c48011c48_1673683",
+      "name": "CMGT_WFL_MTR_UserEditsCasetypeMetadata",
+      "type": "Expression Rule",
+      "description": "Metrics to track Number of case type edited",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_MTR_CaseTypeMetadataWrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000edbd-1f9f-8000-9d6d-011c48011c48_4081813",
+      "name": "CMGT_setPrefixDefault",
+      "type": "Expression Rule",
+      "description": "sets the default value for the prefix",
+      "parameters": [],
+      "calls": [
+        "CMGT_CFG_CaseType"
+      ],
+      "called_by": [
+        "CMGT_CFG_CaseTypeMetadata_SetMetaData",
+        "CMGT_CFG_CaseType_RecordAction_CaseTypeMetaDataCreateEdit"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea54-9653-8000-9c00-011c48011c48_751727",
+      "name": "CMGT_CFG_CaseTypeMetadata_Details",
+      "type": "Interface",
+      "description": "Case Type Metadata Details of Case Type form",
+      "parameters": [
+        {
+          "name": "caseTypeMetadata",
+          "type": "urn:com:appian:recordtype:datatype:951163aa-6e2b-4fa4-9e05-af689d19b8aa",
+          "raw_type": "urn:com:appian:recordtype:datatype:951163aa-6e2b-4fa4-9e05-af689d19b8aa",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "CMGT_CB_UTIL_LoadBrandingMap",
+        "CMGT_CFG_CaseTypeMetadata",
+        "CMGT_CFG_Priority",
+        "CMGT_QR_GetCaseTypeMetadata",
+        "CMGT_UTIL_ContructSLAMap",
+        "CMGT_UTIL_IsNotBlank",
+        "CMGT_UTIL_ValidateSLA",
+        "CMGT_UTIL_WarningBanner",
+        "CMGT_UTIL_isEmptySLA",
+        "Unknown"
+      ],
+      "called_by": [
+        "CMGT_CFG_CaseType_RecordAction_CaseTypeMetaDataCreateEdit"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea26-2ced-8000-9bf1-011c48011c48_566597",
+      "name": "CMGT_CFG_CaseType_RecordAction_CaseTypeMetaDataCreateEdit",
+      "type": "Interface",
+      "description": "Form interface for creating or updated Case Type Metadata",
+      "parameters": [
+        {
+          "name": "caseType",
+          "type": "urn:com:appian:recordtype:datatype:82aa3b28-94c2-4d3c-a403-bb813bd76155",
+          "raw_type": "urn:com:appian:recordtype:datatype:82aa3b28-94c2-4d3c-a403-bb813bd76155",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        }
+      ],
+      "calls": [
+        "CMGT_CB_UTIL_LoadBrandingMap",
+        "CMGT_CFG_CaseType",
+        "CMGT_CFG_CaseTypeMetadata",
+        "CMGT_CFG_CaseTypeMetadata_Details",
+        "CMGT_REFID_PRIORITY_NONE",
+        "CMGT_setPrefixDefault",
+        "Unknown"
+      ],
+      "called_by": [
+        "CMGT_CFG_CaseTypeMetadata_CreateEdit"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea2f-ac11-8000-9bf4-011c48011c48_606547",
+      "name": "CMGT_UTIL_WarningBanner",
+      "type": "Interface",
+      "description": "Displays a generic warning banner",
+      "parameters": [
+        {
+          "name": "alertStyle",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "alertIconColor",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        },
+        {
+          "name": "dependentNames",
+          "type": "http://www.appian.com/ae/types/2009:Text?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 2
+        },
+        {
+          "name": "warningLabel",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 3
+        },
+        {
+          "name": "alertIcon",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 4
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 5
+        },
+        {
+          "name": "padding",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 6
+        }
+      ],
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_CaseTypeMetadata_Details"
+      ]
+    },
+    {
+      "uuid": "0006ea29-5883-8000-02ea-7f0000014e7a",
+      "name": "CMGT_CFG_CaseTypeMetadata_CreateEdit",
+      "type": "Process Model",
+      "description": "Create or edit a case type (non-category)",
+      "calls": [
+        "CMGT_CFG_CaseType",
+        "CMGT_CFG_CaseTypeMetadata",
+        "CMGT_CFG_CaseTypeMetadata_SetMetaData",
+        "CMGT_CFG_CaseType_RecordAction_CaseTypeMetaDataCreateEdit",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_WFL_MTR_CaseTypeMetadataWrapper"
+      ],
+      "called_by": [
+        "CMGT_CFG_CaseType"
+      ]
+    },
+    {
+      "uuid": "82aa3b28-94c2-4d3c-a403-bb813bd76155",
+      "name": "CMGT_CFG_CaseType",
+      "type": "Record Type",
+      "description": "MODIFIED FOR 2.0 KB AND EML MODULE RELEASE - Case Types",
+      "actions": [
+        "updateMetadata",
+        "editWorkflow",
+        "editMilestones",
+        "editWorkflowEmptyState",
+        "editWorkflowEmptyState2",
+        "createAutomationRule",
+        "addResource"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_CFG_CaseTypeMetadata",
+        "CMGT_CFG_CaseTypeMetadata_CreateEdit",
+        "CMGT_QR_GetCaseType",
+        "Unknown"
+      ],
+      "called_by": [
+        "CMGT_CFG_CaseTypeMetadata",
+        "CMGT_CFG_CaseTypeMetadata_CreateEdit",
+        "CMGT_CFG_CaseType_RecordAction_CaseTypeMetaDataCreateEdit",
+        "CMGT_CaseTypeActiveLogicalExpression",
+        "CMGT_QR_GetCaseType",
+        "CMGT_setPrefixDefault"
+      ]
+    },
+    {
+      "uuid": "951163aa-6e2b-4fa4-9e05-af689d19b8aa",
+      "name": "CMGT_CFG_CaseTypeMetadata",
+      "type": "Record Type",
+      "description": "Record Type for CMGT_CFG_CASE_TYPE_METADATA",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_CFG_CaseType",
+        "CMGT_CFG_Priority"
+      ],
+      "called_by": [
+        "CMGT_CFG_CaseType",
+        "CMGT_CFG_CaseTypeMetadata_CreateEdit",
+        "CMGT_CFG_CaseTypeMetadata_Details",
+        "CMGT_CFG_CaseTypeMetadata_SetMetaData",
+        "CMGT_CFG_CaseType_RecordAction_CaseTypeMetaDataCreateEdit",
+        "CMGT_CFG_Priority",
+        "CMGT_QR_GetCaseTypeMetadata",
+        "CMGT_WFL_MTR_CaseTypeMetadataWrapper"
+      ]
+    },
+    {
+      "uuid": "c49bbf9d-5030-4fde-b98c-3d75afbfe67e",
+      "name": "CMGT_CFG_Priority",
+      "type": "Record Type",
+      "description": "Configuration Priorities",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_CFG_CaseTypeMetadata"
+      ],
+      "called_by": [
+        "CMGT_CFG_CaseTypeMetadata",
+        "CMGT_CFG_CaseTypeMetadata_Details"
+      ]
+    },
+    {
+      "uuid": "4794decc-5e8c-4cb6-bf94-0696d49b4fa5",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Label to represent the SLA field - Days",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_CaseTypeMetadata_Details"
+      ]
+    },
+    {
+      "uuid": "edd4df67-d878-46d6-ab67-732a3700a588",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_CaseType_RecordAction_CaseTypeMetaDataCreateEdit"
+      ]
+    },
+    {
+      "uuid": "0ab37401-6bd6-43b5-8b4a-484b1b1c7378",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Validation for SLA Field",
+      "calls": [],
+      "called_by": [
+        "CMGT_UTIL_ValidateSLA"
+      ]
+    },
+    {
+      "uuid": "9f41e6f7-45b5-4350-af35-58bf2b3af4eb",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Text to represent SLA section configurations",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_CaseTypeMetadata_Details"
+      ]
+    },
+    {
+      "uuid": "4fab94dc-fcb1-427a-af9f-1239079b2897",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Required message for fields validation",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_CaseTypeMetadata_Details"
+      ]
+    },
+    {
+      "uuid": "5720ed7a-4287-4613-9eaa-73bea746874b",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Placeholder Label in Priority Dropdown Field",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_CaseTypeMetadata_Details"
+      ]
+    },
+    {
+      "uuid": "7b86ad78-c822-4359-b564-8ddc2fcf9bf8",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Label to represent the default priority field",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_CaseTypeMetadata_Details"
+      ]
+    },
+    {
+      "uuid": "bd71c625-c5a4-4116-853e-0e3826aba323",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Banner message to show when the given case type prefix is already present",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_CaseTypeMetadata_Details"
+      ]
+    },
+    {
+      "uuid": "9a7cf658-8a54-4189-8617-c1a355c955ee",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Action name to update case type metadata",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_CaseType",
+        "CMGT_CFG_CaseType_RecordAction_CaseTypeMetaDataCreateEdit"
+      ]
+    },
+    {
+      "uuid": "befd59bf-3568-4c2b-9afd-71b7d6f7060a",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Label to represent the SLA field - Hours",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_CaseTypeMetadata_Details"
+      ]
+    },
+    {
+      "uuid": "2cfd2a67-27ef-4dc4-b0d5-6fb08358e1ee",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Validation text for character length",
+      "calls": [],
+      "called_by": [
+        "CMGT_UTIL_ValidateSLA"
+      ]
+    },
+    {
+      "uuid": "759245e6-9b85-4710-831f-f11ad593d08a",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Label to represent the calculate using business days",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_CaseTypeMetadata_Details"
+      ]
+    },
+    {
+      "uuid": "8011a7b9-c1f3-45f4-9f16-99471296e83d",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Label to represent the SLA field - Minutes",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_CaseTypeMetadata_Details"
+      ]
+    },
+    {
+      "uuid": "78ecdd7f-8128-4f65-bd14-46bde6be71de",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Label to represent the Prefix field",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_CaseTypeMetadata_Details"
+      ]
+    },
+    {
+      "uuid": "06dbafc7-e085-40de-a68a-c83054c1d7ec",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Label text in Multiple places",
+      "calls": [],
+      "called_by": [
+        "CMGT_CFG_CaseType_RecordAction_CaseTypeMetaDataCreateEdit"
+      ]
+    },
+    {
+      "uuid": "f1ea8a38-1904-4cd0-80cc-1f1c119f5abe",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Validation text for Task SLA integer field",
+      "calls": [],
+      "called_by": [
+        "CMGT_UTIL_ValidateSLA"
+      ]
+    }
+  ]
+}

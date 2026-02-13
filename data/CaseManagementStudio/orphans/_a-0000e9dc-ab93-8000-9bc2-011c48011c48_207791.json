@@ -1,0 +1,70 @@
+{
+  "uuid": "_a-0000e9dc-ab93-8000-9bc2-011c48011c48_207791",
+  "name": "CMGT_PortalPage_ContactUs",
+  "type": "Interface",
+  "description": "Portal interface page for contact us",
+  "sail_code": "a!localVariables(\n  local!wideScreen: {\n    \"TABLET_LANDSCAPE\",\n    \"DESKTOP_NARROW\",\n    \"DESKTOP\",\n    \"DESKTOP_WIDE\"\n  },\n  local!isWide: if(\n    #\"SYSTEM_SYSRULES_isPageWidth\"(local!wideScreen),\n    true,\n    false\n  ),\n  local!portalConfig: rule!CMGT_INT_GET_PortalConfig(locale: \"en_US\"),\n  local!brandingMap: local!portalConfig.result.body.brandingMap,\n  local!cardContents: {\n    a!map(\n      icon: \"route\",\n      primaryText: #\"urn:appian:translation-string:v1:1afbed2b-fa81-4385-a684-bc52f0685b11\",\n      secondaryText: #\"urn:appian:translation-string:v1:d766ecc6-bf6d-401a-a377-1682c26ad33c\"\n    ),\n    a!map(\n      icon: \"envelope-open-text\",\n      primaryText: #\"urn:appian:translation-string:v1:41327863-bf56-4365-9a84-273ead0ea3bc\",\n      secondaryText: #\"urn:appian:translation-string:v1:4cd5bb1d-7d4b-4d70-bb21-3fd2ccf22c6e\",\n      secondaryTextColor: local!brandingMap.AccentColor\n    ),\n    a!map(\n      icon: \"phone\",\n      primaryText: #\"urn:appian:translation-string:v1:8a524816-8f71-4ad1-942f-97819eee17f4\",\n      secondaryText: #\"urn:appian:translation-string:v1:0d780b0b-aa9d-4149-98bb-1bf36dd7a689\"\n    ),\n    a!map(\n      icon: \"clock\",\n      primaryText: #\"urn:appian:translation-string:v1:83b7deb9-aa51-462f-9a84-9e050880051d\",\n      secondaryText: #\"urn:appian:translation-string:v1:4894dddb-6a57-498d-aac1-bacf854f0939\"\n    )\n  },\n  rule!CMGT_PortalInterface_HeaderLayout(\n    title: #\"urn:appian:translation-string:v1:ec8fc354-bb1a-4b22-b76c-f7e86d3970c3\",\n    description: #\"urn:appian:translation-string:v1:837e4a5e-9ca1-41e1-977a-7da074787a54\",\n    height: \"SHORT_PLUS\",\n    contents: #\"SYSTEM_SYSRULES_columnsLayout\"(\n      columns: {\n        #\"SYSTEM_SYSRULES_columnLayout\"(contents: {}, width: \"EXTRA_NARROW\" ,showWhen: local!isWide),\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: {\n            #\"SYSTEM_SYSRULES_cardLayout\"(\n              contents: #\"SYSTEM_SYSRULES_forEach\"(\n                items: local!cardContents,\n                expression: #\"SYSTEM_SYSRULES_cardLayout\"(\n                  contents: {\n                    #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n                      items: {\n                        #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                          item: #\"SYSTEM_SYSRULES_stampField\"(\n                            labelPosition: \"COLLAPSED\",\n                            icon: fv!item.icon,\n                            size: \"SMALL\",\n                            shape: local!brandingMap.StandardStampShape,\n                            marginAbove: \"EVEN_LESS\",\n                            marginBelow: \"EVEN_LESS\",\n                            contentColor: local!brandingMap.StandardStampContentColor,\n                            backgroundColor: local!brandingMap.StandardStampBackgroundColor\n                          ),\n                          width: \"MINIMIZE\"\n                        ),\n                        #\"SYSTEM_SYSRULES_sideBySideItem\"(width: \"MINIMIZE\"),\n                        #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                          item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                            value: {\n                              #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                                text: fv!item.primaryText,\n                                style: \"STRONG\",\n                                color: local!brandingMap.PrimaryTextColor,\n                                size: \"MEDIUM\"\n                              ),\n                              char(10),\n                              #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                                text: fv!item.secondaryText,\n                                color: a!defaultValue(\n                                  fv!item.secondaryTextColor,\n                                  local!brandingMap.SecondaryTextColor\n                                )\n                              )\n                            },\n                            marginAbove: \"LESS\"\n                          )\n                        )\n                      },\n                      alignVertical: \"TOP\",\n                      marginAbove: \"NONE\",\n                      marginBelow: \"NONE\"\n                    )\n                  },\n                  height: \"AUTO\",\n                  padding: \"LESS\",\n                  marginAbove: \"LESS\",\n                  marginBelow: if(fv!isLast, \"LESS\", \"STANDARD\"),\n                  shape: local!brandingMap.CardShape,\n                  showBorder: false,\n                  showShadow: local!brandingMap.CardShowShadow,\n                  style: local!brandingMap.CardBackgroundColor\n                )\n              ),\n              shape: local!brandingMap.CardShape,\n              showBorder: false,\n              showShadow: local!brandingMap.CardShowShadow,\n              padding: \"STANDARD\",\n              style: local!brandingMap.SecondaryCardBackgroundColor\n            )\n          }\n        ),\n        #\"SYSTEM_SYSRULES_columnLayout\"(contents: {}, width: \"EXTRA_NARROW\" ,showWhen: local!isWide),\n      },\n      marginAbove: \"STANDARD\",\n      marginBelow: \"EVEN_MORE\"\n    ),\n    brandingMap: local!brandingMap\n  )\n)",
+  "calls": [
+    {
+      "name": "CMGT_INT_GET_PortalConfig",
+      "type": "Integration",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_PortalInterface_HeaderLayout",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

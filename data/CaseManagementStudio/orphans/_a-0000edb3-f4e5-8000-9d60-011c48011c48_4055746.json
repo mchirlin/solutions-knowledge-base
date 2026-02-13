@@ -1,0 +1,41 @@
+{
+  "uuid": "_a-0000edb3-f4e5-8000-9d60-011c48011c48_4055746",
+  "name": "CMGT_AssociatedAssignmentRule_SetMetaData",
+  "type": "Expression Rule",
+  "description": "Set metadata for CMGT_AssignmentRules",
+  "sail_code": "#\"SYSTEM_SYSRULES_forEach\"(\n  items: ri!assignmentRules,\n  expression: a!localVariables(\n    local!originalAssignmentRule: if(\n      rule!CMGT_UTIL_IsBlank(\n        fv!item[recordType!CMGT_AssignmentRule.assignmentRuleId]\n      ),\n      {},\n      rule!CMGT_QR_getAssignmentRule(\n      returnType: \"SINGLE_OBJECT\",\n      assignmentRuleId: fv!item[recordType!CMGT_AssignmentRule.assignmentRuleId],\n      returnAllRelatedRecords: true\n    )),\n    rule!CMGT_UTIL_SetRecordFields(\n    record: fv!item,\n    /*Always set these fields with each update*/\n    alwaysOverwrite: {\n      a!map(\n        field: recordType!CMGT_AssignmentRule.modifiedOn,\n        value: now()\n      ),\n      a!map(\n        field: recordType!CMGT_AssignmentRule.modifedBy,\n        value: ri!initiator\n      ),\n      a!map(\n        field: recordType!CMGT_AssignmentRule.assignmentVersion,\n        value: if(\n          a!isNullOrEmpty(\n            fv!item[recordType!CMGT_AssignmentRule.assignmentRuleId]\n          ),\n          1,\n          a!localVariables(\n            local!originalGroup: index(\n              #\"SYSTEM_SYSRULES_fromJson_v1\"(\n                local!originalAssignmentRule[recordType!CMGT_AssignmentRule.assignmentJson]\n              ),\n              \"groups\",\n              \"id\",\n              null\n            ),\n            local!currentGroup: index(\n              #\"SYSTEM_SYSRULES_fromJson_v1\"(\n                fv!item[recordType!CMGT_AssignmentRule.assignmentJson]\n              ),\n              \"groups\",\n              \"id\",\n              null\n            ),\n            if(\n              or(\n                tointeger(local!originalGroup) <> tointeger(local!currentGroup),\n                local!originalAssignmentRule[recordType!CMGT_AssignmentRule.routingType] <> fv!item[recordType!CMGT_AssignmentRule.routingType]\n              ),\n              local!originalAssignmentRule[recordType!CMGT_AssignmentRule.assignmentVersion] + 1,\n              local!originalAssignmentRule[recordType!CMGT_AssignmentRule.assignmentVersion]\n            )\n          )\n        )\n      )\n    },\n    /*Only modify these fields if they are currently null*/\n    neverOverwrite: {\n      a!map(\n        field: recordType!CMGT_AssignmentRule.createdBy,\n        value: ri!initiator\n      ),\n      a!map(\n        field: recordType!CMGT_AssignmentRule.createdOn,\n        value: now()\n      ),\n      a!map(\n        field: recordType!CMGT_AssignmentRule.isActive,\n        value: true\n      )\n    },\n    childRelationships: {\n      a!map(\n        field: recordType!CMGT_AssignmentRule.caseAssignmentUsersToExclude,\n        value: rule!CMGT_ExcludedUsers_SetMetaData(\n          excludedUsers: fv!item[recordType!CMGT_AssignmentRule.caseAssignmentUsersToExclude],\n          initiator: ri!initiator,\n          originalExcludedUsers: index(local!originalAssignmentRule,recordType!CMGT_AssignmentRule.caseAssignmentUsersToExclude,null)\n        )\n      ),\n\n    }\n  )\n  )\n)",
+  "calls": [
+    {
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_QR_getAssignmentRule",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_SetRecordFields",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_ExcludedUsers_SetMetaData",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_AssignmentRule",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "CMGT_TaskAction_SetMetaData",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

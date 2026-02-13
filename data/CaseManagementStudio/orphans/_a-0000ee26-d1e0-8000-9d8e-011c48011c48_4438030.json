@@ -1,0 +1,91 @@
+{
+  "uuid": "_a-0000ee26-d1e0-8000-9d8e-011c48011c48_4438030",
+  "name": "CMGT_SELF_SignUpDetails",
+  "type": "Interface",
+  "description": "Interface having the sign up details",
+  "sail_code": "#\"SYSTEM_SYSRULES_cardLayout\"(\n  contents: {\n    #\"SYSTEM_SYSRULES_stampField\"(\n      labelPosition: \"COLLAPSED\",\n      icon: \"user-plus\",\n      backgroundColor: ri!brandingMap.StandardStampBackgroundColor,\n      contentColor: ri!brandingMap.StandardStampContentColor,\n      size: \"TINY\",\n      align: \"CENTER\",\n      marginAbove: \"EVEN_LESS\",\n      shape: ri!brandingMap.StandardStampShape,\n      showWhen: a!defaultValue(ri!showHeader, true)\n    ),\n    #\"SYSTEM_SYSRULES_headingField\"(\n      text: #\"urn:appian:translation-string:v1:1e67e5ec-55d2-4e4d-9b9f-7f2433c97801\",\n      size: ri!brandingMap.H2Size,\n      headingTag: \"H2\",\n      color: \"SECONDARY\",\n      fontWeight: ri!brandingMap.H2Weight,\n      align: \"CENTER\",\n      showWhen: a!defaultValue(ri!showHeader, true)\n    ),\n    #\"SYSTEM_SYSRULES_textField\"(\n      label: #\"urn:appian:translation-string:v1:3c62d2bc-db5d-4103-8802-54dd4c79ac75\",\n      labelPosition: \"ABOVE\",\n      value: ri!userDetails.firstName,\n      saveInto: {\n        a!save(\n          ri!userDetails.firstName,\n          trim(save!value)\n        )\n      },\n      refreshAfter: \"UNFOCUS\",\n      showCharacterCount: false,\n      required: true,\n      requiredMessage: #\"urn:appian:translation-string:v1:eb154c20-804a-495c-a2d2-959abb02a3a7\",\n      validations: {\n        if(\n          len(ri!userDetails.firstName) > 35,\n          #\"urn:appian:translation-string:v1:354eadcf-1b91-4637-b084-2a053c9dcf0e\"(\n            #\"urn:appian:translation-variable:v1:42309227-f174-44cd-a8b6-09ab7fc6ed26\": 35\n          ),\n          {}\n        )\n      },\n      inputPurpose: \"NAME\"\n    ),\n    #\"SYSTEM_SYSRULES_textField\"(\n      label: #\"urn:appian:translation-string:v1:18c3da99-a299-452c-aada-eef83059d7b7\",\n      labelPosition: \"ABOVE\",\n      value: ri!userDetails.lastName,\n      saveInto: {\n        a!save(\n          ri!userDetails.lastName,\n          trim(save!value)\n        )\n      },\n      refreshAfter: \"UNFOCUS\",\n      showCharacterCount: false,\n      required: true,\n      requiredMessage: #\"urn:appian:translation-string:v1:37f3fc67-d8af-4371-ba81-03059621ebf0\",\n      validations: {\n        if(\n          len(ri!userDetails.lastName) > 35,\n          #\"urn:appian:translation-string:v1:354eadcf-1b91-4637-b084-2a053c9dcf0e\"(\n            #\"urn:appian:translation-variable:v1:42309227-f174-44cd-a8b6-09ab7fc6ed26\": 35\n          ),\n          {}\n        )\n      },\n      inputPurpose: \"NAME\"\n    ),\n    #\"SYSTEM_SYSRULES_textField\"(\n      label: #\"urn:appian:translation-string:v1:bc515a1d-502b-4de2-b525-f959b965cea9\",\n      labelPosition: \"ABOVE\",\n      value: ri!userDetails.email,\n      saveInto: {\n        a!save(\n          ri!userDetails.email,\n          lower(trim(save!value))\n        )\n      },\n      refreshAfter: \"UNFOCUS\",\n      required: true,\n      requiredMessage: #\"urn:appian:translation-string:v1:f7852948-efde-40c3-93b2-61d1fc40b018\",\n      validations: {\n        rule!CMGT_SELF_ValidateEmailForUserCreation(text: ri!userDetails.email)\n      },\n      inputPurpose: \"EMAIL\"\n    ),\n    #\"SYSTEM_SYSRULES_ButtonArrayLayout\"(\n      buttons: {\n        #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n          label: #\"urn:appian:translation-string:v1:624d9976-905d-4e2a-8b27-39a4749a5f53\",\n          recaptchaSaveInto: rule!CMGT_UTIL_VerifyRecaptcha_SaveLogic(\n            onSuccess: {\n              #\"SYSTEM_SYSRULES_startProcess3\"(\n                processModel: cons!CMGT_SELF_PM_CREATE_USER_ACCOUNT,\n                processParameters: {\n                  firstName: ri!userDetails.firstName,\n                  lastName: ri!userDetails.lastName,\n                  email: ri!userDetails.email\n                },\n                onSuccess: { a!save(ri!isCreationSuccessful, true) }\n              ),\n              a!save(ri!isCreationSuccessful, true)\n            },\n            onError: a!save(ri!isCreationSuccessful, false)\n          ),\n          submit: false,\n          size: \"STANDARD\",\n          style: \"SOLID\",\n          width: \"FILL\",\n          validate: true\n        )\n      },\n      align: \"START\",\n      marginBelow: \"MORE\",\n      marginAbove: \"EVEN_LESS\"\n    ),\n    #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n      labelPosition: \"COLLAPSED\",\n      value: {\n        #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n          text: #\"urn:appian:translation-string:v1:6cfc4862-c59d-4670-a505-9372ba2cea80\",\n          color: ri!brandingMap.SecondaryTextColor,\n          size: \"STANDARD\"\n        ),\n        \" \",\n        #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n          text: #\"urn:appian:translation-string:v1:e0adba46-2fd6-47fb-af9b-aad2e7bbec3a\",\n          size: \"STANDARD\",\n          link: #\"SYSTEM_SYSRULES_safeLink\"(\n            uri: ri!portalConfig.result.body.urlInfo.authedPath & cons!CMGT_SELF_URL_STUB_SITE_PAGE_MY_CASES,\n            openLinkIn: \"SAME_TAB\"\n          ),\n          color: ri!brandingMap.AccentColor,\n          linkStyle: \"STANDALONE\"\n        )\n      },\n      align: \"CENTER\",\n      marginBelow: \"MORE\"\n    ),\n\n  },\n  height: \"AUTO\",\n  style: ri!brandingMap.CardBackgroundColor,\n  shape: ri!brandingMap.CardShape,\n  padding: \"STANDARD\",\n  marginBelow: \"STANDARD\",\n  showBorder: false,\n  showShadow: true\n)",
+  "calls": [
+    {
+      "name": "CMGT_SELF_ValidateEmailForUserCreation",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_VerifyRecaptcha_SaveLogic",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_SELF_PM_CREATE_USER_ACCOUNT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_SELF_URL_STUB_SITE_PAGE_MY_CASES",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "CMGT_SELF_PortalPage_SignUp",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

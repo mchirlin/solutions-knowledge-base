@@ -1,0 +1,80 @@
+{
+  "uuid": "_a-0000ecb5-acf8-8000-9cf6-011c48011c48_3188530",
+  "name": "CMGT_Condition_EvaluationforChoiceListFields",
+  "type": "Expression Rule",
+  "description": "execution logic for a Choice List fields",
+  "sail_code": "a!localVariables(\n  local!value: tointeger(\n    index(\n      rule!CMGT_UTIL_CastJsonToMap(\n        jsonText: ri!condition[recordType!CMGT_Condition.valueJson]\n      ),\n      \"value\",\n      null\n    )\n  ),\n  /*casting it to to integer because only the pk is stored in the value*/\n  local!caseValue: tointeger(\n    rule!CMGT_AUTO_EVAL_returnRuntimeValue(data: ri!data, field: ri!field)\n  ),\n  a!match(\n    value: ri!condition[recordType!CMGT_Condition.operator],\n    equals: cons!CMGT_TXT_AUTOMATION_OPERATOR_INCLUDES,\n    then: contains(local!caseValue, local!value),\n    equals: cons!CMGT_TXT_AUTOMATION_OPERATOR_DOES_NOT_INCLUDE,\n    then: not(contains(local!caseValue, local!value)),\n    equals: cons!CMGT_TXT_AUTOMATION_OPERATOR_EQUAL_TO,\n    then: local!caseValue = local!value,\n    /*if null not equal to operator should return true*/\n    equals: cons!CMGT_TXT_AUTOMATION_OPERATOR_NOT_EQUAL_TO,\n    then: local!caseValue <> local!value,\n    equals: cons!CMGT_TXT_AUTOMATION_OPERATOR_IS_NULL,\n    then: rule!CMGT_UTIL_IsBlank(value: local!caseValue),\n    equals: cons!CMGT_TXT_AUTOMATION_OPERATOR_IS_NOT_NULL,\n    then: rule!CMGT_UTIL_IsNotBlank(input: local!caseValue),\n    default: false()\n  )\n)",
+  "calls": [
+    {
+      "name": "CMGT_UTIL_CastJsonToMap",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_AUTO_EVAL_returnRuntimeValue",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_IsNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_TXT_AUTOMATION_OPERATOR_INCLUDES",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_TXT_AUTOMATION_OPERATOR_DOES_NOT_INCLUDE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_TXT_AUTOMATION_OPERATOR_EQUAL_TO",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_TXT_AUTOMATION_OPERATOR_NOT_EQUAL_TO",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_TXT_AUTOMATION_OPERATOR_IS_NULL",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_TXT_AUTOMATION_OPERATOR_IS_NOT_NULL",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_Condition",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_Case",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_Role",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_CFG_RoleType",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    }
+  ],
+  "called_by": []
+}

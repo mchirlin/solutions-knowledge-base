@@ -1,0 +1,121 @@
+{
+  "uuid": "_a-0000ed7d-5e46-8000-9d4b-011c48011c48_3822038",
+  "name": "CMGT_AUTO_EVAL_TaskAssignment_RouteTaskToUserOrGroup",
+  "type": "Expression Rule",
+  "description": "(Output: List of CMGT_Role) Incorporation Point: Returns the assigned team role and the assigned underwriter role on case creation based on assignment rules and routing type.",
+  "sail_code": "if(\n  a!isNullOrEmpty(ri!groupId),\n  null,\n  a!localVariables(\n    /*local!metrics: rule!CMGT_ACR_MTR_caseAssignedWithAssignmentRule(),*/\n    local!usersToExclude: touser(\n      ri!assignmentRule[recordType!CMGT_AssignmentRule.caseAssignmentUsersToExclude.username]\n    ),\n    local!usersInGroup: touser(\n      a!groupMembers(\n        group: togroup(ri!groupId),\n        memberType: \"USER\",\n        pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n          startIndex: 1,\n          batchSize: 1000,\n          sort: #\"SYSTEM_SYSRULES_sortInfo\"(field: \"lastName\", ascending: true)\n        )\n      ).data\n    ),\n    local!possibleUserAssignees: difference(\n      local!usersInGroup,\n      local!usersToExclude\n    ),\n    local!userAssignee: if(\n      a!isNullOrEmpty(local!possibleUserAssignees),\n      /*If there are no users we're able to assign to, return nothing*/\n      {},\n      a!match(\n        value: ri!assignmentRule[recordType!CMGT_AssignmentRule.routingType],\n        /****** WORKLOAD BALANCE  *****/\n        equals: cons!CMGT_WFL_TXT_ROUTING_WORKLOAD_BALANCE,\n        then: /*If there are possible user assignees, figure out who has the least amount of active assigned cases*/\n        a!localVariables(\n          /*local!metrics: rule!CMGT_ACR_MTR_caseAssignedWithAssignmentRuleUsingWorkloadBalance(),*/\n          local!activeCasesByUser: rule!CMGT_QR_GetRole(\n            returnType: \"OBJECT_ARRAY\",\n            roleTypeId: cons!CMGT_REFID_ROLE_TYPE_USER_ASSIGNEE,\n            usernames: local!possibleUserAssignees,\n            /*by passing group by field in, underlying query will execute aggregation and return count of each user*/\n            groupByFields: recordType!CMGT_Role.username,\n            additionalFilters: #\"SYSTEM_SYSRULES_queryFilter\"(\n              field: recordType!CMGT_Role.task.statusId,\n              operator: \"in\",\n              value: {\n                cons!CMGT_REFID_STATUS_TASK_IN_PROGRESS,\n                cons!CMGT_REFID_STATUS_TASK_READY,\n                \n              }\n            )\n          ),\n          local!usersWithMinCases: a!defaultValue(\n            /*first check if users have no cases by seeing if any possible users at not returned in aggregation*/\n            value: difference(\n              local!possibleUserAssignees,\n              touser(local!activeCasesByUser.username)\n            ),\n            /*Otherwise, assign to the user with the least amount of active cases*/\n            default: rule!CMGT_UTIL_Filter(\n              records: local!activeCasesByUser,\n              field: \"count\",\n              value: tointeger(min(local!activeCasesByUser.count))\n            ).username\n          ),\n          /*to account for ties, select a user at random from users with minimum*/\n          index(\n            local!usersWithMinCases,\n            roundup(\n              (\n                rand() * rule!CMGT_ACR_UTIL_lengthFunction(local!usersWithMinCases)\n              ),\n              0\n            ),\n            {}\n          )\n        ),\n        /****** ROUND ROBIN  *****/\n        equals: cons!CMGT_ACR_TXT_ROUTING_ROUND_ROBIN,\n        then: {\n          a!localVariables(\n            /*local!metrics: rule!CMGT_ACR_MTR_caseAssignedWithAssignmentRuleUsingRoundRobin(),*/\n            /*Retrieve last 100 round robin task assignments across task type for the applicable assignment rule version*/\n            local!previousAssignments: rule!CMGT_QR_getTaskAssignmentHistory(\n              assignmentRuleId: index(\n                ri!assignmentRule[recordType!CMGT_AssignmentRule.assignmentRuleId],\n                1,\n                null\n              ),\n              assignmentVersion: ri!assignmentRule[recordType!CMGT_AssignmentRule.assignmentVersion],\n              roleTypeId: cons!CMGT_REFID_ROLE_TYPE_USER_ASSIGNEE,\n              taskBehaviorTypeId: ri!task[recordType!CMGT_Task.taskBehaviorTypeId],\n              routingType: cons!CMGT_WFL_TXT_ROUTING_ROUND_ROBIN,\n              pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n                startIndex: 1,\n                batchSize: cons!CMGT_INT_BATCH_SIZE_LARGE,\n                sort: #\"SYSTEM_SYSRULES_sortInfo\"(\n                  field: recordType!CMGT_TaskAssignmentHistory.taskAssignmentHistoryId,\n                  ascending: false\n                )\n              )\n            ),\n            if(\n              a!isNullOrEmpty(local!previousAssignments),\n              /*Assign to the first user in the ordered list if there are no previous assignments for the applicable assignment rule version*/\n              local!possibleUserAssignees[1],\n              a!localVariables(\n                local!recentAssignedUsers: local!previousAssignments[recordType!CMGT_TaskAssignmentHistory.role.username],\n                /*This returns the first username from local!recentAssignedUsers that is contained in the ordered list*/\n                local!mostRecentAssignedUserInList: reduce(\n                  rule!CMGT_UTIL_returnUserInGroupList(\n                    possibleUserAssignees: local!possibleUserAssignees,\n                    username: _,\n                    usernameToEvaluate: _\n                  ),\n                  null,\n                  local!recentAssignedUsers\n                ),\n                if(\n                  a!isNullOrEmpty(local!mostRecentAssignedUserInList),\n                  /*If none of the previous assignments matched to a user in the ordered list, assign to the first user in the ordered list*/\n                  local!possibleUserAssignees[1],\n                  /*Otherwise, using the index of the previous assigned user in the ordered list, assign to the next user in the ordered list*/\n                  a!localVariables(\n                    local!indexOfMostRecentAssignedUserInList: wherecontains(\n                      touser(local!mostRecentAssignedUserInList),\n                      local!possibleUserAssignees\n                    ),\n                    if(\n                      tointeger(\n                        local!indexOfMostRecentAssignedUserInList\n                      ) = length(local!possibleUserAssignees),\n                      local!possibleUserAssignees[1],\n                      local!possibleUserAssignees[tointeger(\n                        local!indexOfMostRecentAssignedUserInList\n                      ) + 1],\n                      \n                    )\n                  )\n                )\n              )\n            )\n          )\n        },\n        equals: cons!CMGT_WFL_TXT_ROUTING_SHARED_QUEUE,\n        then: a!localVariables(\n          /*local!metrics: rule!CMGT_ACR_MTR_caseAssignedWithAssignmentRuleUsingSharedQueue(),*/\n          null(),\n          \n        ),\n        default: null\n      )\n    ),\n    /*Return an array of roles, or just the assigned group role if no user was able to be assigned*/\n    rule!CMGT_UTIL_RejectBlank(\n      array: {\n        #\"SYSTEM_SYSRULES_forEach\"(\n          items: { local!userAssignee, ri!groupId },\n          expression: a!localVariables(\n            local!isGroup: typeof(fv!item) = 1,\n            rule!CMGT_EVAL_returnTaskAssignmentHistoryForRoles(\n              taskId: ri!task[recordType!CMGT_Task.taskId],\n              taskBehaviorTypeId: ri!task[recordType!CMGT_Task.taskBehaviorTypeId],\n              assignedGroup: if(local!isGroup, fv!item, null),\n              assignedUser: if(local!isGroup, null, fv!item),\n              applicableAssignmentRule: ri!assignmentRule,\n              assigneeTypeId: if(\n                local!isGroup,\n                cons!CMGT_REFID_ROLE_TYPE_GROUP_ASSIGNEE,\n                cons!CMGT_REFID_ROLE_TYPE_USER_ASSIGNEE\n              )\n            )\n          )\n        )\n      }\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "CMGT_QR_GetRole",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_Filter",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_ACR_UTIL_lengthFunction",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_QR_getTaskAssignmentHistory",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_returnUserInGroupList",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_RejectBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_EVAL_returnTaskAssignmentHistoryForRoles",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_WFL_TXT_ROUTING_WORKLOAD_BALANCE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_ROLE_TYPE_USER_ASSIGNEE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_STATUS_TASK_IN_PROGRESS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_STATUS_TASK_READY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_ACR_TXT_ROUTING_ROUND_ROBIN",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_WFL_TXT_ROUTING_ROUND_ROBIN",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_INT_BATCH_SIZE_LARGE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_WFL_TXT_ROUTING_SHARED_QUEUE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_REFID_ROLE_TYPE_GROUP_ASSIGNEE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_AssignmentRule",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_Role",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_Task",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_TaskAssignmentHistory",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_GRP_CASE_MANAGERS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "CMGT_AUTO_EVAL_TaskAssignment_DetermineProcessParameters",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

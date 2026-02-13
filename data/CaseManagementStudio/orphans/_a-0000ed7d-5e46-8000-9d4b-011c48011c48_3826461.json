@@ -1,0 +1,41 @@
+{
+  "uuid": "_a-0000ed7d-5e46-8000-9d4b-011c48011c48_3826461",
+  "name": "CMGT_Case_Rules_FormatRuleConditionSet",
+  "type": "Interface",
+  "description": "Interface to show the conditions in text format for each rule",
+  "sail_code": "a!localVariables(\n  local!activeConditionSets: rule!CMGT_UTIL_Filter(\n    records: ri!task[recordType!CMGT_Task.conditionSet],\n    field: recordType!CMGT_ConditionSet.isActive,\n    value: true\n  ),\n  local!containsMultipleChildConditionSets: length(\n    a!defaultValue(\n      local!activeConditionSets,\n      0\n    )\n  ) > 1,\n  #\"SYSTEM_SYSRULES_forEach\"(\n    items: local!activeConditionSets,\n    expression: {\n      a!localVariables(\n        local!currentChildConditionSet: fv!item,\n        local!activeConditions:rule!CMGT_UTIL_Filter(\n          records:local!currentChildConditionSet[recordType!CMGT_ConditionSet.condition],\n          field: recordType!CMGT_Condition.isActive,\n          value: true\n        ),\n        local!numberOfConditions: length(\n          local!activeConditions\n        ),\n        local!containsMultipleConditions: local!numberOfConditions > 1,\n        {\n          #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n            text: \"(\",\n            size: a!defaultValue(ri!textSize, \"MEDIUM\"),\n            showWhen: and(\n              local!containsMultipleChildConditionSets,\n              local!containsMultipleConditions\n            ),\n            color: a!defaultValue(ri!textColor, \"STANDARD\")\n          ),\n          #\"SYSTEM_SYSRULES_forEach\"(\n            items: local!activeConditions,\n            expression: a!localVariables(\n              {\n                rule!CMGT_Automation_FormatCondition(\n                  fieldDetails: ri!availableFields,\n                  fieldPathJson: fv!item[recordType!CMGT_Condition.fieldPathJson],\n                  textSize: a!defaultValue(ri!textSize, \"MEDIUM\"),\n                  textColor: ri!textColor,\n                  valueJson: fv!item[recordType!CMGT_Condition.valueJson],\n                  operator: fv!item[recordType!CMGT_Condition.operator]\n                ),\n                #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                  text: \" \",\n                  showWhen: and(fv!index < local!numberOfConditions, ),\n                  size: a!defaultValue(ri!textSize, \"MEDIUM\"),\n                  color: a!defaultValue(ri!textColor, \"STANDARD\")\n                ),\n                /*only show the in between opeartor codes if it is not the last condition within a specific condition set*/\n                #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                  text: UPPER(\n                    local!currentChildConditionSet[recordType!CMGT_ConditionSet.operatorCode]\n                  ) & \" \",\n                  showWhen: fv!index < local!numberOfConditions,\n                  size: a!defaultValue(ri!textSize, \"MEDIUM\"),\n                  color: a!defaultValue(ri!textColor, \"STANDARD\")\n                )\n              }\n            )\n          ),\n          #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n            text: \")\",\n            size: a!defaultValue(ri!textSize, \"MEDIUM\"),\n            showWhen: and(\n              local!containsMultipleChildConditionSets,\n              local!containsMultipleConditions\n            ),\n            color: a!defaultValue(ri!textColor, \"STANDARD\")\n          ),\n          #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n            text: \" \",\n            size: a!defaultValue(ri!textSize, \"MEDIUM\"),\n            showWhen: or(\n              and(\n                local!containsMultipleChildConditionSets,\n                local!containsMultipleConditions\n              ),\n              fv!index < length(\n                a!defaultValue(\n                 local!activeConditionSets,\n                  {}\n                )\n              )\n            ),\n            color: a!defaultValue(ri!textColor, \"STANDARD\")\n          ),\n          /*only show the operator code if the current condition set is not the last one*/\n          #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n            text: UPPER(\n              ri!task[recordType!CMGT_Task.conditionSet.operatorCode]\n            ) & \" \",\n            showWhen: fv!index < length(\n              a!defaultValue(\n               local!activeConditionSets,\n                {}\n              )\n            ),\n            size: a!defaultValue(ri!textSize, \"MEDIUM\"),\n            color: a!defaultValue(ri!textColor, \"STANDARD\")\n          )\n        }\n      )\n    }\n  )\n)",
+  "calls": [
+    {
+      "name": "CMGT_UTIL_Filter",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_Automation_FormatCondition",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_Task",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_ConditionSet",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_Condition",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "CMGT_Case_ConfigureTask_Task_SingleRuleConfig",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

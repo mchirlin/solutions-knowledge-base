@@ -1,0 +1,105 @@
+{
+  "uuid": "_a-0000ed02-d945-8000-9bc0-011c48011c48_71680",
+  "name": "CMGT_WFL_AutomationRule_Configure_Condition",
+  "type": "Interface",
+  "description": "Interface used to configure an condition on an automation rule",
+  "sail_code": "a!localVariables(\n  local!activeConditions: rule!CMGT_UTIL_Filter(\n    records: {\n      ri!caseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.conditionSet]\n    },\n    field: recordType!CMGT_CFG_ConditionSet.isActive,\n    value: true\n  ),\n  local!noConditionsNeeded: rule!CMGT_UTIL_IsBlank(local!activeConditions),\n  {\n    #\"SYSTEM_SYSRULES_radioButtonField_v1\"(\n      labelPosition: \"COLLAPSED\",\n      choiceLabels: {\n        #\"urn:appian:translation-string:v1:ce175f4e-fa40-4fd2-a8e1-ed76c9854df3\",\n        #\"urn:appian:translation-string:v1:26445fed-f1e6-4f9d-aa55-4e7f439d0af2\"\n      },\n      choiceValues: { false, true },\n      value: local!noConditionsNeeded,\n      choiceLayout: \"COMPACT\",\n      saveInto: {\n        a!save(\n          ri!caseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.conditionSet],\n          if(\n            save!value,\n            if(\n              rule!CMGT_UTIL_IsBlank(\n                ri!caseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.conditionSet.conditionSetId]\n              ),\n              /*if condition set has not been written to DB, save null*/\n              null,\n              /*if rule condition set has already been written to DB, then flag the condition set and its conditions as deleted*/\n              rule!CMGT_UTIL_SetRecordFields(\n                record: ri!caseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.conditionSet],\n                alwaysOverwrite: a!map(\n                  field: recordType!CMGT_CFG_ConditionSet.isActive,\n                  value: false\n                ),\n                childRelationships: {\n                  a!map(\n                    field: recordType!CMGT_CFG_ConditionSet.childConditionSet,\n                    value: #\"SYSTEM_SYSRULES_forEach\"(\n                      items: ri!caseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.conditionSet],\n                      expression: a!localVariables(\n                        local!childConditionSet: fv!item,\n                        rule!CMGT_UTIL_SetRecordFields(\n                          record: local!childConditionSet,\n                          alwaysOverwrite: {\n                            a!map(\n                              field: recordType!CMGT_CFG_ConditionSet.isActive,\n                              value: false\n                            )\n                          },\n                          childRelationships: {\n                            a!map(\n                              field: recordType!CMGT_CFG_ConditionSet.condition,\n                              value: #\"SYSTEM_SYSRULES_forEach\"(\n                                items: local!childConditionSet[recordType!CMGT_CFG_ConditionSet.condition],\n                                expression: rule!CMGT_UTIL_SetRecordFields(\n                                  record: fv!item,\n                                  alwaysOverwrite: {\n                                    a!map(\n                                      field: recordType!CMGT_CFG_Condition.isActive,\n                                      value: false\n                                    )\n                                  }\n                                )\n                              )\n                            )\n                          }\n                        )\n                      )\n                    )\n                  )\n                }\n              )\n            ),\n          /*If there's an existing condition set, then re-initialize the existing one */\n            rule!CMGT_WFL_CaseType_Automation_initializeConditionSet(\n              conditionSetId: ri!caseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.conditionSet.conditionSetId],\n              caseTypeWorkflowTaskUuid: ri!caseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.caseTypeWorkflowTaskUuid],\n              parentConditionSetUUid: a!defaultValue(ri!caseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.conditionSet.conditionSetUuid],rule!CMGT_UTIL_GenerateUuid_NonPlugin())\n            )\n          )\n        )\n      }\n    ),\n    if(\n      local!noConditionsNeeded,\n      null,\n      {\n        #\"SYSTEM_SYSRULES_forEach\"(\n          items: ri!caseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.conditionSet],\n          expression: {\n            #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n              items: {\n                #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                  item: #\"SYSTEM_SYSRULES_dropdownField_v1\"(\n                    label:#\"urn:appian:translation-string:v1:e9d8c34b-a1a6-471c-97ce-ce5de1d6bbe0\",\n                    labelPosition: \"COLLAPSED\",\n                    choiceLabels: {\n                      #\"urn:appian:translation-string:v1:fa2de152-629a-4edd-be76-7dcda74e0032\",\n                      #\"urn:appian:translation-string:v1:b5d8cfdc-55e9-486c-83be-0db19fe5b647\"\n                    },\n                    choiceValues: {\n                      cons!CMGT_TXT_SET_OPERATOR_AND,\n                      cons!CMGT_TXT_SET_OPERATOR_OR\n                    },\n                    value: ri!caseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.conditionSet.operatorCode],\n                    saveInto: ri!caseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.conditionSet.operatorCode],\n                    disabled: fv!index > 2,\n                    showWhen: fv!index > 1\n                  ),\n                  width: \"MINIMIZE\"\n                ),\n                #\"SYSTEM_SYSRULES_sideBySideItem\"()\n              },\n              alignVertical: \"MIDDLE\",\n              marginBelow: \"STANDARD\",\n              showWhen: fv!index > 1\n            ),\n            rule!CMGT_WFL_Automation_FieldLevelConditionsConfiguration(\n              conditionSet: fv!item,\n              availableFieldsInfo: ri!availableFields,\n              brandingMap: ri!brandingMap,\n              totalConditionsDisplayed: count(\n                rule!CMGT_UTIL_Filter(\n                  records: fv!item[recordType!CMGT_CFG_ConditionSet.condition],\n                  field: recordType!CMGT_CFG_Condition.isActive,\n                  value: true\n                )\n              ),\n              conditionSetIndex: fv!index,\n              topLevelRuleConditionSet: ri!caseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.conditionSet],\n              showHeader: true\n            )\n          }\n        ),\n        #\"SYSTEM_SYSRULES_ButtonArrayLayout\"(\n          buttons: #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n            label: #\"urn:appian:translation-string:v1:833f1933-c2d7-4478-b82b-d42b524cfbfc\",\n            icon: \"plus-circle\",\n            saveInto: a!save(\n              ri!caseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.conditionSet],\n              append(\n                ri!caseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.conditionSet],\n                rule!CMGT_WFL_Automation_initializeChildConditionSet(\n                  parentConditionSetUUid: ri!caseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.conditionSet.conditionSetUuid]\n                )\n              )\n            ),\n            style: \"LINK\",\n            color: \"ACCENT\"\n          ),\n          align: \"START\"\n        )\n      }\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "CMGT_UTIL_Filter",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_SetRecordFields",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_WFL_CaseType_Automation_initializeConditionSet",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_GenerateUuid_NonPlugin",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_WFL_Automation_FieldLevelConditionsConfiguration",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_WFL_Automation_initializeChildConditionSet",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_TXT_SET_OPERATOR_AND",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_TXT_SET_OPERATOR_OR",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_WFL_CFG_CaseTypeWorkflowTask",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_CFG_ConditionSet",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_CFG_Condition",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_LoadBrandingMap",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

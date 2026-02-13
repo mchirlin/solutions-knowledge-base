@@ -1,0 +1,26 @@
+{
+  "uuid": "_a-0000ed40-282d-8000-9d33-011c48011c48_3577460",
+  "name": "CMGT_QR_getAssignmentHistory",
+  "type": "Expression Rule",
+  "description": "QR to get assignment history",
+  "sail_code": "rule!CMGT_UTIL_QueryRecord(\n  recordType: recordType!CMGT_CaseAssignmentHistory,\n  returnType: ri!returnType,\n  triggerRefresh: ri!triggerRefresh,\n  executeWhen: ri!executeWhen,\n  pagingInfo: ri!pagingInfo,\n  sort: a!defaultValue(\n    ri!sortInfo,\n    #\"SYSTEM_SYSRULES_sortInfo\"(\n      field: recordType!CMGT_CaseAssignmentHistory.createdOn,\n      ascending: false()\n    )\n  ),\n  filters: {\n    ri!additionalFilters,\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!CMGT_CaseAssignmentHistory.assignmentRuleId,\n      operator: \"in\",\n      value: ri!assignmentRuleId,\n      applyWhen: a!isNotNullOrEmpty(ri!assignmentRuleId)\n    ),\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!CMGT_CaseAssignmentHistory.assignmentVersion,\n      operator: \"=\",\n      value: ri!assignmentVersion,\n      applyWhen: a!isNotNullOrEmpty(ri!assignmentVersion)\n    ),\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!CMGT_CaseAssignmentHistory.role.roleTypeId,\n      operator: \"=\",\n      value: ri!roleTypeId,\n      applyWhen: a!isNotNullOrEmpty(ri!roleTypeId)\n    ),\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!CMGT_CaseAssignmentHistory.routingType,\n      operator: \"=\",\n      value: ri!routingType,\n      applyWhen: a!isNotNullOrEmpty(ri!routingType)\n    )\n  },\n  fields: {\n    ri!fields,\n    recordType!CMGT_CaseAssignmentHistory.role\n  },\n  logicalExpressions: ri!additionalLogicalExpressions,\n  groupByFields: ri!groupByFields,\n  relatedRecordData: ri!relatedRecordData\n)",
+  "calls": [
+    {
+      "name": "CMGT_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_CaseAssignmentHistory",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "CMGT_AUTO_EVAL_CaseAssignment_RouteCaseToUserOrGroup",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

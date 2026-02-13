@@ -1,0 +1,125 @@
+{
+  "uuid": "_a-0000ed65-13b8-8000-9d44-011c48011c48_3732057",
+  "name": "CMGT_WFL_CaseType_ConfigureTask_Task_RulesSection",
+  "type": "Interface",
+  "description": "displays the UI components for both read only and adding new rules",
+  "sail_code": "a!localVariables(\n  local!error,\n  local!triggerGroup: cons!CMGT_WFL_TRIGGER_GROUP_TASK,\n  local!triggers: rule!CMGT_WFL_QR_GetTriggers(\n    returnType: cons!CMGT_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY,\n    group: local!triggerGroup\n  ),\n  /*will need to update the below when we extend the fields needed to be dispalyed*/\n  local!availableFieldsForTaskTriggers: rule!CMGT_UTIL_Filter(\n    records: ri!fieldDetails,\n    fieldValuePairs: {\n      a!map(field: \"displayName\", value: \"Status\"),\n      a!map(\n        field: \"parentRecordTypeUuid\",\n        value: cons!CMGT_UUID_RECORD_TYPE_TASK\n      )\n    }\n  ),\n  local!actions: rule!CMGT_UTIL_Filter(\n    records: rule!CMGT_CFG_ENUM_ACTIONS(),\n    field: \"context\",\n    value: cons!CMGT_CFG_TXT_ACT_CONTEXT_TASK\n  ),\n  /* to be done in a future ticket */\n  local!allTaskRules: rule!CMGT_WFL_QR_GetCaseTypeWorkflowTask(\n    taskIntentionCodes: {\n      cons!CMGT_WFL_CASE_TYPE_TASK_INTENTION_CODE_TRIGGER\n    },\n    includeInactive: false,\n    fields: {\n      recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.automationTaskAction,\n      recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.automationTrigger,\n      /*to show the assignment rule selected*/\n      recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.automationTaskAction,\n      #\"urn:appian:record-relationship:v1:d6ebee27-6e86-47e3-a9b8-71fdd0348854/b80565b5-ff65-4f64-8007-f2382adffd3f/de7a72ca-c484-48d9-974a-f834e5d302bd/69201ed0-4d96-49e9-805a-4bcf4d59ab9d\"\n    },\n    additionalFilters: {\n      #\"SYSTEM_SYSRULES_queryFilter\"(\n        field: recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.automationParentCaseTypeWorkflowTaskUuid,\n        operator: \"=\",\n        value: ri!selectedCaseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.caseTypeWorkflowTaskUuid]\n\n      )\n    },\n    sort: #\"SYSTEM_SYSRULES_sortInfo\"(\n      field: recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.sortOrder,\n      ascending: true\n    ),\n    relatedRecordData: {\n      #\"SYSTEM_SYSRULES_relatedRecordData\"(\n        relationship: recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.conditionSet,\n        filters: #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: recordType!CMGT_CFG_ConditionSet.isActive,\n          operator: \"=\",\n          value: true\n        )\n      ),\n      #\"SYSTEM_SYSRULES_relatedRecordData\"(\n        relationship: #\"urn:appian:record-relationship:v1:d6ebee27-6e86-47e3-a9b8-71fdd0348854/ef9cc417-d6ce-4fee-bd86-fa71ab64f8a1/eb49dd52-e1ed-4e4c-a3ab-903f4eadb20c/aa71274b-fe14-4420-b400-573007a0049d\",\n        filters: #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: recordType!CMGT_CFG_Condition.isActive,\n          operator: \"=\",\n          value: true\n        )\n      )\n    }\n  ),\n  local!isAddNew: a!refreshVariable(\n    value: false,\n    refreshOnVarChange: ri!selectedCaseTypeWorkflowTask\n    ),\n  local!ruleState: a!refreshVariable(\n    value: if(\n      rule!CMGT_UTIL_IsBlank(local!allTaskRules),\n      null,\n      #\"SYSTEM_SYSRULES_forEach\"(\n        items: local!allTaskRules,\n        expression: a!map(\n          uuid: fv!item[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.caseTypeWorkflowTaskUuid],\n          isEdit: false,\n          isReadOnly: true\n        )\n      )\n    ),\n    refreshOnReferencedVarChange: false,\n    refreshOnVarChange: ri!selectedCaseTypeWorkflowTask\n  ),\n  local!workingTaskRules: a!refreshVariable(\n    value: null,\n    refreshOnVarChange: ri!selectedCaseTypeWorkflowTask\n  ),\n  {\n    if(\n      a!isNullOrEmpty(local!allTaskRules),\n      #\"SYSTEM_SYSRULES_cardLayout\"(\n        contents: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n          value: #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n            text: #\"urn:appian:translation-string:v1:b75cb4f8-24b8-4167-b26d-cce5247e4b79\",\n            style: \"EMPHASIS\"\n          )\n        ),\n        style: ri!brandingMap.configBackgroundColor,\n        shape: \"SEMI_ROUNDED\",\n        padding: \"STANDARD\",\n        marginBelow: \"STANDARD\",\n        showBorder: false\n      ),\n      {\n        #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n          items: {\n            #\"SYSTEM_SYSRULES_sideBySideItem\"(\n              item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                value: #\"SYSTEM_SYSRULES_richTextIcon\"(\n                  icon: \"info-circle\",\n                  color: ri!brandingMap.AccentColor\n                )\n              ),\n              width: \"MINIMIZE\"\n            ),\n            #\"SYSTEM_SYSRULES_sideBySideItem\"(\n              item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                value: #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                  text: #\"urn:appian:translation-string:v1:703bbfa5-a715-42e2-9462-838303e3cd1c\",\n                  color: ri!brandingMap.SecondaryTextColor\n                )\n\n              )\n\n            )\n          },\n          alignVertical: \"MIDDLE\"\n        ),\n        #\"SYSTEM_SYSRULES_forEach\"(\n          items: rule!CMGT_UTIL_sortList(\n            records:local!allTaskRules,\n            field: recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.sortOrder\n          ),\n          expression: a!localVariables(\n            local!thisRuleStateIndex: rule!CMGT_UTIL_Filter(\n              records: local!ruleState,\n              field: \"uuid\",\n              value: fv!item[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.caseTypeWorkflowTaskUuid],\n              filterType: \"MATCH_INDICES\"\n            ),\n            local!arrayIndex: rule!CMGT_UTIL_Filter(\n              records: local!allTaskRules,\n              field: recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.caseTypeWorkflowTaskUuid,\n              value: fv!item[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.caseTypeWorkflowTaskUuid],\n              filterType: \"MATCH_INDICES\"\n            ),\n            local!workingTaskIndex:rule!CMGT_UTIL_Filter(\n              records: local!workingTaskRules,\n              field: recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.caseTypeWorkflowTaskUuid,\n              value: fv!item[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.caseTypeWorkflowTaskUuid],\n              filterType: \"MATCH_INDICES\"\n            ),\n            #\"SYSTEM_SYSRULES_cardLayout\"(\n              contents:{\n              rule!CMGT_WFL_CaseType_ConfigureTask_Task_SingleRuleConfig(\n                automationCaseTypeWorkflowTask: local!allTaskRules[local!arrayIndex],\n                automationIndex: local!arrayIndex,\n                triggers: local!triggers,\n                availableTriggerFields: local!availableFieldsForTaskTriggers,\n                brandingMap: ri!brandingMap,\n                actions: local!actions,\n                allAutomationCaseTypeWorkflowTasks: local!allTaskRules,\n                isAddNew: if(\n                  and(\n                    fv!index = length(local!allTaskRules),\n                    local!isAddNew\n                  ),\n                  local!isAddNew,\n                  null\n                ),\n                triggerRefresh: ri!triggerRefresh,\n                error: local!error,\n                triggerGroup: local!triggerGroup,\n                availableTaskFields: ri!fieldDetails,\n                validationGroup: fv!index,\n                orderIndex: fv!index,\n                ruleState: local!ruleState[local!thisRuleStateIndex],\n                isNewRuleAdded: local!isAddNew,\n                allWorkingCaseTypeWorkflowTasks: local!workingTaskRules,\n                thisWorkingCaseTypeWorkflowTask: local!workingTaskRules[local!workingTaskIndex],\n                thisWorkingTaskIndex: local!workingTaskIndex,\n                trackAutomationRuleChanges: ri!trackAutomationRuleChanges\n\n              )},\n              style: ri!brandingMap.ConfigBackgroundColor,\n              shape: \"SEMI_ROUNDED\",\n              padding: \"STANDARD\",\n              marginBelow: \"STANDARD\",\n              showBorder: false\n            )\n\n          )\n        )\n      }\n    ),\n    #\"SYSTEM_SYSRULES_ButtonArrayLayout\"(\n      buttons: {\n        #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n          label: #\"urn:appian:translation-string:v1:ba771656-67d6-4c97-b4ec-01edb367fc64\",\n          icon: \"plus-circle\",\n          value: true,\n          saveInto: a!localVariables(\n            local!uuid: a!refreshVariable(\n              value: rule!CMGT_UTIL_GenerateUuid_NonPlugin(),\n              refreshAlways: true\n            ),\n            local!conditionSetUUID: a!refreshVariable(\n              value: rule!CMGT_UTIL_GenerateUuid_NonPlugin(),\n              refreshAlways: true\n            ),\n            local!defaultCondition: recordType!CMGT_CFG_Condition(\n              recordType!CMGT_CFG_Condition.evaluationType: \"FIELD_VALUE\",\n              recordType!CMGT_CFG_Condition.isActive: true,\n              recordType!CMGT_CFG_Condition.isValid: true,\n              recordType!CMGT_CFG_Condition.fieldPathJson: \"{\"\"uuid\"\":\"\"3d96454c-776f-4b29-9413-d7fffa3ebaeb\"\",\"\"parentRecordTypeUuid\"\":\"\"ee5aa46d-0228-430f-a794-1134a11fbcc0\"\",\"\"fieldType\"\":\"\"CHOICE_LIST\"\",\"\"customFieldCode\"\":null,\"\"displayName\"\":\"\"Status\"\",\"\"extraConfigurations\"\":{\"\"code\"\":null,\"\"recordTypeUuid\"\":null}}\",\n              recordType!CMGT_CFG_Condition.valueType: \"CHOICE_LIST\",\n              recordType!CMGT_CFG_Condition.operator: \"Equal to\",\n              recordType!CMGT_CFG_Condition.valueJson: \"{\"\"value\"\":6}\"\n            ),\n            local!newTask: recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask(\n              recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.automationParentCaseTypeWorkflowTaskUuid: ri!selectedCaseTypeWorkflowTask[recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.caseTypeWorkflowTaskUuid],\n              recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.caseTypeWorkflowTaskUuid: local!uuid,\n              recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.taskIntentionCode: cons!CMGT_WFL_CASE_TYPE_TASK_INTENTION_CODE_TRIGGER,\n              recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.isActive: true,\n              recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.sortOrder: if(\n                a!isNullOrEmpty(local!allTaskRules),\n                1,\n                length(local!allTaskRules) + 1\n              ),\n              recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.isDeleted: false,\n              recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.createdBy: loggedInUser(),\n              recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.createdOn: now(),\n              recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.modifiedOn: now(),\n              recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.modifedBy: loggedInUser(),\n              recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.automationTrigger: recordType!CMGT_CFG_Triggers(\n                recordType!CMGT_CFG_Triggers.triggerId: 4,\n                recordType!CMGT_CFG_Triggers.triggerName: \"Task field is updated\",\n                recordType!CMGT_CFG_Triggers.group: \"TASK\",\n                recordType!CMGT_CFG_Triggers.isActive: true,\n                recordType!CMGT_CFG_Triggers.createdBy: loggedInUser(),\n                recordType!CMGT_CFG_Triggers.createdOn: now(),\n                recordType!CMGT_CFG_Triggers.modifedBy: loggedInUser(),\n                recordType!CMGT_CFG_Triggers.modifiedOn: now()\n              ),\n              recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.triggerId: 4,\n              recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.triggerContext: \"{\"\"uuid\"\":\"\"3d96454c-776f-4b29-9413-d7fffa3ebaeb\"\",\"\"parentRecordTypeUuid\"\":\"\"ee5aa46d-0228-430f-a794-1134a11fbcc0\"\",\"\"fieldType\"\":\"\"CHOICE_LIST\"\",\"\"customFieldCode\"\":null,\"\"displayName\"\":\"\"Status\"\",\"\"extraConfigurations\"\":{\"\"code\"\":null,\"\"recordTypeUuid\"\":null}}\",\n              recordType!CMGT_WFL_CFG_CaseTypeWorkflowTask.conditionSet: rule!CMGT_WFL_CaseType_Automation_initializeConditionSet(\n                caseTypeWorkflowTaskUuid: local!uuid,\n                parentConditionSetUUid: local!conditionSetUUID,\n                defaultConditions: local!defaultCondition\n              )\n            ),\n            {\n              a!save(\n                local!allTaskRules,\n                append(\n                  local!allTaskRules,\n                  local!newTask\n                )\n              ),\n              a!save(local!isAddNew, true),\n              a!save(\n                local!workingTaskRules,\n                append(local!workingTaskRules,local!newTask)\n              ),\n              a!save(\n                local!ruleState,\n                append(\n                  local!ruleState,\n                  a!map(\n                    uuid: local!uuid,\n                    isEdit: false,\n                    isReadOnly: false\n                  )\n                )\n              )\n\n            }\n          ),\n          showWhen: not(local!isAddNew)\n        )\n\n      },\n      align: \"START\"\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "CMGT_WFL_QR_GetTriggers",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_Filter",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_CFG_ENUM_ACTIONS",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_WFL_QR_GetCaseTypeWorkflowTask",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_sortList",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_WFL_CaseType_ConfigureTask_Task_SingleRuleConfig",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_GenerateUuid_NonPlugin",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_WFL_CaseType_Automation_initializeConditionSet",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_WFL_TRIGGER_GROUP_TASK",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_UUID_RECORD_TYPE_TASK",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_CFG_TXT_ACT_CONTEXT_TASK",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_WFL_CASE_TYPE_TASK_INTENTION_CODE_TRIGGER",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_WFL_CFG_CaseTypeWorkflowTask",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_CFG_ConditionSet",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_CFG_Condition",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_CFG_Triggers",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_Task",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_returnAvailableFields",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

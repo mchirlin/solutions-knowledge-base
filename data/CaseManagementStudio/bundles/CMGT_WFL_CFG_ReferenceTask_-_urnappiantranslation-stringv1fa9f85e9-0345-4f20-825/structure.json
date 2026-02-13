@@ -1,0 +1,2457 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "CMGT_WFL_CFG_ReferenceTask - #\"urn:appian:translation-string:v1:fa9f85e9-0345-4f20-8252-5686f8d7955e\"",
+    "parent_name": "CMGT_WFL_CFG_ReferenceTask",
+    "total_objects": 134
+  },
+  "entry_point": {
+    "action_type": "RECORD_LIST_ACTION",
+    "record_type": "CMGT_WFL_CFG_ReferenceTask",
+    "target_process": "CMGT_WFL_ReferenceTask_CreateUpdate",
+    "form_interface": "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate",
+    "expressions": {
+      "TITLE": "#\"urn:appian:translation-string:v1:fa9f85e9-0345-4f20-8252-5686f8d7955e\"",
+      "DESCRIPTION": null,
+      "VISIBILITY": null
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "CMGT_WFL_ReferenceTask_CreateUpdate",
+      "complexity_score": 15.0,
+      "total_nodes": 8,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Is Cancel?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Set Metadata",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write Reference Task"
+          ]
+        },
+        {
+          "name": "Write Reference Task",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Write Email Templates",
+          "type": "SUBPROCESS",
+          "next": [
+            "Set Metadata"
+          ],
+          "subprocess": "CMGT_WFL_EmailTemplate_CreateUpdate"
+        },
+        {
+          "name": "Delete Document",
+          "type": "Delete Document",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Is Cancel?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Set Metadata (No)",
+            "Write Email Templates (No)",
+            "End Node (Yes)",
+            "Delete Document (Yes)"
+          ]
+        }
+      ]
+    },
+    "subprocesses": [
+      {
+        "name": "CMGT_WFL_EmailTemplate_CreateUpdate",
+        "complexity_score": 13.0,
+        "total_nodes": 7,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Is Cancel?"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "is Delete Email Attachments",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Delete Attachments",
+              "End Node"
+            ]
+          },
+          {
+            "name": "Delete Attachments",
+            "type": "Delete Document",
+            "next": [
+              "End Node"
+            ]
+          },
+          {
+            "name": "Write Email Template",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "is Delete Email Attachments"
+            ]
+          },
+          {
+            "name": "Is Cancel?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Set Meta Data (No)",
+              "is Delete Email Attachments"
+            ]
+          },
+          {
+            "name": "Set Meta Data",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Write Email Template"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ea26-2ced-8000-9bf1-011c48011c48_576735",
+      "name": "CMGT_BOL_AUTOMATION_TESTING_LABEL_SWITCH",
+      "type": "Constant",
+      "description": "A constant that controls the Automation Testing label.\nAutomation Environment - TRUE\nOther Environments - FALSE",
+      "value": "false",
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "CMGT_UTIL_ReturnLabelGivenAutomationTestingSwitch",
+        "CMGT_UTIL_RichTextField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e98b-cfe0-8000-9ba5-011c48011c48_22110",
+      "name": "CMGT_GRP_BUSINESS_GROUPS",
+      "type": "Constant",
+      "description": "Group: Business Groups",
+      "value": "CMGT Business Groups",
+      "value_type": "http://www.appian.com/ae/types/2009:Group",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea9e-6ae8-8000-9c1d-011c48011c48_967525",
+      "name": "CMGT_INT_MAX_CHAR_LIMIT_EXTRA_LARGE",
+      "type": "Constant",
+      "description": "Value: 4000",
+      "value": "4000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_UTIL_RichTextField",
+        "CMGT_WFL_EmailTemplate_Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000e99c-1217-8000-9ba9-011c48011c48_52088",
+      "name": "CMGT_INT_MAX_CHAR_LIMIT_MEDIUM",
+      "type": "Constant",
+      "description": "Value: 255",
+      "value": "255",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_EmailTemplate_Details",
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea67-0b43-8000-9c08-011c48011c48_843994",
+      "name": "CMGT_MAX_SLA_DAYS",
+      "type": "Constant",
+      "description": "Value: 750",
+      "value": "750",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_UTIL_ValidateSLA"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec87-8877-8000-9ce8-011c48011c48_3011428",
+      "name": "CMGT_REFID_TASK_BEHAVIOR_TYPE_AUTOMATION",
+      "type": "Constant",
+      "description": "4 - Automation",
+      "value": "4",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed08-c8b4-8000-9d25-011c48011c48_3441139",
+      "name": "CMGT_REFID_TASK_BEHAVIOR_TYPE_CREATE_CASE",
+      "type": "Constant",
+      "description": "5 - Create Case",
+      "value": "5",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea03-1fde-8000-9be1-011c48011c48_375054",
+      "name": "CMGT_REFID_TASK_BEHAVIOR_TYPE_DECISION",
+      "type": "Constant",
+      "description": "2 - Decision",
+      "value": "2",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed49-63d5-8000-9d3e-011c48011c48_3618669",
+      "name": "CMGT_REFID_TASK_BEHAVIOR_TYPE_SEND_EMAIL",
+      "type": "Constant",
+      "description": "6 - Send Email",
+      "value": "6",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed49-63d5-8000-9d3e-011c48011c48_3612939",
+      "name": "CMGT_WFL_FLD_EMAIL_TEMPLATE_ATTACHMENTS",
+      "type": "Constant",
+      "description": "Value: CMGT WFL Email Template Attachments",
+      "value": "_a-0000ed49-63d5-8000-9d3e-011c48011c48_3612933",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationFolder",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_EmailTemplate_Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb88-676f-8000-9c81-011c48011c48_1925601",
+      "name": "CMGT_CB_UTIL_LoadBrandingMap",
+      "type": "Expression Rule",
+      "description": "Returns branding map for Case Management Studio Admin site",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_LoadBrandingMap"
+      ],
+      "called_by": [
+        "CMGT_WFL_DisplayInfoBanner_EmailTemplate",
+        "CMGT_WFL_EmailTemplate_RecordAction_CreateUpdate",
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate",
+        "CMGT_WFL_SUB_CreateEmailTemplate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec7e-4d3b-8000-9ce6-011c48011c48_2997534",
+      "name": "CMGT_Document_IconColorLogic",
+      "type": "Expression Rule",
+      "description": null,
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_Sub_EmailTemplateAttachmentsCard"
+      ]
+    },
+    {
+      "uuid": "_a-0000edf8-ac88-8000-9d80-011c48011c48_4290472",
+      "name": "CMGT_Document_IconLogic",
+      "type": "Expression Rule",
+      "description": null,
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_EmailTemplate_Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000e98b-cfe0-8000-9ba5-011c48011c48_19651",
+      "name": "CMGT_QR_GetCaseType",
+      "type": "Expression Rule",
+      "description": "Queries the CMGT_CFG_CaseType record",
+      "parameters": [],
+      "calls": [
+        "CMGT_CFG_CaseType",
+        "CMGT_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "CMGT_CFG_CaseType",
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed5b-d85c-8000-9d42-011c48011c48_3696853",
+      "name": "CMGT_QR_GetEmailTemplateAttachments",
+      "type": "Expression Rule",
+      "description": "Queries the CMGT_EmailTemplateAttachments record",
+      "parameters": [],
+      "calls": [
+        "CMGT_EmailTemplateAttachments",
+        "CMGT_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "CMGT_Sub_EmailTemplateAttachments_SummaryDisplay"
+      ]
+    },
+    {
+      "uuid": "_a-0000e99c-1217-8000-9ba9-011c48011c48_63958",
+      "name": "CMGT_QR_GetTaskBehaviorType",
+      "type": "Expression Rule",
+      "description": "Queries the CMGT_CFG_TaskBehaviorType record",
+      "parameters": [],
+      "calls": [
+        "CMGT_CFG_TaskBehaviorType",
+        "CMGT_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ece2-0128-8000-9bb8-011c48011c48_40224",
+      "name": "CMGT_UTIL_ContructSLAMap",
+      "type": "Expression Rule",
+      "description": "Rule to Construct SLA Map with inputs",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_IsNotBlank"
+      ],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9fa-aa45-8000-9bda-011c48011c48_301090",
+      "name": "CMGT_UTIL_DisplayUser",
+      "type": "Expression Rule",
+      "description": "Returns a display name for a user in the format of \"firstName lastName\". Null-safe.",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_IsNotBlank"
+      ],
+      "called_by": [
+        "CMGT_Sub_EmailTemplateAttachments_SummaryDisplay"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9ca-3659-8000-9bb8-011c48011c48_145917",
+      "name": "CMGT_UTIL_Distinct",
+      "type": "Expression Rule",
+      "description": "Returns the distinct values from a list",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "af326a29-a1c8-4399-a28d-996f85819d9e",
+      "name": "CMGT_UTIL_Filter",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_UTIL_DisplayUser",
+        "CMGT_WFL_EmailTemplate_CreateUpdate",
+        "CMGT_WFL_EmailTemplate_Details",
+        "CMGT_WFL_EmailTemplate_RecordAction_CreateUpdate",
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000e99c-1217-8000-9ba9-011c48011c48_56349",
+      "name": "CMGT_UTIL_FormatDateTime",
+      "type": "Expression Rule",
+      "description": "Rule to format datetime value",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_Sub_EmailTemplateAttachments_SummaryDisplay"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea1d-36f5-8000-9bef-011c48011c48_538451",
+      "name": "CMGT_UTIL_GenerateUuid_NonPlugin",
+      "type": "Expression Rule",
+      "description": "Generates random uuid",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_EmailTemplate_SetMetaData",
+        "CMGT_WFL_SUB_CreateEmailTemplate"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_25890",
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_EmailTemplate_Preview",
+        "CMGT_UTIL_IsNotBlank",
+        "CMGT_UTIL_RichTextField",
+        "CMGT_UTIL_SetRecordFields",
+        "CMGT_WFL_EmailTemplate_CreateUpdate",
+        "CMGT_WFL_EmailTemplate_RecordAction_CreateUpdate",
+        "CMGT_WFL_ReferenceTask_CreateUpdate",
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9d3-70bf-8000-9bbd-011c48011c48_180568",
+      "name": "CMGT_UTIL_IsNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around CMGT_UTIL_IsBlank",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_IsBlank"
+      ],
+      "called_by": [
+        "CMGT_UTIL_ContructSLAMap",
+        "CMGT_UTIL_DisplayUser",
+        "CMGT_WFL_DisplayInfoBanner_EmailTemplate",
+        "CMGT_WFL_EmailTemplate_CreateUpdate",
+        "CMGT_WFL_EmailTemplate_Details",
+        "CMGT_WFL_EmailTemplate_RecordAction_CreateUpdate",
+        "CMGT_WFL_ReferenceTask_CreateUpdate",
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9f4-1323-8000-9bd3-011c48011c48_267840",
+      "name": "CMGT_UTIL_LoadBrandingMap",
+      "type": "Expression Rule",
+      "description": "Returns branding map for Case Management",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_CB_UTIL_LoadBrandingMap",
+        "CMGT_EmailTemplate_Preview",
+        "CMGT_Sub_EmailTemplateAttachmentsCard",
+        "CMGT_Sub_EmailTemplateAttachments_SummaryDisplay"
+      ]
+    },
+    {
+      "uuid": "_a-0000e98b-cfe0-8000-9ba5-011c48011c48_22352",
+      "name": "CMGT_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "description": "Enhanced wrapper rule around a!queryRecord()",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_QR_GetCaseType",
+        "CMGT_QR_GetEmailTemplateAttachments",
+        "CMGT_QR_GetTaskBehaviorType",
+        "CMGT_WFL_QR_GetEmailTemplates",
+        "CMGT_WFL_QR_GetSendEmailCaseTypeWorkflowTasks",
+        "CMGT_WFL_QR_GetSendEmailReferenceTasks",
+        "CMGT_WFL_QR_GetSendEmailTaskBlockTasks"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9d3-70bf-8000-9bbd-011c48011c48_180481",
+      "name": "CMGT_UTIL_RejectBlank",
+      "type": "Expression Rule",
+      "description": "Rule to removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_UTIL_SetRecordFields",
+        "CMGT_WFL_EmailTemplate_Details",
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate",
+        "CMGT_WFL_SUB_CreateEmailTemplate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea26-2ced-8000-9bf1-011c48011c48_576741",
+      "name": "CMGT_UTIL_ReturnLabelGivenAutomationTestingSwitch",
+      "type": "Expression Rule",
+      "description": "Rule to return label accounting automation testing switch",
+      "parameters": [],
+      "calls": [
+        "CMGT_BOL_AUTOMATION_TESTING_LABEL_SWITCH"
+      ],
+      "called_by": [
+        "CMGT_EmailTemplate_Preview",
+        "CMGT_Sub_EmailTemplateAttachmentsCard",
+        "CMGT_Sub_EmailTemplateAttachments_SummaryDisplay",
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_33778",
+      "name": "CMGT_UTIL_SetRecordFields",
+      "type": "Expression Rule",
+      "description": "Runs a bulk update on a record object, setting new values for its fields",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_RejectBlank"
+      ],
+      "called_by": [
+        "CMGT_WFL_CreateCaseReferenceTask_SetMetaData",
+        "CMGT_WFL_EmailTemplateAttachment_SetMetaData",
+        "CMGT_WFL_EmailTemplate_SetMetaData",
+        "CMGT_WFL_ReferenceTask_SetMetaData",
+        "CMGT_WFL_SendEmailReferenceTask_SetMetaData",
+        "CMGT_WFL_TaskResponseOption_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000eaf1-7a52-8000-9c42-011c48011c48_1227353",
+      "name": "CMGT_UTIL_StripHtmlTags",
+      "type": "Expression Rule",
+      "description": "Rule to strip html tags",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_UTIL_RichTextField"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea72-a399-8000-9c0d-011c48011c48_863909",
+      "name": "CMGT_UTIL_ValidateSLA",
+      "type": "Expression Rule",
+      "description": "Validates the SLA value",
+      "parameters": [],
+      "calls": [
+        "CMGT_MAX_SLA_DAYS",
+        "Unknown"
+      ],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ece2-0128-8000-9bb8-011c48011c48_40321",
+      "name": "CMGT_UTIL_isEmptySLA",
+      "type": "Expression Rule",
+      "description": "Check for SLA is empty/0 or not",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed08-c8b4-8000-9d25-011c48011c48_3441965",
+      "name": "CMGT_WFL_CreateCaseReferenceTask_SetMetaData",
+      "type": "Expression Rule",
+      "description": "Set metadata for CMGT_WFL_CreateCaseReferenceTask",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_SetRecordFields",
+        "CMGT_WFL_CFG_CreateCaseReferenceTask"
+      ],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed49-63d5-8000-9d3e-011c48011c48_3604833",
+      "name": "CMGT_WFL_EmailTemplateAttachment_SetMetaData",
+      "type": "Expression Rule",
+      "description": "Set metadata for CMGT_WFL_EmailTemplateAttachments",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_SetRecordFields",
+        "CMGT_WFL_CFG_EmailTemplateAttachments"
+      ],
+      "called_by": [
+        "CMGT_WFL_EmailTemplate_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed49-63d5-8000-9d3e-011c48011c48_3604826",
+      "name": "CMGT_WFL_EmailTemplate_SetMetaData",
+      "type": "Expression Rule",
+      "description": "Set metadata for CMGT_WFL_CFG_EmailTemplate",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_GenerateUuid_NonPlugin",
+        "CMGT_UTIL_SetRecordFields",
+        "CMGT_WFL_CFG_EmailTemplate",
+        "CMGT_WFL_EmailTemplateAttachment_SetMetaData"
+      ],
+      "called_by": [
+        "CMGT_WFL_EmailTemplate_CreateUpdate",
+        "CMGT_WFL_SendEmailReferenceTask_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb4d-d051-8000-9c68-011c48011c48_1673741",
+      "name": "CMGT_WFL_MTR_ReferenceTaskWrapper",
+      "type": "Expression Rule",
+      "description": "Wrapper rule containing create and edit reference task metrics",
+      "parameters": [],
+      "calls": [
+        "CMGT_WFL_CFG_ReferenceTask",
+        "CMGT_WFL_MTR_UserCreatesReferenceTask",
+        "CMGT_WFL_MTR_UserEditsReferenceTask"
+      ],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb4d-d051-8000-9c68-011c48011c48_1673375",
+      "name": "CMGT_WFL_MTR_UserCreatesReferenceTask",
+      "type": "Expression Rule",
+      "description": "Metrics to track Number of times reference tasks created",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_MTR_ReferenceTaskWrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb4d-d051-8000-9c68-011c48011c48_1673723",
+      "name": "CMGT_WFL_MTR_UserEditsReferenceTask",
+      "type": "Expression Rule",
+      "description": "Metrics to track Number of times reference task edited",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_MTR_ReferenceTaskWrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb4d-d051-8000-9c68-011c48011c48_1673763",
+      "name": "CMGT_WFL_MTR_UserInitiatesReferenceTask",
+      "type": "Expression Rule",
+      "description": "Metrics to track Number of times reference tasks initiated",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed49-63d5-8000-9d3e-011c48011c48_3602456",
+      "name": "CMGT_WFL_QR_GetEmailTemplates",
+      "type": "Expression Rule",
+      "description": "Queries the CMGT_WFL_CFG_EmailTemplate record",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_QueryRecord",
+        "CMGT_WFL_CFG_EmailTemplate"
+      ],
+      "called_by": [
+        "CMGT_WFL_CFG_EmailTemplate",
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed49-63d5-8000-9d3e-011c48011c48_3604797",
+      "name": "CMGT_WFL_QR_GetSendEmailCaseTypeWorkflowTasks",
+      "type": "Expression Rule",
+      "description": "Queries the CMGT_WFL_CFG_SendEmailCaseTypeWorkflowTask record",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_QueryRecord",
+        "CMGT_WFL_CFG_SendEmailCaseTypeWorkflowTask"
+      ],
+      "called_by": [
+        "CMGT_WFL_EmailTemplate_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed49-63d5-8000-9d3e-011c48011c48_3604771",
+      "name": "CMGT_WFL_QR_GetSendEmailReferenceTasks",
+      "type": "Expression Rule",
+      "description": "Queries the CMGT_WFL_CFG_SendEmailReferenceTask record",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_QueryRecord",
+        "CMGT_WFL_CFG_SendEmailReferenceTask"
+      ],
+      "called_by": [
+        "CMGT_WFL_EmailTemplate_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed49-63d5-8000-9d3e-011c48011c48_3604784",
+      "name": "CMGT_WFL_QR_GetSendEmailTaskBlockTasks",
+      "type": "Expression Rule",
+      "description": "Queries the CMGT_WFL_CFG_SendEmailTaskBlockTask record",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_QueryRecord",
+        "CMGT_WFL_CFG_SendEmailTaskBlockTask"
+      ],
+      "called_by": [
+        "CMGT_WFL_EmailTemplate_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea26-2ced-8000-9bf1-011c48011c48_568168",
+      "name": "CMGT_WFL_ReferenceTask_SetMetaData",
+      "type": "Expression Rule",
+      "description": "Set metadata for CMGT_CFG_ReferenceTask",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_SetRecordFields",
+        "CMGT_WFL_CFG_ReferenceTask",
+        "CMGT_WFL_CreateCaseReferenceTask_SetMetaData",
+        "CMGT_WFL_SendEmailReferenceTask_SetMetaData",
+        "CMGT_WFL_TaskResponseOption_SetMetaData"
+      ],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed49-63d5-8000-9d3e-011c48011c48_3619696",
+      "name": "CMGT_WFL_SendEmailReferenceTask_SetMetaData",
+      "type": "Expression Rule",
+      "description": "Set metadata for CMGT_WFL_CFG_SendEmailReferenceTask",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_SetRecordFields",
+        "CMGT_WFL_CFG_SendEmailReferenceTask",
+        "CMGT_WFL_EmailTemplate_SetMetaData"
+      ],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea26-2ced-8000-9bf1-011c48011c48_568343",
+      "name": "CMGT_WFL_TaskResponseOption_SetMetaData",
+      "type": "Expression Rule",
+      "description": "Set metadata for CMGT_CFG_TaskResponseOption",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_SetRecordFields",
+        "CMGT_WFL_CFG_TaskResponseOption"
+      ],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed49-63d5-8000-9d3e-011c48011c48_3612621",
+      "name": "CMGT_EmailTemplate_Preview",
+      "type": "Interface",
+      "description": "Interface to preview the selected email template in a read only format",
+      "parameters": [
+        {
+          "name": "emailTemplateName",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "subject",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        },
+        {
+          "name": "body",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 2
+        },
+        {
+          "name": "attachments",
+          "type": "urn:com:appian:recordtype:datatype:ecfa3aa5-8852-4685-8d4c-f54e1a112163?list",
+          "raw_type": "urn:com:appian:recordtype:datatype:ecfa3aa5-8852-4685-8d4c-f54e1a112163?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 3
+        },
+        {
+          "name": "isPreview",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 4
+        },
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "display_order": 5
+        },
+        {
+          "name": "cfgAttachments",
+          "type": "urn:com:appian:recordtype:datatype:80da8346-e0cb-4f34-ac75-7742809a4afe?list",
+          "raw_type": "urn:com:appian:recordtype:datatype:80da8346-e0cb-4f34-ac75-7742809a4afe?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 6
+        }
+      ],
+      "calls": [
+        "CMGT_Sub_EmailTemplateAttachmentsCard",
+        "CMGT_UTIL_CardGroupHandler",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_LoadBrandingMap",
+        "CMGT_UTIL_ReturnLabelGivenAutomationTestingSwitch",
+        "CMGT_UTIL_RichTextField",
+        "Unknown"
+      ],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed5b-d85c-8000-9d42-011c48011c48_3693036",
+      "name": "CMGT_Sub_EmailTemplateAttachmentsCard",
+      "type": "Interface",
+      "description": "Displays a single document card sub-interface",
+      "parameters": [
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "showCreatedOn",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        },
+        {
+          "name": "linkColor",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 2
+        },
+        {
+          "name": "sizeAndExtensionColor",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 3
+        },
+        {
+          "name": "attachment",
+          "type": "urn:com:appian:recordtype:datatype:ecfa3aa5-8852-4685-8d4c-f54e1a112163",
+          "raw_type": "urn:com:appian:recordtype:datatype:ecfa3aa5-8852-4685-8d4c-f54e1a112163",
+          "required": false,
+          "default_value": null,
+          "display_order": 4
+        },
+        {
+          "name": "cfgAttachment",
+          "type": "urn:com:appian:recordtype:datatype:80da8346-e0cb-4f34-ac75-7742809a4afe",
+          "raw_type": "urn:com:appian:recordtype:datatype:80da8346-e0cb-4f34-ac75-7742809a4afe",
+          "required": false,
+          "default_value": null,
+          "display_order": 5
+        },
+        {
+          "name": "showDocumentDownloadLink",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 6
+        }
+      ],
+      "calls": [
+        "CMGT_Document_IconColorLogic",
+        "CMGT_EmailTemplateAttachments",
+        "CMGT_Sub_EmailTemplateAttachments_SummaryDisplay",
+        "CMGT_UTIL_LoadBrandingMap",
+        "CMGT_UTIL_ReturnLabelGivenAutomationTestingSwitch",
+        "CMGT_WFL_CFG_EmailTemplateAttachments"
+      ],
+      "called_by": [
+        "CMGT_EmailTemplate_Preview"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed5b-d85c-8000-9d42-011c48011c48_3693313",
+      "name": "CMGT_Sub_EmailTemplateAttachments_SummaryDisplay",
+      "type": "Interface",
+      "description": "Summary display for a single document object",
+      "parameters": [
+        {
+          "name": "size",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "isSingleRichTextField",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        },
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "display_order": 2
+        },
+        {
+          "name": "linkColor",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 3
+        },
+        {
+          "name": "sizeAndExtensionColor",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 4
+        },
+        {
+          "name": "doNoColoring",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 5
+        },
+        {
+          "name": "isShowNoLink",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 6
+        },
+        {
+          "name": "nameStyle",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 7
+        },
+        {
+          "name": "attachment",
+          "type": "urn:com:appian:recordtype:datatype:ecfa3aa5-8852-4685-8d4c-f54e1a112163",
+          "raw_type": "urn:com:appian:recordtype:datatype:ecfa3aa5-8852-4685-8d4c-f54e1a112163",
+          "required": false,
+          "default_value": null,
+          "display_order": 8
+        },
+        {
+          "name": "cfgAttachment",
+          "type": "urn:com:appian:recordtype:datatype:80da8346-e0cb-4f34-ac75-7742809a4afe",
+          "raw_type": "urn:com:appian:recordtype:datatype:80da8346-e0cb-4f34-ac75-7742809a4afe",
+          "required": false,
+          "default_value": null,
+          "display_order": 9
+        }
+      ],
+      "calls": [
+        "CMGT_EmailTemplateAttachments",
+        "CMGT_QR_GetEmailTemplateAttachments",
+        "CMGT_UTIL_DisplayUser",
+        "CMGT_UTIL_FormatDateTime",
+        "CMGT_UTIL_LoadBrandingMap",
+        "CMGT_UTIL_ReturnLabelGivenAutomationTestingSwitch",
+        "CMGT_WFL_CFG_EmailTemplateAttachments",
+        "Unknown"
+      ],
+      "called_by": [
+        "CMGT_Sub_EmailTemplateAttachmentsCard"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea01-8773-8000-9bde-011c48011c48_356157",
+      "name": "CMGT_UTIL_CardGroupHandler",
+      "type": "Interface",
+      "description": "Renders a list of cards row-by-row",
+      "parameters": [
+        {
+          "name": "maxPerRow",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "cardLayouts",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        },
+        {
+          "name": "marginBelow",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 2
+        },
+        {
+          "name": "align",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 3
+        },
+        {
+          "name": "columnWidth",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 4
+        },
+        {
+          "name": "stackWhen",
+          "type": "http://www.appian.com/ae/types/2009:Text?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 5
+        },
+        {
+          "name": "spacing",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 6
+        }
+      ],
+      "calls": [],
+      "called_by": [
+        "CMGT_EmailTemplate_Preview"
+      ]
+    },
+    {
+      "uuid": "bd8f3e49-406c-4eab-a3a4-ce119dfbb5ce",
+      "name": "CMGT_UTIL_RichTextField",
+      "type": "Interface",
+      "description": "A rich text component that resolves to paragraph field when on portal, but ensures that length requirements are met regardless of what component a user entered text in",
+      "parameters": [
+        {
+          "name": "value",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "readOnly",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        },
+        {
+          "name": "maxSize",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "display_order": 2
+        },
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 3
+        },
+        {
+          "name": "labelPosition",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 4
+        },
+        {
+          "name": "instructions",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 5
+        },
+        {
+          "name": "helpToolTip",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 6
+        },
+        {
+          "name": "required",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 7
+        },
+        {
+          "name": "disabled",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 8
+        },
+        {
+          "name": "validations",
+          "type": "http://www.appian.com/ae/types/2009:Text?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 9
+        },
+        {
+          "name": "height",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 10
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 11
+        },
+        {
+          "name": "placeholder",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 12
+        },
+        {
+          "name": "refreshAfter",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 13
+        },
+        {
+          "name": "additionalSaves",
+          "type": "http://www.appian.com/ae/types/2009:Save?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Save?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 14
+        },
+        {
+          "name": "requiredMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 15
+        }
+      ],
+      "calls": [
+        "CMGT_BOL_AUTOMATION_TESTING_LABEL_SWITCH",
+        "CMGT_INT_MAX_CHAR_LIMIT_EXTRA_LARGE",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_StripHtmlTags"
+      ],
+      "called_by": [
+        "CMGT_EmailTemplate_Preview",
+        "CMGT_WFL_EmailTemplate_Details",
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed49-63d5-8000-9d3e-011c48011c48_3604539",
+      "name": "CMGT_WFL_DisplayInfoBanner_EmailTemplate",
+      "type": "Interface",
+      "description": "Info Banner to be displayed to show where all the email template is referenced",
+      "parameters": [
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "primaryMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 2
+        },
+        {
+          "name": "caseTypeWorkFlowNames",
+          "type": "http://www.appian.com/ae/types/2009:Text?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 3
+        },
+        {
+          "name": "referenceTaskNames",
+          "type": "http://www.appian.com/ae/types/2009:Text?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 4
+        },
+        {
+          "name": "taskBlockNames",
+          "type": "http://www.appian.com/ae/types/2009:Text?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 5
+        }
+      ],
+      "calls": [
+        "CMGT_CB_UTIL_LoadBrandingMap",
+        "CMGT_UTIL_IsNotBlank",
+        "Unknown"
+      ],
+      "called_by": [
+        "CMGT_WFL_EmailTemplate_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed49-63d5-8000-9d3e-011c48011c48_3612864",
+      "name": "CMGT_WFL_EmailTemplate_Details",
+      "type": "Interface",
+      "description": "Rule having Email Template details",
+      "parameters": [
+        {
+          "name": "emailTemplate",
+          "type": "urn:com:appian:recordtype:datatype:85901491-e10b-4d54-aa08-7e9141f85151",
+          "raw_type": "urn:com:appian:recordtype:datatype:85901491-e10b-4d54-aa08-7e9141f85151",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        }
+      ],
+      "calls": [
+        "CMGT_Document_IconLogic",
+        "CMGT_INT_MAX_CHAR_LIMIT_EXTRA_LARGE",
+        "CMGT_INT_MAX_CHAR_LIMIT_MEDIUM",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_IsNotBlank",
+        "CMGT_UTIL_RejectBlank",
+        "CMGT_UTIL_RichTextField",
+        "CMGT_WFL_CFG_EmailTemplate",
+        "CMGT_WFL_CFG_EmailTemplateAttachments",
+        "CMGT_WFL_FLD_EMAIL_TEMPLATE_ATTACHMENTS",
+        "Unknown"
+      ],
+      "called_by": [
+        "CMGT_WFL_EmailTemplate_RecordAction_CreateUpdate",
+        "CMGT_WFL_SUB_CreateEmailTemplate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed49-63d5-8000-9d3e-011c48011c48_3603367",
+      "name": "CMGT_WFL_EmailTemplate_RecordAction_CreateUpdate",
+      "type": "Interface",
+      "description": "Interface for email template create and update",
+      "parameters": [
+        {
+          "name": "emailTemplate",
+          "type": "urn:com:appian:recordtype:datatype:85901491-e10b-4d54-aa08-7e9141f85151",
+          "raw_type": "urn:com:appian:recordtype:datatype:85901491-e10b-4d54-aa08-7e9141f85151",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "documentsToDelete",
+          "type": "http://www.appian.com/ae/types/2009:CollaborationDocument?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:CollaborationDocument?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "CMGT_CB_UTIL_LoadBrandingMap",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_IsNotBlank",
+        "CMGT_WFL_CFG_EmailTemplate",
+        "CMGT_WFL_CFG_EmailTemplateAttachments",
+        "CMGT_WFL_CFG_SendEmailCaseTypeWorkflowTask",
+        "CMGT_WFL_CFG_SendEmailReferenceTask",
+        "CMGT_WFL_CFG_SendEmailTaskBlockTask",
+        "CMGT_WFL_DisplayInfoBanner_EmailTemplate",
+        "CMGT_WFL_EmailTemplate_Details",
+        "CMGT_WFL_QR_GetSendEmailCaseTypeWorkflowTasks",
+        "CMGT_WFL_QR_GetSendEmailReferenceTasks",
+        "CMGT_WFL_QR_GetSendEmailTaskBlockTasks",
+        "Unknown"
+      ],
+      "called_by": [
+        "CMGT_WFL_EmailTemplate_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea26-2ced-8000-9bf1-011c48011c48_566567",
+      "name": "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate",
+      "type": "Interface",
+      "description": "Form interface for creating or updating a reference task",
+      "parameters": [
+        {
+          "name": "referenceTask",
+          "type": "urn:com:appian:recordtype:datatype:3dbe5fed-28bf-4f27-aa59-eb2c940289b4",
+          "raw_type": "urn:com:appian:recordtype:datatype:3dbe5fed-28bf-4f27-aa59-eb2c940289b4",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "newEmailTemplates",
+          "type": "urn:com:appian:recordtype:datatype:85901491-e10b-4d54-aa08-7e9141f85151?list",
+          "raw_type": "urn:com:appian:recordtype:datatype:85901491-e10b-4d54-aa08-7e9141f85151?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        },
+        {
+          "name": "documentsToDelete",
+          "type": "http://www.appian.com/ae/types/2009:CollaborationDocument?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:CollaborationDocument?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 2
+        }
+      ],
+      "calls": [
+        "CMGT_CB_UTIL_LoadBrandingMap",
+        "CMGT_CFG_CaseType",
+        "CMGT_CFG_RelationshipMapType",
+        "CMGT_CFG_TaskBehaviorType",
+        "CMGT_EmailTemplate_Preview",
+        "CMGT_GRP_BUSINESS_GROUPS",
+        "CMGT_INT_MAX_CHAR_LIMIT_MEDIUM",
+        "CMGT_QR_GetCaseType",
+        "CMGT_QR_GetTaskBehaviorType",
+        "CMGT_REFID_TASK_BEHAVIOR_TYPE_AUTOMATION",
+        "CMGT_REFID_TASK_BEHAVIOR_TYPE_CREATE_CASE",
+        "CMGT_REFID_TASK_BEHAVIOR_TYPE_DECISION",
+        "CMGT_REFID_TASK_BEHAVIOR_TYPE_SEND_EMAIL",
+        "CMGT_UTIL_ContructSLAMap",
+        "CMGT_UTIL_Distinct",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_IsNotBlank",
+        "CMGT_UTIL_RejectBlank",
+        "CMGT_UTIL_ReturnLabelGivenAutomationTestingSwitch",
+        "CMGT_UTIL_RichTextField",
+        "CMGT_UTIL_ValidateSLA",
+        "CMGT_UTIL_isEmptySLA",
+        "CMGT_WFL_CFG_EmailTemplate",
+        "CMGT_WFL_CFG_ReferenceTask",
+        "CMGT_WFL_CFG_TaskResponseOption",
+        "CMGT_WFL_MTR_UserInitiatesReferenceTask",
+        "CMGT_WFL_QR_GetEmailTemplates",
+        "CMGT_WFL_SUB_CreateEmailTemplate",
+        "Unknown"
+      ],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed49-63d5-8000-9d3e-011c48011c48_3612963",
+      "name": "CMGT_WFL_SUB_CreateEmailTemplate",
+      "type": "Interface",
+      "description": "Common interface for creating email template from tasks, task blocks and case types",
+      "parameters": [
+        {
+          "name": "emailTemplates",
+          "type": "urn:com:appian:recordtype:datatype:85901491-e10b-4d54-aa08-7e9141f85151?list",
+          "raw_type": "urn:com:appian:recordtype:datatype:85901491-e10b-4d54-aa08-7e9141f85151?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "documentsToDelete",
+          "type": "http://www.appian.com/ae/types/2009:CollaborationDocument?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:CollaborationDocument?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        },
+        {
+          "name": "submitSaveInto",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "display_order": 2
+        },
+        {
+          "name": "cancelSaveInto",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "display_order": 3
+        },
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "display_order": 4
+        }
+      ],
+      "calls": [
+        "CMGT_CB_UTIL_LoadBrandingMap",
+        "CMGT_UTIL_GenerateUuid_NonPlugin",
+        "CMGT_UTIL_RejectBlank",
+        "CMGT_WFL_CFG_EmailTemplate",
+        "CMGT_WFL_EmailTemplate_Details",
+        "Unknown"
+      ],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "0002ed4a-bade-8000-1ea3-7f0000014e7a",
+      "name": "CMGT_WFL_EmailTemplate_CreateUpdate",
+      "type": "Process Model",
+      "description": "PM for email template create and update",
+      "calls": [
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_IsNotBlank",
+        "CMGT_WFL_CFG_EmailTemplate",
+        "CMGT_WFL_CFG_EmailTemplateAttachments",
+        "CMGT_WFL_EmailTemplate_RecordAction_CreateUpdate",
+        "CMGT_WFL_EmailTemplate_SetMetaData"
+      ],
+      "called_by": [
+        "CMGT_WFL_CFG_EmailTemplate",
+        "CMGT_WFL_ReferenceTask_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "000dea29-56ba-8000-02de-7f0000014e7a",
+      "name": "CMGT_WFL_ReferenceTask_CreateUpdate",
+      "type": "Process Model",
+      "description": "INCORPORATE ME - Creates or updates a CMGT_CFG_ReferenceTask",
+      "calls": [
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_IsNotBlank",
+        "CMGT_WFL_CFG_ReferenceTask",
+        "CMGT_WFL_EmailTemplate_CreateUpdate",
+        "CMGT_WFL_MTR_ReferenceTaskWrapper",
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate",
+        "CMGT_WFL_ReferenceTask_SetMetaData"
+      ],
+      "called_by": [
+        "CMGT_WFL_CFG_ReferenceTask"
+      ]
+    },
+    {
+      "uuid": "82aa3b28-94c2-4d3c-a403-bb813bd76155",
+      "name": "CMGT_CFG_CaseType",
+      "type": "Record Type",
+      "description": "MODIFIED FOR 2.0 KB AND EML MODULE RELEASE - Case Types",
+      "actions": [
+        "updateMetadata",
+        "editWorkflow",
+        "editMilestones",
+        "editWorkflowEmptyState",
+        "editWorkflowEmptyState2",
+        "createAutomationRule",
+        "addResource"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_QR_GetCaseType"
+      ],
+      "called_by": [
+        "CMGT_QR_GetCaseType",
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "00f5d5ba-e85d-4f1e-b903-cf14a09847f1",
+      "name": "CMGT_CFG_RelationshipMapType",
+      "type": "Record Type",
+      "description": "Relationships types between cases and entities and each other",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_CFG_CreateCaseReferenceTask",
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "96100ef7-e344-44e3-97b8-f050300ac060",
+      "name": "CMGT_CFG_TaskBehaviorType",
+      "type": "Record Type",
+      "description": "Task Behavior Types",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "CMGT_QR_GetTaskBehaviorType",
+        "CMGT_WFL_CFG_ReferenceTask",
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "ecfa3aa5-8852-4685-8d4c-f54e1a112163",
+      "name": "CMGT_EmailTemplateAttachments",
+      "type": "Record Type",
+      "description": "CMGT_EMAIL_TEMPLATE_ATTACHMENTS",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "CMGT_QR_GetEmailTemplateAttachments",
+        "CMGT_Sub_EmailTemplateAttachmentsCard",
+        "CMGT_Sub_EmailTemplateAttachments_SummaryDisplay"
+      ]
+    },
+    {
+      "uuid": "7f7ed27b-20cc-4140-9ea4-682d956cc1db",
+      "name": "CMGT_WFL_CFG_CreateCaseReferenceTask",
+      "type": "Record Type",
+      "description": "Record type for table CMGT_WFL_CFG_CREATE_CASE_REFERENCE_TASK.",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_CFG_RelationshipMapType"
+      ],
+      "called_by": [
+        "CMGT_WFL_CFG_ReferenceTask",
+        "CMGT_WFL_CreateCaseReferenceTask_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "85901491-e10b-4d54-aa08-7e9141f85151",
+      "name": "CMGT_WFL_CFG_EmailTemplate",
+      "type": "Record Type",
+      "description": "Record Type for CMGT_WFL_CFG_EMAIL_TEMPLATE table",
+      "actions": [
+        "createEmailTemplate",
+        "deleteEmailTemplate",
+        "updateEmailTemplate"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_WFL_CFG_EmailTemplateAttachments",
+        "CMGT_WFL_CFG_SendEmailCaseTypeWorkflowTask",
+        "CMGT_WFL_CFG_SendEmailReferenceTask",
+        "CMGT_WFL_CFG_SendEmailTaskBlockTask",
+        "CMGT_WFL_EmailTemplate_CreateUpdate",
+        "CMGT_WFL_QR_GetEmailTemplates",
+        "Unknown"
+      ],
+      "called_by": [
+        "CMGT_WFL_CFG_SendEmailCaseTypeWorkflowTask",
+        "CMGT_WFL_CFG_SendEmailReferenceTask",
+        "CMGT_WFL_CFG_SendEmailTaskBlockTask",
+        "CMGT_WFL_EmailTemplate_CreateUpdate",
+        "CMGT_WFL_EmailTemplate_Details",
+        "CMGT_WFL_EmailTemplate_RecordAction_CreateUpdate",
+        "CMGT_WFL_EmailTemplate_SetMetaData",
+        "CMGT_WFL_QR_GetEmailTemplates",
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate",
+        "CMGT_WFL_SUB_CreateEmailTemplate"
+      ]
+    },
+    {
+      "uuid": "80da8346-e0cb-4f34-ac75-7742809a4afe",
+      "name": "CMGT_WFL_CFG_EmailTemplateAttachments",
+      "type": "Record Type",
+      "description": "Record type for CMGT_WFL_CFG_E MAIL_TEMPLATE_ATTACHMENTS table",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "CMGT_Sub_EmailTemplateAttachmentsCard",
+        "CMGT_Sub_EmailTemplateAttachments_SummaryDisplay",
+        "CMGT_WFL_CFG_EmailTemplate",
+        "CMGT_WFL_EmailTemplateAttachment_SetMetaData",
+        "CMGT_WFL_EmailTemplate_CreateUpdate",
+        "CMGT_WFL_EmailTemplate_Details",
+        "CMGT_WFL_EmailTemplate_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "3dbe5fed-28bf-4f27-aa59-eb2c940289b4",
+      "name": "CMGT_WFL_CFG_ReferenceTask",
+      "type": "Record Type",
+      "description": "Reference Tasks",
+      "actions": [
+        "createReferenceTask",
+        "updateReferenceTask",
+        "inactivateTask"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_CFG_TaskBehaviorType",
+        "CMGT_WFL_CFG_CreateCaseReferenceTask",
+        "CMGT_WFL_CFG_SendEmailReferenceTask",
+        "CMGT_WFL_CFG_TaskResponseOption",
+        "CMGT_WFL_ReferenceTask_CreateUpdate",
+        "Unknown"
+      ],
+      "called_by": [
+        "CMGT_WFL_CFG_SendEmailReferenceTask",
+        "CMGT_WFL_CFG_TaskResponseOption",
+        "CMGT_WFL_MTR_ReferenceTaskWrapper",
+        "CMGT_WFL_ReferenceTask_CreateUpdate",
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate",
+        "CMGT_WFL_ReferenceTask_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "f5bbfd2a-7be5-4cfc-9768-d937452dbe5f",
+      "name": "CMGT_WFL_CFG_SendEmailCaseTypeWorkflowTask",
+      "type": "Record Type",
+      "description": "Record Types for CMGT_WFL_CFG_SEND_EMAIL_CASE_TYPE_WORKFLOW_TASK table",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_WFL_CFG_EmailTemplate"
+      ],
+      "called_by": [
+        "CMGT_WFL_CFG_EmailTemplate",
+        "CMGT_WFL_EmailTemplate_RecordAction_CreateUpdate",
+        "CMGT_WFL_QR_GetSendEmailCaseTypeWorkflowTasks"
+      ]
+    },
+    {
+      "uuid": "d390e0a6-d760-4e0a-9af3-681da5ddc144",
+      "name": "CMGT_WFL_CFG_SendEmailReferenceTask",
+      "type": "Record Type",
+      "description": "Record Type for CMGT_WFL_CFG_SEND_EMAIL_REFERENCE_TASK table",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_WFL_CFG_EmailTemplate",
+        "CMGT_WFL_CFG_ReferenceTask"
+      ],
+      "called_by": [
+        "CMGT_WFL_CFG_EmailTemplate",
+        "CMGT_WFL_CFG_ReferenceTask",
+        "CMGT_WFL_EmailTemplate_RecordAction_CreateUpdate",
+        "CMGT_WFL_QR_GetSendEmailReferenceTasks",
+        "CMGT_WFL_SendEmailReferenceTask_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "0e155667-6e30-45bf-8854-43e422a0512f",
+      "name": "CMGT_WFL_CFG_SendEmailTaskBlockTask",
+      "type": "Record Type",
+      "description": "Record Type for CMGT_WFL_CFG_SEND_EMAIL_TASK_BLOCK_TASK table",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_WFL_CFG_EmailTemplate"
+      ],
+      "called_by": [
+        "CMGT_WFL_CFG_EmailTemplate",
+        "CMGT_WFL_EmailTemplate_RecordAction_CreateUpdate",
+        "CMGT_WFL_QR_GetSendEmailTaskBlockTasks"
+      ]
+    },
+    {
+      "uuid": "506ac439-1dfd-40ac-95e9-2c8cf6df3538",
+      "name": "CMGT_WFL_CFG_TaskResponseOption",
+      "type": "Record Type",
+      "description": "Task Response Options",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_WFL_CFG_ReferenceTask"
+      ],
+      "called_by": [
+        "CMGT_WFL_CFG_ReferenceTask",
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate",
+        "CMGT_WFL_TaskResponseOption_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "b3937399-62c6-489c-9594-fc51cb8074f0",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Reference Tasks label to show in Info Banner of Update/Delete Related action",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_DisplayInfoBanner_EmailTemplate"
+      ]
+    },
+    {
+      "uuid": "fe962919-107c-4fbe-b95f-53eef9152c9f",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Label to represent Name in the task read only grid",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_EmailTemplate_Details",
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "6ae27e88-ca52-4cde-831a-a6e6c2cd57e9",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "CaseRecord.Summary.lbl.CaseDescription\nUploadDocument.lbl.Description",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "1fac909d-a6aa-4a91-9ade-2ff52163b94e",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "placeholder text to represent select default group",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "0238b081-2003-447d-9ddc-7d2e03c1b756",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Label used in new custom email",
+      "calls": [],
+      "called_by": [
+        "CMGT_EmailTemplate_Preview",
+        "CMGT_WFL_EmailTemplate_Details"
+      ]
+    },
+    {
+      "uuid": "34b0c22a-1b36-4741-98ff-fffca01ee0e3",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Task Block Tasks label to show in Info Banner of Update/Delete Related action",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_DisplayInfoBanner_EmailTemplate"
+      ]
+    },
+    {
+      "uuid": "5c813578-8c25-4776-ab40-324949c19c6b",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Validation message used in Supporting documents of New Custom email",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_EmailTemplate_Details"
+      ]
+    },
+    {
+      "uuid": "815d242c-4bcb-4550-a6e3-ac4fbbd46728",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Used in reference task create/update",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "c9e8165d-aed0-40d7-a023-d0903986c59c",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Case type Workflow Tasks label to show in Info Banner of Update/Delete Related action",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_DisplayInfoBanner_EmailTemplate"
+      ]
+    },
+    {
+      "uuid": "759245e6-9b85-4710-831f-f11ad593d08a",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Label to represent the calculate using business days",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "f967743d-71a3-4f23-8107-b8f1ebc38396",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Label for 'Relationship to Original Case'",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "8081c5e8-c2e7-4294-af43-28e7a98658e6",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Label for Preview button on Modify Workflow",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "06dbafc7-e085-40de-a68a-c83054c1d7ec",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Label text in Multiple places",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_EmailTemplate_RecordAction_CreateUpdate",
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "f1ea8a38-1904-4cd0-80cc-1f1c119f5abe",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Validation text for Task SLA integer field",
+      "calls": [],
+      "called_by": [
+        "CMGT_UTIL_ValidateSLA"
+      ]
+    },
+    {
+      "uuid": "4794decc-5e8c-4cb6-bf94-0696d49b4fa5",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Label to represent the SLA field - Days",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "6deffc1a-e4be-4a1b-a899-02820e6ca2bd",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Placeholder for Email template dropdown",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "352e8f93-81ec-4882-a059-01abdbe209b1",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Primary message to display in Info banner of Update email template related action",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_DisplayInfoBanner_EmailTemplate",
+        "CMGT_WFL_EmailTemplate_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "25a115a1-c8b3-436c-981c-0e111a5a1275",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "accessibility text for the email preview",
+      "calls": [],
+      "called_by": [
+        "CMGT_EmailTemplate_Preview"
+      ]
+    },
+    {
+      "uuid": "5fff53df-8d97-4610-a492-2c37db32f302",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Button label used in the preview email template interface",
+      "calls": [],
+      "called_by": [
+        "CMGT_EmailTemplate_Preview"
+      ]
+    },
+    {
+      "uuid": "7994796a-c989-4edf-a48a-2c5a838f1c16",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "773c4e60-8a60-4dbf-834c-bb4ef201b786",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "db902d02-f822-4eaf-a0c2-07944110b684",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Validation message to represent that there is not enough response options",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "4fab94dc-fcb1-427a-af9f-1239079b2897",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Required message for fields validation",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_EmailTemplate_Details",
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "6f42b039-c079-45f1-806f-cbf4104e8037",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Label text to represent default assigned group",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "a1087a9c-a240-49a1-9c4b-0bad6508d7e7",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Validation message used in Supporting documents of New custom email",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_EmailTemplate_Details"
+      ]
+    },
+    {
+      "uuid": "2cfd2a67-27ef-4dc4-b0d5-6fb08358e1ee",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Validation text for character length",
+      "calls": [],
+      "called_by": [
+        "CMGT_UTIL_ValidateSLA"
+      ]
+    },
+    {
+      "uuid": "87b80513-1e00-457f-92aa-c7df18190cd5",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Field Label in the Task Creation screen",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "9731a5c4-f9d3-439e-9256-2bead6cb98b7",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "46b8e7eb-9250-4bc1-87ba-785b0eb505a2",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Label for record action create email template",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_CFG_EmailTemplate",
+        "CMGT_WFL_EmailTemplate_RecordAction_CreateUpdate",
+        "CMGT_WFL_SUB_CreateEmailTemplate"
+      ]
+    },
+    {
+      "uuid": "fa9f85e9-0345-4f20-8252-5686f8d7955e",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Create task Related action form title",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_CFG_ReferenceTask",
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "4d275ec1-1668-4931-8cb0-d98659946f9e",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Action done date time and actioned by",
+      "calls": [],
+      "called_by": [
+        "CMGT_Sub_EmailTemplateAttachments_SummaryDisplay"
+      ]
+    },
+    {
+      "uuid": "b6df6f51-cd36-4d95-bfe4-e7be13e4dc7f",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Validation text for decision tasks duplicate response options",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "b8033487-0a9e-4a1b-8970-b49eb8ad8cc7",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "used within the create form of automation rules",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_EmailTemplate_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "88737b77-6273-41ec-bcc3-c41bacb44d4a",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Placeholder text",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "2a483bf9-c1f6-41dc-9d02-b9e65747a006",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "8011a7b9-c1f3-45f4-9f16-99471296e83d",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Label to represent the SLA field - Minutes",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "1540dd99-3992-4217-b534-43440de2fc7f",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Tooltip text for the description field in the create task form",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "5f22d685-37f9-42d5-b1b1-bda7f782cf18",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Related Action name for updating the email template",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_CFG_EmailTemplate",
+        "CMGT_WFL_EmailTemplate_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "3efef77c-5d03-4add-b1a2-6fdf7f39d690",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "9ee41a2b-9ebc-4f9a-8581-138e2e348ba3",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Label for Email Template Dropdown in Modify Workflow",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "8109f456-b575-47d2-8f0f-097db1743e6b",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Text used in Form Titles of all Create Record Actions",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate",
+        "CMGT_WFL_SUB_CreateEmailTemplate"
+      ]
+    },
+    {
+      "uuid": "91314f57-1a7a-4999-88b8-7e6bab124c67",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "d402c5b7-0888-4e49-8599-5ac3a6edacab",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Validation text to represent a empty response option",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "edd4df67-d878-46d6-ab67-732a3700a588",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_EmailTemplate_RecordAction_CreateUpdate",
+        "CMGT_WFL_SUB_CreateEmailTemplate"
+      ]
+    },
+    {
+      "uuid": "179fc44d-752c-4185-8e1f-775a538abd8d",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Task Block Task label to show in Info Banner of Update/Delete Related action for single reference",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_DisplayInfoBanner_EmailTemplate"
+      ]
+    },
+    {
+      "uuid": "e2e5d9f2-a4d2-45e2-8011-e195eaeb07f7",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Used in Create/Update Reference task",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "fda6abad-ccd8-4f13-8a77-1ae7e871680c",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Used in the preview email template interface",
+      "calls": [],
+      "called_by": [
+        "CMGT_EmailTemplate_Preview"
+      ]
+    },
+    {
+      "uuid": "0ab37401-6bd6-43b5-8b4a-484b1b1c7378",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Validation for SLA Field",
+      "calls": [],
+      "called_by": [
+        "CMGT_UTIL_ValidateSLA"
+      ]
+    },
+    {
+      "uuid": "befd59bf-3568-4c2b-9afd-71b7d6f7060a",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Label to represent the SLA field - Hours",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "3831f890-1fc6-41e0-8732-dedfe0749174",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Placeholder Label in the Relationship dropdown",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "8af4d705-f521-4a97-a2b3-0eb63aff4217",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Label used in New Custom Email",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_EmailTemplate_Details"
+      ]
+    },
+    {
+      "uuid": "9e159048-eba6-486b-9a68-0a8e9f01b555",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "a11y text to represent change in form upon an action in Modify Workflow action",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "4e55001e-fef0-492e-9eee-42b9010b7b6d",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Instruction on Create Case action",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_EmailTemplate_RecordAction_CreateUpdate",
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate",
+        "CMGT_WFL_SUB_CreateEmailTemplate"
+      ]
+    },
+    {
+      "uuid": "bc958819-24af-4576-866e-3141056afc9d",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Help tooltip to represent that assigned groups or not there for automated tasks",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "28ea68dc-457f-4863-9e77-b36020dbeb4b",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Case type Section title",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "0fd1b5e8-27d7-435b-af55-17db70deff8c",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Reference Task label to show in Info Banner of Update/Delete Related action for single reference",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_DisplayInfoBanner_EmailTemplate"
+      ]
+    },
+    {
+      "uuid": "83b3fbbe-7b13-4700-97e6-d9c1c99d26a9",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "All forms, Upload doc field name",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_EmailTemplate_Details"
+      ]
+    },
+    {
+      "uuid": "a2299fa0-257f-401b-98b7-ee280826474b",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Record action display name to update a task action",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_CFG_ReferenceTask",
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "d91269ae-78f6-4736-b22a-ea742a59e80d",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Placeholder label for the Case type dropdown",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "1d75c2e0-04ea-4b38-97fd-62fb1a14f0f4",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Text to represent question in Modify Workflow action",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "2d58f145-74bd-433d-b33b-2d4f0568704b",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Tool tip for the question field",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "651cf177-f30b-485b-900f-8aaf47805737",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Button Label in multiple screens",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "0bae9b3f-5ddd-4c6a-a4cf-abe8702dac9e",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Label to represent name field in Modify Workflow action",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_ReferenceTask_RecordAction_CreateUpdate"
+      ]
+    },
+    {
+      "uuid": "b8af0998-cbb6-4bc1-bfde-d4c65953ab10",
+      "name": "Unknown",
+      "type": "Translation String",
+      "description": "Case type Workflow Task label to show in Info Banner of Update/Delete Related action for single reference",
+      "calls": [],
+      "called_by": [
+        "CMGT_WFL_DisplayInfoBanner_EmailTemplate"
+      ]
+    }
+  ]
+}

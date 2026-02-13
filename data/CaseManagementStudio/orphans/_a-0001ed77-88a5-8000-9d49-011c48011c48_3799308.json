@@ -1,0 +1,50 @@
+{
+  "uuid": "_a-0001ed77-88a5-8000-9d49-011c48011c48_3799308",
+  "name": "CMGT_Case_ConfigureTask_Task_SendEmailSection",
+  "type": "Interface",
+  "description": "UI components to configure send email details",
+  "sail_code": "a!localVariables(\n  local!sendEmailTaskSelection: rule!CMGT_UTIL_Filter(\n    records: ri!sendEmailTaskSelectionMaps,\n    field: \"taskInstanceUuid\",\n    value: ri!selectedTask[recordType!CMGT_Task.taskInstanceUuid]\n  ).sendEmailTaskSelection,\n  local!selectedEmailTemplate,\n  {\n    if(\n      and(\n        rule!CMGT_UTIL_IsBlank(\n          value: ri!selectedTask[recordType!CMGT_Task.taskId]\n        ),\n        index(\n          ri!selectedTask,\n          recordType!CMGT_Task.automationTaskAction.actionCode,\n          null\n        ) = cons!CMGT_CFG_TXT_ACT_SEND_EMAIL\n      ),\n      #\"SYSTEM_SYSRULES_columnsLayout\"(\n        columns: {\n          #\"SYSTEM_SYSRULES_columnLayout\"(\n            contents: rule!CMGT_Task_RecordAction_WorkflowEdit_CreateNewSendEmailTasks(\n              currentNewTask: ri!selectedTask,\n              isEmailTemplatePreview: ri!isEmailTemplatePreview,\n              sendEmailTaskSelection: local!sendEmailTaskSelection,\n              selectedEmailTemplate: local!selectedEmailTemplate,\n              sendEmailTaskSelectionMaps: ri!sendEmailTaskSelectionMaps,\n              case: ri!case\n            ),\n\n          )\n        },\n        marginBelow: \"STANDARD\"\n      ),\n      {\n        /*Email Name*/\n        #\"SYSTEM_SYSRULES_columnsLayout\"(\n          columns: #\"SYSTEM_SYSRULES_columnLayout\"(\n            contents: #\"SYSTEM_SYSRULES_textField\"(\n              label: #\"urn:appian:translation-string:v1:ead5fcb5-744c-454b-b451-b6958fc4adb8\",\n              value: ri!selectedTask[recordType!CMGT_Task.sendEmailTask.templateName],\n              readOnly: true()\n            )\n          ),\n          marginAbove: \"EVEN_LESS\"\n        ),\n        #\"SYSTEM_SYSRULES_ButtonArrayLayout\"(\n          buttons: #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n            label: #\"urn:appian:translation-string:v1:8081c5e8-c2e7-4294-af43-28e7a98658e6\",\n            saveInto: a!save(ri!isEmailTemplatePreview, true)\n          ),\n          align: \"START\",\n          marginAbove: \"NONE\",\n          marginBelow: \"STANDARD\"\n        )\n      }\n    ),\n    /*Recipients*/\n    rule!CMGT_Task_SendEmail_Recipients(\n      brandingMap: ri!brandingMap,\n      case: ri!case,\n      selectedTask: ri!selectedTask,\n      selectedTaskUuid: ri!selectedTaskInstanceUUID,\n      caseType: ri!caseType\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "CMGT_UTIL_Filter",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_Task_RecordAction_WorkflowEdit_CreateNewSendEmailTasks",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_Task_SendEmail_Recipients",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_CFG_TXT_ACT_SEND_EMAIL",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_Task",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

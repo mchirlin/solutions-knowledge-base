@@ -1,0 +1,327 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "CMGT_EML_TRI_UnlockThreadHourlyProcess",
+    "parent_name": null,
+    "total_objects": 18
+  },
+  "entry_point": {
+    "complexity_score": 8.0,
+    "total_nodes": 5,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "CMGT_EML_TRI_UnlockThreadHourlyProcess",
+      "complexity_score": 8.0,
+      "total_nodes": 5,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Query Locked Threads"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Update Thread",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Query Locked Threads",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Is Thread Null?"
+          ]
+        },
+        {
+          "name": "Is Thread Null?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Update Thread (No)",
+            "End Node (Yes)"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ec90-c257-8000-9cea-011c48011c48_3038924",
+      "name": "CMGT_EML_TRI_TRIAGE_STATUS_CREATED_CASE",
+      "type": "Constant",
+      "description": "Triage Status: CREATED_CASE",
+      "value": "CREATED_CASE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_Thread_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec90-c257-8000-9cea-011c48011c48_3038938",
+      "name": "CMGT_EML_TRI_TRIAGE_STATUS_IGNORED",
+      "type": "Constant",
+      "description": "Triage Status: IGNORED",
+      "value": "IGNORED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_Thread_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec90-c257-8000-9cea-011c48011c48_3033819",
+      "name": "CMGT_EML_TRI_TRIAGE_STATUS_IN_PROGRESS",
+      "type": "Constant",
+      "description": "Triage Status: IN_PROGRESS",
+      "value": "IN_PROGRESS",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_QR_GetLockedThreads",
+        "CMGT_EML_TRI_Thread_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec90-c257-8000-9cea-011c48011c48_3038931",
+      "name": "CMGT_EML_TRI_TRIAGE_STATUS_LINKED_TO_CASE",
+      "type": "Constant",
+      "description": "Triage Status: LINKED_TO_CASE",
+      "value": "LINKED_TO_CASE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_Thread_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec90-c257-8000-9cea-011c48011c48_3038917",
+      "name": "CMGT_EML_TRI_TRIAGE_STATUS_OPEN",
+      "type": "Constant",
+      "description": "Triage Status: OPEN",
+      "value": "OPEN",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_Thread_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb5-acf8-8000-9cf6-011c48011c48_3191107",
+      "name": "CMGT_EML_TRI_TRIAGE_STATUS_PROCESSING",
+      "type": "Constant",
+      "description": "Triage Status: PROCESSING",
+      "value": "PROCESSING",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_QR_GetLockedThreads",
+        "CMGT_EML_TRI_Thread_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb5-acf8-8000-9cf6-011c48011c48_3194194",
+      "name": "CMGT_EML_TRI_TXT_SYSTEM",
+      "type": "Constant",
+      "description": "Contains text \"SYSTEM\"",
+      "value": "SYSTEM",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_UnlockThreadHourlyProcess"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee54-f700-8000-9d97-011c48011c48_4558403",
+      "name": "CMGT_EML_TRI_Message_SetMetaData",
+      "type": "Expression Rule",
+      "description": "Set meta data fields for CMGT_EML_TRI_Message",
+      "parameters": [],
+      "calls": [
+        "CMGT_EML_TRI_Message",
+        "CMGT_UTIL_SetRecordFields"
+      ],
+      "called_by": [
+        "CMGT_EML_TRI_Thread_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb5-acf8-8000-9cf6-011c48011c48_3194200",
+      "name": "CMGT_EML_TRI_QR_GetLockedThreads",
+      "type": "Expression Rule",
+      "description": "Query to get the locked threads",
+      "parameters": [],
+      "calls": [
+        "CMGT_EML_TRI_QR_GetThreads",
+        "CMGT_EML_TRI_TRIAGE_STATUS_IN_PROGRESS",
+        "CMGT_EML_TRI_TRIAGE_STATUS_PROCESSING",
+        "CMGT_EML_TRI_Thread"
+      ],
+      "called_by": [
+        "CMGT_EML_TRI_UnlockThreadHourlyProcess"
+      ]
+    },
+    {
+      "uuid": "_a-0000e882-ff68-8000-9bb2-011c48011c48_37819-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_QR_GetThreads",
+      "type": "Expression Rule",
+      "description": "Returns all the CMGT_EML_TRI_Thread_RecordType",
+      "parameters": [],
+      "calls": [
+        "CMGT_EML_TRI_Thread",
+        "CMGT_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "CMGT_EML_TRI_QR_GetLockedThreads",
+        "CMGT_EML_TRI_Thread"
+      ]
+    },
+    {
+      "uuid": "_a-0000eca3-381d-8000-9cf0-011c48011c48_3109206",
+      "name": "CMGT_EML_TRI_ThreadSet_SetMetaData",
+      "type": "Expression Rule",
+      "description": "Set meta data fields for CMGT_EML_TRI_ThreadSet",
+      "parameters": [],
+      "calls": [
+        "CMGT_EML_TRI_Thread",
+        "CMGT_EML_TRI_ThreadSet",
+        "CMGT_UTIL_SetRecordFields"
+      ],
+      "called_by": [
+        "CMGT_EML_TRI_Thread_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "_a-0000eca3-381d-8000-9cf0-011c48011c48_3104219",
+      "name": "CMGT_EML_TRI_Thread_SetMetaData",
+      "type": "Expression Rule",
+      "description": "Set meta data fields for CMGT_EML_TRI_Thread",
+      "parameters": [],
+      "calls": [
+        "CMGT_EML_TRI_Message_SetMetaData",
+        "CMGT_EML_TRI_TRIAGE_STATUS_CREATED_CASE",
+        "CMGT_EML_TRI_TRIAGE_STATUS_IGNORED",
+        "CMGT_EML_TRI_TRIAGE_STATUS_IN_PROGRESS",
+        "CMGT_EML_TRI_TRIAGE_STATUS_LINKED_TO_CASE",
+        "CMGT_EML_TRI_TRIAGE_STATUS_OPEN",
+        "CMGT_EML_TRI_TRIAGE_STATUS_PROCESSING",
+        "CMGT_EML_TRI_Thread",
+        "CMGT_EML_TRI_ThreadSet_SetMetaData",
+        "CMGT_UTIL_SetRecordFields"
+      ],
+      "called_by": [
+        "CMGT_EML_TRI_UnlockThreadHourlyProcess"
+      ]
+    },
+    {
+      "uuid": "_a-0000e98b-cfe0-8000-9ba5-011c48011c48_22352",
+      "name": "CMGT_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "description": "Enhanced wrapper rule around a!queryRecord()",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_QR_GetThreads"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_33778",
+      "name": "CMGT_UTIL_SetRecordFields",
+      "type": "Expression Rule",
+      "description": "Runs a bulk update on a record object, setting new values for its fields",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_EML_TRI_Message_SetMetaData",
+        "CMGT_EML_TRI_ThreadSet_SetMetaData",
+        "CMGT_EML_TRI_Thread_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "0004ecb8-b3fc-8000-18e9-7f0000014e7a",
+      "name": "CMGT_EML_TRI_UnlockThreadHourlyProcess",
+      "type": "Process Model",
+      "description": "Hourly process process to unlock thread",
+      "calls": [
+        "CMGT_EML_TRI_QR_GetLockedThreads",
+        "CMGT_EML_TRI_TXT_SYSTEM",
+        "CMGT_EML_TRI_Thread",
+        "CMGT_EML_TRI_Thread_SetMetaData"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "851ef4a4-12f4-407e-aae5-713b0284c304-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_Message",
+      "type": "Record Type",
+      "description": "Synced record for message",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_EML_TRI_Thread"
+      ],
+      "called_by": [
+        "CMGT_EML_TRI_Message_SetMetaData",
+        "CMGT_EML_TRI_Thread"
+      ]
+    },
+    {
+      "uuid": "53d3f93d-ccb6-423d-9238-2edf8811d08f-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_Thread",
+      "type": "Record Type",
+      "description": "Synced record for threads",
+      "actions": [
+        "linkExisting",
+        "ignoreThread",
+        "submitCase"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_EML_TRI_Message",
+        "CMGT_EML_TRI_QR_GetThreads",
+        "CMGT_EML_TRI_ThreadSet"
+      ],
+      "called_by": [
+        "CMGT_EML_TRI_Message",
+        "CMGT_EML_TRI_QR_GetLockedThreads",
+        "CMGT_EML_TRI_QR_GetThreads",
+        "CMGT_EML_TRI_ThreadSet",
+        "CMGT_EML_TRI_ThreadSet_SetMetaData",
+        "CMGT_EML_TRI_Thread_SetMetaData",
+        "CMGT_EML_TRI_UnlockThreadHourlyProcess"
+      ]
+    },
+    {
+      "uuid": "a040334c-5a2a-4c4b-81b4-56a643a74950-cmgt_eml_tri",
+      "name": "CMGT_EML_TRI_ThreadSet",
+      "type": "Record Type",
+      "description": "Synced record for thread set of the message",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_EML_TRI_Thread"
+      ],
+      "called_by": [
+        "CMGT_EML_TRI_Thread",
+        "CMGT_EML_TRI_ThreadSet_SetMetaData"
+      ]
+    }
+  ]
+}

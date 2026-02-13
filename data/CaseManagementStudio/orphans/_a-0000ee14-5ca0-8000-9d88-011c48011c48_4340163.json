@@ -1,0 +1,61 @@
+{
+  "uuid": "_a-0000ee14-5ca0-8000-9d88-011c48011c48_4340163",
+  "name": "CMGT_Portal_CaseTypes",
+  "type": "Interface",
+  "description": "Interface for displaying the case types in portal",
+  "sail_code": "#\"SYSTEM_SYSRULES_sectionLayout_v1\"(\n  contents: {\n    #\"SYSTEM_SYSRULES_cardGroupLayout\"(\n      spacing: \"STANDARD\",\n      marginAbove: \"LESS\",\n      marginBelow: \"EVEN_LESS\",\n      cards: {\n        #\"SYSTEM_SYSRULES_forEach\"(\n          items: ri!allCaseTypes.data,\n          expression: #\"SYSTEM_SYSRULES_cardLayout\"(\n            contents: {\n              #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n                items: {\n                  #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                    item: #\"SYSTEM_SYSRULES_stampField\"(\n                      icon: fv!item[recordType!CMGT_CFG_CaseType.icon],\n                      size: \"TINY\",\n                      contentColor: ri!brandingMap.WhiteColor,\n                      backgroundColor: fv!item[recordType!CMGT_CFG_CaseType.color],\n                      shape: ri!brandingMap.StandardStampShape,\n\n                    ),\n                    width: \"MINIMIZE\"\n                  ),\n                  #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                    item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                      labelPosition: \"COLLAPSED\",\n                      value: {\n                        #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                          text: fv!item[recordType!CMGT_CFG_CaseType.name],\n                          style: \"STRONG\"\n                        ),\n                        if(\n                          a!isNotNullOrEmpty(\n                            fv!item[recordType!CMGT_CFG_CaseType.parentCaseType.name]\n                          ),\n                          {\n                            char(10),\n                            #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                              text: fv!item[recordType!CMGT_CFG_CaseType.parentCaseType.name],\n                              color: ri!brandingMap.SecondaryTextColor,\n                              size: \"SMALL\",\n\n                            )\n                          },\n                          {}\n                        )\n                      },\n                      marginAbove: \"STANDARD\",\n                      marginBelow: \"LESS\"\n                    ),\n\n                  )\n                },\n                alignVertical: \"MIDDLE\",\n                marginBelow: \"NONE\"\n              ),\n              #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                value: #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                  text: fv!item[recordType!CMGT_CFG_CaseType.description],\n                  size: \"SMALL\"\n                )\n              )\n            },\n            height: \"SHORT\",\n            link: #\"SYSTEM_SYSRULES_dynamicLink\"(\n              saveInto: {\n                a!save(\n                  ri!case,\n                  rule!CMGT_Case_RecordAction_Create_InitializeCase(\n                    source: cons!CMGT_TXT_SOURCE_PORTAL,\n                    caseType: fv!item\n                  )\n                ),\n                a!save(\n                  ri!case[recordType!CMGT_Case.friendlyId],\n                  rule!CMGT_Case_GenerateFriendlyIdentifier_Logic(case: ri!case)\n                )\n              }\n            ),\n            style: if(\n              ri!case[recordType!CMGT_Case.caseTypeUuid] = fv!item[recordType!CMGT_CFG_CaseType.uuid],\n              ri!brandingMap.SelectedCardColor,\n              ri!brandingMap.CardBackgroundColor\n            ),\n            shape: ri!brandingMap.CardShape,\n            padding: \"LESS\",\n            marginBelow: \"STANDARD\",\n            borderColor: if(\n              ri!case[recordType!CMGT_Case.caseTypeUuid] = fv!item[recordType!CMGT_CFG_CaseType.uuid],\n              ri!brandingMap.SelectedCardBorderColor,\n              null\n            ),\n            showBorder: ri!brandingMap.CardShowBorder,\n            showShadow: ri!brandingMap.CardShowShadow,\n            decorativeBarPosition: \"TOP\",\n            decorativeBarColor: fv!item[recordType!CMGT_CFG_CaseType.color]\n          )\n        )\n      },\n      cardWidth: \"NARROW_PLUS\",\n      fillContainer: false,\n      cardHeight: \"SHORT\"\n    ),\n    if(\n      ri!allCaseTypes.totalCount > cons!CMGT_PORTAL_INT_BATCH_SIZE_MEDIUM_PLUS,\n      rule!CMGT_UTIL_CustomPaging(\n        pagingInfo: ri!pagingInfo,\n        totalCount: ri!allCaseTypes.totalCount,\n        brandingMap: ri!brandingMap\n      ),\n      {}\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "CMGT_Case_RecordAction_Create_InitializeCase",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_Case_GenerateFriendlyIdentifier_Logic",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_CustomPaging",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_TXT_SOURCE_PORTAL",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_PORTAL_INT_BATCH_SIZE_MEDIUM_PLUS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_CFG_CaseType",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_Case",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_QR_GetCaseType",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_Portal_LoadBrandingMap",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "CMGT_Portal_Case_CreateCase_FormDisplayWrapper",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

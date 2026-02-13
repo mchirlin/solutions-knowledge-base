@@ -1,0 +1,46 @@
+{
+  "uuid": "_a-0000edb3-f4e5-8000-9d60-011c48011c48_4055805",
+  "name": "CMGT_ExcludedUsers_SetMetaData",
+  "type": "Expression Rule",
+  "description": "Set metadata for CMGT_AssignmentRule_UsersToExclude",
+  "sail_code": "a!localVariables(\n  /*returns usernames of existing excluded users and newly selected excluded users*/\n  local!duplicateUsernames: if(\n    or(\n      rule!CMGT_UTIL_IsBlank(ri!originalExcludedUsers),\n      rule!CMGT_UTIL_IsBlank(ri!excludedUsers)\n    ),\n    {},\n    intersection(\n      ri!originalExcludedUsers[recordType!CMGT_CaseAssignmentUsersToExclude.username],\n      ri!excludedUsers[recordType!CMGT_CaseAssignmentUsersToExclude.username]\n    )\n  ),\n  /*returns usernames of excluded users that were deselected*/\n  local!deletedExcludedUsernames: a!match(\n    value: ri!excludedUsers,\n    whenTrue: rule!CMGT_UTIL_IsBlank(ri!originalExcludedUsers),\n    then: {},\n    whenTrue: rule!CMGT_UTIL_IsBlank(fv!value),\n    equals: {},\n    then: ri!originalExcludedUsers[recordType!CMGT_CaseAssignmentUsersToExclude.username],\n    default: difference(\n      ri!originalExcludedUsers[recordType!CMGT_CaseAssignmentUsersToExclude.username],\n      ri!excludedUsers[recordType!CMGT_CaseAssignmentUsersToExclude.username]\n    )\n  ),\n  /*returns the records that need to be updated as is_deleted = 1*/\n  local!deletedExcludedUserRecords: index(\n    ri!originalExcludedUsers,\n    wherecontains(\n      local!deletedExcludedUsernames,\n      index(ri!originalExcludedUsers,recordType!CMGT_CaseAssignmentUsersToExclude.username,{})\n    ),\n    null\n  ),\n  /*returns the records that need to be written to the excluded users table*/\n  local!uniqueExcludedUserRecords: rule!CMGT_UTIL_Filter(\n    records: ri!excludedUsers,\n    field: recordType!CMGT_CaseAssignmentUsersToExclude.username,\n    value: local!duplicateUsernames,\n    filterType: \"REJECT\"\n  ),\n  {\n    #\"SYSTEM_SYSRULES_forEach\"(\n      items: local!uniqueExcludedUserRecords,\n      expression: rule!CMGT_UTIL_SetRecordFields(\n        record: fv!item,\n        /*Always set these fields with each update*/\n        alwaysOverwrite: {\n          a!map(\n            field: recordType!CMGT_CaseAssignmentUsersToExclude.modifiedOn,\n            value: now()\n          ),\n          a!map(\n            field: recordType!CMGT_CaseAssignmentUsersToExclude.modifiedBy,\n            value: ri!initiator\n          )\n        },\n        /*Only modify these fields if they are currently null*/\n        neverOverwrite: {\n          a!map(\n            field: recordType!CMGT_CaseAssignmentUsersToExclude.createdBy,\n            value: ri!initiator\n          ),\n          a!map(\n            field: recordType!CMGT_CaseAssignmentUsersToExclude.createdOn,\n            value: now()\n          )\n        },\n        childRelationships: {}\n      )\n    ),\n    #\"SYSTEM_SYSRULES_forEach\"(\n      items: local!deletedExcludedUserRecords,\n      expression: rule!CMGT_UTIL_SetRecordFields(\n        record: fv!item,\n        /*Always set these fields with each update*/\n        alwaysOverwrite: {\n          a!map(\n            field: recordType!CMGT_CaseAssignmentUsersToExclude.isDeleted,\n            value: true\n          ),\n          a!map(\n            field: recordType!CMGT_CaseAssignmentUsersToExclude.modifiedOn,\n            value: now()\n          ),\n          a!map(\n            field: recordType!CMGT_CaseAssignmentUsersToExclude.modifiedBy,\n            value: ri!initiator\n          )\n        },\n        /*Only modify these fields if they are currently null*/\n        neverOverwrite: {},\n        childRelationships: {}\n      )\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_Filter",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_SetRecordFields",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_CaseAssignmentUsersToExclude",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_CFG_AssignmentRule_UsersToExclude",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_CFG_AssignmentRules",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "CMGT_AssociatedAssignmentRule_SetMetaData",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

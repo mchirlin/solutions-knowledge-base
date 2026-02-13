@@ -1,0 +1,253 @@
+{
+  "_metadata": {
+    "bundle_type": "web_api",
+    "root_name": "CMGT_SELF_API_POST_ClaimCase",
+    "parent_name": null,
+    "total_objects": 13
+  },
+  "entry_point": {
+    "http_method": "POST",
+    "url_alias": "claim-case",
+    "security": [
+      {
+        "role_name": "web_api_administrator",
+        "users": [],
+        "groups": [
+          "e96e2761-a80b-40c8-aca9-187b27941abc"
+        ]
+      },
+      {
+        "role_name": "web_api_viewer",
+        "users": [],
+        "groups": [
+          "1ae8417d-fefa-4627-afed-ac1e5e83ce4b"
+        ]
+      }
+    ]
+  },
+  "flow": null,
+  "objects": [
+    {
+      "uuid": "_a-0000ebc5-ba33-8000-9bac-011c48011c48_26295",
+      "name": "CMGT_SELF_PM_CLAIM_CASE",
+      "type": "Constant",
+      "description": "PM: CMGT_SELF_Claim_Case",
+      "value": "CMGT_SELF_Claim_Case",
+      "value_type": "http://www.appian.com/ae/types/2009:ProcessModel",
+      "calls": [],
+      "called_by": [
+        "CMGT_SELF_API_POST_ClaimCase"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2b-3e9f-8000-9cd4-011c48011c48_2733325",
+      "name": "CMGT_SELF_REFID_ROLE_TYPE_CLAIMANT",
+      "type": "Constant",
+      "description": "5 - Claimant",
+      "value": "5",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "CMGT_SELF_ClaimStatusLogic"
+      ]
+    },
+    {
+      "uuid": "_a-0000ebf3-df94-8000-9cc3-011c48011c48_2378423",
+      "name": "CMGT_QR_GetPortalCaseContact",
+      "type": "Expression Rule",
+      "description": "Queries the CMGT_Portal_CaseContact record",
+      "parameters": [],
+      "calls": [
+        "CMGT_Portal_CaseContact",
+        "CMGT_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_SELF_GetCaseToClaim"
+      ]
+    },
+    {
+      "uuid": "_a-0000ebf7-3bc0-8000-9cc4-011c48011c48_2391356",
+      "name": "CMGT_SELF_ClaimStatusLogic",
+      "type": "Expression Rule",
+      "description": "Logic to identify the claim status of a case",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_Portal_CaseContact",
+        "CMGT_Role",
+        "CMGT_SELF_REFID_ROLE_TYPE_CLAIMANT",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_IsBlank"
+      ],
+      "called_by": [
+        "CMGT_SELF_API_POST_ClaimCase"
+      ]
+    },
+    {
+      "uuid": "_a-0000ebce-f0a8-8000-9cb7-011c48011c48_2213241",
+      "name": "CMGT_SELF_GetCaseToClaim",
+      "type": "Expression Rule",
+      "description": "Rule containing logic to query a case for claiming",
+      "parameters": [],
+      "calls": [
+        "CMGT_Portal_CaseContact",
+        "CMGT_QR_GetPortalCaseContact"
+      ],
+      "called_by": [
+        "CMGT_SELF_API_POST_ClaimCase"
+      ]
+    },
+    {
+      "uuid": "af326a29-a1c8-4399-a28d-996f85819d9e",
+      "name": "CMGT_UTIL_Filter",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case",
+        "CMGT_Role"
+      ],
+      "called_by": [
+        "CMGT_SELF_ClaimStatusLogic"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_25890",
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_SELF_ClaimStatusLogic",
+        "CMGT_UTIL_IsNotBlank"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9d3-70bf-8000-9bbd-011c48011c48_180568",
+      "name": "CMGT_UTIL_IsNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around CMGT_UTIL_IsBlank",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_IsBlank"
+      ],
+      "called_by": [
+        "CMGT_SELF_API_POST_ClaimCase"
+      ]
+    },
+    {
+      "uuid": "_a-0000e98b-cfe0-8000-9ba5-011c48011c48_22352",
+      "name": "CMGT_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "description": "Enhanced wrapper rule around a!queryRecord()",
+      "parameters": [],
+      "calls": [
+        "CMGT_Case"
+      ],
+      "called_by": [
+        "CMGT_QR_GetPortalCaseContact"
+      ]
+    },
+    {
+      "uuid": "d81cdd0e-c54d-4b8e-beec-b7ae37fefe7f",
+      "name": "CMGT_Case",
+      "type": "Record Type",
+      "description": "MODIFIED FOR 2.0 KB , EML MODULE RELEASE , SMART SEARCH - Cases.",
+      "actions": [
+        "createCase",
+        "bulkUpdateCases",
+        "updateCase",
+        "updateProperty",
+        "addEntityToCase",
+        "updateRelatedCases",
+        "manageAssignee",
+        "manageWatcher",
+        "addTags",
+        "uploadDocuments",
+        "addComment",
+        "modifyWorkflow",
+        "updateContact",
+        "composeEmail"
+      ],
+      "views": [
+        "#\"urn:appian:translation-string:v1:a3a3c015-e0c6-4bd2-b78a-aaf392495bdd\"",
+        "#\"urn:appian:translation-string:v1:2f4f2cde-9986-47cb-ac2a-1ecfeeddc693\"",
+        "#\"urn:appian:translation-string:v1:455edb96-9d9a-4038-b43e-d10aa9a3a811\"",
+        "#\"urn:appian:translation-string:v1:6f32eac5-d5de-4502-9a1f-4d3184aac8d2\"",
+        "#\"urn:appian:translation-string:v1:86481b57-9608-4720-9198-578bfd8b8385\"",
+        "#\"urn:appian:translation-string:v1:297cf25d-abb6-4d91-b9ed-ab0139f56398\"",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Portal_CaseContact",
+        "CMGT_QR_GetPortalCaseContact",
+        "CMGT_Role"
+      ],
+      "called_by": [
+        "CMGT_Portal_CaseContact",
+        "CMGT_Role",
+        "CMGT_SELF_ClaimStatusLogic",
+        "CMGT_UTIL_Filter",
+        "CMGT_UTIL_QueryRecord"
+      ]
+    },
+    {
+      "uuid": "6549c1f3-51a7-4b3c-b5f1-609a3c639846",
+      "name": "CMGT_Portal_CaseContact",
+      "type": "Record Type",
+      "description": null,
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Case"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_QR_GetPortalCaseContact",
+        "CMGT_SELF_API_POST_ClaimCase",
+        "CMGT_SELF_ClaimStatusLogic",
+        "CMGT_SELF_GetCaseToClaim"
+      ]
+    },
+    {
+      "uuid": "6799d796-883e-49ff-8975-297d87e40756",
+      "name": "CMGT_Role",
+      "type": "Record Type",
+      "description": "Roles",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_Case"
+      ],
+      "called_by": [
+        "CMGT_Case",
+        "CMGT_SELF_ClaimStatusLogic",
+        "CMGT_UTIL_Filter"
+      ]
+    },
+    {
+      "uuid": "68d25630-1cc6-4224-9b3d-3bacf8d35b31",
+      "name": "CMGT_SELF_API_POST_ClaimCase",
+      "type": "Web API",
+      "description": "Web API to claim case from My Cases site",
+      "url_alias": "claim-case",
+      "http_method": "POST",
+      "calls": [
+        "CMGT_Portal_CaseContact",
+        "CMGT_SELF_ClaimStatusLogic",
+        "CMGT_SELF_GetCaseToClaim",
+        "CMGT_SELF_PM_CLAIM_CASE",
+        "CMGT_UTIL_IsNotBlank"
+      ],
+      "called_by": []
+    }
+  ]
+}

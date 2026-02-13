@@ -1,0 +1,46 @@
+{
+  "uuid": "_a-0000ed7d-5e46-8000-9d4b-011c48011c48_3822284",
+  "name": "CMGT_Case_ConfigureTask_Task_DefaultAssignmentSection",
+  "type": "Interface",
+  "description": null,
+  "sail_code": "a!localVariables(\n  {\n    /*Default Assignment Section*/\n    if(\n      /*Task block task is an \"automated\" task*/\n      ri!isAutomated,\n      /*default assignment is N/A for an automated task*/\n      #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n        value: #\"urn:appian:translation-string:v1:7ed3fef7-c6cd-4516-a123-9883ccf20ac6\"\n      ),\n      #\"SYSTEM_SYSRULES_sectionLayout_v1\"(\n        contents: {\n          #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n            value: {\n              #\"SYSTEM_SYSRULES_richTextIcon\"(\n                icon: \"info-circle\",\n                color: ri!brandingMap.InfoAccentColor\n              ),\n              \" \",\n              #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                text: #\"urn:appian:translation-string:v1:90602de9-6e83-4b53-8ebe-12c3ad2a7a49\"\n              )\n            },\n            showWhen: ri!disabled\n          ),\n\n          /*Default Assigned Group - Pick a group from CMGT Business Groups*/\n          #\"SYSTEM_SYSRULES_pickerFieldGroups\"(\n            label: #\"urn:appian:translation-string:v1:64bf7660-8738-4162-81c8-166d776a7324\",\n            maxSelections: 1,\n            groupFilter: cons!CMGT_GRP_BUSINESS_GROUPS,\n            value: ri!selectedTask[recordType!CMGT_Task.defaultGroupAssignee],\n            showWhen: not(ri!disabled),\n            saveInto: {\n              ri!selectedTask[recordType!CMGT_Task.defaultGroupAssignee],\n              a!save(\n                ri!case[recordType!CMGT_Case.tasks],\n                #\"urn:appian:function:v1:a:update\"(\n                  ri!case[recordType!CMGT_Case.tasks],\n                  /*Index of the case workflow task that we want to update in the ri!tasks array*/\n                  wherecontains(\n                    ri!selectedTaskInstanceUUID,\n                    ri!case[recordType!CMGT_Case.tasks][recordType!CMGT_Task.taskInstanceUuid]\n                  ),\n                  /*The updated case workflow task*/\n                  #\"urn:appian:function:v1:a:update\"(\n                    ri!selectedTask,\n                    recordType!CMGT_Task.defaultGroupAssignee,\n                    ri!selectedTask[recordType!CMGT_Task.defaultGroupAssignee]\n                  )\n                )\n              )\n            }\n          )\n\n        },\n        marginBelow: \"EVEN_LESS\"\n      )\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "CMGT_GRP_BUSINESS_GROUPS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "CMGT_Task",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_Case",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "CMGT_Case_ConfigureTask_Task_AssignmentSection",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "_metadata": {
+    "bundle_id": "CMGT_SUB_SendEmail"
+  },
+  "objects": {
+    "0004ea31-0987-8000-0334-7f0000014e7a": {
+      "name": "CMGT_SUB_SendEmail",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n= rule!CMGT_UTIL_Filter( records: pv!emailSettingMap, fieldValuePairs: { { field: \"recipients\", value: a!groupMembers( group: cons!CMGT_GRP_SERVICE_ACCOUNTS, direct: true, memberType: \"USER\" ).data }, }, filterType: \"REJECT\")\n\n// Output: ?\nrule!CMGT_UTIL_Filter(\n  records: ac!rejectServiceAccounts,\n  fieldValuePairs: {\n    { field: \"recipients\", value: null },\n    {\n      field: \"recipientEmailAddress\",\n      value: null\n    },\n    { field: \"bccRecipients\", value: null },\n    { field: \"ccRecipients\", value: null }\n  },\n  filterType: \"REJECT\"\n)\n\n// Input: ?\n= a!defaultValue( value: index( pv!emailSettingMap[tp!instanceindex], \"senderEmail\", null() ), default: concat( \"no-reply@\", rule!CMGT_UTIL_GetSiteUrl().subdomainWithDomain ))\n\n// Input: ?\n= toemailrecipient( a!defaultValue( value: pv!emailSettingMap[tp!instanceindex].recipients, default: pv!emailSettingMap[tp!instanceindex].recipientEmailAddress ))\n\n// Input: ?\n= index( pv!emailSettingMap[tp!instanceindex], \"ccRecipients\", null)\n\n// Input: ?\n=index( pv!emailSettingMap[tp!instanceindex], \"bccRecipients\", null)\n\n// Input: ?\n=pv!emailSettingMap.subject\n\n// Input: ?\n=todocument(pv!emailSettingMap.attachments)\n\n// Input: ?\n= a!defaultValue( value: index( pv!emailSettingMap[tp!instanceindex], \"customSenderDisplayName\", null ), default: #\"urn:appian:translation-string:v1:311735dd-c418-42b1-9019-b3f175959489\")\n\n// Input: ?\n= rule!CMGT_EmailBody( replacementParams: pv!emailSettingMap[tp!instanceindex].replacementParams, document: pv!emailSettingMap[tp!instanceindex].document)"
+    },
+    "_a-0000e9d3-70bf-8000-9bbd-011c48011c48_180568": {
+      "name": "CMGT_UTIL_IsNotBlank",
+      "type": "Expression Rule",
+      "sail_code": "not(rule!CMGT_UTIL_IsBlank(ri!input))"
+    },
+    "_a-0000e9ca-3659-8000-9bb8-011c48011c48_145648": {
+      "name": "CMGT_UTIL_GetSiteUrl",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!authedPath: cast(\n    'type!{http://www.appian.com/ae/types/2009}Text',\n    extract(linktodocument(0, \"doc\"), \"\"\"\", \"/doc/\")\n  ),\n  local!subdomainWithDomain: extract(local!authedPath, \"//\", \"/suite\")[1],\n  local!subdomain: split(local!subdomainWithDomain, \".\")[1],\n  a!map(\n    subdomain: local!subdomain,\n    authedPath: local!authedPath,\n    subdomainWithDomain: local!subdomainWithDomain\n  )\n)"
+    },
+    "_a-0000ea26-2ced-8000-9bf1-011c48011c48_583958": {
+      "name": "CMGT_UTIL_FillDocumentTemplate",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!output: reduce(\n    substitute(_, _, _),\n    rule!CMGT_PLUGIN_ReadDocumentContent(document: ri!document),\n    merge(\n      apply(\n        concat(\"###\", _, \"###\"),\n        ri!replacementParams.find\n      ),\n      touniformstring(ri!replacementParams.replace)\n    )\n  ),\n  local!output\n)"
+    },
+    "_a-0000ea26-2ced-8000-9bf1-011c48011c48_583989": {
+      "name": "CMGT_PLUGIN_ReadDocumentContent",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!documentContent: readdocumentcontent(ri!document),\n  if(\n    local!documentContent = \"null\",\n    \"\",\n    local!documentContent\n  )\n)"
+    },
+    "af326a29-a1c8-4399-a28d-996f85819d9e": {
+      "name": "CMGT_UTIL_Filter",
+      "type": "Expression Rule",
+      "sail_code": "with(\n  local!fieldValuePairs: a!defaultValue(\n    ri!fieldValuePairs,\n    apply(\n      rule!CMGT_UTIL_Filter_CreateFieldValuePair(\n        field: _,\n        value: ri!value,\n        allFields: a!flatten(ri!field)\n      ),\n      a!flatten(ri!field)\n    )\n  ),\n  local!matchingCriteria: a!defaultValue(\n    value: ri!matchingCriteria,\n    default: \"ALL\"\n  ),\n  local!matchType: a!defaultValue(value: ri!matchType, default: \"EXACT\"),\n  local!matchIndices: if(\n    a!isNullOrEmpty(a!flatten(ri!records)),\n    tointeger({}),\n    reduce(\n      rule!CMGT_UTIL_Filter_Reducer(\n        matchingCriteria: local!matchingCriteria,\n        previousIndices: _,\n        records: a!flatten(ri!records),\n        fieldValuePair: _,\n        matchType: local!matchType\n      ),\n      a!match(\n        value: local!matchingCriteria,\n        equals: \"ALL\",\n        then: enumerate(count(a!flatten(ri!records))) + 1,\n        equals: \"ANY\",\n        then: {},\n        default: fn!error(\n          \"Invalid matchingCriteria, must be one of: ALL, ANY\"\n        )\n      ),\n      local!fieldValuePairs\n    )\n  ),\n  local!rejectIndices: difference(\n    if(\n      a!isNullOrEmpty(ri!records),\n      tointeger({}),\n      enumerate(count(a!flatten(ri!records))) + 1\n    ),\n    local!matchIndices\n  ),\n  local!matches: cast(\n    runtimetypeof(ri!records),\n    index(ri!records, local!matchIndices, {})\n  ),\n  local!rejects: cast(\n    runtimetypeof(ri!records),\n    index(ri!records, local!rejectIndices, {})\n  ),\n  local!output: a!match(\n    value: a!defaultValue(ri!filterType, \"FILTER\"),\n    equals: \"FILTER\",\n    then: local!matches,\n    equals: \"REJECT\",\n    then: local!rejects,\n    equals: \"FIRST_MATCH\",\n    then: index(local!matches, 1, null),\n    equals: \"FIRST_REJECT\",\n    then: index(local!rejects, 1, null),\n    equals: \"MATCH_COUNT\",\n    then: count(local!matchIndices),\n    equals: \"REJECT_COUNT\",\n    then: count(local!rejectIndices),\n    equals: \"MATCH_INDICES\",\n    then: local!matchIndices,\n    equals: \"REJECT_INDICES\",\n    then: local!rejectIndices,\n    equals: \"FULL_RESULT\",\n    then: a!map(\n      matches: local!matches,\n      rejects: local!rejects,\n      firstMatch: index(local!matches, 1, null),\n      firstReject: index(local!rejects, 1, null),\n      matchCount: count(local!matchIndices),\n      rejectCount: count(local!rejectIndices),\n      matchIndices: local!matchIndices,\n      rejectIndices: local!rejectIndices\n    ),\n    default: fn!error(\n      \"Invalid filterType, must be one of: FILTER, REJECT, FIRST_MATCH, FIRST_REJECT, MATCH_COUNT, REJECT_COUNT, MATCH_INDICES, REJECT_INDICES, FULL_RESULT\"\n    )\n  ),\n  local!output\n)"
+    },
+    "_a-0000ea26-2ced-8000-9bf1-011c48011c48_583935": {
+      "name": "CMGT_EmailBody",
+      "type": "Expression Rule",
+      "sail_code": "rule!CMGT_UTIL_FillDocumentTemplate(\n  document: a!defaultValue(\n    value: ri!document,\n    default: cons!CMGT_DOC_EMAIL_BASE_TEMPLATE\n  ),\n  replacementParams: { ri!replacementParams }\n)"
+    }
+  }
+}

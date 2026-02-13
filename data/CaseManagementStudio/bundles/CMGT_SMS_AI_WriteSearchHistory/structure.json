@@ -1,0 +1,198 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "CMGT_SMS_AI_WriteSearchHistory",
+    "parent_name": null,
+    "total_objects": 10
+  },
+  "entry_point": {
+    "complexity_score": 8.0,
+    "total_nodes": 5,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "CMGT_SMS_AI_WriteSearchHistory",
+      "complexity_score": 8.0,
+      "total_nodes": 5,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Is Search Text Empty"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Write Search History",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Is Search Text Empty",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Construct Search History",
+            "End Node"
+          ]
+        },
+        {
+          "name": "Construct Search History",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write Search History"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000eeba-7a31-8000-9dbb-011c48011c48_4842263",
+      "name": "CMGT_SMS_AI_MTR_UserPerformsSmartSearch",
+      "type": "Expression Rule",
+      "description": "Metric rule to track the number of times search is performed using smart search",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_SMS_AI_WriteSearchHistory"
+      ]
+    },
+    {
+      "uuid": "_a-0000eea8-05c2-8000-9db5-011c48011c48_4799702",
+      "name": "CMGT_SMS_AI_QR_GetSearchHistory",
+      "type": "Expression Rule",
+      "description": "Queries the CMGT_SMS_AI_SearchHistory record",
+      "parameters": [],
+      "calls": [
+        "CMGT_SMS_AI_SearchHistory",
+        "CMGT_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "CMGT_SMS_AI_WriteSearchHistory"
+      ]
+    },
+    {
+      "uuid": "_a-0000eea8-05c2-8000-9db5-011c48011c48_4810878",
+      "name": "CMGT_SMS_AI_SearchHistory_SetMetaData",
+      "type": "Expression Rule",
+      "description": "Set meta data fields for CMGT_SMS_AI_SearchHistory",
+      "parameters": [],
+      "calls": [
+        "CMGT_SMS_AI_SearchHistory",
+        "CMGT_UTIL_SetRecordFields"
+      ],
+      "called_by": [
+        "CMGT_SMS_AI_WriteSearchHistory"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_25890",
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_SMS_AI_WriteSearchHistory",
+        "CMGT_UTIL_SetRecordFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e98b-cfe0-8000-9ba5-011c48011c48_22352",
+      "name": "CMGT_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "description": "Enhanced wrapper rule around a!queryRecord()",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_SMS_AI_QR_GetSearchHistory"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9d3-70bf-8000-9bbd-011c48011c48_180481",
+      "name": "CMGT_UTIL_RejectBlank",
+      "type": "Expression Rule",
+      "description": "Rule to removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "CMGT_SMS_AI_WriteSearchHistory",
+        "CMGT_UTIL_SetRecordFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e990-c462-8000-9ba7-011c48011c48_33778",
+      "name": "CMGT_UTIL_SetRecordFields",
+      "type": "Expression Rule",
+      "description": "Runs a bulk update on a record object, setting new values for its fields",
+      "parameters": [],
+      "calls": [
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_RejectBlank"
+      ],
+      "called_by": [
+        "CMGT_SMS_AI_SearchHistory_SetMetaData"
+      ]
+    },
+    {
+      "uuid": "000aeeab-af46-8000-29e9-7f0000014e7a",
+      "name": "CMGT_SMS_AI_WriteSearchHistory",
+      "type": "Process Model",
+      "description": "Writes to CMGT_SMS_AI_SEARCH_HISTORY",
+      "calls": [
+        "CMGT_SMS_AI_MTR_UserPerformsSmartSearch",
+        "CMGT_SMS_AI_QR_GetSearchHistory",
+        "CMGT_SMS_AI_SearchHistory",
+        "CMGT_SMS_AI_SearchHistoryCategoryMap",
+        "CMGT_SMS_AI_SearchHistory_SetMetaData",
+        "CMGT_UTIL_IsBlank",
+        "CMGT_UTIL_RejectBlank"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "53049395-2855-4537-8bc6-f1a7d80fd2df",
+      "name": "CMGT_SMS_AI_SearchHistory",
+      "type": "Record Type",
+      "description": "Search History.",
+      "actions": [
+        "deleteSearchHistory"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "CMGT_SMS_AI_SearchHistoryCategoryMap"
+      ],
+      "called_by": [
+        "CMGT_SMS_AI_QR_GetSearchHistory",
+        "CMGT_SMS_AI_SearchHistory_SetMetaData",
+        "CMGT_SMS_AI_WriteSearchHistory"
+      ]
+    },
+    {
+      "uuid": "17265fb7-9a88-472b-be25-dfec9917dc09",
+      "name": "CMGT_SMS_AI_SearchHistoryCategoryMap",
+      "type": "Record Type",
+      "description": "Record type for CMGT_SMS_AI_SEARCH_HISTORY_CATEGORY_MAP",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "CMGT_SMS_AI_SearchHistory",
+        "CMGT_SMS_AI_WriteSearchHistory"
+      ]
+    }
+  ]
+}

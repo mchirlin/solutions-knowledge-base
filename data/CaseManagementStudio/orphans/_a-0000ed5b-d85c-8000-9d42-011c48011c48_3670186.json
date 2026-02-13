@@ -1,0 +1,121 @@
+{
+  "uuid": "_a-0000ed5b-d85c-8000-9d42-011c48011c48_3670186",
+  "name": "CMGT_Task_RecordAction_WorkflowEdit_CreateNewSendEmailTasks",
+  "type": "Interface",
+  "description": "Interface to handle Adhoc Send Email Tasks from Modify Workflow",
+  "sail_code": "a!localVariables(\n  local!choiceLabels: {\n    #\"urn:appian:translation-string:v1:ef149b08-b1f5-4777-b2c8-14a6c9266274\",\n    #\"urn:appian:translation-string:v1:22a053ed-493f-4f89-b558-088bb29746c0\"\n  },\n  local!choiceValues: {\n    \"SELECT_EXISTING_TEMPLATE\",\n    \"CREATE_CUSTOM_EMAIL\"\n  },\n  local!emailTemplates: rule!CMGT_WFL_QR_GetEmailTemplates(\n    returnType: \"OBJECT_ARRAY\",\n    sort: #\"SYSTEM_SYSRULES_sortInfo\"(\n      field: recordType!CMGT_WFL_CFG_EmailTemplate.templateName,\n      ascending: true()\n    )\n  ),\n  {\n    #\"SYSTEM_SYSRULES_radioButtonField_v1\"(\n      label: #\"urn:appian:translation-string:v1:bc266606-a0cf-4e46-bf53-4cf7b31a5209\",\n      choiceLabels: local!choiceLabels,\n      choiceValues: local!choiceValues,\n      required: true(),\n      requiredMessage: #\"urn:appian:translation-string:v1:4fab94dc-fcb1-427a-af9f-1239079b2897\"(\n        #\"urn:appian:translation-variable:v1:3e31b6d5-df20-4d17-80a7-81f3c83ff370\": #\"urn:appian:translation-string:v1:bc266606-a0cf-4e46-bf53-4cf7b31a5209\"\n      ),\n      choiceLayout: \"COMPACT\",\n      value: ri!sendEmailTaskSelection,\n      saveInto: {\n        ri!sendEmailTaskSelection,\n        a!save(\n          ri!currentNewTask[recordType!CMGT_Task.sendEmailTask],\n          recordType!CMGT_SendEmailTask(\n            recordType!CMGT_SendEmailTask.recipientRoleJson: ri!currentNewTask[recordType!CMGT_Task.sendEmailTask.recipientRoleJson],\n            recordType!CMGT_SendEmailTask.recipientUserJson: ri!currentNewTask[recordType!CMGT_Task.sendEmailTask.recipientUserJson],\n            recordType!CMGT_SendEmailTask.recipientGroupJson: ri!currentNewTask[recordType!CMGT_Task.sendEmailTask.recipientGroupJson],\n            recordType!CMGT_SendEmailTask.recipientEmailJson: ri!currentNewTask[recordType!CMGT_Task.sendEmailTask.recipientEmailJson]\n          )\n        ),\n        if(\n          rule!CMGT_UTIL_IsNotBlank(input: ri!sendEmailTaskSelectionMaps),\n          a!save(\n            ri!sendEmailTaskSelectionMaps,\n            #\"urn:appian:function:v1:a:update\"(\n              data: ri!sendEmailTaskSelectionMaps,\n              index: rule!CMGT_UTIL_Filter(\n                records: ri!sendEmailTaskSelectionMaps,\n                field: \"taskInstanceUuid\",\n                value: ri!currentNewTask[recordType!CMGT_Task.taskInstanceUuid],\n                filterType: \"MATCH_INDICES\"\n              ),\n              value: a!map(\n                taskInstanceUuid: ri!currentNewTask[recordType!CMGT_Task.taskInstanceUuid],\n                sendEmailTaskSelection: save!value\n              )\n            )\n          ),\n          {}\n        )\n      }\n    ),\n    a!match(\n      value: ri!sendEmailTaskSelection,\n      equals: \"SELECT_EXISTING_TEMPLATE\",\n      then: #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n        items: {\n          #\"SYSTEM_SYSRULES_sideBySideItem\"(\n            item: #\"SYSTEM_SYSRULES_dropdownField_v1\"(\n              data: recordType!CMGT_WFL_CFG_EmailTemplate,\n              choiceLabels: recordType!CMGT_WFL_CFG_EmailTemplate.templateName,\n              choiceValues: recordType!CMGT_WFL_CFG_EmailTemplate.emailTemplateUuid,\n              label: #\"urn:appian:translation-string:v1:9ee41a2b-9ebc-4f9a-8581-138e2e348ba3\",\n              placeholder: #\"urn:appian:translation-string:v1:6deffc1a-e4be-4a1b-a899-02820e6ca2bd\",\n              value: ri!currentNewTask[recordType!CMGT_Task.sendEmailTask.emailTemplateUuid],\n              saveInto: {\n                ri!currentNewTask[recordType!CMGT_Task.sendEmailTask.emailTemplateUuid],\n                a!save(\n                  ri!selectedEmailTemplate,\n                  rule!CMGT_UTIL_Filter(\n                    records: local!emailTemplates,\n                    field: recordType!CMGT_WFL_CFG_EmailTemplate.emailTemplateUuid,\n                    value: save!value\n                  )\n                ),\n                a!save(\n                  ri!currentNewTask,\n                  rule!CMGT_UTIL_SetRecordFields(\n                    record: ri!currentNewTask,\n                    childRelationships: {\n                      a!map(\n                        field: recordType!CMGT_Task.sendEmailTask,\n                        value: recordType!CMGT_SendEmailTask(\n                          recordType!CMGT_SendEmailTask.emailTemplateUuid: ri!selectedEmailTemplate[recordType!CMGT_WFL_CFG_EmailTemplate.emailTemplateUuid],\n                          recordType!CMGT_SendEmailTask.templateName: ri!selectedEmailTemplate[recordType!CMGT_WFL_CFG_EmailTemplate.templateName],\n                          recordType!CMGT_SendEmailTask.subject: ri!selectedEmailTemplate[recordType!CMGT_WFL_CFG_EmailTemplate.subject],\n                          recordType!CMGT_SendEmailTask.body: ri!selectedEmailTemplate[recordType!CMGT_WFL_CFG_EmailTemplate.body],\n                          recordType!CMGT_SendEmailTask.recipientRoleJson: ri!currentNewTask[recordType!CMGT_Task.sendEmailTask.recipientRoleJson],\n                          recordType!CMGT_SendEmailTask.recipientUserJson: ri!currentNewTask[recordType!CMGT_Task.sendEmailTask.recipientUserJson],\n                          recordType!CMGT_SendEmailTask.recipientGroupJson: ri!currentNewTask[recordType!CMGT_Task.sendEmailTask.recipientGroupJson],\n                          recordType!CMGT_SendEmailTask.recipientEmailJson: ri!currentNewTask[recordType!CMGT_Task.sendEmailTask.recipientEmailJson],\n                          recordType!CMGT_SendEmailTask.emailTemplateAttachments: #\"SYSTEM_SYSRULES_forEach\"(\n                            items: rule!CMGT_UTIL_Filter(\n                              records: a!flatten(\n                                ri!selectedEmailTemplate[recordType!CMGT_WFL_CFG_EmailTemplate.emailTemplateAttachments]\n                              ),\n                              field: recordType!CMGT_WFL_CFG_EmailTemplateAttachments.isActive,\n                              value: true()\n                            ),\n                            expression: recordType!CMGT_EmailTemplateAttachments(\n                              recordType!CMGT_EmailTemplateAttachments.appianDocumentId: fv!item[recordType!CMGT_WFL_CFG_EmailTemplateAttachments.appianDocumentId],\n                              recordType!CMGT_EmailTemplateAttachments.documentName: fv!item[recordType!CMGT_WFL_CFG_EmailTemplateAttachments.documentName],\n                              recordType!CMGT_EmailTemplateAttachments.extension: fv!item[recordType!CMGT_WFL_CFG_EmailTemplateAttachments.extension],\n                              recordType!CMGT_EmailTemplateAttachments.size: fv!item[recordType!CMGT_WFL_CFG_EmailTemplateAttachments.size],\n                              recordType!CMGT_EmailTemplateAttachments.fullName: concat(\n                                fv!item[recordType!CMGT_WFL_CFG_EmailTemplateAttachments.documentName],\n                                \".\",\n                                fv!item[recordType!CMGT_WFL_CFG_EmailTemplateAttachments.extension]\n                              ),\n                              recordType!CMGT_EmailTemplateAttachments.extensionIcon: rule!CMGT_Document_IconLogic(\n                                fv!item[recordType!CMGT_WFL_CFG_EmailTemplateAttachments.extension]\n                              ),\n                              recordType!CMGT_EmailTemplateAttachments.sizeDisplay: round(\n                                fv!item[recordType!CMGT_WFL_CFG_EmailTemplateAttachments.size] / 1024,\n                                2\n                              ) & \" KB\"\n                            )\n                          )\n                        )\n                      )\n                    }\n                  )\n                ),\n                if(\n                  rule!CMGT_UTIL_IsNotBlank(input: ri!case),\n                  a!save(\n                    ri!case[recordType!CMGT_Case.tasks],\n                    #\"urn:appian:function:v1:a:update\"(\n                      ri!case[recordType!CMGT_Case.tasks],\n                      /*Index of the case type workflow task that we want to update in the ri!case array*/\n                      wherecontains(\n                        ri!currentNewTask[recordType!CMGT_Task.taskInstanceUuid],\n                        ri!case[recordType!CMGT_Case.tasks.taskInstanceUuid]\n                      ),\n                      /*The updated case task*/\n                      ri!currentNewTask\n                    )\n                  ),\n                  {}\n                )\n              },\n              required: true,\n              requiredMessage: #\"urn:appian:translation-string:v1:4fab94dc-fcb1-427a-af9f-1239079b2897\"(\n                #\"urn:appian:translation-variable:v1:3e31b6d5-df20-4d17-80a7-81f3c83ff370\": #\"urn:appian:translation-string:v1:9ee41a2b-9ebc-4f9a-8581-138e2e348ba3\"\n              )\n            ),\n            width: \"10X\"\n          ),\n          #\"SYSTEM_SYSRULES_sideBySideItem\"(\n            item: #\"SYSTEM_SYSRULES_ButtonArrayLayout\"(\n              buttons: #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n                label: #\"urn:appian:translation-string:v1:8081c5e8-c2e7-4294-af43-28e7a98658e6\",\n                saveInto: a!save(ri!isEmailTemplatePreview, true),\n                disabled: rule!CMGT_UTIL_IsBlank(\n                  value: ri!currentNewTask[recordType!CMGT_Task.sendEmailTask.emailTemplateUuid]\n                )\n              ),\n              align: \"START\",\n              marginAbove: \"LESS\",\n              marginBelow: \"NONE\"\n            ),\n            width: \"MINIMIZE\"\n          )\n        },\n        alignVertical: \"BOTTOM\",\n        marginAbove: \"NONE\",\n        marginBelow: \"NONE\"\n      ),\n      equals: \"CREATE_CUSTOM_EMAIL\",\n      then: rule!CMGT_Task_SendEmail_Details(task: ri!currentNewTask, case: ri!case),\n      default: {}\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "CMGT_WFL_QR_GetEmailTemplates",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_IsNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_Filter",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_SetRecordFields",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_Document_IconLogic",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_UTIL_IsBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_Task_SendEmail_Details",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_WFL_CFG_EmailTemplate",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_Task",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_SendEmailTask",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_WFL_CFG_EmailTemplateAttachments",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_EmailTemplateAttachments",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "CMGT_Case",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Unknown",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "CMGT_Task_RecordAction_WorkflowEdit_CreateNewTasks_TaskDetailsSection",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_Case_ConfigureTask_Task_SendEmailSection",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

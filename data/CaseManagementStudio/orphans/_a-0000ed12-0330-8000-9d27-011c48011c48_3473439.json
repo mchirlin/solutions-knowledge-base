@@ -1,0 +1,26 @@
+{
+  "uuid": "_a-0000ed12-0330-8000-9d27-011c48011c48_3473439",
+  "name": "CMGT_TaskCaseMap_SetMetaData",
+  "type": "Expression Rule",
+  "description": "Set metadata for CMGT_TaskCaseMap",
+  "sail_code": "#\"SYSTEM_SYSRULES_forEach\"(\n  items: ri!taskCaseMap,\n  expression: rule!CMGT_UTIL_SetRecordFields(\n    record: fv!item,\n    /*Always set these fields with each update*/\n    alwaysOverwrite: {\n      a!map(\n        field: recordType!CMGT_TaskCaseMap.modifiedOn,\n        value: now()\n      ),\n      a!map(\n        field: recordType!CMGT_TaskCaseMap.modifiedBy,\n        value: ri!initiator\n      )\n    },\n    /*Only modify these fields if they are currently null*/\n    neverOverwrite: {\n      a!map(\n        field: recordType!CMGT_TaskCaseMap.createdBy,\n        value: ri!initiator\n      ),\n      a!map(\n        field: recordType!CMGT_TaskCaseMap.createdOn,\n        value: now()\n      ),\n      a!map(\n        field: recordType!CMGT_TaskCaseMap.isActive,\n        value: true\n      )\n    }\n  )\n)",
+  "calls": [
+    {
+      "name": "CMGT_UTIL_SetRecordFields",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "CMGT_TaskCaseMap",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "CMGT_Task_SetMetaData",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

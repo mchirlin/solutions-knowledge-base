@@ -3,25 +3,15 @@
     "bundle_id": "AS_GSS_Summarize_Responses_Using_AI"
   },
   "objects": {
-    "_a-0000eb16-753f-8000-9d01-011c48011c48_9518400": {
-      "name": "AS_GSS_UT_deepIndex",
-      "type": "Expression Rule",
-      "sail_code": "if(\n  a!isNullOrEmpty(value: ri!indexArray),\n  ri!item,\n  if(\n    a!isNullOrEmpty(value: ri!item),\n    {},\n    reduce(index(_, _, {}), ri!item, ri!indexArray)\n  )\n)"
-    },
-    "0002ee7f-b44c-8000-dd96-7f0000014e7a": {
-      "name": "AS GSS Summarize Responses Using AI",
-      "type": "Process Model",
-      "sail_code": "// Input: ?\n=cons!AS_GSS_ENT_CONSENSUS_AI_SUGGESTION\n\n// Input: ?\n= 'type!{urn:com:appian:types}AS_GSS_ConsensusAiSuggestion'( consensusId: pv!consensusId, prompt: pv!input, response: if( a!isNullOrEmpty(pv!responseMap), null, #\"SYSTEM_SYSRULES_toJson_v1\"(pv!responseMap) ), errorInfo: if( a!isNullOrEmpty(pv!errorMap), null, #\"SYSTEM_SYSRULES_toJson_v1\"(pv!errorMap) ), isSuccess: pv!isSuccess, createdBy: loggedInUser(), createdDateTime: now(), usedAppianAi:rule!AS_GSS_EnableOrDisableAppianAIForSummarization_wrapper())\n\n// Output: ?\nAC!StoredValues\n\n// Input: ?\n=input\n\n// Input: ?\n=prompt\n\n// Input: ?\n=useNativeAi\n\n// Input: ?\n= a!localVariables( local!isSuccess: a!defaultValue(value: pv!isSuccess, default: false()), if( a!isNullOrEmpty(pv!useNativeAi), \"Unknown\", a!match( value: pv!useNativeAi, whenTrue: and(fv!value, local!isSuccess), then: rule!AS_GSS_MTR_SAVE_consensusFinalCommentsNativeAiSuggestionGenerationSuccess(), whenTrue: and(fv!value, not(local!isSuccess)), then: rule!AS_GSS_MTR_SAVE_consensusFinalCommentsNativeAiSuggestionGenerationFailure(), whenTrue: local!isSuccess, then: rule!AS_GSS_MTR_SAVE_consensusFinalCommentsAiSuggestionGenerationSuccess(), whenTrue: not(local!isSuccess), then: rule!AS_GSS_MTR_SAVE_consensusFinalCommentsAiSuggestionGenerationFailure(), default: \"Unknown\" ) ))"
-    },
-    "_a-0000eb3b-692b-8000-9d11-011c48011c48_9925177": {
-      "name": "AS_GSS_MTR_SAVE_consensusFinalCommentsAiSuggestionGenerationSuccess",
-      "type": "Expression Rule",
-      "sail_code": "a!localVariables(local!temp: 1, local!temp)"
-    },
     "_a-0000ee79-e5e2-8000-9e3c-011c48011c48_16896277": {
       "name": "AS_GSS_EnableOrDisableAppianAIForSummarization_wrapper",
       "type": "Expression Rule",
       "sail_code": "a!localVariables(\n  /*Determine whether to execute the _default or _custom rule*/\n  local!runtimeRule: a!refreshVariable(\n    value: rule!AS_FRM_determineRuntimeRule(\n      defaultRuleReference: rule!AS_GSS_EnableOrDisableAppianAIForSummarization_v1_default\n    ),\n    refreshAlways: true\n  ),\n  local!runtimeRule()\n)"
+    },
+    "0002ee7f-845b-8000-dd77-7f0000014e7a": {
+      "name": "AS GSS Summarize With AI",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n=assistantText\n\n// Input: ?\n=input\n\n// Input: ?\n=prompt\n\n// Input: ?\n=input\n\n// Input: ?\n=prompt"
     },
     "0002ee7d-0147-8000-dd1d-7f0000014e7a": {
       "name": "AS GSS Summarize With Azure OpenAI",
@@ -30,6 +20,31 @@
     },
     "_a-0000ee83-219b-8000-9e3e-011c48011c48_16980440": {
       "name": "AS_GSS_MTR_SAVE_consensusFinalCommentsNativeAiSuggestionGenerationSuccess",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(local!temp: 1, local!temp)"
+    },
+    "0002ee7f-b44c-8000-dd96-7f0000014e7a": {
+      "name": "AS GSS Summarize Responses Using AI",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n=cons!AS_GSS_ENT_CONSENSUS_AI_SUGGESTION\n\n// Input: ?\n= 'type!{urn:com:appian:types}AS_GSS_ConsensusAiSuggestion'( consensusId: pv!consensusId, prompt: pv!input, response: if( a!isNullOrEmpty(pv!responseMap), null, #\"SYSTEM_SYSRULES_toJson_v1\"(pv!responseMap) ), errorInfo: if( a!isNullOrEmpty(pv!errorMap), null, #\"SYSTEM_SYSRULES_toJson_v1\"(pv!errorMap) ), isSuccess: pv!isSuccess, createdBy: loggedInUser(), createdDateTime: now(), usedAppianAi:rule!AS_GSS_EnableOrDisableAppianAIForSummarization_wrapper())\n\n// Output: ?\nAC!StoredValues\n\n// Input: ?\n=input\n\n// Input: ?\n=prompt\n\n// Input: ?\n=useNativeAi\n\n// Input: ?\n= a!localVariables( local!isSuccess: a!defaultValue(value: pv!isSuccess, default: false()), if( a!isNullOrEmpty(pv!useNativeAi), \"Unknown\", a!match( value: pv!useNativeAi, whenTrue: and(fv!value, local!isSuccess), then: rule!AS_GSS_MTR_SAVE_consensusFinalCommentsNativeAiSuggestionGenerationSuccess(), whenTrue: and(fv!value, not(local!isSuccess)), then: rule!AS_GSS_MTR_SAVE_consensusFinalCommentsNativeAiSuggestionGenerationFailure(), whenTrue: local!isSuccess, then: rule!AS_GSS_MTR_SAVE_consensusFinalCommentsAiSuggestionGenerationSuccess(), whenTrue: not(local!isSuccess), then: rule!AS_GSS_MTR_SAVE_consensusFinalCommentsAiSuggestionGenerationFailure(), default: \"Unknown\" ) ))"
+    },
+    "_a-0000e5d4-2024-8000-9baf-011c48011c48_320878": {
+      "name": "AS_FRM_determineRuntimeRule",
+      "type": "Expression Rule",
+      "sail_code": "if( \n  cons!AS_FRM_BOOL_RULE_CUSTOMIZATION_1_0_ENABLED,\n  \n  determineruntimerule(ri!defaultRuleReference),\n  \n  ri!defaultRuleReference\n)"
+    },
+    "_a-0000eb16-753f-8000-9d01-011c48011c48_9518400": {
+      "name": "AS_GSS_UT_deepIndex",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  a!isNullOrEmpty(value: ri!indexArray),\n  ri!item,\n  if(\n    a!isNullOrEmpty(value: ri!item),\n    {},\n    reduce(index(_, _, {}), ri!item, ri!indexArray)\n  )\n)"
+    },
+    "0002ee7f-7e38-8000-dd72-7f0000014e7a": {
+      "name": "AS GSS Summarize With Native AI",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n=pv!input\n\n// Input: ?\n=pv!runtimePrompt\n\n// Output: ?\nAC!Success\n\n// Output: ?\nif(\n  a!isNullOrEmpty(ac!Response),\n  {},\n  a!map(\n    \"Response\": { \"Chat Completions\": { ac!Response } }\n  )\n)\n\n// Output: ?\nif(\n  a!isNullOrEmpty(ac!ErrorMessage),\n  {},\n  a!map(\n    title: \"Appian AI Skills Error\",\n    message: ac!ErrorMessage\n  )\n)"
+    },
+    "_a-0000eb3b-692b-8000-9d11-011c48011c48_9925177": {
+      "name": "AS_GSS_MTR_SAVE_consensusFinalCommentsAiSuggestionGenerationSuccess",
       "type": "Expression Rule",
       "sail_code": "a!localVariables(local!temp: 1, local!temp)"
     },
@@ -42,21 +57,6 @@
       "name": "AS_GSS_MTR_SAVE_consensusFinalCommentsAiSuggestionGenerationFailure",
       "type": "Expression Rule",
       "sail_code": "a!localVariables(local!temp: 1, local!temp)"
-    },
-    "_a-0000e5d4-2024-8000-9baf-011c48011c48_320878": {
-      "name": "AS_FRM_determineRuntimeRule",
-      "type": "Expression Rule",
-      "sail_code": "if( \n  cons!AS_FRM_BOOL_RULE_CUSTOMIZATION_1_0_ENABLED,\n  \n  determineruntimerule(ri!defaultRuleReference),\n  \n  ri!defaultRuleReference\n)"
-    },
-    "0002ee7f-7e38-8000-dd72-7f0000014e7a": {
-      "name": "AS GSS Summarize With Native AI",
-      "type": "Process Model",
-      "sail_code": "// Input: ?\n=pv!input\n\n// Input: ?\n=pv!runtimePrompt\n\n// Output: ?\nAC!Success\n\n// Output: ?\nif(\n  a!isNullOrEmpty(ac!Response),\n  {},\n  a!map(\n    \"Response\": { \"Chat Completions\": { ac!Response } }\n  )\n)\n\n// Output: ?\nif(\n  a!isNullOrEmpty(ac!ErrorMessage),\n  {},\n  a!map(\n    title: \"Appian AI Skills Error\",\n    message: ac!ErrorMessage\n  )\n)"
-    },
-    "0002ee7f-845b-8000-dd77-7f0000014e7a": {
-      "name": "AS GSS Summarize With AI",
-      "type": "Process Model",
-      "sail_code": "// Input: ?\n=assistantText\n\n// Input: ?\n=input\n\n// Input: ?\n=prompt\n\n// Input: ?\n=input\n\n// Input: ?\n=prompt"
     }
   }
 }

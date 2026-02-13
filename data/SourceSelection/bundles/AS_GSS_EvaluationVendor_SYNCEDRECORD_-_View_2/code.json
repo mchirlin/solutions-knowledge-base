@@ -1,0 +1,47 @@
+{
+  "_metadata": {
+    "bundle_id": "AS_GSS_EvaluationVendor_SYNCEDRECORD_-_View_2"
+  },
+  "objects": {
+    "_a-0000e6cd-618a-8000-9bd9-011c48011c48_1688557": {
+      "name": "AS_CO_UT_checkIsNullOrEmpty",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  or(\n    isnull(\n      ri!value\n    ),\n    trim(\n      ri!value\n    ) = \"\"\n  ),\n  true(),\n  if(\n    length(\n      ri!value\n    ) = 0,\n    true(),\n    false()\n  )\n)"
+    },
+    "_a-0000e643-f7f1-8000-9bca-011c48011c48_1319026": {
+      "name": "AS_GSS_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "sail_code": "with(\n  local!lang: \"en_US\",\n  /* below is deprecated for now, uncomment to support multi-language display */\n  /*if(*/\n  /*isnull(ri!langISOCode),*/\n  /*userlocale(loggedInUser()),*/\n  /*ri!langISOCode*/\n  /*),*/\n  local!bundleName: /*rule!AS_GCM_determineValueBySolutionFlavor(\n    options: cons!AS_GCM_TXT_VALID_SOLUTION_FLAVORS\n  )*/\"AS.GSS.General\",\n  /*local!bundleName*/\n  local!output: loadbundlepropertiesfile(\n    cons!AS_GSS_FLD_PROPERTIES_FILES,\n    local!lang,\n    local!bundleName\n  )[local!bundleName],\n  local!output\n)"
+    },
+    "_a-0000ed52-a319-8000-9df0-011c48011c48_15017709": {
+      "name": "AS_GSS_QR_getEvaluationVendorByIdentifier",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  rule!AS_CO_UT_checkIsNullOrEmpty(value: ri!vendorId),\n  recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD(),\n  rule!AS_GSS_UT_queryRecordByIdentifier(\n    recordType: recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD,\n    identifier: ri!vendorId,\n    executeWhen: ri!executeWhen,\n    triggerRefresh: ri!triggerRefresh,\n    fields: ri!fields,\n    relatedRecordData: ri!relatedRecordData\n  )\n)"
+    },
+    "_a-0000ec62-ac34-8000-9d9a-011c48011c48_13134000": {
+      "name": "AS_GSS_UT_queryRecordByIdentifier",
+      "type": "Expression Rule",
+      "sail_code": "/*\n\nPLEASE REFER TO THE BOTTOM OF THIS RULE FOR INSTRUCTIONS ON HOW TO USE\n\nPlease DO NOT auto-format this rule\n\n*/\na!localVariables(\n  /*Determine the castResultToType*/\n  local!castResultToType: a!defaultValue(ri!castToCdtType, ri!recordType),\n  /*Execute the query*/\n  local!queryResult: a!refreshVariable(\n    value: if(\n      ri!executeWhen = false,\n      null(ri!recordType),\n      #\"SYSTEM_SYSRULES_queryRecordByIdentifier\"(\n        recordType: ri!recordType,\n        identifier: ri!identifier,\n        fields: {\n          ri!fields,\n          ri!relatedRecordData.relationship\n        },\n        relatedRecordData: ri!relatedRecordData\n      )\n    ),\n    refreshOnVarChange: ri!triggerRefresh,\n    refreshAfter: { \"RECORD_ACTION\" }\n  ),\n  rule!AS_CO_UT_cast(\n    type: local!castResultToType,\n    value: local!queryResult\n  )\n)/*\n\nDOCUMENTATION\n\nThis rule is designed to minimize the overhead with querying data and then casting the result\n\n\nRequired Inputs:\n\n1. recordType\n- This is a recordtype! input of the data type to be queried against\n\n2. identifier\n- The primary key of the record type which needs to be queried\n\nOptional Inputs:\n\n3. executeWhen\n- The query will not execute if this is false, the query will execute if this is true or null\n-- This is meant to operate in a similar manner to the showWhen parameter of components\n- Use this to skip execution of a query without needing to wrap if() statements around the rule\n-- Examples of this would be to skip querying if your filter value is a null ID\n- If the query does not execute, this will return a null value whose type is based on the returnType input\n\n4. triggerRefresh\n- By default, the query will always re-execute whenever any inputs change\n- However, by updating the value of triggerRefresh, you can also trigger a re-execution even if none of the other inputs change (e.g. after a record action)\n\n5. castToCdtType\n- Any cdt type to the cast the result set. \n\n6. fields\n- The record fields that need to be queried\n\n7. relatedRecordData\n- the relatedRecordData in which the filters and limit can be specified for each relationship\n\n*/"
+    },
+    "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157603": {
+      "name": "AS_CO_UT_cast",
+      "type": "Expression Rule",
+      "sail_code": "with(  \n  local!typeNumber: rule!AS_CO_UT_returnTypeNumber(\n    type: ri!type,\n    typeOf: ri!typeOf\n  ),\n\n  /* If the object is empty, use null or {} depending on if it is array type or not */\n  local!objectToCast: if(\n    rule!AS_CO_UT_isNotBlank(ri!value),\n    ri!value,\n    rule!AS_CO_UT_checkIfSingleType(\n      type: ri!type,\n      typeOf: ri!typeOf\n    ),\n    null,\n    {}\n  ),\n\n  cast(\n    local!typeNumber,\n    local!objectToCast\n  )\n  \n)"
+    },
+    "_a-0000e643-f7f1-8000-9bca-011c48011c48_1369557": {
+      "name": "AS_GSS_BrandingValueByKey",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!output: if(\n    rule!AS_CO_UT_replaceNull(\n      nullableValue: ri!useSuiteBranding,\n      replacementValue: false\n    ),\n    rule!AS_FRM_getBrandingValueByKey(\n      defaultBrandingConfigDoc: cons!AS_GSS_DOC_BRANDING_DEFAULT,\n      brandingKey: ri!brandingKey\n    ),\n    rule!AS_FRM_getBrandingValueByKey(\n      defaultBrandingConfigDoc: cons!AS_GAM_DOC_BRANDING_DEFAULT,\n      brandingKey: ri!brandingKey\n    )\n  ),\n  if(\n    typename(typeof(local!output)) = cons!AS_GSS_TXT_DOCUMENT,\n    local!output,\n    tostring(local!output)\n  )\n)"
+    },
+    "_a-0000ee15-bcab-8000-9e1f-011c48011c48_16274455": {
+      "name": "AS_GSS_FM_vendorDecisionDetails",
+      "type": "Interface",
+      "sail_code": "a!localVariables(\n  local!bundle: rule!AS_GSS_CO_UT_loadBundleFromFolder(langISOCode: null),\n  #\"SYSTEM_SYSRULES_formLayout_v1\"(\n    label: ri!evaluationVendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.legalName],\n    contents: {\n      #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n        value: #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n          text: \"Decision\",\n          style: \"STRONG\"\n        )\n      ),\n      #\"SYSTEM_SYSRULES_tagField\"(\n        labelPosition: \"COLLAPSED\",\n        tags: #\"SYSTEM_SYSRULES_tagItem_v1\"(\n          text: rule!AS_GSS_UT_returnDecisionLabelForViewActions(\n            decisionId: ri!evaluationVendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.decisionTypeId]\n          ),\n          backgroundColor: rule!AS_GSS_BrandingValueByKey(\n            brandingKey: if(\n              tointeger(\n                ri!evaluationVendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.decisionTypeId]\n              ) = cons!AS_GSS_REF_ID_VENDOR_DECISION_REJECT,\n              \"RedOne\",\n              \"GreenOne\"\n            ),\n            useSuiteBranding: true\n          ),\n          textColor: rule!AS_GSS_BrandingValueByKey(\n            brandingKey: if(\n              tointeger(\n                ri!evaluationVendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.decisionTypeId]\n              ) = cons!AS_GSS_REF_ID_VENDOR_DECISION_REJECT,\n              \"RedFour\",\n              \"GreenFour\"\n            ),\n            useSuiteBranding: true\n          )\n        )\n      ),\n      #\"SYSTEM_SYSRULES_styledTextEditorField\"(\n        label: \"Reason\",\n        value: a!defaultValue(\n          value: ri!evaluationVendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.decisionReason],\n          default: cons!AS_GSS_CO_NULL_REPLACEABLE_TEXT\n        ),\n        readOnly: true()\n      )\n    },\n    buttons: {}\n  )\n)"
+    },
+    "_a-0000ee15-bcab-8000-9e1f-011c48011c48_16280731": {
+      "name": "AS_GSS_UT_returnDecisionLabelForViewActions",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!bundle: rule!AS_GSS_CO_UT_loadBundleFromFolder(langISOCode: null),\n  if(\n    a!isNullOrEmpty(value: ri!decisionId),\n    cons!AS_GSS_CO_NULL_REPLACEABLE_TEXT,\n    a!match(\n      value: ri!decisionId,\n      equals: cons!AS_GSS_REF_ID_VENDOR_DECISION_SELECT,\n      then: \"Selected\",\n      equals: cons!AS_GSS_REF_ID_VENDOR_DECISION_REJECT,\n      then: \"Rejected\",\n      equals: cons!AS_GSS_REF_ID_VENDOR_DECISION_NOT_REVIEWED,\n      then: \"Not Reviewed\",\n      default: cons!AS_GSS_CO_NULL_REPLACEABLE_TEXT\n    )\n  )\n)"
+    }
+  }
+}

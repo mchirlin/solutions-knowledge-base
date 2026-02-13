@@ -1,0 +1,271 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "AS_GSS_EvaluationVendor_SYNCEDRECORD - View",
+    "parent_name": "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+    "total_objects": 15
+  },
+  "entry_point": {
+    "action_type": "RECORD_ACTION",
+    "record_type": "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+    "target_process": "AS GSS View Vendor Decision",
+    "form_interface": "AS_GSS_FM_vendorDecisionDetails",
+    "expressions": {
+      "TITLE": "\"View\"",
+      "DESCRIPTION": null,
+      "VISIBILITY": null,
+      "CONTEXT": "{\n  evaluationVendor: rule!AS_GSS_QR_getEvaluationVendorByIdentifier(\n    executeWhen: true(),\n    vendorId: rv!record[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.vendorId],\n    fields: {\n      recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.decisionType\n    }\n  )\n}"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GSS View Vendor Decision",
+      "complexity_score": 1.0,
+      "total_nodes": 2,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ec62-ac34-8000-9d9a-011c48011c48_13151218",
+      "name": "AS_GSS_CO_NULL_REPLACEABLE_TEXT",
+      "type": "Constant",
+      "description": "Value:  -",
+      "value": "-",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_FM_vendorDecisionDetails",
+        "AS_GSS_UT_returnDecisionLabelForViewActions"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee0b-274d-8000-9e1b-011c48011c48_16202184",
+      "name": "AS_GSS_REF_ID_VENDOR_DECISION_NOT_REVIEWED",
+      "type": "Constant",
+      "description": "Value : 70",
+      "value": "70",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_returnDecisionLabelForViewActions"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee0b-274d-8000-9e1b-011c48011c48_16208987",
+      "name": "AS_GSS_REF_ID_VENDOR_DECISION_REJECT",
+      "type": "Constant",
+      "description": "Value : 69",
+      "value": "69",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_FM_vendorDecisionDetails",
+        "AS_GSS_UT_returnDecisionLabelForViewActions"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee0b-274d-8000-9e1b-011c48011c48_16208980",
+      "name": "AS_GSS_REF_ID_VENDOR_DECISION_SELECT",
+      "type": "Constant",
+      "description": "Value : 68",
+      "value": "68",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_returnDecisionLabelForViewActions"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157603",
+      "name": "AS_CO_UT_cast",
+      "type": "Expression Rule",
+      "description": "Casts a variable to the type of either the input `type`, or the typeof of the input `typeof`, and properly handles for null inputs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_queryRecordByIdentifier"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6cd-618a-8000-9bd9-011c48011c48_1688557",
+      "name": "AS_CO_UT_checkIsNullOrEmpty",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is null/empty. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_QR_getEvaluationVendorByIdentifier"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1369557",
+      "name": "AS_GSS_BrandingValueByKey",
+      "type": "Expression Rule",
+      "description": "Returns a GSS branding value by key",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_FM_vendorDecisionDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1319026",
+      "name": "AS_GSS_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "description": "Loads a property bundle file by name from a folder, returns a dictionary of the key-value pairs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_FM_vendorDecisionDetails",
+        "AS_GSS_UT_returnDecisionLabelForViewActions"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed52-a319-8000-9df0-011c48011c48_15017709",
+      "name": "AS_GSS_QR_getEvaluationVendorByIdentifier",
+      "type": "Expression Rule",
+      "description": "Returns evaluation vendor synced record based on the provided ids. ",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_UT_queryRecordByIdentifier"
+      ],
+      "called_by": [
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec62-ac34-8000-9d9a-011c48011c48_13134000",
+      "name": "AS_GSS_UT_queryRecordByIdentifier",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast"
+      ],
+      "called_by": [
+        "AS_GSS_QR_getEvaluationVendorByIdentifier"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee15-bcab-8000-9e1f-011c48011c48_16280731",
+      "name": "AS_GSS_UT_returnDecisionLabelForViewActions",
+      "type": "Expression Rule",
+      "description": "The rule is used to return the decision labels for the actions that display the decision infomation from the vendors tab in the summary",
+      "parameters": [],
+      "calls": [
+        "AS_GSS_CO_NULL_REPLACEABLE_TEXT",
+        "AS_GSS_CO_UT_loadBundleFromFolder",
+        "AS_GSS_REF_ID_VENDOR_DECISION_NOT_REVIEWED",
+        "AS_GSS_REF_ID_VENDOR_DECISION_REJECT",
+        "AS_GSS_REF_ID_VENDOR_DECISION_SELECT"
+      ],
+      "called_by": [
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_FM_vendorDecisionDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee15-bcab-8000-9e1f-011c48011c48_16274455",
+      "name": "AS_GSS_FM_vendorDecisionDetails",
+      "type": "Interface",
+      "description": "The form for the vendor decision details",
+      "parameters": [
+        {
+          "name": "evaluationVendor",
+          "type": "urn:com:appian:recordtype:datatype:b6081510-0d11-4d51-8eba-966610b168db",
+          "raw_type": "urn:com:appian:recordtype:datatype:b6081510-0d11-4d51-8eba-966610b168db",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        }
+      ],
+      "calls": [
+        "AS_GSS_BrandingValueByKey",
+        "AS_GSS_CO_NULL_REPLACEABLE_TEXT",
+        "AS_GSS_CO_UT_loadBundleFromFolder",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_REF_ID_VENDOR_DECISION_REJECT",
+        "AS_GSS_UT_returnDecisionLabelForViewActions",
+        "AS_GSS_VendorPriceBreakup_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS GSS View Vendor Decision"
+      ]
+    },
+    {
+      "uuid": "0003ee1a-142b-8000-d5ac-7f0000014e7a",
+      "name": "AS GSS View Vendor Decision",
+      "type": "Process Model",
+      "description": "The model with the interface to view vendor decision information",
+      "calls": [
+        "AS_GSS_FM_vendorDecisionDetails"
+      ],
+      "called_by": [
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD"
+      ]
+    },
+    {
+      "uuid": "b6081510-0d11-4d51-8eba-966610b168db",
+      "name": "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "Synced record for evaluation vendors",
+      "actions": [
+        "updateVendor",
+        "deleteVendor",
+        "updateVendorDetails",
+        "viewBreakdown",
+        "viewVendorDecision",
+        "viewConsensusRatings",
+        "viewVendorDecisionForAwardees"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS GSS View Vendor Decision",
+        "AS_GSS_QR_getEvaluationVendorByIdentifier",
+        "AS_GSS_UT_returnDecisionLabelForViewActions",
+        "AS_GSS_VendorPriceBreakup_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_FM_vendorDecisionDetails",
+        "AS_GSS_QR_getEvaluationVendorByIdentifier",
+        "AS_GSS_VendorPriceBreakup_SYNCEDRECORD"
+      ]
+    },
+    {
+      "uuid": "e29f01c8-20bf-4220-8797-7fe0041be362",
+      "name": "AS_GSS_VendorPriceBreakup_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "Synced record for pricing line item information for Vendors",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_FM_vendorDecisionDetails"
+      ]
+    }
+  ]
+}

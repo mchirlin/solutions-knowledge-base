@@ -83,6 +83,90 @@
     },
     "subprocesses": [
       {
+        "name": "AS GAM ADT Audit Process",
+        "complexity_score": 22.0,
+        "total_nodes": 11,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Audit Params Multiple?"
+            ]
+          },
+          {
+            "name": "Terminate",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Write to Audit Multiple",
+            "type": "Write to Multiple DSE",
+            "next": [
+              "Terminate"
+            ]
+          },
+          {
+            "name": "Audit Params Multiple?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Mul Object DSE exists? (Yes)",
+              "Object DSE exists? (No)"
+            ]
+          },
+          {
+            "name": "Write to Audit",
+            "type": "Write to Data Store Entity",
+            "next": [
+              "Terminate"
+            ]
+          },
+          {
+            "name": "Mul Object DSE exists?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Write to Audit Multiple",
+              "Get Original Objects"
+            ]
+          },
+          {
+            "name": "Object DSE exists?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Write to Audit",
+              "Get Original Objects"
+            ]
+          },
+          {
+            "name": "Get Original Objects",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Write to Object Data Multiple"
+            ]
+          },
+          {
+            "name": "Write to Object Data Multiple",
+            "type": "Write to Multiple DSE",
+            "next": [
+              "Write to Audit Multiple"
+            ]
+          },
+          {
+            "name": "Write to Object Data",
+            "type": "Write to Data Store Entity",
+            "next": [
+              "Write to Audit"
+            ]
+          },
+          {
+            "name": "Get Original Objects",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Write to Object Data"
+            ]
+          }
+        ]
+      },
+      {
         "name": "AS GSS Upload Documents",
         "complexity_score": 26.0,
         "total_nodes": 12,
@@ -174,90 +258,6 @@
               "Join"
             ],
             "interface": "AS_GSS_FM_uploadEvaluationDocuments"
-          }
-        ]
-      },
-      {
-        "name": "AS GAM ADT Audit Process",
-        "complexity_score": 22.0,
-        "total_nodes": 11,
-        "nodes": [
-          {
-            "name": "Start Node",
-            "type": "START_EVENT",
-            "next": [
-              "Audit Params Multiple?"
-            ]
-          },
-          {
-            "name": "Terminate",
-            "type": "END_EVENT"
-          },
-          {
-            "name": "Write to Audit Multiple",
-            "type": "Write to Multiple DSE",
-            "next": [
-              "Terminate"
-            ]
-          },
-          {
-            "name": "Audit Params Multiple?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "Mul Object DSE exists? (Yes)",
-              "Object DSE exists? (No)"
-            ]
-          },
-          {
-            "name": "Write to Audit",
-            "type": "Write to Data Store Entity",
-            "next": [
-              "Terminate"
-            ]
-          },
-          {
-            "name": "Mul Object DSE exists?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "Write to Audit Multiple",
-              "Get Original Objects"
-            ]
-          },
-          {
-            "name": "Object DSE exists?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "Write to Audit",
-              "Get Original Objects"
-            ]
-          },
-          {
-            "name": "Get Original Objects",
-            "type": "SCRIPT_TASK",
-            "next": [
-              "Write to Object Data Multiple"
-            ]
-          },
-          {
-            "name": "Write to Object Data Multiple",
-            "type": "Write to Multiple DSE",
-            "next": [
-              "Write to Audit Multiple"
-            ]
-          },
-          {
-            "name": "Write to Object Data",
-            "type": "Write to Data Store Entity",
-            "next": [
-              "Write to Audit"
-            ]
-          },
-          {
-            "name": "Get Original Objects",
-            "type": "SCRIPT_TASK",
-            "next": [
-              "Write to Object Data"
-            ]
           }
         ]
       }
@@ -870,18 +870,6 @@
       ]
     },
     {
-      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1034332",
-      "name": "AS_GSS_HEX_CODE_TEXT_COLOR_SELECTED_VENDOR",
-      "type": "Constant",
-      "description": "Hex code: #FFFFFF (white)",
-      "value": "#FFFFFF",
-      "value_type": "http://www.w3.org/2001/XMLSchema:string",
-      "calls": [],
-      "called_by": [
-        "AS_GSS_CPS_vendorDetailsBoxFieldDisplay"
-      ]
-    },
-    {
       "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_947370",
       "name": "AS_GSS_MAX_SELECTION_FOR_UPLOAD_DOC_RA",
       "type": "Constant",
@@ -1125,6 +1113,18 @@
       "called_by": [
         "AS_GSS_CPS_vendorInputs",
         "AS_GSS_FM_addOrUpdateVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1034332",
+      "name": "AS_GSS_TEXT_HEX_WHITE",
+      "type": "Constant",
+      "description": "Hex code: #FFFFFF (white)",
+      "value": "#FFFFFF",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CPS_vendorDetailsBoxFieldDisplay"
       ]
     },
     {
@@ -6131,7 +6131,7 @@
         "AS_CO_UT_isBlank",
         "AS_CO_UT_isNotBlank",
         "AS_CO_UT_replaceNull",
-        "AS_GSS_HEX_CODE_TEXT_COLOR_SELECTED_VENDOR"
+        "AS_GSS_TEXT_HEX_WHITE"
       ],
       "called_by": [
         "AS_GSS_CPS_vendorDetailsBoxInformationColumn",

@@ -144,7 +144,7 @@ All team members will see the new application immediately — no reinstall neede
 This is a one-time install. Run in your terminal:
 
 ```bash
-pipx install "gam-appian-kb @ git+https://github.com/ram-020998/gam-appian-kb.git#subdirectory=mcp_server"
+pipx install "gam-appian-kb @ git+ssh://git@github.com/ram-020998/gam-knowledge-base.git#subdirectory=mcp_server"
 ```
 
 Verify it installed:

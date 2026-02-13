@@ -1,0 +1,206 @@
+{
+  "_metadata": {
+    "bundle_type": "web_api",
+    "root_name": "AS GSS WA GET Evaluation Status List",
+    "parent_name": null,
+    "total_objects": 12
+  },
+  "entry_point": {
+    "http_method": "GET",
+    "url_alias": "evaluationList",
+    "security": [
+      {
+        "role_name": "web_api_administrator",
+        "users": [],
+        "groups": [
+          "_e-0000e42d-ffef-8000-9af3-01075c01075c_19"
+        ]
+      },
+      {
+        "role_name": "web_api_viewer",
+        "users": [],
+        "groups": [
+          "_e-0000ef20-0e41-8000-9db5-01075c01075c_6312"
+        ]
+      }
+    ]
+  },
+  "flow": null,
+  "objects": [
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290131",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+      "type": "Constant",
+      "description": "DATA_SUBSET - Returns a type of DataSubset when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "DATA_SUBSET",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_WA_GET_EvaluationStatusList"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290157",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "description": "SINGLE_OBJECT - Returns a single type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "SINGLE_OBJECT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_WA_GET_EvaluationStatusList"
+      ]
+    },
+    {
+      "uuid": "_a-0001ed6e-54f1-8000-9df6-011c48011c48_15278670",
+      "name": "AS_GSS_HTTP_STATUS_CODE_SUCCESS",
+      "type": "Constant",
+      "description": "Contains http status code for Success. Value: 200",
+      "value": "200",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_WA_GET_EvaluationStatusList"
+      ]
+    },
+    {
+      "uuid": "_a-0000eee8-b1ee-8000-9e5a-011c48011c48_17688600",
+      "name": "AS_GSS_WA_BATCH_SIZE_EVALUATION_STATUS_LIST",
+      "type": "Constant",
+      "description": "Value: 50",
+      "value": "50",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_WA_GET_EvaluationStatusList"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_WA_GET_EvaluationStatusList"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around AS_CO_UT_isBlank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_CO_UT_webApiResponseSuccess",
+        "AS_GSS_WA_GET_EvaluationStatusList"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6c8-d132-8000-9bbe-011c48011c48_469266",
+      "name": "AS_CO_UT_queryRecord",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_GSS_WA_GET_EvaluationStatusList"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef20-10f8-8000-9e68-011c48011c48_18119256",
+      "name": "AS_GSS_CO_UT_webApiJsonResponseHeader",
+      "type": "Expression Rule",
+      "description": "Returns standard HTTP header 'Content-Type': 'application/json'",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CO_UT_webApiResponseSuccess"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef20-10f8-8000-9e68-011c48011c48_18119212",
+      "name": "AS_GSS_CO_UT_webApiResponseSuccess",
+      "type": "Expression Rule",
+      "description": "Successful Web API Response constructor. Pass in an Appian Dictionary or Records for body and the rule will cast it to JSON",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_GSS_CO_UT_webApiJsonResponseHeader"
+      ],
+      "called_by": [
+        "AS_GSS_WA_GET_EvaluationStatusList"
+      ]
+    },
+    {
+      "uuid": "_a-0000eee8-b1ee-8000-9e5a-011c48011c48_17688586",
+      "name": "AS_GSS_WA_GET_EvaluationStatusList",
+      "type": "Expression Rule",
+      "description": "Rule to get evaluation list for GCW",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_CO_UT_webApiResponseSuccess",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_HTTP_STATUS_CODE_SUCCESS",
+        "AS_GSS_WA_BATCH_SIZE_EVALUATION_STATUS_LIST"
+      ],
+      "called_by": [
+        "AS GSS WA GET Evaluation Status List"
+      ]
+    },
+    {
+      "uuid": "e6bc8561-d3a6-4679-b7af-6e279910468e",
+      "name": "AS_GSS_Evaluation_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "NOTE: Solicitation Description and Evaluation Description are 5000 characters and will be trimmed in the synced record",
+      "actions": [
+        "createNewEvaluation",
+        "addVendor",
+        "UpdatePhases",
+        "AddPhases"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT"
+      ],
+      "called_by": [
+        "AS_GSS_WA_GET_EvaluationStatusList"
+      ]
+    },
+    {
+      "uuid": "433d67e2-26f5-4212-9ced-1e408aa9fddf",
+      "name": "AS GSS WA GET Evaluation Status List",
+      "type": "Web API",
+      "description": "Web API to get evaluation list with status and send it to GCW",
+      "url_alias": "evaluationList",
+      "http_method": "GET",
+      "calls": [
+        "AS_GSS_WA_GET_EvaluationStatusList"
+      ],
+      "called_by": []
+    }
+  ]
+}

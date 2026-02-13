@@ -3,120 +3,120 @@
     "bundle_id": "AS_GSS_Add_Document_Details"
   },
   "objects": {
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73568": {
+      "name": "AS_CO_UT_getLabelPosition",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Text',\n  rule!AS_CO_UT_replaceNull(\n    nullableValue: ri!labelPosition,\n    replacementValue: if(\n      rule!AS_CO_UT_isBlank(ri!label),\n      \"COLLAPSED\",\n      if(ri!readOnly, \"ADJACENT\", \"ABOVE\")\n    )\n  )\n)"
+    },
     "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782": {
       "name": "AS_CO_UT_isNotBlank",
       "type": "Expression Rule",
       "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Boolean',\n  not(rule!AS_CO_UT_isBlank(ri!input))\n)"
-    },
-    "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_948612": {
-      "name": "AS_GSS_UT_loadBundleByNames",
-      "type": "Expression Rule",
-      "sail_code": "rule!AS_CO_I18N_UT_loadBundleFromFolder(\n  bundleFolder: cons!AS_GSS_FLD_PROPERTIES_FILES,\n  localeAgnostic: true,\n  bundleNames: rule!AS_CO_UT_replaceNull(\n    nullableValue: ri!bundleNames,\n    replacementValue: { \"AS.GSS.General\" }\n  )\n)"
-    },
-    "_a-0000eb44-a528-8000-9d15-011c48011c48_9978504": {
-      "name": "AS_CO_UT_displayRequiredMessage",
-      "type": "Expression Rule",
-      "sail_code": "if(\n  a!isNotNullOrEmpty(\n    ri!label\n  ),\n  a!defaultValue(\n    value: ri!requiredMessage,\n    default: rule!AS_CO_UT_displayCommonObjectBundleLabel(\n      bundleKey: \"AS.CO.CommonObjects.vld_RequiredMessage\",\n      arguments: stripwith(ri!label, \"*\")\n    )\n  ),\n  ri!requiredMessage\n)"
-    },
-    "000ae5ce-3b97-8000-0b0f-7f0000014e7a": {
-      "name": "AS GSS Add Document Details",
-      "type": "Process Model",
-      "sail_code": "// Input: ?\n=pv!evaluationDocuments\n\n// Input: ?\n=pv!userAction\n\n// Input: ?\n=cons!AS_GSS_ENT_EVALUATION_DOCUMENT\n\n// Input: ?\n=pv!evaluationDocuments\n\n// Output: ?\nAC!StoredValues"
-    },
-    "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_940470": {
-      "name": "AS_GSS_GRD_uploadedDocumentGrid",
-      "type": "Interface",
-      "sail_code": "a!localVariables(\n  local!i18nData: rule!AS_GSS_CO_UT_loadBundleFromFolder(null()),\n  {\n    #\"SYSTEM_SYSRULES_gridLayout\"(\n      label: \"\",\n      labelPosition: \"ABOVE\",\n      headerCells: {\n        #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(\n          label: \"Document Name\"\n        ),\n        #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(\n          label: \"Description\"\n        )\n      },\n      columnConfigs: {\n        #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(width: \"\"),\n        #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(width: \"DISTRIBUTE\", weight: 2)\n      },\n      rows: #\"SYSTEM_SYSRULES_forEach\"(\n        items: ri!evaluationDocuments,\n        expression: #\"SYSTEM_SYSRULES_gridRowLayout\"(\n          contents: {\n            rule!AS_CO_DSP_standardReadOnlyField(value: fv!item.documentName),\n            rule!AS_CO_INP_paragraphField(\n              value: fv!item.documentDesc,\n              saveInto: fv!item.documentDesc,\n              placeholder: \"Enter document description\",\n              maxLength: cons!AS_CO_ENUM_PARAGRAPH_LENGTH_SHORT\n            )\n          }\n        )\n      ),\n      validations: {},\n      shadeAlternateRows: true,\n      borderStyle: \"LIGHT\"\n    )\n  }\n)"
-    },
-    "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_84411": {
-      "name": "AS_CO_I18N_UT_getAndDisplayLabelSingle",
-      "type": "Expression Rule",
-      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Text',\n  a!localVariables(\n  \n    local!bundleKeyParse: rule!AS_CO_I18N_UT_parseBundleKey(\n      bundleKey: ri!bundleKey\n    ),\n    \n    local!i18nData: rule!AS_CO_I18N_UT_loadBundleFromFolder(\n      bundleFolder: ri!bundleFolder,\n      bundleNames: local!bundleKeyParse.bundleName,\n      localeAgnostic: ri!localeAgnostic\n    ),\n    \n    rule!AS_CO_I18N_UT_displayLabel(\n      i18nData: local!i18nData,\n      bundleKey: ri!bundleKey,\n      arguments: ri!arguments\n    )\n  )\n)"
-    },
-    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_74104": {
-      "name": "AS_CO_VD_textValidation",
-      "type": "Expression Rule",
-      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Text',\n  a!localVariables(\n    local!length: len(ri!value),\n    local!minLength: rule!AS_CO_UT_replaceNull(\n      nullableValue: ri!minLength,\n      replacementValue: 0\n    ),\n    if(\n      /* Does not meet exact length requirement */\n      and(\n        rule!AS_CO_UT_isNotBlank(ri!minLength),\n        rule!AS_CO_UT_isNotBlank(ri!maxLength),\n        ri!minLength = ri!maxLength,\n        local!length <> ri!minLength\n      ),\n      rule!AS_CO_UT_replaceNull(\n        nullableValue: rule!AS_CO_UT_replaceNull(\n          nullableValue: ri!maxLengthMessage,\n          replacementValue: ri!minLengthMessage\n        ),\n        replacementValue: rule!AS_CO_UT_displayCommonObjectBundleLabel(\n          bundleKey: if(\n            ri!minLength = 1,\n            \"AS.CO.CommonObjects.vld_EnterExactlySingle\",\n            \"AS.CO.CommonObjects.vld_EnterExactlyMultiple\"\n          ),\n          arguments: ri!minLength\n        )\n      ),\n      /*Too short*/\n      if(\n        local!length < ri!minLength,\n        rule!AS_CO_UT_replaceNull(\n          nullableValue: ri!minLengthMessage,\n          replacementValue: rule!AS_CO_UT_displayCommonObjectBundleLabel(\n            bundleKey: \"AS.CO.CommonObjects.vld_EnterAtLeast\",\n            arguments: local!minLength\n          )\n        ),\n        /*Too long*/\n        if(\n          and(\n            rule!AS_CO_UT_isNotBlank(ri!maxLength),\n            local!length > ri!maxLength\n          ),\n          rule!AS_CO_UT_replaceNull(\n            nullableValue: ri!maxLengthMessage,\n            replacementValue: rule!AS_CO_UT_displayCommonObjectBundleLabel(\n              bundleKey: if(\n                ri!maxLength = 1,\n                \"AS.CO.CommonObjects.vld_EnterNoMoreThanSingle\",\n                \"AS.CO.CommonObjects.vld_EnterNoMoreThanMultiple\"\n              ),\n              arguments: ri!maxLength\n            )\n          ),\n          /*Valid*/\n          \"\"\n        )\n      )\n    )\n  )\n)"
-    },
-    "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_939732": {
-      "name": "AS_GSS_UT_displayDynamicLabel",
-      "type": "Expression Rule",
-      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Text',\n  a!localVariables(\n    local!bundle: rule!AS_GSS_CO_UT_loadBundleFromFolder(langISOCode: null()),\n    rule!AS_GAM_CO_I18N_UT_displayLabel(\n      bundle:  local!bundle,\n      bundleKey: ri!bundleKey,\n      arguments: ri!arguments\n    )\n  )\n)"
-    },
-    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_74131": {
-      "name": "AS_CO_DSP_standardReadOnlyField",
-      "type": "Interface",
-      "sail_code": "#\"SYSTEM_SYSRULES_textField\"(\n  label: ri!label,\n  labelPosition: rule!AS_CO_UT_getLabelPosition(\n    label: ri!label,\n    labelPosition: ri!labelPosition,\n    readOnly: true\n  ),\n  instructions: ri!instructions,\n  helpTooltip: ri!helpTooltip,\n  value: rule!AS_CO_UT_replaceNull(\n    nullableValue: ri!value,\n    replacementValue: if(\n      rule!AS_CO_UT_booleanDefaultTrue(\n        ri!showHyphenIfValueNull\n      ),\n      \"-\",\n      \"\"\n    )\n  ),\n  showWhen: ri!showWhen,\n  readOnly: true,\n  align: ri!align,\n  accessibilityText: ri!accessibilityText\n)"
-    },
-    "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_940429": {
-      "name": "AS_GSS_FM_addDocumentDetails",
-      "type": "Interface",
-      "sail_code": "a!localVariables(\n  local!i18nData: rule!AS_GSS_CO_UT_loadBundleFromFolder(langISOCode: null),\n  /*rule!AS_GSS_UT_loadBundleByNames(bundleNames: \"AS.GSS.General\"),*/\n  #\"SYSTEM_SYSRULES_formLayout_v1\"(\n    label: \"Add document details\",\n    contents: rule!AS_GSS_GRD_uploadedDocumentGrid(\n      evaluationDocuments: ri!evaluationDocuments\n    ),\n    buttons: rule!AS_CO_CPS_cancelSaveButtons(\n      confirmAccessibilityText: \"Press Enter to save changes\",\n      cancelAccessibilityText: \"Press Enter to cancel changes\",\n      confirmLabel: \"Select\",\n      /*rule!AS_GSS_UT_displayDynamicLabel(bundleKey: \"AS.GSS.General.btn_Select\")*/\n      cancelLabel: \"Cancel\",\n      /*rule!AS_GSS_UT_displayDynamicLabel(bundleKey: \"AS.GSS.General.btn_Cancel\"),*/\n      confirmSaveInto: {\n        a!save(\n          ri!userAction,\n          cons!AS_CO_ENUM_USER_ACTION_SAVE\n        )\n      },\n      cancelSaveInto: {\n        a!save(\n          ri!userAction,\n          cons!AS_CO_ENUM_USER_ACTION_CANCEL\n        )\n      },\n      confirmSubmit: true,\n      cancelSubmit: true,\n      cancelShowWhen: rule!AS_CO_UT_isNotBlank(ri!evaluationDocuments.evalDocumentId)\n    )\n  )\n)"
-    },
-    "_a-0000e3d1-f4dc-8000-9ba4-011c48011c48_134344": {
-      "name": "AS_CO_CPS_cancelSaveButtons",
-      "type": "Interface",
-      "sail_code": "a!localVariables(\n  /*The button layout, which can dynamically be inside a section or not*/\n  /*Note that when using this pattern of storing an interface as a local variable, it must be set to refreshAlways = true*/\n  local!buttonLayout: a!refreshVariable(\n    value: #\"SYSTEM_SYSRULES_ButtonLayout\"(\n      primaryButtons: {\n        #\"SYSTEM_SYSRULES_ButtonWidget\"(\n          accessibilityText: ri!confirmAccessibilityText,\n          label: ri!confirmLabel,\n          size: ri!confirmSize,\n          saveInto: if(\n            rule!AS_CO_UT_isBlank(\n              ri!confirmSaveInto\n            ),\n            {},\n            ri!confirmSaveInto\n          ),\n          style: rule!AS_CO_UT_replaceNull(\n            nullableValue: ri!confirmStyle,\n            replacementValue: \"PRIMARY\"\n          ),\n          validate: true,\n          validationGroup: ri!confirmValidationGroup,\n          submit: ri!confirmSubmit,\n          disabled: ri!confirmDisabled,\n          confirmHeader: ri!confirmHeader,\n          confirmMessage: ri!confirmMessage\n        )\n      },\n      secondaryButtons: {\n        #\"SYSTEM_SYSRULES_ButtonWidget\"(\n          accessibilityText: ri!cancelAccessibilityText,\n          label: ri!cancelLabel,\n          size: ri!cancelSize,\n          saveInto: if(\n            rule!AS_CO_UT_isBlank(\n              ri!cancelSaveInto\n            ),\n            {},\n            ri!cancelSaveInto\n          ),\n          style: rule!AS_CO_UT_replaceNull(\n            nullableValue: ri!cancelStyle,\n            replacementValue: \"NORMAL\"\n          ),\n          validate: false,\n          submit: ri!cancelSubmit,\n          disabled: ri!cancelDisabled,\n          confirmHeader: ri!cancelHeader,\n          confirmMessage: ri!cancelMessage,\n          showWhen: ri!cancelShowWhen\n        )\n      },\n      showWhen: ri!showWhen\n    ),\n    refreshAlways: true\n  ),\n  /*Components to show*/\n  if(\n    ri!includeDivider,\n    #\"SYSTEM_SYSRULES_sectionLayout_v1\"(\n      divider: \"ABOVE\",\n      contents: {\n        local!buttonLayout\n      }\n    ),\n    local!buttonLayout\n  )\n)"
-    },
-    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76004": {
-      "name": "AS_CO_I18N_UT_getUserLocale",
-      "type": "Expression Rule",
-      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Text',\n  userlocale(ri!user)\n)"
-    },
-    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536": {
-      "name": "AS_CO_UT_isBlank",
-      "type": "Expression Rule",
-      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  length(a!flatten(ri!value)) = 0\n)"
-    },
-    "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_81818": {
-      "name": "AS_CO_I18N_UT_displayLabel",
-      "type": "Expression Rule",
-      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Text',\n  with(\n    local!bundleKeyParse: rule!AS_CO_I18N_UT_parseBundleKey(bundleKey: ri!bundleKey),\n    local!label: if(\n      rule!AS_CO_UT_isBlank(local!bundleKeyParse.bundleName),\n      ri!i18nData[local!bundleKeyParse.labelKey],\n      ri!i18nData[local!bundleKeyParse.bundleName][local!bundleKeyParse.labelKey]\n    ),\n    local!updatedLabel: rule!AS_CO_UT_replaceNull(\n      nullableValue: local!label,\n      replacementValue: ri!bundleKey\n    ),\n    local!updatedLabelForArguments: if(\n      rule!AS_CO_UT_isBlank(ri!arguments),\n      local!updatedLabel,\n      reduce(\n        rule!AS_CO_I18N_UT_replaceArgument(input: _, index: _, arguments: ri!arguments),\n        local!updatedLabel,\n        enumerate(count(ri!arguments)) + 1\n      )\n    ),\n    local!updatedLabelForArguments\n  )\n)"
-    },
-    "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39082": {
-      "name": "AS_CO_UT_booleanDefaultTrue",
-      "type": "Expression Rule",
-      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  if(\n    isnull(ri!boolean),\n    true,\n    ri!boolean\n  )\n)"
-    },
-    "_a-0000e643-f7f1-8000-9bca-011c48011c48_1319026": {
-      "name": "AS_GSS_CO_UT_loadBundleFromFolder",
-      "type": "Expression Rule",
-      "sail_code": "with(\n  local!lang: \"en_US\",\n  /* below is deprecated for now, uncomment to support multi-language display */\n  /*if(*/\n  /*isnull(ri!langISOCode),*/\n  /*userlocale(loggedInUser()),*/\n  /*ri!langISOCode*/\n  /*),*/\n  local!bundleName: /*rule!AS_GCM_determineValueBySolutionFlavor(\n    options: cons!AS_GCM_TXT_VALID_SOLUTION_FLAVORS\n  )*/\"AS.GSS.General\",\n  /*local!bundleName*/\n  local!output: loadbundlepropertiesfile(\n    cons!AS_GSS_FLD_PROPERTIES_FILES,\n    local!lang,\n    local!bundleName\n  )[local!bundleName],\n  local!output\n)"
-    },
-    "_a-0000e447-933d-8000-9baa-011c48011c48_33160": {
-      "name": "AS_CO_UT_displayCommonObjectBundleLabel",
-      "type": "Expression Rule",
-      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Text',\n  rule!AS_CO_I18N_UT_getAndDisplayLabelSingle(\n    bundleFolder: cons!AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES,\n    bundleKey: ri!bundleKey,\n    arguments: ri!arguments,\n    localeAgnostic: false\n  )\n)"
-    },
-    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73980": {
-      "name": "AS_CO_UT_replaceNull",
-      "type": "Expression Rule",
-      "sail_code": "if(\n  rule!AS_CO_UT_isBlank(ri!nullableValue),\n  ri!replacementValue,\n  ri!nullableValue\n)"
-    },
-    "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53662": {
-      "name": "AS_GAM_CO_I18N_UT_displayLabel",
-      "type": "Expression Rule",
-      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Text',\n  a!localVariables(\n    local!result: a!refreshVariable(\n      value: if(\n        rule!AS_CO_UT_isBlank(ri!bundleKey),\n        null,\n        if(\n          rule!AS_CO_UT_isBlank(ri!arguments),\n          rule!AS_CO_UT_replaceNull(\n            nullableValue: ri!bundle[ri!bundleKey],\n            replacementValue: ri!bundleKey\n          ),\n          rule!AS_GAM_CO_I18N_UT_replaceArguments(\n            bundleKey: ri!bundle[ri!bundleKey],\n            arguments: ri!arguments\n          )\n        )\n      ),\n      refreshAlways: true\n    ),\n    local!result\n  )\n)"
     },
     "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_74400": {
       "name": "AS_CO_INP_paragraphField",
       "type": "Interface",
       "sail_code": "if(\n  ri!readOnly,\n  rule!AS_CO_DSP_standardReadOnlyField(\n    label: ri!label,\n    instructions: ri!instructions,\n    value: ri!value,\n    labelPosition: ri!labelPosition,\n    helpTooltip: ri!helpTooltip,\n    showWhen: ri!showWhen,\n    accessibilityText: ri!accessibilityText,\n    align: null,\n    showHyphenIfValueNull: ri!showHyphenIfValueNull\n  ),\n  #\"SYSTEM_SYSRULES_paragraphField\"(\n    label: ri!label,\n    labelPosition: rule!AS_CO_UT_getLabelPosition(\n      label: ri!label,\n      labelPosition: ri!labelPosition,\n      readOnly: false\n    ),\n    height: ri!height,\n    instructions: ri!instructions,\n    helpTooltip: ri!helpTooltip,\n    placeholder: ri!placeholder,\n    value: ri!value,\n    /* We are using nested saveIntos to automatically perform a trim on any value */\n    /* before executing the actual saves */\n    /* Saves can be nested in this format to allow for better reusability */\n    saveInto: a!save(ri!saveInto, trim(save!value)),\n    showWhen: ri!showWhen,\n    required: if(ri!readOnly, false, ri!required),\n    /* Updated requiredMessage parameter to show default validation text*/\n    requiredMessage: rule!AS_CO_UT_displayRequiredMessage(\n      label: ri!label,\n      requiredMessage: ri!requiredMessage\n    ),\n    readOnly: ri!readOnly,\n    disabled: ri!disabled,\n    validations: if(\n      ri!readOnly,\n      {},\n      a!flatten(\n        {\n          ri!validations,\n          rule!AS_CO_VD_textValidation(value: ri!value, maxLength: ri!maxLength)\n        }\n      )\n    ),\n    validationGroup: ri!validationGroup,\n    accessibilitytext: ri!accessibilityText,\n    characterLimit: ri!characterLimit,\n    showCharacterCount: ri!showCharacterCount\n  )\n)"
     },
-    "_a-0000e438-fdf5-8000-9ba8-011c48011c48_19869": {
-      "name": "AS_CO_I18N_UT_parseBundleKey",
+    "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_940429": {
+      "name": "AS_GSS_FM_addDocumentDetails",
+      "type": "Interface",
+      "sail_code": "a!localVariables(\n  local!i18nData: rule!AS_GSS_CO_UT_loadBundleFromFolder(langISOCode: null),\n  /*rule!AS_GSS_UT_loadBundleByNames(bundleNames: \"AS.GSS.General\"),*/\n  #\"SYSTEM_SYSRULES_formLayout_v1\"(\n    label: \"Add document details\",\n    contents: rule!AS_GSS_GRD_uploadedDocumentGrid(\n      evaluationDocuments: ri!evaluationDocuments\n    ),\n    buttons: rule!AS_CO_CPS_cancelSaveButtons(\n      confirmAccessibilityText: \"Press Enter to save changes\",\n      cancelAccessibilityText: \"Press Enter to cancel changes\",\n      confirmLabel: \"Select\",\n      /*rule!AS_GSS_UT_displayDynamicLabel(bundleKey: \"AS.GSS.General.btn_Select\")*/\n      cancelLabel: \"Cancel\",\n      /*rule!AS_GSS_UT_displayDynamicLabel(bundleKey: \"AS.GSS.General.btn_Cancel\"),*/\n      confirmSaveInto: {\n        a!save(\n          ri!userAction,\n          cons!AS_CO_ENUM_USER_ACTION_SAVE\n        )\n      },\n      cancelSaveInto: {\n        a!save(\n          ri!userAction,\n          cons!AS_CO_ENUM_USER_ACTION_CANCEL\n        )\n      },\n      confirmSubmit: true,\n      cancelSubmit: true,\n      cancelShowWhen: rule!AS_CO_UT_isNotBlank(ri!evaluationDocuments.evalDocumentId)\n    )\n  )\n)"
+    },
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_74131": {
+      "name": "AS_CO_DSP_standardReadOnlyField",
+      "type": "Interface",
+      "sail_code": "#\"SYSTEM_SYSRULES_textField\"(\n  label: ri!label,\n  labelPosition: rule!AS_CO_UT_getLabelPosition(\n    label: ri!label,\n    labelPosition: ri!labelPosition,\n    readOnly: true\n  ),\n  instructions: ri!instructions,\n  helpTooltip: ri!helpTooltip,\n  value: rule!AS_CO_UT_replaceNull(\n    nullableValue: ri!value,\n    replacementValue: if(\n      rule!AS_CO_UT_booleanDefaultTrue(\n        ri!showHyphenIfValueNull\n      ),\n      \"-\",\n      \"\"\n    )\n  ),\n  showWhen: ri!showWhen,\n  readOnly: true,\n  align: ri!align,\n  accessibilityText: ri!accessibilityText\n)"
+    },
+    "_a-0000e447-933d-8000-9baa-011c48011c48_33160": {
+      "name": "AS_CO_UT_displayCommonObjectBundleLabel",
       "type": "Expression Rule",
-      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Dictionary',\n  with(\n    local!split: split(\n      ri!bundleKey,\n      \".\"\n    ),\n    local!bundleName: joinarray(\n      remove(\n        local!split,\n        count(\n          local!split\n        )\n      ),\n      \".\"\n    ),\n    local!labelKey: local!split[count(\n      local!split\n    )],\n    {\n      bundleName: local!bundleName,\n      labelKey: local!labelKey\n    }\n  )\n)"
+      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Text',\n  rule!AS_CO_I18N_UT_getAndDisplayLabelSingle(\n    bundleFolder: cons!AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES,\n    bundleKey: ri!bundleKey,\n    arguments: ri!arguments,\n    localeAgnostic: false\n  )\n)"
+    },
+    "000ae5ce-3b97-8000-0b0f-7f0000014e7a": {
+      "name": "AS GSS Add Document Details",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n=pv!evaluationDocuments\n\n// Input: ?\n=pv!userAction\n\n// Input: ?\n=cons!AS_GSS_ENT_EVALUATION_DOCUMENT\n\n// Input: ?\n=pv!evaluationDocuments\n\n// Output: ?\nAC!StoredValues"
     },
     "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_81720": {
       "name": "AS_CO_I18N_UT_loadBundleFromFolder",
       "type": "Expression Rule",
       "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Dictionary',\n  a!localVariables(\n    \n    local!locale: if(\n      ri!localeAgnostic,\n      null,\n      rule!AS_CO_I18N_UT_getUserLocale(user: loggedInUser())\n    ),\n    \n    if(\n      rule!AS_CO_UT_isBlank(ri!bundleFolder),\n      \n      null,\n      \n      a!localVariables(\n        /*Wrapping this in a local variable to ensure caching -- it will only re-execute if inputs change*/\n        local!bundleData: loadbundlepropertiesfile(\n          ri!bundleFolder,\n          local!locale,\n          a!flatten(ri!bundleNames)\n        ),\n        \n        local!bundleData\n      )\n    )\n  )\n)"
     },
-    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73568": {
-      "name": "AS_CO_UT_getLabelPosition",
+    "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_81818": {
+      "name": "AS_CO_I18N_UT_displayLabel",
       "type": "Expression Rule",
-      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Text',\n  rule!AS_CO_UT_replaceNull(\n    nullableValue: ri!labelPosition,\n    replacementValue: if(\n      rule!AS_CO_UT_isBlank(ri!label),\n      \"COLLAPSED\",\n      if(ri!readOnly, \"ADJACENT\", \"ABOVE\")\n    )\n  )\n)"
+      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Text',\n  with(\n    local!bundleKeyParse: rule!AS_CO_I18N_UT_parseBundleKey(bundleKey: ri!bundleKey),\n    local!label: if(\n      rule!AS_CO_UT_isBlank(local!bundleKeyParse.bundleName),\n      ri!i18nData[local!bundleKeyParse.labelKey],\n      ri!i18nData[local!bundleKeyParse.bundleName][local!bundleKeyParse.labelKey]\n    ),\n    local!updatedLabel: rule!AS_CO_UT_replaceNull(\n      nullableValue: local!label,\n      replacementValue: ri!bundleKey\n    ),\n    local!updatedLabelForArguments: if(\n      rule!AS_CO_UT_isBlank(ri!arguments),\n      local!updatedLabel,\n      reduce(\n        rule!AS_CO_I18N_UT_replaceArgument(input: _, index: _, arguments: ri!arguments),\n        local!updatedLabel,\n        enumerate(count(ri!arguments)) + 1\n      )\n    ),\n    local!updatedLabelForArguments\n  )\n)"
+    },
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73980": {
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  rule!AS_CO_UT_isBlank(ri!nullableValue),\n  ri!replacementValue,\n  ri!nullableValue\n)"
+    },
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76004": {
+      "name": "AS_CO_I18N_UT_getUserLocale",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Text',\n  userlocale(ri!user)\n)"
+    },
+    "_a-0000e438-fdf5-8000-9ba8-011c48011c48_19869": {
+      "name": "AS_CO_I18N_UT_parseBundleKey",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Dictionary',\n  with(\n    local!split: split(\n      ri!bundleKey,\n      \".\"\n    ),\n    local!bundleName: joinarray(\n      remove(\n        local!split,\n        count(\n          local!split\n        )\n      ),\n      \".\"\n    ),\n    local!labelKey: local!split[count(\n      local!split\n    )],\n    {\n      bundleName: local!bundleName,\n      labelKey: local!labelKey\n    }\n  )\n)"
+    },
+    "_a-0000eb44-a528-8000-9d15-011c48011c48_9978504": {
+      "name": "AS_CO_UT_displayRequiredMessage",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  a!isNotNullOrEmpty(\n    ri!label\n  ),\n  a!defaultValue(\n    value: ri!requiredMessage,\n    default: rule!AS_CO_UT_displayCommonObjectBundleLabel(\n      bundleKey: \"AS.CO.CommonObjects.vld_RequiredMessage\",\n      arguments: stripwith(ri!label, \"*\")\n    )\n  ),\n  ri!requiredMessage\n)"
+    },
+    "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53662": {
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Text',\n  a!localVariables(\n    local!result: a!refreshVariable(\n      value: if(\n        rule!AS_CO_UT_isBlank(ri!bundleKey),\n        null,\n        if(\n          rule!AS_CO_UT_isBlank(ri!arguments),\n          rule!AS_CO_UT_replaceNull(\n            nullableValue: ri!bundle[ri!bundleKey],\n            replacementValue: ri!bundleKey\n          ),\n          rule!AS_GAM_CO_I18N_UT_replaceArguments(\n            bundleKey: ri!bundle[ri!bundleKey],\n            arguments: ri!arguments\n          )\n        )\n      ),\n      refreshAlways: true\n    ),\n    local!result\n  )\n)"
+    },
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_74104": {
+      "name": "AS_CO_VD_textValidation",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Text',\n  a!localVariables(\n    local!length: len(ri!value),\n    local!minLength: rule!AS_CO_UT_replaceNull(\n      nullableValue: ri!minLength,\n      replacementValue: 0\n    ),\n    if(\n      /* Does not meet exact length requirement */\n      and(\n        rule!AS_CO_UT_isNotBlank(ri!minLength),\n        rule!AS_CO_UT_isNotBlank(ri!maxLength),\n        ri!minLength = ri!maxLength,\n        local!length <> ri!minLength\n      ),\n      rule!AS_CO_UT_replaceNull(\n        nullableValue: rule!AS_CO_UT_replaceNull(\n          nullableValue: ri!maxLengthMessage,\n          replacementValue: ri!minLengthMessage\n        ),\n        replacementValue: rule!AS_CO_UT_displayCommonObjectBundleLabel(\n          bundleKey: if(\n            ri!minLength = 1,\n            \"AS.CO.CommonObjects.vld_EnterExactlySingle\",\n            \"AS.CO.CommonObjects.vld_EnterExactlyMultiple\"\n          ),\n          arguments: ri!minLength\n        )\n      ),\n      /*Too short*/\n      if(\n        local!length < ri!minLength,\n        rule!AS_CO_UT_replaceNull(\n          nullableValue: ri!minLengthMessage,\n          replacementValue: rule!AS_CO_UT_displayCommonObjectBundleLabel(\n            bundleKey: \"AS.CO.CommonObjects.vld_EnterAtLeast\",\n            arguments: local!minLength\n          )\n        ),\n        /*Too long*/\n        if(\n          and(\n            rule!AS_CO_UT_isNotBlank(ri!maxLength),\n            local!length > ri!maxLength\n          ),\n          rule!AS_CO_UT_replaceNull(\n            nullableValue: ri!maxLengthMessage,\n            replacementValue: rule!AS_CO_UT_displayCommonObjectBundleLabel(\n              bundleKey: if(\n                ri!maxLength = 1,\n                \"AS.CO.CommonObjects.vld_EnterNoMoreThanSingle\",\n                \"AS.CO.CommonObjects.vld_EnterNoMoreThanMultiple\"\n              ),\n              arguments: ri!maxLength\n            )\n          ),\n          /*Valid*/\n          \"\"\n        )\n      )\n    )\n  )\n)"
+    },
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536": {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  length(a!flatten(ri!value)) = 0\n)"
+    },
+    "_a-0000e3d1-f4dc-8000-9ba4-011c48011c48_134344": {
+      "name": "AS_CO_CPS_cancelSaveButtons",
+      "type": "Interface",
+      "sail_code": "a!localVariables(\n  /*The button layout, which can dynamically be inside a section or not*/\n  /*Note that when using this pattern of storing an interface as a local variable, it must be set to refreshAlways = true*/\n  local!buttonLayout: a!refreshVariable(\n    value: #\"SYSTEM_SYSRULES_ButtonLayout\"(\n      primaryButtons: {\n        #\"SYSTEM_SYSRULES_ButtonWidget\"(\n          accessibilityText: ri!confirmAccessibilityText,\n          label: ri!confirmLabel,\n          size: ri!confirmSize,\n          saveInto: if(\n            rule!AS_CO_UT_isBlank(\n              ri!confirmSaveInto\n            ),\n            {},\n            ri!confirmSaveInto\n          ),\n          style: rule!AS_CO_UT_replaceNull(\n            nullableValue: ri!confirmStyle,\n            replacementValue: \"PRIMARY\"\n          ),\n          validate: true,\n          validationGroup: ri!confirmValidationGroup,\n          submit: ri!confirmSubmit,\n          disabled: ri!confirmDisabled,\n          confirmHeader: ri!confirmHeader,\n          confirmMessage: ri!confirmMessage\n        )\n      },\n      secondaryButtons: {\n        #\"SYSTEM_SYSRULES_ButtonWidget\"(\n          accessibilityText: ri!cancelAccessibilityText,\n          label: ri!cancelLabel,\n          size: ri!cancelSize,\n          saveInto: if(\n            rule!AS_CO_UT_isBlank(\n              ri!cancelSaveInto\n            ),\n            {},\n            ri!cancelSaveInto\n          ),\n          style: rule!AS_CO_UT_replaceNull(\n            nullableValue: ri!cancelStyle,\n            replacementValue: \"NORMAL\"\n          ),\n          validate: false,\n          submit: ri!cancelSubmit,\n          disabled: ri!cancelDisabled,\n          confirmHeader: ri!cancelHeader,\n          confirmMessage: ri!cancelMessage,\n          showWhen: ri!cancelShowWhen\n        )\n      },\n      showWhen: ri!showWhen\n    ),\n    refreshAlways: true\n  ),\n  /*Components to show*/\n  if(\n    ri!includeDivider,\n    #\"SYSTEM_SYSRULES_sectionLayout_v1\"(\n      divider: \"ABOVE\",\n      contents: {\n        local!buttonLayout\n      }\n    ),\n    local!buttonLayout\n  )\n)"
+    },
+    "_a-0000e643-f7f1-8000-9bca-011c48011c48_1319026": {
+      "name": "AS_GSS_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "sail_code": "with(\n  local!lang: \"en_US\",\n  /* below is deprecated for now, uncomment to support multi-language display */\n  /*if(*/\n  /*isnull(ri!langISOCode),*/\n  /*userlocale(loggedInUser()),*/\n  /*ri!langISOCode*/\n  /*),*/\n  local!bundleName: /*rule!AS_GCM_determineValueBySolutionFlavor(\n    options: cons!AS_GCM_TXT_VALID_SOLUTION_FLAVORS\n  )*/\"AS.GSS.General\",\n  /*local!bundleName*/\n  local!output: loadbundlepropertiesfile(\n    cons!AS_GSS_FLD_PROPERTIES_FILES,\n    local!lang,\n    local!bundleName\n  )[local!bundleName],\n  local!output\n)"
+    },
+    "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_84411": {
+      "name": "AS_CO_I18N_UT_getAndDisplayLabelSingle",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Text',\n  a!localVariables(\n  \n    local!bundleKeyParse: rule!AS_CO_I18N_UT_parseBundleKey(\n      bundleKey: ri!bundleKey\n    ),\n    \n    local!i18nData: rule!AS_CO_I18N_UT_loadBundleFromFolder(\n      bundleFolder: ri!bundleFolder,\n      bundleNames: local!bundleKeyParse.bundleName,\n      localeAgnostic: ri!localeAgnostic\n    ),\n    \n    rule!AS_CO_I18N_UT_displayLabel(\n      i18nData: local!i18nData,\n      bundleKey: ri!bundleKey,\n      arguments: ri!arguments\n    )\n  )\n)"
+    },
+    "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39082": {
+      "name": "AS_CO_UT_booleanDefaultTrue",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  if(\n    isnull(ri!boolean),\n    true,\n    ri!boolean\n  )\n)"
+    },
+    "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_948612": {
+      "name": "AS_GSS_UT_loadBundleByNames",
+      "type": "Expression Rule",
+      "sail_code": "rule!AS_CO_I18N_UT_loadBundleFromFolder(\n  bundleFolder: cons!AS_GSS_FLD_PROPERTIES_FILES,\n  localeAgnostic: true,\n  bundleNames: rule!AS_CO_UT_replaceNull(\n    nullableValue: ri!bundleNames,\n    replacementValue: { \"AS.GSS.General\" }\n  )\n)"
+    },
+    "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_939732": {
+      "name": "AS_GSS_UT_displayDynamicLabel",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Text',\n  a!localVariables(\n    local!bundle: rule!AS_GSS_CO_UT_loadBundleFromFolder(langISOCode: null()),\n    rule!AS_GAM_CO_I18N_UT_displayLabel(\n      bundle:  local!bundle,\n      bundleKey: ri!bundleKey,\n      arguments: ri!arguments\n    )\n  )\n)"
+    },
+    "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_940470": {
+      "name": "AS_GSS_GRD_uploadedDocumentGrid",
+      "type": "Interface",
+      "sail_code": "a!localVariables(\n  local!i18nData: rule!AS_GSS_CO_UT_loadBundleFromFolder(null()),\n  {\n    #\"SYSTEM_SYSRULES_gridLayout\"(\n      label: \"\",\n      labelPosition: \"ABOVE\",\n      headerCells: {\n        #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(\n          label: \"Document Name\"\n        ),\n        #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(\n          label: \"Description\"\n        )\n      },\n      columnConfigs: {\n        #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(width: \"\"),\n        #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(width: \"DISTRIBUTE\", weight: 2)\n      },\n      rows: #\"SYSTEM_SYSRULES_forEach\"(\n        items: ri!evaluationDocuments,\n        expression: #\"SYSTEM_SYSRULES_gridRowLayout\"(\n          contents: {\n            rule!AS_CO_DSP_standardReadOnlyField(value: fv!item.documentName),\n            rule!AS_CO_INP_paragraphField(\n              value: fv!item.documentDesc,\n              saveInto: fv!item.documentDesc,\n              placeholder: \"Enter document description\",\n              maxLength: cons!AS_CO_ENUM_PARAGRAPH_LENGTH_SHORT\n            )\n          }\n        )\n      ),\n      validations: {},\n      shadeAlternateRows: true,\n      borderStyle: \"LIGHT\"\n    )\n  }\n)"
     }
   }
 }

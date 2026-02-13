@@ -1,0 +1,738 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "AS_GSS_EvaluationVendor_SYNCEDRECORD - View",
+    "parent_name": "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+    "total_objects": 33
+  },
+  "entry_point": {
+    "action_type": "RECORD_ACTION",
+    "record_type": "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+    "target_process": "AS GSS View Consensus Rating Breakdown",
+    "form_interface": "AS_GSS_FM_consensusRatingBreakdown",
+    "expressions": {
+      "TITLE": "\"View\"",
+      "DESCRIPTION": null,
+      "VISIBILITY": null,
+      "CONTEXT": "{\n  evaluationVendor: rule!AS_GSS_QR_getEvaluationVendorByIdentifier(\n    executeWhen: true(),\n    vendorId: rv!record[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.vendorId],\n    fields: {\n      recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.evaluation\n    }\n  )\n}"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GSS View Consensus Rating Breakdown",
+      "complexity_score": 1.0,
+      "total_nodes": 2,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290163",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "description": "OBJECT_ARRAY - Returns an array type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "OBJECT_ARRAY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_ConsensusReport_SYNCEDRECORD",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_constructConsensusRatingForGivenVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290157",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "description": "SINGLE_OBJECT - Returns a single type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "SINGLE_OBJECT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_QR_getConsensusReport",
+        "AS_GSS_QR_getCriteria"
+      ]
+    },
+    {
+      "uuid": "_a-0000eed7-628f-8000-9e56-011c48011c48_17651646",
+      "name": "AS_GSS_CONSENSUS_RATING_BREAKDOWN_EMPTY_STATE_IMAGE",
+      "type": "Constant",
+      "description": "Constant reference to the AS GSS Consensus Rating Breakdown Empty State Image document",
+      "value": "_a-0000eed7-628f-8000-9e56-011c48011c48_17651640",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_SEC_consensusRatingBreakdownEmptyState"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec62-ac34-8000-9d9a-011c48011c48_13151218",
+      "name": "AS_GSS_CO_NULL_REPLACEABLE_TEXT",
+      "type": "Constant",
+      "description": "Value:  -",
+      "value": "-",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CRD_consensusRatingPerFactor"
+      ]
+    },
+    {
+      "uuid": "_a-0000eed7-628f-8000-9e56-011c48011c48_17640199",
+      "name": "AS_GSS_CO_TXT_SPLIT_TAG",
+      "type": "Constant",
+      "description": "The split tag to mark the to insert between texts",
+      "value": "|",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CRD_consensusRatingPerFactor",
+        "AS_GSS_FM_consensusRatingBreakdown"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9b7-c1f0-8000-9c5e-011c48011c48_5190355",
+      "name": "AS_GSS_ENUM_TEXT_LIMIT_FOR_CONSENSUS_REPORT_SUMMARY",
+      "type": "Constant",
+      "description": "value: 100",
+      "value": "100",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CRD_consensusRatingPerFactor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e721-640b-8000-9ba8-011c48011c48_43175",
+      "name": "AS_GSS_REF_ID_CONSENSUS_REPORT_STATUS_COMPLETE",
+      "type": "Constant",
+      "description": "Value: 47\n",
+      "value": "47",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_constructConsensusRatingForGivenVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_973775",
+      "name": "AS_GSS_REF_ID_EVALUATION_STATUS_TEMP",
+      "type": "Constant",
+      "description": "Value: 34",
+      "value": "34",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_constructConsensusRatingForGivenVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9c7-4e42-8000-9c64-011c48011c48_5366367",
+      "name": "AS_GSS_TOGGLE_AUTOMATION_TESTING_ENABLED",
+      "type": "Constant",
+      "description": "Always leave this constant as false, only set to true for automated testing",
+      "value": null,
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CPS_richTextWithShowMoreLess"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157603",
+      "name": "AS_CO_UT_cast",
+      "type": "Expression Rule",
+      "description": "Casts a variable to the type of either the input `type`, or the typeof of the input `typeof`, and properly handles for null inputs",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_UT_queryRecordByIdentifier"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6cd-618a-8000-9bd9-011c48011c48_1688557",
+      "name": "AS_CO_UT_checkIsNullOrEmpty",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is null/empty. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_FM_consensusRatingBreakdown",
+        "AS_GSS_QR_getEvaluationVendorByIdentifier",
+        "AS_GSS_constructConsensusRatingForGivenVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6a4-3c85-8000-9ba5-011c48011c48_45984",
+      "name": "AS_CO_UT_indexWhere",
+      "type": "Expression Rule",
+      "description": "Will find the index of a value in one array and return the value in a different array at that same index",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GSS_constructConsensusRatingForGivenVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_indexWhere",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_left",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_replaceNull"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around AS_CO_UT_isBlank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_FM_consensusRatingBreakdown",
+        "AS_GSS_constructConsensusRatingForGivenVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75618",
+      "name": "AS_CO_UT_left",
+      "type": "Expression Rule",
+      "description": "Executes the `left()` function with error handling for a null input",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GSS_CPS_richTextWithShowMoreLess"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6c8-d132-8000-9bbe-011c48011c48_469266",
+      "name": "AS_CO_UT_queryRecord",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_GSS_QR_getConsensusReport",
+        "AS_GSS_QR_getCriteria"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367",
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GSS_QR_getConsensusReport",
+        "AS_GSS_QR_getCriteria"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73980",
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "description": "Returns nullableValue only if it is not null. Else returns replacementValue.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_left",
+        "AS_GSS_BrandingValueByKey"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1369557",
+      "name": "AS_GSS_BrandingValueByKey",
+      "type": "Expression Rule",
+      "description": "Returns a GSS branding value by key",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GSS_CRD_consensusRatingPerFactor",
+        "AS_GSS_FM_consensusRatingBreakdown",
+        "AS_GSS_SEC_consensusRatingBreakdownEmptyState"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1319026",
+      "name": "AS_GSS_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "description": "Loads a property bundle file by name from a folder, returns a dictionary of the key-value pairs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CPS_richTextWithShowMoreLess",
+        "AS_GSS_FM_consensusRatingBreakdown"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb5-bbc6-8000-9dba-011c48011c48_13899505",
+      "name": "AS_GSS_QR_getConsensusReport",
+      "type": "Expression Rule",
+      "description": "Generic query expression for consensus report SYNCED record",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GSS_ConsensusReport_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_constructConsensusRatingForGivenVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea13-fcbd-8000-9c86-011c48011c48_6430545",
+      "name": "AS_GSS_QR_getCriteria",
+      "type": "Expression Rule",
+      "description": "Generic query expression for criteria (aka factor) record data",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GSS_Criteria_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_constructConsensusRatingForGivenVendor"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed52-a319-8000-9df0-011c48011c48_15017709",
+      "name": "AS_GSS_QR_getEvaluationVendorByIdentifier",
+      "type": "Expression Rule",
+      "description": "Returns evaluation vendor synced record based on the provided ids. ",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_UT_queryRecordByIdentifier"
+      ],
+      "called_by": [
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_FM_consensusRatingBreakdown"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec62-ac34-8000-9d9a-011c48011c48_13134000",
+      "name": "AS_GSS_UT_queryRecordByIdentifier",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast"
+      ],
+      "called_by": [
+        "AS_GSS_QR_getEvaluationVendorByIdentifier"
+      ]
+    },
+    {
+      "uuid": "_a-0000eed7-628f-8000-9e56-011c48011c48_17639707",
+      "name": "AS_GSS_constructConsensusRatingForGivenVendor",
+      "type": "Expression Rule",
+      "description": "The rule is used to construct consensus rating information per factor for the given vendor",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_CO_UT_indexWhere",
+        "AS_CO_UT_isNotBlank",
+        "AS_GSS_ConsensusReport_SYNCEDRECORD",
+        "AS_GSS_Criteria_SYNCEDRECORD",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_QR_getConsensusReport",
+        "AS_GSS_QR_getCriteria",
+        "AS_GSS_REF_ID_CONSENSUS_REPORT_STATUS_COMPLETE",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_TEMP"
+      ],
+      "called_by": [
+        "AS_GSS_FM_consensusRatingBreakdown"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb4d-def5-8000-9d18-011c48011c48_10111164",
+      "name": "AS_GSS_CPS_richTextWithShowMoreLess",
+      "type": "Interface",
+      "description": "Generic interface for displaying rich text fields",
+      "parameters": [
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "labelPosition",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        },
+        {
+          "name": "instructions",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 2
+        },
+        {
+          "name": "helpToolTip",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 3
+        },
+        {
+          "name": "text",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 4
+        },
+        {
+          "name": "showHyphen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 5
+        },
+        {
+          "name": "shortenToLen",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "display_order": 6
+        },
+        {
+          "name": "textColor",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 7
+        },
+        {
+          "name": "shortenIfLongerThanLen",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "display_order": 8
+        },
+        {
+          "name": "linkColor",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 9
+        },
+        {
+          "name": "i18nData",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "display_order": 10
+        },
+        {
+          "name": "preventWrapping",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 11
+        },
+        {
+          "name": "tooltip",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 12
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 13
+        },
+        {
+          "name": "align",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 14
+        },
+        {
+          "name": "marginAbove",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 15
+        },
+        {
+          "name": "marginBelow",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 16
+        },
+        {
+          "name": "textSize",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 17
+        }
+      ],
+      "calls": [
+        "AS_CO_UT_left",
+        "AS_GSS_CO_UT_loadBundleFromFolder",
+        "AS_GSS_TOGGLE_AUTOMATION_TESTING_ENABLED"
+      ],
+      "called_by": [
+        "AS_GSS_CRD_consensusRatingPerFactor"
+      ]
+    },
+    {
+      "uuid": "_a-0000eed7-628f-8000-9e56-011c48011c48_17633647",
+      "name": "AS_GSS_CRD_consensusRatingPerFactor",
+      "type": "Interface",
+      "description": "The card interface to display consensus rating sper factor",
+      "parameters": [
+        {
+          "name": "item",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AS_GSS_BrandingValueByKey",
+        "AS_GSS_CO_NULL_REPLACEABLE_TEXT",
+        "AS_GSS_CO_TXT_SPLIT_TAG",
+        "AS_GSS_CPS_richTextWithShowMoreLess",
+        "AS_GSS_ENUM_TEXT_LIMIT_FOR_CONSENSUS_REPORT_SUMMARY"
+      ],
+      "called_by": [
+        "AS_GSS_FM_consensusRatingBreakdown"
+      ]
+    },
+    {
+      "uuid": "_a-0000eed7-628f-8000-9e56-011c48011c48_17632873",
+      "name": "AS_GSS_FM_consensusRatingBreakdown",
+      "type": "Interface",
+      "description": "The form to display consensus ratings for a vendor across all factors and subfactors",
+      "parameters": [
+        {
+          "name": "evaluationVendor",
+          "type": "urn:com:appian:recordtype:datatype:b6081510-0d11-4d51-8eba-966610b168db",
+          "raw_type": "urn:com:appian:recordtype:datatype:b6081510-0d11-4d51-8eba-966610b168db",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        }
+      ],
+      "calls": [
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_CO_UT_isNotBlank",
+        "AS_GSS_BrandingValueByKey",
+        "AS_GSS_CO_TXT_SPLIT_TAG",
+        "AS_GSS_CO_UT_loadBundleFromFolder",
+        "AS_GSS_CRD_consensusRatingPerFactor",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_QR_getEvaluationVendorByIdentifier",
+        "AS_GSS_SEC_consensusRatingBreakdownEmptyState",
+        "AS_GSS_constructConsensusRatingForGivenVendor"
+      ],
+      "called_by": [
+        "AS GSS View Consensus Rating Breakdown"
+      ]
+    },
+    {
+      "uuid": "_a-0000eed7-628f-8000-9e56-011c48011c48_17651628",
+      "name": "AS_GSS_SEC_consensusRatingBreakdownEmptyState",
+      "type": "Interface",
+      "description": "The interface for the consensus rating breakdown empty state",
+      "parameters": [
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        }
+      ],
+      "calls": [
+        "AS_GSS_BrandingValueByKey",
+        "AS_GSS_CONSENSUS_RATING_BREAKDOWN_EMPTY_STATE_IMAGE"
+      ],
+      "called_by": [
+        "AS_GSS_FM_consensusRatingBreakdown"
+      ]
+    },
+    {
+      "uuid": "0003eee1-2f91-8000-e616-7f0000014e7a",
+      "name": "AS GSS View Consensus Rating Breakdown",
+      "type": "Process Model",
+      "description": "The model with the interface to view vendor consensus rating breakdowns",
+      "calls": [
+        "AS_GSS_FM_consensusRatingBreakdown"
+      ],
+      "called_by": [
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD"
+      ]
+    },
+    {
+      "uuid": "53315796-2d3b-4edd-bd96-55f169c999dc",
+      "name": "AS_GSS_ConsensusReport_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "Synced Record for Consensus Report",
+      "actions": [
+        "openConsensusFormForOnSpot",
+        "continueConsensusForOnSpot"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_GSS_Criteria_SYNCEDRECORD",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_Criteria_SYNCEDRECORD",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_QR_getConsensusReport",
+        "AS_GSS_constructConsensusRatingForGivenVendor"
+      ]
+    },
+    {
+      "uuid": "11dcc745-3c81-49f9-9cb2-6427680e4b41",
+      "name": "AS_GSS_Criteria_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "Synced Record for Evaluation Criteria",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_GSS_ConsensusReport_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_ConsensusReport_SYNCEDRECORD",
+        "AS_GSS_QR_getCriteria",
+        "AS_GSS_constructConsensusRatingForGivenVendor"
+      ]
+    },
+    {
+      "uuid": "b6081510-0d11-4d51-8eba-966610b168db",
+      "name": "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "Synced record for evaluation vendors",
+      "actions": [
+        "updateVendor",
+        "deleteVendor",
+        "updateVendorDetails",
+        "viewBreakdown",
+        "viewVendorDecision",
+        "viewConsensusRatings",
+        "viewVendorDecisionForAwardees"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS GSS View Consensus Rating Breakdown",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_GSS_ConsensusReport_SYNCEDRECORD",
+        "AS_GSS_QR_getCriteria",
+        "AS_GSS_QR_getEvaluationVendorByIdentifier"
+      ],
+      "called_by": [
+        "AS_GSS_ConsensusReport_SYNCEDRECORD",
+        "AS_GSS_FM_consensusRatingBreakdown",
+        "AS_GSS_QR_getEvaluationVendorByIdentifier",
+        "AS_GSS_constructConsensusRatingForGivenVendor"
+      ]
+    }
+  ]
+}

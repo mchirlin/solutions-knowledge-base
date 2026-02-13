@@ -76,6 +76,48 @@
     },
     "subprocesses": [
       {
+        "name": "AS GSS Summarize With AI",
+        "complexity_score": 8.0,
+        "total_nodes": 5,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Which AI?"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Call Azure Summarizer",
+            "type": "SUBPROCESS",
+            "next": [
+              "End Node"
+            ],
+            "subprocess": "AS GSS Summarize With Azure OpenAI"
+          },
+          {
+            "name": "Call Appian AI Summarizer",
+            "type": "SUBPROCESS",
+            "next": [
+              "End Node"
+            ],
+            "subprocess": "AS GSS Summarize With Native AI"
+          },
+          {
+            "name": "Which AI?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Call Azure Summarizer (Azure)",
+              "Call Appian AI Summarizer"
+            ]
+          }
+        ]
+      },
+      {
         "name": "AS GSS Summarize With Azure OpenAI",
         "complexity_score": 3.0,
         "total_nodes": 3,
@@ -121,48 +163,6 @@
             "type": "Execute Generative AI Skill",
             "next": [
               "End Node"
-            ]
-          }
-        ]
-      },
-      {
-        "name": "AS GSS Summarize With AI",
-        "complexity_score": 8.0,
-        "total_nodes": 5,
-        "nodes": [
-          {
-            "name": "Start Node",
-            "type": "START_EVENT",
-            "next": [
-              "Which AI?"
-            ]
-          },
-          {
-            "name": "End Node",
-            "type": "END_EVENT"
-          },
-          {
-            "name": "Call Azure Summarizer",
-            "type": "SUBPROCESS",
-            "next": [
-              "End Node"
-            ],
-            "subprocess": "AS GSS Summarize With Azure OpenAI"
-          },
-          {
-            "name": "Call Appian AI Summarizer",
-            "type": "SUBPROCESS",
-            "next": [
-              "End Node"
-            ],
-            "subprocess": "AS GSS Summarize With Native AI"
-          },
-          {
-            "name": "Which AI?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "Call Azure Summarizer (Azure)",
-              "Call Appian AI Summarizer"
             ]
           }
         ]

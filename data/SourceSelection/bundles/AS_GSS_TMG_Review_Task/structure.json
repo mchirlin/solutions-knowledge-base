@@ -3,7 +3,7 @@
     "bundle_type": "process",
     "root_name": "AS GSS TMG Review Task",
     "parent_name": null,
-    "total_objects": 321
+    "total_objects": 322
   },
   "entry_point": {
     "complexity_score": 17.0,
@@ -84,15 +84,15 @@
     },
     "subprocesses": [
       {
-        "name": "AS GSS TMG Task Completion",
-        "complexity_score": 9.0,
-        "total_nodes": 6,
+        "name": "AS GSS TMG Create Ad Hoc Task",
+        "complexity_score": 20.0,
+        "total_nodes": 10,
         "nodes": [
           {
             "name": "Start Node",
             "type": "START_EVENT",
             "next": [
-              "Update Current Task Status"
+              "cancel?"
             ]
           },
           {
@@ -100,34 +100,104 @@
             "type": "END_EVENT"
           },
           {
-            "name": "Update Current Task Status",
-            "type": "SCRIPT_TASK",
+            "name": "cancel?",
+            "type": "XOR_GATEWAY",
             "next": [
-              "Current Tasks"
+              "End Node",
+              "Update tasks"
             ]
           },
           {
-            "name": "Current Tasks",
-            "type": "Write to Data Store Entity",
-            "next": [
-              "Task Complete Audit"
-            ]
-          },
-          {
-            "name": "Task Dependency",
+            "name": "Audit",
             "type": "SUBPROCESS",
             "next": [
-              "End Node"
-            ],
-            "subprocess": "AS GSS TMG Task Dependency"
-          },
-          {
-            "name": "Task Complete Audit",
-            "type": "SUBPROCESS",
-            "next": [
-              "Task Dependency"
+              "Any tasks to be mailed?"
             ],
             "subprocess": "AS GSS TMG Task Action Audit"
+          },
+          {
+            "name": "Update tasks",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Skip Group Add?"
+            ]
+          },
+          {
+            "name": "Skip Group Add?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Add userAssignee to groupAssignee (no)",
+              "Write to Task (yes)"
+            ]
+          },
+          {
+            "name": "Add userAssignee to groupAssignee",
+            "type": "Add Group Members",
+            "next": [
+              "Write to Task"
+            ]
+          },
+          {
+            "name": "Write to Task",
+            "type": "Write to Data Store Entity",
+            "next": [
+              "Audit"
+            ]
+          },
+          {
+            "name": "Send Email for Assigned Tasks",
+            "type": "Start Process (v2)",
+            "next": [
+              "End Node"
+            ]
+          },
+          {
+            "name": "Any tasks to be mailed?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Send Email for Assigned Tasks (Yes)",
+              "End Node (No)"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AS GSS TMG Task Action Audit",
+        "complexity_score": 8.0,
+        "total_nodes": 5,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "data?"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "data?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "End Node",
+              "Create Task Action Audit CDTs"
+            ]
+          },
+          {
+            "name": "Write to Task Action Audit",
+            "type": "Write to Data Store Entity",
+            "next": [
+              "End Node"
+            ]
+          },
+          {
+            "name": "Create Task Action Audit CDTs",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Write to Task Action Audit"
+            ]
           }
         ]
       },
@@ -217,15 +287,15 @@
         ]
       },
       {
-        "name": "AS GSS TMG Task Action Audit",
-        "complexity_score": 8.0,
-        "total_nodes": 5,
+        "name": "AS GSS TMG Task Completion",
+        "complexity_score": 9.0,
+        "total_nodes": 6,
         "nodes": [
           {
             "name": "Start Node",
             "type": "START_EVENT",
             "next": [
-              "data?"
+              "Update Current Task Status"
             ]
           },
           {
@@ -233,104 +303,34 @@
             "type": "END_EVENT"
           },
           {
-            "name": "data?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "End Node",
-              "Create Task Action Audit CDTs"
-            ]
-          },
-          {
-            "name": "Write to Task Action Audit",
-            "type": "Write to Data Store Entity",
-            "next": [
-              "End Node"
-            ]
-          },
-          {
-            "name": "Create Task Action Audit CDTs",
+            "name": "Update Current Task Status",
             "type": "SCRIPT_TASK",
             "next": [
-              "Write to Task Action Audit"
+              "Current Tasks"
             ]
-          }
-        ]
-      },
-      {
-        "name": "AS GSS TMG Create Ad Hoc Task",
-        "complexity_score": 20.0,
-        "total_nodes": 10,
-        "nodes": [
+          },
           {
-            "name": "Start Node",
-            "type": "START_EVENT",
+            "name": "Current Tasks",
+            "type": "Write to Data Store Entity",
             "next": [
-              "cancel?"
+              "Task Complete Audit"
             ]
           },
           {
-            "name": "End Node",
-            "type": "END_EVENT"
-          },
-          {
-            "name": "cancel?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "End Node",
-              "Update tasks"
-            ]
-          },
-          {
-            "name": "Audit",
+            "name": "Task Dependency",
             "type": "SUBPROCESS",
             "next": [
-              "Any tasks to be mailed?"
+              "End Node"
+            ],
+            "subprocess": "AS GSS TMG Task Dependency"
+          },
+          {
+            "name": "Task Complete Audit",
+            "type": "SUBPROCESS",
+            "next": [
+              "Task Dependency"
             ],
             "subprocess": "AS GSS TMG Task Action Audit"
-          },
-          {
-            "name": "Update tasks",
-            "type": "SCRIPT_TASK",
-            "next": [
-              "Skip Group Add?"
-            ]
-          },
-          {
-            "name": "Skip Group Add?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "Add userAssignee to groupAssignee (no)",
-              "Write to Task (yes)"
-            ]
-          },
-          {
-            "name": "Add userAssignee to groupAssignee",
-            "type": "Add Group Members",
-            "next": [
-              "Write to Task"
-            ]
-          },
-          {
-            "name": "Write to Task",
-            "type": "Write to Data Store Entity",
-            "next": [
-              "Audit"
-            ]
-          },
-          {
-            "name": "Send Email for Assigned Tasks",
-            "type": "Start Process (v2)",
-            "next": [
-              "End Node"
-            ]
-          },
-          {
-            "name": "Any tasks to be mailed?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "Send Email for Assigned Tasks (Yes)",
-              "End Node (No)"
-            ]
           }
         ]
       }
@@ -1095,6 +1095,21 @@
       ]
     },
     {
+      "uuid": "_a-0000eed7-628f-8000-9e56-011c48011c48_17651910",
+      "name": "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
+      "type": "Constant",
+      "description": "Value: 79\n",
+      "value": "79",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_returnEvaluationInfoForLandingPage",
+        "AS_GSS_CARD_evaluationInfo",
+        "AS_GSS_GRD_EvaluationRecordList",
+        "AS_GSS_QR_getEvaluation"
+      ]
+    },
+    {
       "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1061416",
       "name": "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE",
       "type": "Constant",
@@ -1134,6 +1149,7 @@
       "called_by": [
         "AS_GSS_BL_returnEvaluationAdditionalInfoForCards",
         "AS_GSS_BL_returnEvaluationInfoForLandingPage",
+        "AS_GSS_CARD_evaluationInfo",
         "AS_GSS_QR_getEvaluation"
       ]
     },
@@ -3248,6 +3264,7 @@
         "AS_GSS_Evaluation_SYNCEDRECORD",
         "AS_GSS_MAX_LIMIT_FOR_EVALUATIONS_IN_HOME_PAGE",
         "AS_GSS_QR_getEvaluation",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
         "AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP"
       ],
@@ -3454,6 +3471,7 @@
         "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
         "AS_CO_UT_queryRecord",
         "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
         "AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP"
@@ -6151,7 +6169,9 @@
         "AS_GSS_CO_NULL_REPLACEABLE_TEXT",
         "AS_GSS_CO_UT_loadBundleFromFolder",
         "AS_GSS_Evaluation_RECORD",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP",
         "AS_GSS_UT_checkIfNullOrZero",
         "AS_GSS_UT_checkIfZero",
         "AS_GSS_returnEvaluatorsStampList"
@@ -7174,6 +7194,7 @@
         "AS_GSS_QR_getCriteria",
         "AS_GSS_QR_getCriteriaAssignment",
         "AS_GSS_QR_getEvaluatorTeamMembershipByUser",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
         "AS_GSS_TMG_QR_getTasks",
@@ -8247,7 +8268,9 @@
         "deleteVendor",
         "updateVendorDetails",
         "viewBreakdown",
-        "viewVendorDecision"
+        "viewVendorDecision",
+        "viewConsensusRatings",
+        "viewVendorDecisionForAwardees"
       ],
       "views": [
         "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
@@ -8299,7 +8322,9 @@
         "updateWeights",
         "updateTeams",
         "updateAssignment",
-        "addTeams"
+        "addTeams",
+        "selectAwardees",
+        "updateDueDate"
       ],
       "views": [
         "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",

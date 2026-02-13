@@ -1,0 +1,96 @@
+{
+  "uuid": "_a-0000ef0d-9c9a-8000-9e64-011c48011c48_17983284",
+  "name": "AS_GSS_UT_constructEvalVendorAndDocsForAwardCreation",
+  "type": "Expression Rule",
+  "description": "The rule is used to construct Evaluation, Vendor and Document details for award creation",
+  "sail_code": "a!localVariables(\n  local!fieldsToFetch: a!defaultValue(\n    value: ri!fieldsToFetch,\n    default: rule!AS_GSS_BL_recordFieldsToQueryForAwardCreation()\n  ),\n  local!evaluation: rule!AS_GSS_QR_getEvaluation(\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT,\n    executeWhen: a!isNotNullOrEmpty(value: ri!evaluationId),\n    evaluationId: ri!evaluationId,\n    fields: local!fieldsToFetch.evaluation\n  ),\n  local!vendors: rule!AS_GSS_QR_getEvaluationVendors(\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY,\n    evaluationId: ri!evaluationId,\n    additionalFilters: {\n      #\"SYSTEM_SYSRULES_queryFilter\"(\n        field: recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.isActive,\n        operator: \"=\",\n        value: true()\n      ),\n      #\"SYSTEM_SYSRULES_queryFilter\"(\n        field: recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.gsmVendorRefId,\n        operator: \"in\",\n        value: ri!gsmVendorRefId,\n        applyWhen: ri!includeAllVendors = false()\n      )\n    },\n    fields: local!fieldsToFetch.vendor,\n    executeWhen: or(\n      ri!includeAllVendors,\n      a!isNotNullOrEmpty(value: ri!gsmVendorRefId)\n    ),\n    relatedRecordData: {\n      #\"SYSTEM_SYSRULES_relatedRecordData\"(\n        relationship: recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.address,\n        filters: {\n          #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: recordType!AS_GSS_EvaluationVendorAddress_SYNCEDRECORD.isActive,\n            operator: \"=\",\n            value: true()\n          )\n        }\n      )\n    }\n  ),\n  local!documents: rule!AS_GSS_QR_getEvaluationDocuments(\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY,\n    evaluationId: ri!evaluationId,\n    docTypeId: cons!AS_GSS_REF_ID_DOC_TYPE_VENDOR,\n    fields: local!fieldsToFetch.documents,\n    isDeleted: false(),\n    executeWhen: a!isNotNullOrEmpty(value: ri!evaluationId)\n  ),\n  local!finalRecord: index(\n    rule!AS_GSS_UT_updateRecordsByModelRecord(\n      records: local!evaluation,\n      modelRecord: recordType!AS_GSS_Evaluation_SYNCEDRECORD(\n        recordType!AS_GSS_Evaluation_SYNCEDRECORD.vendor: #\"SYSTEM_SYSRULES_forEach\"(\n          items: local!vendors,\n          expression: rule!AS_GSS_UT_updateRecordsByModelRecord(\n            records: fv!item,\n            modelRecord: recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD(\n              recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.documents: rule!AS_CO_UT_indexWhere(\n                value: fv!item[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.vendorId],\n                initialArray: local!documents[recordType!AS_GSS_EvaluationDocument_SYNCEDRECORD.vendorId],\n                finalArray: local!documents,\n                isRemove: false()\n              )\n            )\n          )\n        )\n      )\n    ),\n    1,\n    {}\n  ),\n  rule!AS_GSS_CO_UT_castToMap(\n    value: #\"SYSTEM_SYSRULES_fromJson_v1\"(#\"SYSTEM_SYSRULES_toJson_v1\"(local!finalRecord))\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_BL_recordFieldsToQueryForAwardCreation",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_QR_getEvaluation",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_QR_getEvaluationVendors",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_QR_getEvaluationDocuments",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_UT_updateRecordsByModelRecord",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_indexWhere",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_CO_UT_castToMap",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_REF_ID_DOC_TYPE_VENDOR",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "AS_GSS_EvaluationVendorAddress_SYNCEDRECORD",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "AS_GSS_Evaluation_SYNCEDRECORD",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "AS_GSS_EvaluationDocument_SYNCEDRECORD",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_GCW_getWinningVendorAndBasicInformation_V1",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_GCW_getEvaluationVendorAndDocumentDetails_V1",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

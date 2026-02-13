@@ -3,7 +3,7 @@
     "bundle_type": "action",
     "root_name": "AS_GSS_Evaluation_RECORD - Delete",
     "parent_name": "AS_GSS_Evaluation_RECORD",
-    "total_objects": 275
+    "total_objects": 276
   },
   "entry_point": {
     "action_type": "RECORD_ACTION",
@@ -13,7 +13,7 @@
     "expressions": {
       "TITLE": "\"Delete\"",
       "DESCRIPTION": "\"Delete Evaluation\"",
-      "VISIBILITY": "rule!AS_GSS_BL_getRelatedActionVisibilityDeleteEvaluation()",
+      "VISIBILITY": "rule!AS_GSS_BL_getRelatedActionVisibilityDeleteEvaluation(\n  evaluationStatusId: rv!record[recordType!AS_GSS_Evaluation_RECORD.evaluationStatus.refDataId]\n)",
       "CONTEXT": "a!localVariables(\n  local!evaluation: rule!AS_GSS_QR_getEvaluationByIdentifier(\n    evaluationId: rv!record[recordType!AS_GSS_Evaluation_RECORD.evaluationId],\n    fields: {\n      recordType!AS_GSS_Evaluation_SYNCEDRECORD.evaluationMethod.refLabel,\n      recordType!AS_GSS_Evaluation_SYNCEDRECORD.vendor,\n      recordType!AS_GSS_Evaluation_SYNCEDRECORD.evaluationPhase,\n      recordType!AS_GSS_Evaluation_SYNCEDRECORD.team\n    }\n  ),\n  {\n    evaluation: local!evaluation,\n    originalEvaluation: local!evaluation,\n    /* AS_GSS_Evaluation_SYNCEDRECORD */\n    userAction: null/* Text */\n\n  }\n)"
     }
   },
@@ -924,6 +924,21 @@
       ]
     },
     {
+      "uuid": "_a-0000eed7-628f-8000-9e56-011c48011c48_17651910",
+      "name": "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
+      "type": "Constant",
+      "description": "Value: 79\n",
+      "value": "79",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_returnEvaluationInfoForLandingPage",
+        "AS_GSS_CARD_evaluationInfo",
+        "AS_GSS_GRD_EvaluationRecordList",
+        "AS_GSS_QR_getEvaluation"
+      ]
+    },
+    {
       "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1061416",
       "name": "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE",
       "type": "Constant",
@@ -957,6 +972,7 @@
       "value_type": "http://www.w3.org/2001/XMLSchema:int",
       "calls": [],
       "called_by": [
+        "AS_GSS_BL_getRelatedActionVisibilityDeleteEvaluation",
         "AS_GSS_BL_returnEvaluationInfoForLandingPage",
         "AS_GSS_CARD_evaluationInfo",
         "AS_GSS_GRD_EvaluationRecordList",
@@ -973,8 +989,10 @@
       "value_type": "http://www.w3.org/2001/XMLSchema:int",
       "calls": [],
       "called_by": [
+        "AS_GSS_BL_getRelatedActionVisibilityDeleteEvaluation",
         "AS_GSS_BL_returnEvaluationAdditionalInfoForCards",
         "AS_GSS_BL_returnEvaluationInfoForLandingPage",
+        "AS_GSS_CARD_evaluationInfo",
         "AS_GSS_QR_getEvaluation"
       ]
     },
@@ -2941,7 +2959,9 @@
       "calls": [
         "AS_CO_UT_isUserMemberOfGroups",
         "AS_GSS_GRP_CONTRACTING_PERSONNEL",
-        "AS_GSS_GRP_EVALUATION_CHAIRS"
+        "AS_GSS_GRP_EVALUATION_CHAIRS",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP"
       ],
       "called_by": [
         "AS_GSS_Evaluation_RECORD"
@@ -3006,6 +3026,7 @@
         "AS_GSS_Evaluation_SYNCEDRECORD",
         "AS_GSS_MAX_LIMIT_FOR_EVALUATIONS_IN_HOME_PAGE",
         "AS_GSS_QR_getEvaluation",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
         "AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP"
       ],
@@ -3186,6 +3207,7 @@
         "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
         "AS_CO_UT_queryRecord",
         "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
         "AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP"
@@ -3894,7 +3916,9 @@
         "AS_GSS_CO_NULL_REPLACEABLE_TEXT",
         "AS_GSS_CO_UT_loadBundleFromFolder",
         "AS_GSS_Evaluation_RECORD",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP",
         "AS_GSS_UT_checkIfNullOrZero",
         "AS_GSS_UT_checkIfZero",
         "AS_GSS_returnEvaluatorsStampList"
@@ -5078,6 +5102,7 @@
         "AS_GSS_QR_getCriteria",
         "AS_GSS_QR_getCriteriaAssignment",
         "AS_GSS_QR_getEvaluatorTeamMembershipByUser",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
         "AS_GSS_TMG_QR_getTasks",
@@ -5648,7 +5673,9 @@
         "deleteVendor",
         "updateVendorDetails",
         "viewBreakdown",
-        "viewVendorDecision"
+        "viewVendorDecision",
+        "viewConsensusRatings",
+        "viewVendorDecisionForAwardees"
       ],
       "views": [
         "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
@@ -5704,7 +5731,9 @@
         "updateWeights",
         "updateTeams",
         "updateAssignment",
-        "addTeams"
+        "addTeams",
+        "selectAwardees",
+        "updateDueDate"
       ],
       "views": [
         "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",

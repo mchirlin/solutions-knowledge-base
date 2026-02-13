@@ -3,7 +3,7 @@
     "bundle_type": "action",
     "root_name": "AS_GSS_Evaluation_RECORD - Complete Evaluation",
     "parent_name": "AS_GSS_Evaluation_RECORD",
-    "total_objects": 111
+    "total_objects": 181
   },
   "entry_point": {
     "action_type": "RECORD_ACTION",
@@ -14,14 +14,14 @@
       "TITLE": "\"Complete Evaluation\"",
       "DESCRIPTION": "\"Mark Evaluation as Complete\"",
       "VISIBILITY": "rule!AS_GSS_BL_getRelatedActionVisibilityForMarkEvaluationAsComplete(evaluationId: rv!record[recordType!AS_GSS_Evaluation_RECORD.evaluationId])",
-      "CONTEXT": "{\n  evaluation: rule!AS_GSS_QE_getEvaluation(\n    evaluationId: rv!record[recordType!AS_GSS_Evaluation_RECORD.evaluationId],\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT\n  ), /* AS_GSS_Evaluation */\n}"
+      "CONTEXT": "{\n  evaluation: rule!AS_GSS_QR_getEvaluation(\n    evaluationId: rv!record[recordType!AS_GSS_Evaluation_RECORD.evaluationId],\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT\n  )\n}"
     }
   },
   "flow": {
     "process_model": {
       "name": "AS GSS Mark Evaluation as Complete",
-      "complexity_score": 6.0,
-      "total_nodes": 4,
+      "complexity_score": 12.0,
+      "total_nodes": 7,
       "nodes": [
         {
           "name": "Start Node",
@@ -35,7 +35,22 @@
           "type": "END_EVENT"
         },
         {
-          "name": "Update evaluation and capture audit",
+          "name": "userAction",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node",
+            "Get Original Evaluation"
+          ]
+        },
+        {
+          "name": "Get Original Evaluation",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write to Evaluation"
+          ]
+        },
+        {
+          "name": "Capture Audit",
           "type": "SUBPROCESS",
           "next": [
             "End Node"
@@ -43,11 +58,17 @@
           "subprocess": "AS GAM ADT Audit Process"
         },
         {
-          "name": "userAction",
-          "type": "XOR_GATEWAY",
+          "name": "Write to Evaluation",
+          "type": "SCRIPT_TASK",
           "next": [
-            "End Node",
-            "Update evaluation and capture audit"
+            "Sync Eval Status in GCW"
+          ]
+        },
+        {
+          "name": "Sync Eval Status in GCW",
+          "type": "Start Process",
+          "next": [
+            "Capture Audit"
           ]
         }
       ]
@@ -149,7 +170,8 @@
       "value_type": "http://www.w3.org/2001/XMLSchema:string",
       "calls": [],
       "called_by": [
-        "AS_ADT_UT_determineAuditActionCode"
+        "AS_ADT_UT_determineAuditActionCode",
+        "AS_GSS_UT_buildEvaluationDataForAudit"
       ]
     },
     {
@@ -173,7 +195,9 @@
       "value_type": "http://www.w3.org/2001/XMLSchema:string",
       "calls": [],
       "called_by": [
-        "AS_ADT_UT_determineAuditActionCode"
+        "AS_ADT_UT_determineAuditActionCode",
+        "AS_GSS_BL_constructFieldChangesForEvalDocs",
+        "AS_GSS_UT_evalDocsStartAuditProcess_Parameters"
       ]
     },
     {
@@ -222,7 +246,8 @@
       "calls": [],
       "called_by": [
         "AS_ADT_UT_calculateAudit_SingleObject",
-        "AS_ADT_UT_determineAuditActionCode"
+        "AS_ADT_UT_determineAuditActionCode",
+        "AS_GSS_UT_buildEvaluationDataForAudit"
       ]
     },
     {
@@ -271,14 +296,21 @@
       "value_type": "http://www.w3.org/2001/XMLSchema:string",
       "calls": [],
       "called_by": [
+        "AS GSS Dynamic Record",
         "AS_ADT_UT_getNewObjectsAfterWritingFromMutipleDSE",
         "AS_ADT_UT_getNewObjectsAfterWritingFromSingleDSE",
         "AS_ADT_UT_getOriginalObjects",
         "AS_CO_UT_queryEntity",
         "AS_CO_UT_queryRecord",
         "AS_GSS_BL_getRelatedActionVisibilityForMarkEvaluationAsComplete",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_GRD_vendorListForAwarding",
         "AS_GSS_QE_getEvaluation",
-        "AS_GSS_QE_getEvaluationCriteria"
+        "AS_GSS_QE_getEvaluationCriteria",
+        "AS_GSS_QR_getEvaluation",
+        "AS_GSS_TMG_QE_getTaskCategories",
+        "AS_GSS_UT_buildEvaluationDataForAudit"
       ]
     },
     {
@@ -290,10 +322,17 @@
       "value_type": "http://www.w3.org/2001/XMLSchema:string",
       "calls": [],
       "called_by": [
+        "AS GSS Mark Evaluation as Complete",
         "AS_CO_UT_queryEntity",
         "AS_CO_UT_queryRecord",
         "AS_GSS_BL_getRelatedActionVisibilityForMarkEvaluationAsComplete",
-        "AS_GSS_TMG_QR_getTasks"
+        "AS_GSS_EvaluationDocument_SYNCEDRECORD",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_QR_getFactorDocumentMapping",
+        "AS_GSS_TMG_QR_getTasks",
+        "AS_GSS_UT_buildEvaluationDataForAudit",
+        "AS_GSS_UT_convertPhaseRecordDataToDictionaryForAudit"
       ]
     },
     {
@@ -322,6 +361,31 @@
       ]
     },
     {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_104931",
+      "name": "AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+      "type": "Constant",
+      "description": "AS CO Internationalization Files",
+      "value": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_104925",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationFolder",
+      "calls": [],
+      "called_by": [
+        "AS_CO_I18N_UT_loadBundleFromFolder",
+        "AS_CO_UT_displayBooleanAsYesNo"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_31761",
+      "name": "AS_CO_I18N_TXT_ENGLISH_US_LOCALE",
+      "type": "Constant",
+      "description": "Value: en_US, The locale for English, United States",
+      "value": "en_US",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_I18N_UT_isUserLocaleEnglishUs"
+      ]
+    },
+    {
       "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_941756",
       "name": "AS_GAM_ADT_TXT_AUDIT_TYPE_ACTION_ONLY",
       "type": "Constant",
@@ -335,6 +399,18 @@
       ]
     },
     {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_941749",
+      "name": "AS_GAM_ADT_TXT_AUDIT_TYPE_FIELD_LEVEL",
+      "type": "Constant",
+      "description": "Value: FIELD_LEVEL",
+      "value": "FIELD_LEVEL",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_buildEvaluationDataForAudit"
+      ]
+    },
+    {
       "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_941763",
       "name": "AS_GAM_ADT_TXT_AUDIT_TYPE_MANIPULATION",
       "type": "Constant",
@@ -344,7 +420,22 @@
       "calls": [],
       "called_by": [
         "AS_GAM_ADT_UT_buildAuditEntityData",
-        "AS_GAM_ADT_UT_buildAuditEntityDataMultiple"
+        "AS_GAM_ADT_UT_buildAuditEntityDataMultiple",
+        "AS_GSS_UT_buildEvaluationDataForAudit",
+        "AS_GSS_UT_evalDocsStartAuditProcess_Parameters"
+      ]
+    },
+    {
+      "uuid": "_a-0000e4d2-63a3-8000-9ba6-011c48011c48_53316",
+      "name": "AS_GAM_ENUM_AUDIT_ACTION_CODE_UPLOAD",
+      "type": "Constant",
+      "description": "UPLOAD- Used for document audit",
+      "value": "UPLOAD",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_constructFieldChangesForEvalDocs",
+        "AS_GSS_UT_evalDocsStartAuditProcess_Parameters"
       ]
     },
     {
@@ -384,6 +475,68 @@
       ]
     },
     {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1324829",
+      "name": "AS_GAM_INT_LIMIT_FOR_SHOW_MORE_OR_LESS_SHORT",
+      "type": "Constant",
+      "description": "Value: 2",
+      "value": "2",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_GRD_vendorListForAwarding"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec9a-0c70-8000-9daf-011c48011c48_13608194",
+      "name": "AS_GSS_ADT_ENUM_AUDIT_ACTION_CODE_CREATED_FROM_SOLICITATION",
+      "type": "Constant",
+      "description": "Holds the audit action code for evaluations created from Solicitation in GCW",
+      "value": "CREATED FROM SOLICITATION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_buildEvaluationDataForAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb8e-789f-8000-9d34-011c48011c48_11028479",
+      "name": "AS_GSS_ADT_ENUM_AUDIT_ACTION_CODE_DUPLICATED",
+      "type": "Constant",
+      "description": "DUPLICATED",
+      "value": "DUPLICATED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_buildEvaluationDataForAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec62-ac34-8000-9d9a-011c48011c48_13151218",
+      "name": "AS_GSS_CO_NULL_REPLACEABLE_TEXT",
+      "type": "Constant",
+      "description": "Value:  -",
+      "value": "-",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_GRD_vendorListForAwarding",
+        "AS_GSS_UT_displayLabelForViewBreakdownAction"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee0b-274d-8000-9e1b-011c48011c48_16190869",
+      "name": "AS_GSS_DOLLAR_ISO_CODE",
+      "type": "Constant",
+      "description": "Holds the dollar ISO code for currency: USD",
+      "value": "USD",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_GRD_vendorListForAwarding",
+        "AS_GSS_UT_displayLabelForViewBreakdownAction"
+      ]
+    },
+    {
       "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_941038",
       "name": "AS_GSS_ENT_A_R_EVALUATION",
       "type": "Constant",
@@ -392,20 +545,33 @@
       "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
       "calls": [],
       "called_by": [
-        "AS_GSS_UT_evaluationAuditStartProcess_Parameters"
+        "AS_GSS_UT_buildEvaluationDataForAudit",
+        "AS_GSS_UT_evalDocsStartAuditProcess_Parameters"
       ]
     },
     {
-      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_940138",
-      "name": "AS_GSS_ENT_EVALUATION",
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_940532",
+      "name": "AS_GSS_ENT_EVALUATION_DOCUMENT",
       "type": "Constant",
-      "description": "Value: AS_GSS_Evaluation",
+      "description": "Value: AS_GSS_EvaluationDocument",
       "value": null,
       "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
       "calls": [],
       "called_by": [
-        "AS_GSS_QE_getEvaluation",
-        "AS_GSS_UT_evaluationAuditStartProcess_Parameters"
+        "AS_GSS_UT_evalDocsStartAuditProcess_Parameters"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1427325",
+      "name": "AS_GSS_ENUM_AUDIT_ACTION_CODE_DOC_UPDATE",
+      "type": "Constant",
+      "description": "DOC_UPDATE - Used for document visibility update",
+      "value": "DOC_UPDATE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_buildEvaluationDataForAudit",
+        "AS_GSS_UT_constructManpAuditForFactorDocMappingChanges"
       ]
     },
     {
@@ -421,6 +587,18 @@
       ]
     },
     {
+      "uuid": "_a-0000eed7-628f-8000-9e56-011c48011c48_17656148",
+      "name": "AS_GSS_INT_MAX_SELECTION_FOR_SELECT_AWARDEES",
+      "type": "Constant",
+      "description": "Value: 25",
+      "value": "25",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_GRD_vendorListForAwarding"
+      ]
+    },
+    {
       "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1096408",
       "name": "AS_GSS_REF_ID_CRITERIA_STATUS_COMPLETED",
       "type": "Constant",
@@ -430,6 +608,92 @@
       "calls": [],
       "called_by": [
         "AS_GSS_BL_getRelatedActionVisibilityForMarkEvaluationAsComplete"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_947606",
+      "name": "AS_GSS_REF_ID_DOC_TYPE_CONSENSUS",
+      "type": "Constant",
+      "description": "Value: 27",
+      "value": "27",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_constructFieldChangesForEvalDocs"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_947532",
+      "name": "AS_GSS_REF_ID_DOC_TYPE_EVALUATOR",
+      "type": "Constant",
+      "description": "Value: 26",
+      "value": "26",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_constructFieldChangesForEvalDocs"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_947620",
+      "name": "AS_GSS_REF_ID_DOC_TYPE_FACTOR",
+      "type": "Constant",
+      "description": "Value: 25",
+      "value": "25",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_constructFieldChangesForEvalDocs"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_947538",
+      "name": "AS_GSS_REF_ID_DOC_TYPE_RECOMMENDATION",
+      "type": "Constant",
+      "description": "Value: 28",
+      "value": "28",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_constructFieldChangesForEvalDocs"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb28-f476-8000-9d09-011c48011c48_9700642",
+      "name": "AS_GSS_REF_ID_DOC_TYPE_REFERENCE",
+      "type": "Constant",
+      "description": "Value - 58",
+      "value": "58",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_constructFieldChangesForEvalDocs"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_947613",
+      "name": "AS_GSS_REF_ID_DOC_TYPE_VENDOR",
+      "type": "Constant",
+      "description": "Value: 24",
+      "value": "24",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_constructFieldChangesForEvalDocs"
+      ]
+    },
+    {
+      "uuid": "_a-0000ede8-9bcf-8000-9e13-011c48011c48_16017319",
+      "name": "AS_GSS_REF_ID_EVALUATION_METHOD_BEST_VALUE",
+      "type": "Constant",
+      "description": "Value : 5",
+      "value": "5",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_getRelatedActionVisibilityForMarkEvaluationAsComplete",
+        "AS_GSS_FM_completeEvaluationForm",
+        "AS_GSS_GRD_vendorListForAwarding"
       ]
     },
     {
@@ -445,6 +709,20 @@
       ]
     },
     {
+      "uuid": "_a-0000eed7-628f-8000-9e56-011c48011c48_17651910",
+      "name": "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
+      "type": "Constant",
+      "description": "Value: 79\n",
+      "value": "79",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_getRelatedActionVisibilityForMarkEvaluationAsComplete",
+        "AS_GSS_QE_getEvaluation",
+        "AS_GSS_QR_getEvaluation"
+      ]
+    },
+    {
       "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1061416",
       "name": "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE",
       "type": "Constant",
@@ -454,7 +732,8 @@
       "calls": [],
       "called_by": [
         "AS_GSS_FM_completeEvaluationForm",
-        "AS_GSS_QE_getEvaluation"
+        "AS_GSS_QE_getEvaluation",
+        "AS_GSS_QR_getEvaluation"
       ]
     },
     {
@@ -467,7 +746,8 @@
       "calls": [],
       "called_by": [
         "AS_GSS_BL_getRelatedActionVisibilityForMarkEvaluationAsComplete",
-        "AS_GSS_QE_getEvaluation"
+        "AS_GSS_QE_getEvaluation",
+        "AS_GSS_QR_getEvaluation"
       ]
     },
     {
@@ -479,7 +759,116 @@
       "value_type": "http://www.w3.org/2001/XMLSchema:int",
       "calls": [],
       "called_by": [
-        "AS_GSS_QE_getEvaluation"
+        "AS_GSS_QE_getEvaluation",
+        "AS_GSS_QR_getEvaluation"
+      ]
+    },
+    {
+      "uuid": "_a-0000eed7-628f-8000-9e56-011c48011c48_17571496",
+      "name": "AS_GSS_REF_ID_IDV_AWARD_TYPE_SINGLE",
+      "type": "Constant",
+      "description": "Value :77",
+      "value": "77",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_GRD_vendorListForAwarding"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee0b-274d-8000-9e1b-011c48011c48_16208980",
+      "name": "AS_GSS_REF_ID_VENDOR_DECISION_SELECT",
+      "type": "Constant",
+      "description": "Value : 68",
+      "value": "68",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_GRD_vendorListForAwarding"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1465000",
+      "name": "AS_GSS_REF_LABEL_DOC_TYPE_CONSENSUS",
+      "type": "Constant",
+      "description": "Value: Consensus",
+      "value": "Consensus",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_constructFieldChangesForEvalDocs"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1465008",
+      "name": "AS_GSS_REF_LABEL_DOC_TYPE_EVALUATOR",
+      "type": "Constant",
+      "description": "Value: Evaluator",
+      "value": "Evaluator",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_constructFieldChangesForEvalDocs"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1464986",
+      "name": "AS_GSS_REF_LABEL_DOC_TYPE_FACTOR",
+      "type": "Constant",
+      "description": "Value: Factor",
+      "value": "Factor",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_constructFieldChangesForEvalDocs"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1464993",
+      "name": "AS_GSS_REF_LABEL_DOC_TYPE_RECOMMENDATION",
+      "type": "Constant",
+      "description": "Value: Recommendation",
+      "value": "Recommendation",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_constructFieldChangesForEvalDocs"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf6-54c9-8000-9dd2-011c48011c48_14445865",
+      "name": "AS_GSS_REF_LABEL_DOC_TYPE_REFERENCE",
+      "type": "Constant",
+      "description": "Value: Reference",
+      "value": "Reference",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_constructFieldChangesForEvalDocs"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1464975",
+      "name": "AS_GSS_REF_LABEL_DOC_TYPE_VENDOR",
+      "type": "Constant",
+      "description": "Value: Vendor",
+      "value": "Vendor",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_constructFieldChangesForEvalDocs"
+      ]
+    },
+    {
+      "uuid": "_a-0000e393-fbf1-8000-9ba2-011c48011c48_99414-tmg-am-am",
+      "name": "AS_GSS_TMG_ENT_R_TASK_CATEGORY",
+      "type": "Constant",
+      "description": "Value: AS_GSS_TMG_R_TaskCategory",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_TMG_QE_getTaskCategories"
       ]
     },
     {
@@ -515,7 +904,8 @@
       "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
       "calls": [],
       "called_by": [
-        "AS_GSS_CPS_richTextWithShowMoreLess"
+        "AS_GSS_CPS_richTextWithShowMoreLess",
+        "AS_GSS_EnableOrDisableStateAndLocalGovernment_wrapper"
       ]
     },
     {
@@ -746,7 +1136,77 @@
         "AS_CO_UT_returnTypeNumber"
       ],
       "called_by": [
-        "AS_GSS_UT_evaluationAuditStartProcess_Parameters"
+        "AS_GSS_UT_buildEvaluationDataForAudit",
+        "AS_GSS_UT_evalDocsStartAuditProcess_Parameters"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_81818",
+      "name": "AS_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "description": "Displays a label by the `bundleKey` from passed in bundle data, optionally accepts arguments",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_CO_UT_displayBooleanAsYesNo"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76004",
+      "name": "AS_CO_I18N_UT_getUserLocale",
+      "type": "Expression Rule",
+      "description": "Gets the Appian user locale as defined in the user preferences, returns the default if the user is null",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_I18N_UT_isUserLocaleEnglishUs",
+        "AS_CO_I18N_UT_loadBundleFromFolder"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_31790",
+      "name": "AS_CO_I18N_UT_isUserLocaleEnglishUs",
+      "type": "Expression Rule",
+      "description": "Returns true if the user's locale is en_US, which is English, United States",
+      "parameters": [],
+      "calls": [
+        "AS_CO_I18N_TXT_ENGLISH_US_LOCALE",
+        "AS_CO_I18N_UT_getUserLocale"
+      ],
+      "called_by": [
+        "AS_CO_UT_formatDate",
+        "AS_CO_UT_formatDateTime"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_81720",
+      "name": "AS_CO_I18N_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "description": "Loads a property bundle file by name from a folder, returns a dictionary of the key-value pairs",
+      "parameters": [],
+      "calls": [
+        "AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+        "AS_CO_I18N_UT_getUserLocale",
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_displayBooleanAsYesNo"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39070",
+      "name": "AS_CO_UT_booleanDefaultFalse",
+      "type": "Expression Rule",
+      "description": "Default a null value to false, otherwise returns the boolean value",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_captureMetadata",
+        "AS_CO_UT_not",
+        "AS_GSS_UT_buildEvaluationDataForAudit"
       ]
     },
     {
@@ -768,6 +1228,7 @@
       "description": "Automatically sets the \"auditing\" fields on a CDT, including createdDatetime/createdBy/modifiedDatetime/modifiedBy/isActive/isDeleted",
       "parameters": [],
       "calls": [
+        "AS_CO_UT_booleanDefaultFalse",
         "AS_CO_UT_booleanDefaultTrue",
         "AS_CO_UT_replaceNull",
         "AS_CO_UT_updateCdtFields"
@@ -811,7 +1272,15 @@
         "AS_GAM_ADT_UT_buildAuditLiveEntityDataMultiple",
         "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
         "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
-        "AS_GAM_ADT_UT_constructManipulatedAuditData"
+        "AS_GAM_ADT_UT_constructManipulatedAuditData",
+        "AS_GSS_BL_constructFieldChangesForEvalDocs",
+        "AS_GSS_UT_convertDocumentRecordDataToDictionaryForAudit",
+        "AS_GSS_UT_convertEvaluationRecordDataToDictionaryForAudit",
+        "AS_GSS_UT_convertFactorDocMappingRecordDataToDictionaryForAudit",
+        "AS_GSS_UT_convertFactorRecordDataToDictionaryForAudit",
+        "AS_GSS_UT_convertPhaseRecordDataToDictionaryForAudit",
+        "AS_GSS_UT_convertTeamRecordDataToDictionaryForAudit",
+        "AS_GSS_UT_convertVendorRecordDataToDictionaryForAudit"
       ]
     },
     {
@@ -838,7 +1307,8 @@
       ],
       "called_by": [
         "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
-        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GSS_BL_constructFieldChangesForEvalDocs"
       ]
     },
     {
@@ -852,6 +1322,26 @@
       ],
       "called_by": [
         "AS_GAM_ADT_UT_buildAuditLiveEntityData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6cd-618a-8000-9bd9-011c48011c48_1688557",
+      "name": "AS_CO_UT_checkIsNullOrEmpty",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is null/empty. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_GRD_vendorListForAwarding",
+        "AS_GSS_UT_buildEvaluationDataForAudit",
+        "AS_GSS_UT_constructManpAuditForFactorDocMappingChanges",
+        "AS_GSS_UT_convertDocumentRecordDataToDictionaryForAudit",
+        "AS_GSS_UT_convertEvaluationRecordDataToDictionaryForAudit",
+        "AS_GSS_UT_convertFactorDocMappingRecordDataToDictionaryForAudit",
+        "AS_GSS_UT_convertFactorRecordDataToDictionaryForAudit",
+        "AS_GSS_UT_convertPhaseRecordDataToDictionaryForAudit",
+        "AS_GSS_UT_convertTeamRecordDataToDictionaryForAudit",
+        "AS_GSS_UT_convertVendorRecordDataToDictionaryForAudit"
       ]
     },
     {
@@ -877,6 +1367,21 @@
       ],
       "called_by": [
         "AS_ADT_UT_calculateAudit_SingleObject"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73713",
+      "name": "AS_CO_UT_displayBooleanAsYesNo",
+      "type": "Expression Rule",
+      "description": "Returns \"Yes\" or \"No\" given a boolean with the value True or False, respectively. Returns \"No\" if the boolean is null.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+        "AS_CO_I18N_UT_displayLabel",
+        "AS_CO_I18N_UT_loadBundleFromFolder"
+      ],
+      "called_by": [
+        "AS_GSS_UT_convertEvaluationRecordDataToDictionaryForAudit"
       ]
     },
     {
@@ -933,7 +1438,8 @@
         "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
         "AS_GAM_ADT_UT_getOriginalObjects",
         "AS_GAM_ADT_UT_updateNewObjectsAfterWritingFromSingleDSE",
-        "AS_GAM_ADT_UT_updateNewObjectsAfterWritingfromMultipleDSE"
+        "AS_GAM_ADT_UT_updateNewObjectsAfterWritingfromMultipleDSE",
+        "AS_GSS_BL_constructFieldChangesForEvalDocs"
       ]
     },
     {
@@ -943,10 +1449,26 @@
       "description": "Formats a date for read-only text display. Note, do not use this rule to format date times, only dates. Returns text.",
       "parameters": [],
       "calls": [
+        "AS_CO_I18N_UT_isUserLocaleEnglishUs",
         "AS_CO_UT_isBlank"
       ],
       "called_by": [
-        "AS_CO_INP_dateField"
+        "AS_CO_INP_dateField",
+        "AS_GSS_GRD_vendorListForAwarding"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_74227",
+      "name": "AS_CO_UT_formatDateTime",
+      "type": "Expression Rule",
+      "description": "Formats a date time for read-only text display using the loggedInUser's timezone. Note, do not use this rule to format dates, only date times. Returns text.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_I18N_UT_isUserLocaleEnglishUs",
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GSS_UT_convertDateTimeFromOrToGMT"
       ]
     },
     {
@@ -985,7 +1507,22 @@
       "called_by": [
         "AS_ADT_UT_buildSimpleFieldChangesDictionary",
         "AS_ADT_UT_calculateAudit_SingleObject",
-        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GSS_BL_constructFieldChangesForEvalDocs"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6a4-3c85-8000-9ba5-011c48011c48_45984",
+      "name": "AS_CO_UT_indexWhere",
+      "type": "Expression Rule",
+      "description": "Will find the index of a value in one array and return the value in a different array at that same index",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GSS_UT_buildEvaluationDataForAudit",
+        "AS_GSS_UT_constructManpAuditForFactorDocMappingChanges"
       ]
     },
     {
@@ -1017,17 +1554,22 @@
         "AS_ADT_UT_getNewObjectsAfterWritingFromMutipleDSE",
         "AS_ADT_UT_getNewObjectsAfterWritingFromSingleDSE",
         "AS_CO_CPS_cancelSaveButtons",
+        "AS_CO_I18N_UT_displayLabel",
+        "AS_CO_I18N_UT_loadBundleFromFolder",
         "AS_CO_UT_castToDictionary",
         "AS_CO_UT_castToDictionaryList",
         "AS_CO_UT_castToMapList",
         "AS_CO_UT_formatDate",
+        "AS_CO_UT_formatDateTime",
         "AS_CO_UT_getLabelPosition",
+        "AS_CO_UT_indexWhere",
         "AS_CO_UT_isNotBlank",
         "AS_CO_UT_isUserMemberOfGroups",
         "AS_CO_UT_left",
         "AS_CO_UT_queryEntity",
         "AS_CO_UT_queryRecord",
         "AS_CO_UT_rejectCdtByField",
+        "AS_CO_UT_rejectNullValuesFromArray",
         "AS_CO_UT_replaceNull",
         "AS_CO_UT_updateCdtFields",
         "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
@@ -1038,8 +1580,9 @@
         "AS_GAM_ADT_UT_getOriginalObjects",
         "AS_GAM_ADT_UT_updateNewObjectsAfterWritingFromSingleDSE",
         "AS_GAM_ADT_UT_updateNewObjectsAfterWritingfromMultipleDSE",
-        "AS_GAM_CO_I18N_UT_displayLabel",
-        "AS_GSS_BL_getRelatedActionVisibilityForMarkEvaluationAsComplete"
+        "AS_GSS_BL_constructFieldChangesForEvalDocs",
+        "AS_GSS_BL_getRelatedActionVisibilityForMarkEvaluationAsComplete",
+        "AS_GSS_UT_buildEvaluationDataForAudit"
       ]
     },
     {
@@ -1079,6 +1622,7 @@
         "AS_CO_UT_replaceNull"
       ],
       "called_by": [
+        "AS GSS Dynamic Record",
         "AS_GSS_BL_getRelatedActionVisibilityForMarkEvaluationAsComplete"
       ]
     },
@@ -1102,7 +1646,9 @@
       "type": "Expression Rule",
       "description": "Null handles for not -- null returns true (null acts like false)",
       "parameters": [],
-      "calls": [],
+      "calls": [
+        "AS_CO_UT_booleanDefaultFalse"
+      ],
       "called_by": [
         "AS_ADT_UT_calculateAudit_SingleObject",
         "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
@@ -1129,7 +1675,8 @@
         "AS_ADT_UT_getNewObjectsAfterWritingFromSingleDSE",
         "AS_ADT_UT_getOriginalObjects",
         "AS_GSS_QE_getEvaluation",
-        "AS_GSS_QE_getEvaluationCriteria"
+        "AS_GSS_QE_getEvaluationCriteria",
+        "AS_GSS_TMG_QE_getTaskCategories"
       ]
     },
     {
@@ -1148,6 +1695,8 @@
         "AS_CO_UT_updateCdtFieldsByFieldValuePairs"
       ],
       "called_by": [
+        "AS_GSS_QR_getEvaluation",
+        "AS_GSS_QR_getFactorDocumentMapping",
         "AS_GSS_TMG_QR_getTasks"
       ]
     },
@@ -1161,7 +1710,23 @@
         "AS_CO_UT_isBlank"
       ],
       "called_by": [
-        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GSS_BL_constructFieldChangesForEvalDocs"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367",
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GSS_BL_constructFieldChangesForEvalDocs",
+        "AS_GSS_UT_buildEvaluationDataForAudit",
+        "AS_GSS_UT_constructManpAuditForFactorDocMappingChanges"
       ]
     },
     {
@@ -1180,6 +1745,7 @@
         "AS_ADT_UT_startAuditProcess_Parameters",
         "AS_CO_CPS_cancelSaveButtons",
         "AS_CO_DSP_standardReadOnlyField",
+        "AS_CO_I18N_UT_displayLabel",
         "AS_CO_UT_captureMetadata",
         "AS_CO_UT_getLabelPosition",
         "AS_CO_UT_isUserMemberOfGroups",
@@ -1188,7 +1754,10 @@
         "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
         "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
         "AS_GAM_ADT_UT_getOriginalObjects",
-        "AS_GAM_CO_I18N_UT_displayLabel"
+        "AS_GSS_BL_constructFieldChangesForEvalDocs",
+        "AS_GSS_BrandingValueByKey",
+        "AS_GSS_GRD_vendorListForAwarding",
+        "AS_GSS_UT_buildEvaluationDataForAudit"
       ]
     },
     {
@@ -1507,20 +2076,6 @@
       ]
     },
     {
-      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53662",
-      "name": "AS_GAM_CO_I18N_UT_displayLabel",
-      "type": "Expression Rule",
-      "description": "Displays a label by the `bundleKey` from passed in bundle data, optionally accepts arguments",
-      "parameters": [],
-      "calls": [
-        "AS_CO_UT_isBlank",
-        "AS_CO_UT_replaceNull"
-      ],
-      "called_by": [
-        "AS_GSS_FM_completeEvaluationForm"
-      ]
-    },
-    {
       "uuid": "_a-0000e447-9390-8000-9baa-011c48011c48_134195",
       "name": "AS_GAM_UT_getExpectedOutputDataFromStoredValue",
       "type": "Expression Rule",
@@ -1556,7 +2111,8 @@
         "AS_GSS_ADT_BL_auditConfig_EvaluatorTeam"
       ],
       "called_by": [
-        "AS_GSS_UT_evaluationAuditStartProcess_Parameters"
+        "AS_GSS_UT_buildEvaluationDataForAudit",
+        "AS_GSS_UT_evalDocsStartAuditProcess_Parameters"
       ]
     },
     {
@@ -1604,6 +2160,41 @@
       ]
     },
     {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_951027",
+      "name": "AS_GSS_BL_constructFieldChangesForEvalDocs",
+      "type": "Expression Rule",
+      "description": "Rule to construct audit for evaluation documents",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_DELETE",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_castToDictionaryList",
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_rejectCdtByField",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_replaceNull",
+        "AS_GAM_ENUM_AUDIT_ACTION_CODE_UPLOAD",
+        "AS_GSS_REF_ID_DOC_TYPE_CONSENSUS",
+        "AS_GSS_REF_ID_DOC_TYPE_EVALUATOR",
+        "AS_GSS_REF_ID_DOC_TYPE_FACTOR",
+        "AS_GSS_REF_ID_DOC_TYPE_RECOMMENDATION",
+        "AS_GSS_REF_ID_DOC_TYPE_REFERENCE",
+        "AS_GSS_REF_ID_DOC_TYPE_VENDOR",
+        "AS_GSS_REF_LABEL_DOC_TYPE_CONSENSUS",
+        "AS_GSS_REF_LABEL_DOC_TYPE_EVALUATOR",
+        "AS_GSS_REF_LABEL_DOC_TYPE_FACTOR",
+        "AS_GSS_REF_LABEL_DOC_TYPE_RECOMMENDATION",
+        "AS_GSS_REF_LABEL_DOC_TYPE_REFERENCE",
+        "AS_GSS_REF_LABEL_DOC_TYPE_VENDOR"
+      ],
+      "called_by": [
+        "AS_GSS_UT_constructManpAuditForFactorDocMappingChanges",
+        "AS_GSS_UT_evalDocsStartAuditProcess_Parameters"
+      ]
+    },
+    {
       "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1106861",
       "name": "AS_GSS_BL_getRelatedActionVisibilityForMarkEvaluationAsComplete",
       "type": "Expression Rule",
@@ -1621,7 +2212,9 @@
         "AS_GSS_QE_getEvaluation",
         "AS_GSS_QE_getEvaluationCriteria",
         "AS_GSS_REF_ID_CRITERIA_STATUS_COMPLETED",
+        "AS_GSS_REF_ID_EVALUATION_METHOD_BEST_VALUE",
         "AS_GSS_REF_ID_EVALUATION_METHOD_LPTA",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
         "AS_GSS_TMG_QR_getTasks",
         "AS_GSS_TMG_REF_ID_TASK_STATUS_COMPLETE",
@@ -1631,6 +2224,20 @@
       "called_by": []
     },
     {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1369557",
+      "name": "AS_GSS_BrandingValueByKey",
+      "type": "Expression Rule",
+      "description": "Returns a GSS branding value by key",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GSS_FM_completeEvaluationForm",
+        "AS_GSS_GRD_vendorListForAwarding"
+      ]
+    },
+    {
       "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1319026",
       "name": "AS_GSS_CO_UT_loadBundleFromFolder",
       "type": "Expression Rule",
@@ -1638,8 +2245,34 @@
       "parameters": [],
       "calls": [],
       "called_by": [
-        "AS GSS Mark Evaluation as Complete",
+        "AS_GSS_CPS_richTextListWithShowMoreLess",
         "AS_GSS_CPS_richTextWithShowMoreLess",
+        "AS_GSS_FM_completeEvaluationForm",
+        "AS_GSS_GRD_vendorListForAwarding",
+        "AS_GSS_UT_displayBooleanAsRequiredNotRequired"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec6b-e6c2-8000-9d9d-011c48011c48_13281588",
+      "name": "AS_GSS_DCRA_dynamicContextRecordAction",
+      "type": "Expression Rule",
+      "description": "A record action which can take any dynamic context",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_GRD_vendorListForAwarding"
+      ]
+    },
+    {
+      "uuid": "_a-0001ed6e-54f1-8000-9df6-011c48011c48_15245604",
+      "name": "AS_GSS_EnableOrDisableStateAndLocalGovernment_wrapper",
+      "type": "Expression Rule",
+      "description": "This rule returns a boolean which represents whether or not State and Local is enabled ",
+      "parameters": [],
+      "calls": [
+        "AS_GSS_TOGGLE_AUTOMATION_TESTING_ENABLED"
+      ],
+      "called_by": [
         "AS_GSS_FM_completeEvaluationForm"
       ]
     },
@@ -1653,7 +2286,7 @@
         "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
         "AS_CO_UT_isNotBlank",
         "AS_CO_UT_queryEntity",
-        "AS_GSS_ENT_EVALUATION",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
         "AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP"
@@ -1679,6 +2312,59 @@
       ]
     },
     {
+      "uuid": "_a-0000eb72-c933-8000-9d28-011c48011c48_10441691",
+      "name": "AS_GSS_QR_getEvaluation",
+      "type": "Expression Rule",
+      "description": "Returns evaluation synced record based on the given filter set",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP"
+      ],
+      "called_by": [
+        "AS GSS Mark Evaluation as Complete",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_GRD_vendorListForAwarding",
+        "AS_GSS_UT_buildEvaluationDataForAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb5-bbc6-8000-9dba-011c48011c48_13905251",
+      "name": "AS_GSS_QR_getFactorDocumentMapping",
+      "type": "Expression Rule",
+      "description": "Generic query expression for factor document mapping record data",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_FactorDocumentMapping_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_UT_buildEvaluationDataForAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e393-fbf1-8000-9ba2-011c48011c48_100474-tmg-am-am",
+      "name": "AS_GSS_TMG_QE_getTaskCategories",
+      "type": "Expression Rule",
+      "description": "Gets all TaskCategory reference data",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_queryEntity",
+        "AS_GSS_TMG_ENT_R_TASK_CATEGORY"
+      ],
+      "called_by": [
+        "AS_GSS_UT_convertPhaseRecordDataToDictionaryForAudit"
+      ]
+    },
+    {
       "uuid": "_a-0000eb16-753f-8000-9d01-011c48011c48_9493909",
       "name": "AS_GSS_TMG_QR_getTasks",
       "type": "Expression Rule",
@@ -1694,19 +2380,276 @@
       ]
     },
     {
-      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_941030",
-      "name": "AS_GSS_UT_evaluationAuditStartProcess_Parameters",
+      "uuid": "_a-0000eb7c-0389-8000-9d2c-011c48011c48_10565020",
+      "name": "AS_GSS_UT_CompareLists",
       "type": "Expression Rule",
-      "description": "Populates the parameters for start audit of GSS",
+      "description": null,
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_constructManpAuditForFactorDocMappingChanges"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecda-a664-8000-9dc8-011c48011c48_14322601",
+      "name": "AS_GSS_UT_buildEvaluationDataForAudit",
+      "type": "Expression Rule",
+      "description": "The rule is used to build evaluation data for auidt",
       "parameters": [],
       "calls": [
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_ADD",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_MODIFY",
         "AS_ADT_UT_startAuditProcess_Parameters",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_booleanDefaultFalse",
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_CO_UT_indexWhere",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_replaceNull",
+        "AS_GAM_ADT_TXT_AUDIT_TYPE_FIELD_LEVEL",
+        "AS_GAM_ADT_TXT_AUDIT_TYPE_MANIPULATION",
         "AS_GSS_ADT_BL_auditConfig_Evaluation",
+        "AS_GSS_ADT_ENUM_AUDIT_ACTION_CODE_CREATED_FROM_SOLICITATION",
+        "AS_GSS_ADT_ENUM_AUDIT_ACTION_CODE_DUPLICATED",
+        "AS_GSS_Criteria_SYNCEDRECORD",
         "AS_GSS_ENT_A_R_EVALUATION",
-        "AS_GSS_ENT_EVALUATION"
+        "AS_GSS_ENUM_AUDIT_ACTION_CODE_DOC_UPDATE",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_QR_getEvaluation",
+        "AS_GSS_QR_getFactorDocumentMapping",
+        "AS_GSS_UT_constructManpAuditForFactorDocMappingChanges",
+        "AS_GSS_UT_convertDocumentRecordDataToDictionaryForAudit",
+        "AS_GSS_UT_convertEvaluationRecordDataToDictionaryForAudit",
+        "AS_GSS_UT_convertFactorDocMappingRecordDataToDictionaryForAudit",
+        "AS_GSS_UT_convertFactorRecordDataToDictionaryForAudit",
+        "AS_GSS_UT_convertPhaseRecordDataToDictionaryForAudit",
+        "AS_GSS_UT_convertTeamRecordDataToDictionaryForAudit",
+        "AS_GSS_UT_convertVendorRecordDataToDictionaryForAudit",
+        "AS_GSS_UT_evalDocsStartAuditProcess_Parameters"
       ],
       "called_by": [
         "AS GSS Mark Evaluation as Complete"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed5b-ded3-8000-9df2-011c48011c48_15137087",
+      "name": "AS_GSS_UT_checkIfZero",
+      "type": "Expression Rule",
+      "description": "Expression rule to check if the input value is  zero",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_GRD_vendorListForAwarding"
+      ]
+    },
+    {
+      "uuid": "_a-0000edaa-0a95-8000-9e03-011c48011c48_15687168",
+      "name": "AS_GSS_UT_constructManpAuditForFactorDocMappingChanges",
+      "type": "Expression Rule",
+      "description": "The rule is used to construct the Manipulation audit config for factor mapping changes to an existing vendor",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_CO_UT_indexWhere",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GSS_BL_constructFieldChangesForEvalDocs",
+        "AS_GSS_ENUM_AUDIT_ACTION_CODE_DOC_UPDATE",
+        "AS_GSS_EvaluationDocument_SYNCEDRECORD",
+        "AS_GSS_UT_CompareLists"
+      ],
+      "called_by": [
+        "AS_GSS_UT_buildEvaluationDataForAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed2d-b9af-8000-9de8-011c48011c48_14807606",
+      "name": "AS_GSS_UT_convertDateTimeFromOrToGMT",
+      "type": "Expression Rule",
+      "description": "The rule is used to convert the date time values from user timezone to GMT or from GMT to user timezone",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_formatDateTime"
+      ],
+      "called_by": [
+        "AS_GSS_UT_convertVendorRecordDataToDictionaryForAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed08-d796-8000-9dda-011c48011c48_14539752",
+      "name": "AS_GSS_UT_convertDocumentRecordDataToDictionaryForAudit",
+      "type": "Expression Rule",
+      "description": "The rule is used to convert document record data to normal data for audit purposes",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_GSS_EvaluationDocument_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_UT_buildEvaluationDataForAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecda-a664-8000-9dc8-011c48011c48_14321832",
+      "name": "AS_GSS_UT_convertEvaluationRecordDataToDictionaryForAudit",
+      "type": "Expression Rule",
+      "description": "The rule is used to convert evaluation record data to dictionary data for audit purposes",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_CO_UT_displayBooleanAsYesNo",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_UT_displayBooleanAsRequiredNotRequired"
+      ],
+      "called_by": [
+        "AS_GSS_UT_buildEvaluationDataForAudit",
+        "AS_GSS_UT_convertVendorRecordDataToDictionaryForAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed5b-ded3-8000-9df2-011c48011c48_15103549",
+      "name": "AS_GSS_UT_convertFactorDocMappingRecordDataToDictionaryForAudit",
+      "type": "Expression Rule",
+      "description": "The rule is used to convert Factor Document Mapping record data to normal data for audit purposes",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_GSS_FactorDocumentMapping_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_UT_buildEvaluationDataForAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecda-a664-8000-9dc8-011c48011c48_14322006",
+      "name": "AS_GSS_UT_convertFactorRecordDataToDictionaryForAudit",
+      "type": "Expression Rule",
+      "description": "The rule is used to convert Factor(Criteria) record data to normal data for audit purposes",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_GSS_Criteria_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_UT_buildEvaluationDataForAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000eced-1a08-8000-9dce-011c48011c48_14395832",
+      "name": "AS_GSS_UT_convertPhaseRecordDataToDictionaryForAudit",
+      "type": "Expression Rule",
+      "description": "The rule is used to convert phase record data to normal data for audit purposes",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_GSS_EvaluationPhase_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_TMG_QE_getTaskCategories"
+      ],
+      "called_by": [
+        "AS_GSS_UT_buildEvaluationDataForAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000eced-1a08-8000-9dce-011c48011c48_14395914",
+      "name": "AS_GSS_UT_convertTeamRecordDataToDictionaryForAudit",
+      "type": "Expression Rule",
+      "description": "The rule is used to convert team record data to normal data for audit purposes",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_EvaluatorTeam_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_UT_buildEvaluationDataForAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed2d-b9af-8000-9de8-011c48011c48_14806628",
+      "name": "AS_GSS_UT_convertVendorRecordDataToDictionaryForAudit",
+      "type": "Expression Rule",
+      "description": "The rule is used to convert vendor record data to normal data for audit purposes",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_UT_convertDateTimeFromOrToGMT",
+        "AS_GSS_UT_convertEvaluationRecordDataToDictionaryForAudit",
+        "AS_GSS_VendorPriceBreakup_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_UT_buildEvaluationDataForAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf6-54c9-8000-9dd2-011c48011c48_14439898",
+      "name": "AS_GSS_UT_displayBooleanAsRequiredNotRequired",
+      "type": "Expression Rule",
+      "description": "Returns \"Required\" or \"Not Required\" given a boolean with the value True or False, respectively. Returns \"Not Required\" if the boolean is null.",
+      "parameters": [],
+      "calls": [
+        "AS_GSS_CO_UT_loadBundleFromFolder"
+      ],
+      "called_by": [
+        "AS_GSS_UT_convertEvaluationRecordDataToDictionaryForAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee15-bcab-8000-9e1f-011c48011c48_16281050",
+      "name": "AS_GSS_UT_displayLabelForViewBreakdownAction",
+      "type": "Expression Rule",
+      "description": "The rule is used to return the display label for View breakdown action in Vendors tab",
+      "parameters": [],
+      "calls": [
+        "AS_GSS_CO_NULL_REPLACEABLE_TEXT",
+        "AS_GSS_DOLLAR_ISO_CODE"
+      ],
+      "called_by": [
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_GRD_vendorListForAwarding"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_951177",
+      "name": "AS_GSS_UT_evalDocsStartAuditProcess_Parameters",
+      "type": "Expression Rule",
+      "description": "Populates the parameters for start audit of AS_GSS_EvaluationDocument audit",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_DELETE",
+        "AS_ADT_UT_startAuditProcess_Parameters",
+        "AS_GAM_ADT_TXT_AUDIT_TYPE_MANIPULATION",
+        "AS_GAM_ENUM_AUDIT_ACTION_CODE_UPLOAD",
+        "AS_GSS_ADT_BL_auditConfig_Evaluation",
+        "AS_GSS_BL_constructFieldChangesForEvalDocs",
+        "AS_GSS_ENT_A_R_EVALUATION",
+        "AS_GSS_ENT_EVALUATION_DOCUMENT"
+      ],
+      "called_by": [
+        "AS_GSS_UT_buildEvaluationDataForAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_985423",
+      "name": "AS_GSS_UT_showMoreOrShowLessList",
+      "type": "Expression Rule",
+      "description": "Displays expandable / shortened for list of text -As  ...show more/ less",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CPS_richTextListWithShowMoreLess"
       ]
     },
     {
@@ -2134,6 +3077,149 @@
       ]
     },
     {
+      "uuid": "_a-0000eb4d-def5-8000-9d18-011c48011c48_10122467",
+      "name": "AS_GSS_CPS_richTextListWithShowMoreLess",
+      "type": "Interface",
+      "description": "Generic interface for displaying rich text display components fields",
+      "parameters": [
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "labelPosition",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        },
+        {
+          "name": "instructions",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 2
+        },
+        {
+          "name": "helpToolTip",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 3
+        },
+        {
+          "name": "items",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "display_order": 4
+        },
+        {
+          "name": "showHyphen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 5
+        },
+        {
+          "name": "shortenIfLongerThanCount",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "display_order": 6
+        },
+        {
+          "name": "i18nData",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "display_order": 7
+        },
+        {
+          "name": "preventWrapping",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 8
+        },
+        {
+          "name": "tooltip",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 9
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 10
+        },
+        {
+          "name": "align",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 11
+        },
+        {
+          "name": "marginAbove",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 12
+        },
+        {
+          "name": "marginBelow",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 13
+        },
+        {
+          "name": "showBulletedList",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 14
+        },
+        {
+          "name": "includeLineBreak",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 15
+        }
+      ],
+      "calls": [
+        "AS_GSS_CO_UT_loadBundleFromFolder",
+        "AS_GSS_UT_showMoreOrShowLessList"
+      ],
+      "called_by": [
+        "AS_GSS_GRD_vendorListForAwarding"
+      ]
+    },
+    {
       "uuid": "_a-0000eb4d-def5-8000-9d18-011c48011c48_10111164",
       "name": "AS_GSS_CPS_richTextWithShowMoreLess",
       "type": "Interface",
@@ -2300,28 +3386,20 @@
       "description": "complete an evaluation form",
       "parameters": [
         {
-          "name": "evaluation",
-          "type": "urn:com:appian:types:AS:GSS:AS_GSS_Evaluation",
-          "raw_type": "urn:com:appian:types:AS:GSS:AS_GSS_Evaluation",
-          "required": false,
-          "default_value": null,
-          "display_order": 0
-        },
-        {
-          "name": "i18nData",
-          "type": "http://www.appian.com/ae/types/2009:Variant",
-          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
-          "required": false,
-          "default_value": null,
-          "display_order": 1
-        },
-        {
           "name": "userAction",
           "type": "http://www.w3.org/2001/XMLSchema:string",
           "raw_type": "http://www.w3.org/2001/XMLSchema:string",
           "required": false,
           "default_value": null,
-          "display_order": 2
+          "display_order": 0
+        },
+        {
+          "name": "evaluation",
+          "type": "urn:com:appian:recordtype:datatype:e6bc8561-d3a6-4679-b7af-6e279910468e",
+          "raw_type": "urn:com:appian:recordtype:datatype:e6bc8561-d3a6-4679-b7af-6e279910468e",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
         }
       ],
       "calls": [
@@ -2330,13 +3408,91 @@
         "AS_CO_ENUM_USER_ACTION_CANCEL",
         "AS_CO_ENUM_USER_ACTION_SUBMIT",
         "AS_CO_INP_dateField",
-        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GSS_BrandingValueByKey",
         "AS_GSS_CO_UT_loadBundleFromFolder",
         "AS_GSS_CPS_richTextWithShowMoreLess",
+        "AS_GSS_EnableOrDisableStateAndLocalGovernment_wrapper",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_GRD_vendorListForAwarding",
+        "AS_GSS_REF_ID_EVALUATION_METHOD_BEST_VALUE",
         "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE"
       ],
       "called_by": [
         "AS GSS Mark Evaluation as Complete"
+      ]
+    },
+    {
+      "uuid": "_a-0000eed7-628f-8000-9e56-011c48011c48_17580366",
+      "name": "AS_GSS_GRD_vendorListForAwarding",
+      "type": "Interface",
+      "description": "The grid interface to display the vendors for awardee selection",
+      "parameters": [
+        {
+          "name": "isStateOrLocal",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        },
+        {
+          "name": "evaluation",
+          "type": "urn:com:appian:recordtype:datatype:e6bc8561-d3a6-4679-b7af-6e279910468e",
+          "raw_type": "urn:com:appian:recordtype:datatype:e6bc8561-d3a6-4679-b7af-6e279910468e",
+          "required": false,
+          "default_value": null,
+          "display_order": 2
+        },
+        {
+          "name": "selectedVendors",
+          "type": "urn:com:appian:recordtype:datatype:b6081510-0d11-4d51-8eba-966610b168db?list",
+          "raw_type": "urn:com:appian:recordtype:datatype:b6081510-0d11-4d51-8eba-966610b168db?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 3
+        },
+        {
+          "name": "isCompleteEvaluation",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 4
+        }
+      ],
+      "calls": [
+        "AS GSS Dynamic Record",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_checkIsNullOrEmpty",
+        "AS_CO_UT_formatDate",
+        "AS_CO_UT_replaceNull",
+        "AS_GAM_INT_LIMIT_FOR_SHOW_MORE_OR_LESS_SHORT",
+        "AS_GSS_BrandingValueByKey",
+        "AS_GSS_CO_NULL_REPLACEABLE_TEXT",
+        "AS_GSS_CO_UT_loadBundleFromFolder",
+        "AS_GSS_CPS_richTextListWithShowMoreLess",
+        "AS_GSS_DCRA_dynamicContextRecordAction",
+        "AS_GSS_DOLLAR_ISO_CODE",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_INT_MAX_SELECTION_FOR_SELECT_AWARDEES",
+        "AS_GSS_QR_getEvaluation",
+        "AS_GSS_REF_ID_EVALUATION_METHOD_BEST_VALUE",
+        "AS_GSS_REF_ID_IDV_AWARD_TYPE_SINGLE",
+        "AS_GSS_REF_ID_VENDOR_DECISION_SELECT",
+        "AS_GSS_UT_checkIfZero",
+        "AS_GSS_UT_displayLabelForViewBreakdownAction"
+      ],
+      "called_by": [
+        "AS_GSS_FM_completeEvaluationForm"
       ]
     },
     {
@@ -2365,12 +3521,233 @@
       "description": "complete evaluation process",
       "calls": [
         "AS GAM ADT Audit Process",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
         "AS_CO_ENUM_USER_ACTION_SUBMIT",
-        "AS_GSS_CO_UT_loadBundleFromFolder",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
         "AS_GSS_FM_completeEvaluationForm",
-        "AS_GSS_UT_evaluationAuditStartProcess_Parameters"
+        "AS_GSS_QR_getEvaluation",
+        "AS_GSS_UT_buildEvaluationDataForAudit"
       ],
       "called_by": []
+    },
+    {
+      "uuid": "8b3931ed-e5e1-4827-b6c0-377ff72990e5",
+      "name": "AS GSS Dynamic Record",
+      "type": "Record Type",
+      "description": "Expression-backed record to be used for holding generic record actions not associated with any particular record type",
+      "actions": [
+        "editDueDates",
+        "markTaskComplete",
+        "markTaskNotNeeded",
+        "claimTask",
+        "reassignTasks",
+        "createEvaluation",
+        "createVendorManually",
+        "viewBreakdown"
+      ],
+      "views": [
+        "Record Header",
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_isUserMemberOfGroups"
+      ],
+      "called_by": [
+        "AS_GSS_GRD_vendorListForAwarding"
+      ]
+    },
+    {
+      "uuid": "11dcc745-3c81-49f9-9cb2-6427680e4b41",
+      "name": "AS_GSS_Criteria_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "Synced Record for Evaluation Criteria",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_EvaluatorTeam_SYNCEDRECORD",
+        "AS_GSS_TMG_Task_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_EvaluationDocument_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_EvaluatorTeam_SYNCEDRECORD",
+        "AS_GSS_FactorDocumentMapping_SYNCEDRECORD",
+        "AS_GSS_TMG_Task_SYNCEDRECORD",
+        "AS_GSS_UT_buildEvaluationDataForAudit",
+        "AS_GSS_UT_convertFactorRecordDataToDictionaryForAudit"
+      ]
+    },
+    {
+      "uuid": "9c497e08-f4c6-4fbd-bf14-5638dc226230",
+      "name": "AS_GSS_EvaluationDocument_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": null,
+      "actions": [
+        "delete"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_GSS_Criteria_SYNCEDRECORD",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_FactorDocumentMapping_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_FactorDocumentMapping_SYNCEDRECORD",
+        "AS_GSS_TMG_Task_SYNCEDRECORD",
+        "AS_GSS_UT_constructManpAuditForFactorDocMappingChanges",
+        "AS_GSS_UT_convertDocumentRecordDataToDictionaryForAudit"
+      ]
+    },
+    {
+      "uuid": "bf3ef3fe-9671-40df-a195-bd71ab8deed8",
+      "name": "AS_GSS_EvaluationPhase_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "Synced Record for Evaluation Phase",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_GSS_Evaluation_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_UT_convertPhaseRecordDataToDictionaryForAudit"
+      ]
+    },
+    {
+      "uuid": "b6081510-0d11-4d51-8eba-966610b168db",
+      "name": "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "Synced record for evaluation vendors",
+      "actions": [
+        "updateVendor",
+        "deleteVendor",
+        "updateVendorDetails",
+        "viewBreakdown",
+        "viewVendorDecision",
+        "viewConsensusRatings",
+        "viewVendorDecisionForAwardees"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_GSS_EvaluationDocument_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_QR_getEvaluation",
+        "AS_GSS_TMG_Task_SYNCEDRECORD",
+        "AS_GSS_UT_displayLabelForViewBreakdownAction",
+        "AS_GSS_VendorPriceBreakup_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_EvaluationDocument_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_GRD_vendorListForAwarding",
+        "AS_GSS_TMG_Task_SYNCEDRECORD",
+        "AS_GSS_UT_convertVendorRecordDataToDictionaryForAudit",
+        "AS_GSS_VendorPriceBreakup_SYNCEDRECORD"
+      ]
+    },
+    {
+      "uuid": "e6bc8561-d3a6-4679-b7af-6e279910468e",
+      "name": "AS_GSS_Evaluation_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "NOTE: Solicitation Description and Evaluation Description are 5000 characters and will be trimmed in the synced record",
+      "actions": [
+        "createNewEvaluation",
+        "addVendor",
+        "UpdatePhases",
+        "AddPhases"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_GSS_Criteria_SYNCEDRECORD",
+        "AS_GSS_EvaluationDocument_SYNCEDRECORD",
+        "AS_GSS_EvaluationPhase_SYNCEDRECORD",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_EvaluatorTeam_SYNCEDRECORD",
+        "AS_GSS_QR_getEvaluation",
+        "AS_GSS_TMG_Task_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS GSS Mark Evaluation as Complete",
+        "AS_GSS_Criteria_SYNCEDRECORD",
+        "AS_GSS_EvaluationDocument_SYNCEDRECORD",
+        "AS_GSS_EvaluationPhase_SYNCEDRECORD",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_FM_completeEvaluationForm",
+        "AS_GSS_GRD_vendorListForAwarding",
+        "AS_GSS_QR_getEvaluation",
+        "AS_GSS_TMG_Task_SYNCEDRECORD",
+        "AS_GSS_UT_buildEvaluationDataForAudit",
+        "AS_GSS_UT_convertDocumentRecordDataToDictionaryForAudit",
+        "AS_GSS_UT_convertEvaluationRecordDataToDictionaryForAudit",
+        "AS_GSS_UT_convertFactorRecordDataToDictionaryForAudit",
+        "AS_GSS_UT_convertPhaseRecordDataToDictionaryForAudit",
+        "AS_GSS_UT_convertTeamRecordDataToDictionaryForAudit"
+      ]
+    },
+    {
+      "uuid": "791d954b-beae-4171-808f-876583d707fa",
+      "name": "AS_GSS_EvaluatorTeam_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "Synced record type for evaluator team",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_GSS_Criteria_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_Criteria_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_UT_convertTeamRecordDataToDictionaryForAudit"
+      ]
+    },
+    {
+      "uuid": "acd503e1-00a5-4fd0-bb5d-2171574b7575",
+      "name": "AS_GSS_FactorDocumentMapping_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "SYNCED Record for AS_GSS_FCTR_DCUMENT_MAPPING",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_GSS_Criteria_SYNCEDRECORD",
+        "AS_GSS_EvaluationDocument_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_EvaluationDocument_SYNCEDRECORD",
+        "AS_GSS_QR_getFactorDocumentMapping",
+        "AS_GSS_UT_convertFactorDocMappingRecordDataToDictionaryForAudit"
+      ]
     },
     {
       "uuid": "9a04b944-b726-41f5-9b37-8ec71b6cc370",
@@ -2382,10 +3759,36 @@
         "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
         "List View"
       ],
-      "calls": [],
+      "calls": [
+        "AS_GSS_Criteria_SYNCEDRECORD",
+        "AS_GSS_EvaluationDocument_SYNCEDRECORD",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD"
+      ],
       "called_by": [
         "AS_GSS_BL_getRelatedActionVisibilityForMarkEvaluationAsComplete",
+        "AS_GSS_Criteria_SYNCEDRECORD",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
         "AS_GSS_TMG_QR_getTasks"
+      ]
+    },
+    {
+      "uuid": "e29f01c8-20bf-4220-8797-7fe0041be362",
+      "name": "AS_GSS_VendorPriceBreakup_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "Synced record for pricing line item information for Vendors",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_UT_convertVendorRecordDataToDictionaryForAudit"
       ]
     }
   ]

@@ -1,0 +1,22 @@
+{
+  "_metadata": {
+    "bundle_id": "AS_GSS_GCW_Update_Evaluation_Folder_Security_For_Solicitation"
+  },
+  "objects": {
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782": {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Boolean',\n  not(rule!AS_CO_UT_isBlank(ri!input))\n)"
+    },
+    "0005ef1a-cef1-8000-e898-7f0000014e7a": {
+      "name": "AS GSS GCW Update Evaluation Folder Security For Solicitation",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n= tofolder( rule!AS_GSS_QR_getEvaluation( returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY, fields: { recordType!AS_GSS_Evaluation_SYNCEDRECORD.folderId }, evaluationId: pv!evaluationId )[recordType!AS_GSS_Evaluation_SYNCEDRECORD.folderId])\n\n// Input: ?\n= togroup(pv!groupsToUpdate)"
+    },
+    "_a-0000eb72-c933-8000-9d28-011c48011c48_10441691": {
+      "name": "AS_GSS_QR_getEvaluation",
+      "type": "Expression Rule",
+      "sail_code": "rule!AS_CO_UT_queryRecord(\n  recordType: recordType!AS_GSS_Evaluation_SYNCEDRECORD,\n  returnType: ri!returnType,\n  executeWhen: ri!executeWhen,\n  triggerRefresh: ri!triggerRefresh,\n  logicalExpression: ri!logicalExpression,\n  pagingInfo: ri!pagingInfo,\n  aggregationFields: ri!aggregationFields,\n  fields: ri!fields,\n  relatedRecordData: ri!relatedRecordData,\n  filters: {\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!AS_GSS_Evaluation_SYNCEDRECORD.evaluationId,\n      operator: \"in\",\n      value: ri!evaluationId\n    ),\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!AS_GSS_Evaluation_SYNCEDRECORD.evaluationNumber,\n      operator: \"in\",\n      value: ri!evaluationNumber\n    ),\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!AS_GSS_Evaluation_SYNCEDRECORD.evaluationStatusId,\n      operator: \"in\",\n      value: {\n        cons!AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP,\n        cons!AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS,\n        cons!AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED,\n        cons!AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE\n      }\n    ),\n    ri!additionalFilters\n  },\n  sort: ri!sort\n)"
+    }
+  }
+}

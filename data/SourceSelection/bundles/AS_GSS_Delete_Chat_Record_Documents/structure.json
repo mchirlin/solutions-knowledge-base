@@ -1,0 +1,173 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GSS Delete Chat Record Documents",
+    "parent_name": null,
+    "total_objects": 8
+  },
+  "entry_point": {
+    "complexity_score": 10.0,
+    "total_nodes": 6,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GSS Delete Chat Record Documents",
+      "complexity_score": 10.0,
+      "total_nodes": 6,
+      "nodes": [
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Get Document Folder",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Delete Records"
+          ]
+        },
+        {
+          "name": "Delete Records",
+          "type": "Delete Records",
+          "next": [
+            "More Records to Delete?"
+          ]
+        },
+        {
+          "name": "More Records to Delete?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Delete Folder Contents (No)",
+            "Delete Records"
+          ]
+        },
+        {
+          "name": "Delete Folder Contents",
+          "type": "com.appiancorp.ps.plugins.contenttools.emptyFolderContents",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Get Document Folder"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290131",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+      "type": "Constant",
+      "description": "DATA_SUBSET - Returns a type of DataSubset when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "DATA_SUBSET",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GSS Delete Chat Record Documents",
+        "AS_CO_UT_queryRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290157",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "description": "SINGLE_OBJECT - Returns a single type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "SINGLE_OBJECT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_QR_getDocumentChat"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290175",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+      "type": "Constant",
+      "description": "TOTAL_COUNT - Returns an Integer when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "TOTAL_COUNT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GSS Delete Chat Record Documents"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef29-4c7b-8000-9e6a-011c48011c48_18156076",
+      "name": "AS_GSS_INT_DELETE_RECORD_BATCH_SIZE",
+      "type": "Constant",
+      "description": "Value: 5000 - Batch size for deleting records",
+      "value": "5000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GSS Delete Chat Record Documents"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6c8-d132-8000-9bbe-011c48011c48_469266",
+      "name": "AS_CO_UT_queryRecord",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT"
+      ],
+      "called_by": [
+        "AS_GSS_QR_getDocumentChat"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef29-4c7b-8000-9e6a-011c48011c48_18155840",
+      "name": "AS_GSS_QR_getDocumentChat",
+      "type": "Expression Rule",
+      "description": "Query record for AS_GSS_DocumentChat_SYNCEDRECORD",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_queryRecord",
+        "AS_GSS_DocumentChat_SYNCEDRECORD"
+      ],
+      "called_by": [
+        "AS GSS Delete Chat Record Documents"
+      ]
+    },
+    {
+      "uuid": "0008ef2c-541b-8000-e9c3-7f0000014e7a",
+      "name": "AS GSS Delete Chat Record Documents",
+      "type": "Process Model",
+      "description": "Recurring automatic process to delete record chat documents in AS_GSS_DocumentChat",
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+        "AS_GSS_DocumentChat_SYNCEDRECORD",
+        "AS_GSS_INT_DELETE_RECORD_BATCH_SIZE",
+        "AS_GSS_QR_getDocumentChat"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "2242c0af-cdfd-416b-8a0c-1c9004e5f6df",
+      "name": "AS_GSS_DocumentChat_SYNCEDRECORD",
+      "type": "Record Type",
+      "description": "Contains data needed for Document Chat feature",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "AS GSS Delete Chat Record Documents",
+        "AS_GSS_QR_getDocumentChat"
+      ]
+    }
+  ]
+}

@@ -3,7 +3,7 @@
     "bundle_type": "action",
     "root_name": "AS_GSS_ConsensusReport_SYNCEDRECORD - Open Consensus Form",
     "parent_name": "AS_GSS_ConsensusReport_SYNCEDRECORD",
-    "total_objects": 395
+    "total_objects": 396
   },
   "entry_point": {
     "action_type": "RECORD_ACTION",
@@ -94,15 +94,15 @@
     },
     "subprocesses": [
       {
-        "name": "AS GSS Complete Consensus Report",
-        "complexity_score": 10.0,
-        "total_nodes": 6,
+        "name": "AS GSS Updates for Awaiting Signatures Consensus",
+        "complexity_score": 11.0,
+        "total_nodes": 7,
         "nodes": [
           {
             "name": "Start Node",
             "type": "START_EVENT",
             "next": [
-              "Is it already written as Completed?"
+              "Build consensus signatures"
             ]
           },
           {
@@ -110,34 +110,39 @@
             "type": "END_EVENT"
           },
           {
-            "name": "Update Consensus status",
-            "type": "Write to Data Store Entity",
-            "next": [
-              "Capture Audit"
-            ]
-          },
-          {
             "name": "Generate consensus document",
             "type": "SUBPROCESS",
             "next": [
-              "End Node"
+              "Send email to sign"
             ],
             "subprocess": "AS GSS Generate Consensus Document"
           },
           {
-            "name": "Capture Audit",
-            "type": "SUBPROCESS",
+            "name": "Send email to sign",
+            "type": "Start Process (v2)",
             "next": [
-              "Generate consensus document"
-            ],
-            "subprocess": "AS GAM ADT Audit Process"
+              "End Node"
+            ]
           },
           {
-            "name": "Is it already written as Completed?",
-            "type": "XOR_GATEWAY",
+            "name": "Build consensus signatures",
+            "type": "SCRIPT_TASK",
             "next": [
-              "Update Consensus status (No)",
-              "Generate consensus document (Yes)"
+              "Write Consensus Signatures"
+            ]
+          },
+          {
+            "name": "Write Consensus Signatures",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Get Consensus Signature Records"
+            ]
+          },
+          {
+            "name": "Get Consensus Signature Records",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Generate consensus document"
             ]
           }
         ]
@@ -317,15 +322,15 @@
         ]
       },
       {
-        "name": "AS GSS Updates for Awaiting Signatures Consensus",
-        "complexity_score": 11.0,
-        "total_nodes": 7,
+        "name": "AS GSS Complete Consensus Report",
+        "complexity_score": 10.0,
+        "total_nodes": 6,
         "nodes": [
           {
             "name": "Start Node",
             "type": "START_EVENT",
             "next": [
-              "Build consensus signatures"
+              "Is it already written as Completed?"
             ]
           },
           {
@@ -333,39 +338,34 @@
             "type": "END_EVENT"
           },
           {
+            "name": "Update Consensus status",
+            "type": "Write to Data Store Entity",
+            "next": [
+              "Capture Audit"
+            ]
+          },
+          {
             "name": "Generate consensus document",
             "type": "SUBPROCESS",
             "next": [
-              "Send email to sign"
+              "End Node"
             ],
             "subprocess": "AS GSS Generate Consensus Document"
           },
           {
-            "name": "Send email to sign",
-            "type": "Start Process (v2)",
-            "next": [
-              "End Node"
-            ]
-          },
-          {
-            "name": "Build consensus signatures",
-            "type": "SCRIPT_TASK",
-            "next": [
-              "Write Consensus Signatures"
-            ]
-          },
-          {
-            "name": "Write Consensus Signatures",
-            "type": "SCRIPT_TASK",
-            "next": [
-              "Get Consensus Signature Records"
-            ]
-          },
-          {
-            "name": "Get Consensus Signature Records",
-            "type": "SCRIPT_TASK",
+            "name": "Capture Audit",
+            "type": "SUBPROCESS",
             "next": [
               "Generate consensus document"
+            ],
+            "subprocess": "AS GAM ADT Audit Process"
+          },
+          {
+            "name": "Is it already written as Completed?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Update Consensus status (No)",
+              "Generate consensus document (Yes)"
             ]
           }
         ]
@@ -1343,6 +1343,22 @@
       ]
     },
     {
+      "uuid": "_a-0000eed7-628f-8000-9e56-011c48011c48_17651910",
+      "name": "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
+      "type": "Constant",
+      "description": "Value: 79\n",
+      "value": "79",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_returnEvaluationInfoForLandingPage",
+        "AS_GSS_CARD_evaluationInfo",
+        "AS_GSS_GRD_EvaluationRecordList",
+        "AS_GSS_QE_getEvaluation",
+        "AS_GSS_QR_getEvaluation"
+      ]
+    },
+    {
       "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1061416",
       "name": "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE",
       "type": "Constant",
@@ -1389,6 +1405,7 @@
       "called_by": [
         "AS_GSS_BL_returnEvaluationAdditionalInfoForCards",
         "AS_GSS_BL_returnEvaluationInfoForLandingPage",
+        "AS_GSS_CARD_evaluationInfo",
         "AS_GSS_QE_getEvaluation",
         "AS_GSS_QR_getEvaluation"
       ]
@@ -3862,6 +3879,7 @@
         "AS_GSS_Evaluation_SYNCEDRECORD",
         "AS_GSS_MAX_LIMIT_FOR_EVALUATIONS_IN_HOME_PAGE",
         "AS_GSS_QR_getEvaluation",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
         "AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP"
       ],
@@ -4076,6 +4094,7 @@
         "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
         "AS_CO_UT_isNotBlank",
         "AS_CO_UT_queryEntity",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
         "AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP"
@@ -4363,6 +4382,7 @@
         "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
         "AS_CO_UT_queryRecord",
         "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
         "AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP"
@@ -6139,7 +6159,9 @@
         "AS_GSS_CO_NULL_REPLACEABLE_TEXT",
         "AS_GSS_CO_UT_loadBundleFromFolder",
         "AS_GSS_Evaluation_RECORD",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP",
         "AS_GSS_UT_checkIfNullOrZero",
         "AS_GSS_UT_checkIfZero",
         "AS_GSS_returnEvaluatorsStampList"
@@ -7771,6 +7793,7 @@
         "AS_GSS_QR_getCriteria",
         "AS_GSS_QR_getCriteriaAssignment",
         "AS_GSS_QR_getEvaluatorTeamMembershipByUser",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
         "AS_GSS_TMG_QR_getTasks",
@@ -8620,7 +8643,8 @@
         "AS_GSS_Evaluation_SYNCEDRECORD",
         "AS_GSS_QR_getConsensusReportByIdentifier",
         "AS_GSS_QR_getConsensusResponses",
-        "AS_GSS_R_Data_SYNCEDRECORD"
+        "AS_GSS_R_Data_SYNCEDRECORD",
+        "AS_GSS_Rating_SYNCEDRECORD"
       ],
       "called_by": [
         "AS GSS Submit Consensus",
@@ -8810,7 +8834,9 @@
         "deleteVendor",
         "updateVendorDetails",
         "viewBreakdown",
-        "viewVendorDecision"
+        "viewVendorDecision",
+        "viewConsensusRatings",
+        "viewVendorDecisionForAwardees"
       ],
       "views": [
         "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
@@ -8870,7 +8896,9 @@
         "updateWeights",
         "updateTeams",
         "updateAssignment",
-        "addTeams"
+        "addTeams",
+        "selectAwardees",
+        "updateDueDate"
       ],
       "views": [
         "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
@@ -9112,6 +9140,7 @@
       "called_by": [
         "AS_GSS_CPS_consensusClosingRemarks",
         "AS_GSS_CPS_showRatingWithDescriptions",
+        "AS_GSS_ConsensusReport_SYNCEDRECORD",
         "AS_GSS_Criteria_SYNCEDRECORD",
         "AS_GSS_QR_getRatings"
       ]

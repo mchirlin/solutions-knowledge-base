@@ -3,45 +3,45 @@
     "bundle_id": "AS_GSS_TMG_Update_Task_Details_for_Initiation"
   },
   "objects": {
-    "_a-0000e40a-de32-8000-9ba8-011c48011c48_260165": {
-      "name": "AS_CO_UT_updateCdtFields",
+    "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_194721-tmg-am-am": {
+      "name": "AS_GSS_TMG_UT_initiateTasks",
       "type": "Expression Rule",
-      "sail_code": "cast(\n  typeof(ri!cdt),\n  if(\n    and(\n      rule!AS_CO_UT_isBlank(ri!cdt),\n      rule!AS_CO_UT_checkIfArrayType(\n        typeOf: ri!cdt\n      )\n    ),\n    ri!cdt,\n    reduce(\n      rule!AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_handler(\n        cdt: _,\n        indices: ri!indices,\n        field: _,\n        newValue: _\n      ),\n      ri!cdt,\n      merge(\n        a!flatten(ri!fields),\n        a!flatten(ri!newValues)\n      )\n    )\n  )\n)"
-    },
-    "0002e3f6-76db-8000-fa93-7f0000014e7a-tmg-am-am": {
-      "name": "AS GSS TMG Update Task Details for Initiation",
-      "type": "Process Model",
-      "sail_code": "// Input: ?\n=cons!AS_GSS_TMG_ENT_TASK\n\n// Input: ?\n=pv!tasksToInitiate\n\n// Output: ?\nAC!StoredValues\n\n// Input: ?\n=rule!AS_GSS_TMG_UT_initiateTasks(tasks: pv!tasksToInitiate, initiator: pp!initiator)\n\n// Input: ?\n=rule!AS_CO_UT_filterCdtByField(cdt: pv!tasksToInitiate,field: \"taskBehaviorType.behaviorTypeCode\",value: cons!AS_GSS_TMG_ENUM_TASK_BEHAVIOR_TYPE_CODE_AUTOMATED)\n\n// Input: ?\n=cons!AS_GSS_TMG_PM_START_AUTOMATED_TASK\n\n// Input: ?\n={startTime:now(),task:pv!automatedTasksToInitiate[tp!instanceindex]}\n\n// Input: ?\n=tasksToInitiate\n\n// Input: ?\n=cons!AS_GSS_TMG_REF_ID_TASK_ACTION_ASSIGNED"
-    },
-    "0002e2d7-0c89-8000-f92f-7f0000014e7a-tmg-am-am": {
-      "name": "AS GSS TMG Task Action Audit",
-      "type": "Process Model",
-      "sail_code": "// Input: ?\n=cons!AS_GSS_TMG_ENT_TASK_ACTION_AUDIT\n\n// Input: ?\n=pv!taskActionAudits\n\n// Output: ?\nAC!StoredValues\n\n// Output: ?\n#\"c993facf-ee9a-40e5-857f-2688c58b0839-tmg-am-am\"(\n  tasks: pv!tasks,\n  initiator: rule!AS_CO_UT_replaceNull(\n    nullableValue: pv!initiator,\n    replacementValue: pp!initiator\n  ),\n  startTime: pv!startTime,\n  taskActionId: pv!taskActionId\n)"
+      "sail_code": "rule!AS_CO_UT_captureMetadata(\n  cdt: rule!AS_CO_UT_updateCdtFields(\n    cdt: ri!tasks,\n    fields: {\n      \"taskStatus.taskStatusId\",\n      \"availableDatetime\",\n      \"completedBy\",\n      \"completedDatetime\",\n      \"review\"\n    },\n    newValues: {\n      cons!AS_GSS_TMG_REF_ID_TASK_STATUS_ASSIGNED,\n      now(),\n      null,\n      null,\n      null\n    }\n  ),\n  modifiedBy: ri!initiator\n)"
     },
     "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73980": {
       "name": "AS_CO_UT_replaceNull",
       "type": "Expression Rule",
       "sail_code": "if(\n  rule!AS_CO_UT_isBlank(ri!nullableValue),\n  ri!replacementValue,\n  ri!nullableValue\n)"
     },
-    "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_194721-tmg-am-am": {
-      "name": "AS_GSS_TMG_UT_initiateTasks",
+    "_a-0000e40a-de32-8000-9ba8-011c48011c48_260165": {
+      "name": "AS_CO_UT_updateCdtFields",
       "type": "Expression Rule",
-      "sail_code": "rule!AS_CO_UT_captureMetadata(\n  cdt: rule!AS_CO_UT_updateCdtFields(\n    cdt: ri!tasks,\n    fields: {\n      \"taskStatus.taskStatusId\",\n      \"availableDatetime\",\n      \"completedBy\",\n      \"completedDatetime\",\n      \"review\"\n    },\n    newValues: {\n      cons!AS_GSS_TMG_REF_ID_TASK_STATUS_ASSIGNED,\n      now(),\n      null,\n      null,\n      null\n    }\n  ),\n  modifiedBy: ri!initiator\n)"
+      "sail_code": "cast(\n  typeof(ri!cdt),\n  if(\n    and(\n      rule!AS_CO_UT_isBlank(ri!cdt),\n      rule!AS_CO_UT_checkIfArrayType(\n        typeOf: ri!cdt\n      )\n    ),\n    ri!cdt,\n    reduce(\n      rule!AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_handler(\n        cdt: _,\n        indices: ri!indices,\n        field: _,\n        newValue: _\n      ),\n      ri!cdt,\n      merge(\n        a!flatten(ri!fields),\n        a!flatten(ri!newValues)\n      )\n    )\n  )\n)"
     },
-    "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_28158": {
-      "name": "AS_CO_UT_captureMetadata",
-      "type": "Expression Rule",
-      "sail_code": "cast(\n  typeof(ri!cdt),\n  with(\n    local!modifiedBy: rule!AS_CO_UT_replaceNull(\n      nullableValue: ri!modifiedBy, \n      replacementValue: loggedInUser()\n    ),\n    local!cdtFields: rule!AS_CO_UT_returnCdtFields(typeOf: ri!cdt),\n    local!possibleMetaDataFields: touniformstring(\n      /*These fields should always exist in any CDT for which metadata is captured*/\n      \"modifiedDatetime\",\n      \"modifiedBy\",\n      \"createdDatetime\",\n      \"createdBy\",\n      /*These fields may not exist in every CDT for which metadata is captured*/\n      \"isDeleted\",\n      \"isActive\"\n    ),\n    local!capturedMetadataFields: intersection(\n      local!cdtFields,\n      local!possibleMetaDataFields\n    ),\n    a!flatten(\n      #\"SYSTEM_SYSRULES_forEach\"(\n        items: ri!cdt,\n        expression: {\n          rule!AS_CO_UT_updateCdtFields(\n            cdt: fv!item,\n            fields: local!capturedMetadataFields,\n            newValues: rule!AS_CO_UT_displayValueMultiple(\n              values: local!capturedMetadataFields,\n              inArray: local!possibleMetaDataFields,\n              replacement: {\n                now(),\n                local!modifiedBy,\n                rule!AS_CO_UT_replaceNull(\n                  nullableValue: index(fv!item, \"createdDatetime\", null),\n                  replacementValue: now()\n                ),\n                rule!AS_CO_UT_replaceNull(\n                  nullableValue: index(fv!item, \"createdBy\", null),\n                  replacementValue: local!modifiedBy\n                ),\n                rule!AS_CO_UT_booleanDefaultFalse(\n                  boolean: index(fv!item, \"isDeleted\", null)\n                ),\n                rule!AS_CO_UT_booleanDefaultTrue(boolean: index(fv!item, \"isActive\", null))\n              }\n            )\n          )\n        }\n      )\n    )\n  )\n)"
+    "0002e2d7-0c89-8000-f92f-7f0000014e7a-tmg-am-am": {
+      "name": "AS GSS TMG Task Action Audit",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n=cons!AS_GSS_TMG_ENT_TASK_ACTION_AUDIT\n\n// Input: ?\n=pv!taskActionAudits\n\n// Output: ?\nAC!StoredValues\n\n// Output: ?\n#\"c993facf-ee9a-40e5-857f-2688c58b0839-tmg-am-am\"(\n  tasks: pv!tasks,\n  initiator: rule!AS_CO_UT_replaceNull(\n    nullableValue: pv!initiator,\n    replacementValue: pp!initiator\n  ),\n  startTime: pv!startTime,\n  taskActionId: pv!taskActionId\n)"
     },
     "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75800": {
       "name": "AS_CO_UT_filterCdtByField",
       "type": "Expression Rule",
       "sail_code": "/*Take the input of a cdt, field, and value and returns the matching cdt data\n\nex. cdt of users, filter by field isActive and value of true to find your active users\n*/\ncast(\n  typeof(ri!cdt),\n  index(\n    a!flatten(ri!cdt),\n    rule!AS_CO_UT_returnCdtIndicesByField(\n      cdt: ri!cdt,\n      field: ri!field,\n      value: ri!value\n    ),\n    {}\n  )\n)"
     },
+    "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_28158": {
+      "name": "AS_CO_UT_captureMetadata",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n  typeof(ri!cdt),\n  with(\n    local!modifiedBy: rule!AS_CO_UT_replaceNull(\n      nullableValue: ri!modifiedBy, \n      replacementValue: loggedInUser()\n    ),\n    local!cdtFields: rule!AS_CO_UT_returnCdtFields(typeOf: ri!cdt),\n    local!possibleMetaDataFields: touniformstring(\n      /*These fields should always exist in any CDT for which metadata is captured*/\n      \"modifiedDatetime\",\n      \"modifiedBy\",\n      \"createdDatetime\",\n      \"createdBy\",\n      /*These fields may not exist in every CDT for which metadata is captured*/\n      \"isDeleted\",\n      \"isActive\"\n    ),\n    local!capturedMetadataFields: intersection(\n      local!cdtFields,\n      local!possibleMetaDataFields\n    ),\n    a!flatten(\n      #\"SYSTEM_SYSRULES_forEach\"(\n        items: ri!cdt,\n        expression: {\n          rule!AS_CO_UT_updateCdtFields(\n            cdt: fv!item,\n            fields: local!capturedMetadataFields,\n            newValues: rule!AS_CO_UT_displayValueMultiple(\n              values: local!capturedMetadataFields,\n              inArray: local!possibleMetaDataFields,\n              replacement: {\n                now(),\n                local!modifiedBy,\n                rule!AS_CO_UT_replaceNull(\n                  nullableValue: index(fv!item, \"createdDatetime\", null),\n                  replacementValue: now()\n                ),\n                rule!AS_CO_UT_replaceNull(\n                  nullableValue: index(fv!item, \"createdBy\", null),\n                  replacementValue: local!modifiedBy\n                ),\n                rule!AS_CO_UT_booleanDefaultFalse(\n                  boolean: index(fv!item, \"isDeleted\", null)\n                ),\n                rule!AS_CO_UT_booleanDefaultTrue(boolean: index(fv!item, \"isActive\", null))\n              }\n            )\n          )\n        }\n      )\n    )\n  )\n)"
+    },
     "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536": {
       "name": "AS_CO_UT_isBlank",
       "type": "Expression Rule",
       "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  length(a!flatten(ri!value)) = 0\n)"
+    },
+    "0002e3f6-76db-8000-fa93-7f0000014e7a-tmg-am-am": {
+      "name": "AS GSS TMG Update Task Details for Initiation",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n=cons!AS_GSS_TMG_ENT_TASK\n\n// Input: ?\n=pv!tasksToInitiate\n\n// Output: ?\nAC!StoredValues\n\n// Input: ?\n=rule!AS_GSS_TMG_UT_initiateTasks(tasks: pv!tasksToInitiate, initiator: pp!initiator)\n\n// Input: ?\n=rule!AS_CO_UT_filterCdtByField(cdt: pv!tasksToInitiate,field: \"taskBehaviorType.behaviorTypeCode\",value: cons!AS_GSS_TMG_ENUM_TASK_BEHAVIOR_TYPE_CODE_AUTOMATED)\n\n// Input: ?\n=cons!AS_GSS_TMG_PM_START_AUTOMATED_TASK\n\n// Input: ?\n={startTime:now(),task:pv!automatedTasksToInitiate[tp!instanceindex]}\n\n// Input: ?\n=tasksToInitiate\n\n// Input: ?\n=cons!AS_GSS_TMG_REF_ID_TASK_ACTION_ASSIGNED"
     }
   }
 }

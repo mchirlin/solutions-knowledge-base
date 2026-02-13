@@ -1,0 +1,45 @@
+{
+  "uuid": "_a-0000eee8-b1ee-8000-9e5a-011c48011c48_17688620",
+  "name": "AS_GSS_ENTRYPOINT_GETDATA_getEvaluationStatusRefData",
+  "type": "Expression Rule",
+  "description": "AS_GCW_GSS_APPREF_GETDATA_getEvaluationStatusRefData",
+  "sail_code": "a!localVariables(\n  local!evaluationStatus: rule!AS_CO_UT_queryRecord(\n    recordType: recordType!AS_GSS_R_Data_SYNCEDRECORD,\n    filters: {\n      #\"SYSTEM_SYSRULES_queryFilter\"(\n        field: recordType!AS_GSS_R_Data_SYNCEDRECORD.refType,\n        operator: \"=\",\n        value: cons!AS_GSS_REF_TYPE_EVALUATION_STATUS\n      ),\n      #\"SYSTEM_SYSRULES_queryFilter\"(\n        field: recordType!AS_GSS_R_Data_SYNCEDRECORD.refDataId,\n        operator: \"not in\",\n        value: {\n          cons!AS_GSS_REF_ID_EVALUATION_STATUS_TEMP,\n          cons!AS_GSS_REF_ID_EVALUATION_STATUS_DELETED\n        }\n      ),\n      #\"SYSTEM_SYSRULES_queryFilter\"(\n        field: recordType!AS_GSS_R_Data_SYNCEDRECORD.isActive,\n        operator: \"=\",\n        value: true\n      )\n    },\n    fields: {\n      recordType!AS_GSS_R_Data_SYNCEDRECORD.refDataId,\n      recordType!AS_GSS_R_Data_SYNCEDRECORD.refLabel\n    },\n    pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n      startIndex: 1,\n      batchSize: cons!AS_CO_INT_QUERY_MAX_BATCH_SIZE\n    ),\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET\n  ).data,\n  #\"SYSTEM_SYSRULES_forEach\"(\n    items: local!evaluationStatus,\n    expression: a!map(\n      refDataId: fv!item[recordType!AS_GSS_R_Data_SYNCEDRECORD.refDataId],\n      refLabel: fv!item[recordType!AS_GSS_R_Data_SYNCEDRECORD.refLabel],\n      \n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_queryRecord",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_REF_TYPE_EVALUATION_STATUS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_REF_ID_EVALUATION_STATUS_TEMP",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_REF_ID_EVALUATION_STATUS_DELETED",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_INT_QUERY_MAX_BATCH_SIZE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_R_Data_SYNCEDRECORD",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    }
+  ],
+  "called_by": []
+}

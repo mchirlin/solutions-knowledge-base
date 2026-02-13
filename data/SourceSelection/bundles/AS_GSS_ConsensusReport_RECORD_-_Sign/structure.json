@@ -69,6 +69,55 @@
     },
     "subprocesses": [
       {
+        "name": "AS GSS Complete Consensus Report",
+        "complexity_score": 10.0,
+        "total_nodes": 6,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Is it already written as Completed?"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Update Consensus status",
+            "type": "Write to Data Store Entity",
+            "next": [
+              "Capture Audit"
+            ]
+          },
+          {
+            "name": "Generate consensus document",
+            "type": "SUBPROCESS",
+            "next": [
+              "End Node"
+            ],
+            "subprocess": "AS GSS Generate Consensus Document"
+          },
+          {
+            "name": "Capture Audit",
+            "type": "SUBPROCESS",
+            "next": [
+              "Generate consensus document"
+            ],
+            "subprocess": "AS GAM ADT Audit Process"
+          },
+          {
+            "name": "Is it already written as Completed?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Update Consensus status (No)",
+              "Generate consensus document (Yes)"
+            ]
+          }
+        ]
+      },
+      {
         "name": "AS GSS Generate Consensus Document",
         "complexity_score": 23.0,
         "total_nodes": 12,
@@ -154,55 +203,6 @@
             "type": "MS Word 2007 Doc from Template",
             "next": [
               "Write to Evaluation_Document"
-            ]
-          }
-        ]
-      },
-      {
-        "name": "AS GSS Complete Consensus Report",
-        "complexity_score": 10.0,
-        "total_nodes": 6,
-        "nodes": [
-          {
-            "name": "Start Node",
-            "type": "START_EVENT",
-            "next": [
-              "Is it already written as Completed?"
-            ]
-          },
-          {
-            "name": "End Node",
-            "type": "END_EVENT"
-          },
-          {
-            "name": "Update Consensus status",
-            "type": "Write to Data Store Entity",
-            "next": [
-              "Capture Audit"
-            ]
-          },
-          {
-            "name": "Generate consensus document",
-            "type": "SUBPROCESS",
-            "next": [
-              "End Node"
-            ],
-            "subprocess": "AS GSS Generate Consensus Document"
-          },
-          {
-            "name": "Capture Audit",
-            "type": "SUBPROCESS",
-            "next": [
-              "Generate consensus document"
-            ],
-            "subprocess": "AS GAM ADT Audit Process"
-          },
-          {
-            "name": "Is it already written as Completed?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "Update Consensus status (No)",
-              "Generate consensus document (Yes)"
             ]
           }
         ]

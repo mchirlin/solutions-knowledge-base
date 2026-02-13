@@ -3,7 +3,7 @@
     "bundle_type": "action",
     "root_name": "AS_GSS_Evaluation_SYNCEDRECORD - Create new evaluation",
     "parent_name": "AS_GSS_Evaluation_SYNCEDRECORD",
-    "total_objects": 394
+    "total_objects": 408
   },
   "entry_point": {
     "action_type": "RECORD_LIST_ACTION",
@@ -19,8 +19,8 @@
   "flow": {
     "process_model": {
       "name": "AS GSS Create Evaluation",
-      "complexity_score": 50.0,
-      "total_nodes": 24,
+      "complexity_score": 47.0,
+      "total_nodes": 23,
       "nodes": [
         {
           "name": "Start Node",
@@ -58,7 +58,7 @@
           "name": "Update Solic Public Folder Security",
           "type": "Start Process (v2)",
           "next": [
-            "Extract Requirements?"
+            "Capture Audit"
           ]
         },
         {
@@ -110,7 +110,7 @@
           "name": "Write Evaluation Details",
           "type": "SCRIPT_TASK",
           "next": [
-            "Populate SetUp Task"
+            "Sync Eval Status in GCW"
           ]
         },
         {
@@ -182,18 +182,10 @@
           "interface": "AS_GSS_FM_createEvaluationConfirmation"
         },
         {
-          "name": "Requirements Extraction",
-          "type": "SCRIPT_TASK",
+          "name": "Sync Eval Status in GCW",
+          "type": "Start Process",
           "next": [
-            "Capture Audit"
-          ]
-        },
-        {
-          "name": "Extract Requirements?",
-          "type": "XOR_GATEWAY",
-          "next": [
-            "Requirements Extraction",
-            "Capture Audit"
+            "Populate SetUp Task"
           ]
         }
       ]
@@ -265,6 +257,109 @@
             "type": "Start Process (v2)",
             "next": [
               "End Node"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AS GSS TMG Task Action Audit",
+        "complexity_score": 8.0,
+        "total_nodes": 5,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "data?"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "data?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "End Node",
+              "Create Task Action Audit CDTs"
+            ]
+          },
+          {
+            "name": "Write to Task Action Audit",
+            "type": "Write to Data Store Entity",
+            "next": [
+              "End Node"
+            ]
+          },
+          {
+            "name": "Create Task Action Audit CDTs",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Write to Task Action Audit"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AS GAM Create Folders in Appian and SP",
+        "complexity_score": 16.0,
+        "total_nodes": 8,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Doc Folder Exists?"
+            ]
+          },
+          {
+            "name": "Terminate",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Create Main Document Folder",
+            "type": "Create Folder",
+            "next": [
+              "Skip Contracting folder creation?"
+            ]
+          },
+          {
+            "name": "Create Contracting Folders Wrapper",
+            "type": "Start Process (v2)",
+            "next": [
+              "Integration with Office 365?"
+            ]
+          },
+          {
+            "name": "Doc Folder Exists?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Create Main Document Folder (No)",
+              "Skip Contracting folder creation? (Yes)"
+            ]
+          },
+          {
+            "name": "Skip Contracting folder creation?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Create Contracting Folders Wrapper (No)",
+              "Integration with Office 365? (Yes)"
+            ]
+          },
+          {
+            "name": "Integration with Office 365?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Terminate (No)",
+              "Create Folder in Sharepoint (Yes)"
+            ]
+          },
+          {
+            "name": "Create Folder in Sharepoint",
+            "type": "Call Integration",
+            "next": [
+              "Terminate"
             ]
           }
         ]
@@ -405,109 +500,6 @@
             "type": "SCRIPT_TASK",
             "next": [
               "Write to Object Data"
-            ]
-          }
-        ]
-      },
-      {
-        "name": "AS GAM Create Folders in Appian and SP",
-        "complexity_score": 16.0,
-        "total_nodes": 8,
-        "nodes": [
-          {
-            "name": "Start Node",
-            "type": "START_EVENT",
-            "next": [
-              "Doc Folder Exists?"
-            ]
-          },
-          {
-            "name": "Terminate",
-            "type": "END_EVENT"
-          },
-          {
-            "name": "Create Main Document Folder",
-            "type": "Create Folder",
-            "next": [
-              "Skip Contracting folder creation?"
-            ]
-          },
-          {
-            "name": "Create Contracting Folders Wrapper",
-            "type": "Start Process (v2)",
-            "next": [
-              "Integration with Office 365?"
-            ]
-          },
-          {
-            "name": "Doc Folder Exists?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "Create Main Document Folder (No)",
-              "Skip Contracting folder creation? (Yes)"
-            ]
-          },
-          {
-            "name": "Skip Contracting folder creation?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "Create Contracting Folders Wrapper (No)",
-              "Integration with Office 365? (Yes)"
-            ]
-          },
-          {
-            "name": "Integration with Office 365?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "Terminate (No)",
-              "Create Folder in Sharepoint (Yes)"
-            ]
-          },
-          {
-            "name": "Create Folder in Sharepoint",
-            "type": "Call Integration",
-            "next": [
-              "Terminate"
-            ]
-          }
-        ]
-      },
-      {
-        "name": "AS GSS TMG Task Action Audit",
-        "complexity_score": 8.0,
-        "total_nodes": 5,
-        "nodes": [
-          {
-            "name": "Start Node",
-            "type": "START_EVENT",
-            "next": [
-              "data?"
-            ]
-          },
-          {
-            "name": "End Node",
-            "type": "END_EVENT"
-          },
-          {
-            "name": "data?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "End Node",
-              "Create Task Action Audit CDTs"
-            ]
-          },
-          {
-            "name": "Write to Task Action Audit",
-            "type": "Write to Data Store Entity",
-            "next": [
-              "End Node"
-            ]
-          },
-          {
-            "name": "Create Task Action Audit CDTs",
-            "type": "SCRIPT_TASK",
-            "next": [
-              "Write to Task Action Audit"
             ]
           }
         ]
@@ -1453,6 +1445,90 @@
       ]
     },
     {
+      "uuid": "_a-0000ef0d-9c9a-8000-9e64-011c48011c48_17965678",
+      "name": "AS_GSS_REF_ID_AWARD_INSTRUMENT_TYPE_BOA",
+      "type": "Constant",
+      "description": "Value: 81",
+      "value": "81",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_idvInstrumentTypes"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef0d-9c9a-8000-9e64-011c48011c48_17965630",
+      "name": "AS_GSS_REF_ID_AWARD_INSTRUMENT_TYPE_BPA",
+      "type": "Constant",
+      "description": "Value: 82",
+      "value": "82",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_idvInstrumentTypes"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef0d-9c9a-8000-9e64-011c48011c48_17965637",
+      "name": "AS_GSS_REF_ID_AWARD_INSTRUMENT_TYPE_FSS",
+      "type": "Constant",
+      "description": "Value: 84",
+      "value": "84",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_idvInstrumentTypes"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef0d-9c9a-8000-9e64-011c48011c48_17965665",
+      "name": "AS_GSS_REF_ID_AWARD_INSTRUMENT_TYPE_GWAC",
+      "type": "Constant",
+      "description": "Value: 87",
+      "value": "87",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_idvInstrumentTypes"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef0d-9c9a-8000-9e64-011c48011c48_17965658",
+      "name": "AS_GSS_REF_ID_AWARD_INSTRUMENT_TYPE_IDDQ",
+      "type": "Constant",
+      "description": "Value: 89",
+      "value": "89",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_idvInstrumentTypes"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef0d-9c9a-8000-9e64-011c48011c48_17965651",
+      "name": "AS_GSS_REF_ID_AWARD_INSTRUMENT_TYPE_IDIQ",
+      "type": "Constant",
+      "description": "Value: 90",
+      "value": "90",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_idvInstrumentTypes"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef0d-9c9a-8000-9e64-011c48011c48_17965644",
+      "name": "AS_GSS_REF_ID_AWARD_INSTRUMENT_TYPE_REQUIREMENTS",
+      "type": "Constant",
+      "description": "Value: 93",
+      "value": "93",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_UT_idvInstrumentTypes"
+      ]
+    },
+    {
       "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_947606",
       "name": "AS_GSS_REF_ID_DOC_TYPE_CONSENSUS",
       "type": "Constant",
@@ -1553,6 +1629,22 @@
       ]
     },
     {
+      "uuid": "_a-0000eed7-628f-8000-9e56-011c48011c48_17651910",
+      "name": "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
+      "type": "Constant",
+      "description": "Value: 79\n",
+      "value": "79",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_returnEvaluationInfoForLandingPage",
+        "AS_GSS_CARD_evaluationInfo",
+        "AS_GSS_GRD_EvaluationRecordList",
+        "AS_GSS_QE_getEvaluation",
+        "AS_GSS_QR_getEvaluation"
+      ]
+    },
+    {
       "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1061416",
       "name": "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE",
       "type": "Constant",
@@ -1595,8 +1687,23 @@
         "AS_GSS_BL_returnEvaluationAdditionalInfoForCards",
         "AS_GSS_BL_returnEvaluationInfoForLandingPage",
         "AS_GSS_BTN_createEvaluationButtonLayout",
+        "AS_GSS_CARD_evaluationInfo",
         "AS_GSS_QE_getEvaluation",
         "AS_GSS_QR_getEvaluation"
+      ]
+    },
+    {
+      "uuid": "_a-0000eed7-628f-8000-9e56-011c48011c48_17571496",
+      "name": "AS_GSS_REF_ID_IDV_AWARD_TYPE_SINGLE",
+      "type": "Constant",
+      "description": "Value :77",
+      "value": "77",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BTN_createEvaluationButtonLayout",
+        "AS_GSS_CPS_evaluationBasicDetails",
+        "AS_GSS_returnFieldByFieldIdentifier"
       ]
     },
     {
@@ -1726,6 +1833,19 @@
       ]
     },
     {
+      "uuid": "_a-0000ef0d-9c9a-8000-9e64-011c48011c48_17965764",
+      "name": "AS_GSS_REF_TYPE_AWARD_INSTRUMENT_TYPE",
+      "type": "Constant",
+      "description": "Value: Award Instrument Type",
+      "value": "Award Instrument Type",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CPS_evaluationBasicDetails",
+        "AS_GSS_FM_createEvaluation"
+      ]
+    },
+    {
       "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_951453",
       "name": "AS_GSS_REF_TYPE_EVALUATION_METHOD",
       "type": "Constant",
@@ -1741,6 +1861,18 @@
         "AS_GSS_FM_createEvaluation",
         "AS_GSS_dynamicFieldPropertiesCreateEvaluation",
         "AS_GSS_returnFieldByFieldIdentifier"
+      ]
+    },
+    {
+      "uuid": "_a-0000eed7-628f-8000-9e56-011c48011c48_17571503",
+      "name": "AS_GSS_REF_TYPE_IDV_AWARD_TYPE",
+      "type": "Constant",
+      "description": "Value: IDV Award Type",
+      "value": "IDV Award Type",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_FM_createEvaluation"
       ]
     },
     {
@@ -2746,7 +2878,8 @@
         "AS_GSS_UT_convertTeamRecordDataToDictionaryForAudit",
         "AS_GSS_UT_convertVendorRecordDataToDictionaryForAudit",
         "AS_GSS_UT_handleEvaluationDataOnSubmit",
-        "AS_GSS_UT_removeExternalSourceDocumentsFromRecordEntries"
+        "AS_GSS_UT_removeExternalSourceDocumentsFromRecordEntries",
+        "AS_GSS_dynamicFieldPropertiesCreateEvaluation"
       ]
     },
     {
@@ -2824,7 +2957,8 @@
       "called_by": [
         "AS_CO_CP_fileUploadField",
         "AS_CO_UT_displayRequiredMessage",
-        "AS_CO_VD_textValidation"
+        "AS_CO_VD_textValidation",
+        "AS_GSS_CO_CP_dropdownField"
       ]
     },
     {
@@ -2858,6 +2992,7 @@
         "AS_CO_INP_dateField",
         "AS_CO_INP_paragraphField",
         "AS_CO_INP_textField",
+        "AS_GSS_CO_CP_dropdownField",
         "AS_GSS_CO_CP_radioButtonField"
       ]
     },
@@ -3013,7 +3148,8 @@
         "AS_CO_UT_isBlank"
       ],
       "called_by": [
-        "AS_CO_CP_pickerFieldRecord"
+        "AS_CO_CP_pickerFieldRecord",
+        "AS_GSS_CO_CP_dropdownField"
       ]
     },
     {
@@ -3034,6 +3170,7 @@
         "AS_CO_INP_dateField",
         "AS_CO_INP_paragraphField",
         "AS_CO_INP_textField",
+        "AS_GSS_CO_CP_dropdownField",
         "AS_GSS_CO_CP_radioButtonField"
       ]
     },
@@ -3197,6 +3334,7 @@
         "AS_GAM_VD_datesValidation",
         "AS_GSS_BL_computeEvaluationProgress",
         "AS_GSS_BL_validateIfEvalNumberAlreadyExists",
+        "AS_GSS_CPS_evaluationBasicDetails",
         "AS_GSS_GRD_EvaluationRecordList",
         "AS_GSS_GRD_activeTasks",
         "AS_GSS_QE_getEvaluation",
@@ -3208,7 +3346,8 @@
         "AS_GSS_TMG_isReassignTaskDisabled",
         "AS_GSS_UT_createMap",
         "AS_GSS_UT_displayEvaluationRecordTitle",
-        "AS_GSS_getUserFullName"
+        "AS_GSS_getUserFullName",
+        "AS_GSS_returnFieldByFieldIdentifier"
       ]
     },
     {
@@ -3410,6 +3549,7 @@
         "AS_GSS_BTN_createEvaluationButtonLayout",
         "AS_GSS_BrandingValueByKey",
         "AS_GSS_CARD_evaluationInfo",
+        "AS_GSS_CO_CP_dropdownField",
         "AS_GSS_FM_createEvaluation",
         "AS_GSS_GRD_EvaluationRecordList",
         "AS_GSS_GRD_activeTasks",
@@ -3674,7 +3814,10 @@
         "AS_CO_UT_typeCompare"
       ],
       "called_by": [
-        "AS_GSS_UT_isBlank"
+        "AS_GSS_CPS_evaluationBasicDetails",
+        "AS_GSS_UT_isBlank",
+        "AS_GSS_dynamicFieldPropertiesCreateEvaluation",
+        "AS_GSS_returnFieldByFieldIdentifier"
       ]
     },
     {
@@ -4348,6 +4491,7 @@
         "AS_GSS_Evaluation_SYNCEDRECORD",
         "AS_GSS_MAX_LIMIT_FOR_EVALUATIONS_IN_HOME_PAGE",
         "AS_GSS_QR_getEvaluation",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
         "AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP"
       ],
@@ -4499,6 +4643,7 @@
         "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
         "AS_CO_UT_isNotBlank",
         "AS_CO_UT_queryEntity",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
         "AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP"
@@ -4570,6 +4715,7 @@
         "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
         "AS_CO_UT_queryRecord",
         "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
         "AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP"
@@ -5471,6 +5617,27 @@
       ]
     },
     {
+      "uuid": "_a-0000ef0d-9c9a-8000-9e64-011c48011c48_17965685",
+      "name": "AS_GSS_UT_idvInstrumentTypes",
+      "type": "Expression Rule",
+      "description": "List of Instrument Types for IDV - A, D, or G",
+      "parameters": [],
+      "calls": [
+        "AS_GSS_REF_ID_AWARD_INSTRUMENT_TYPE_BOA",
+        "AS_GSS_REF_ID_AWARD_INSTRUMENT_TYPE_BPA",
+        "AS_GSS_REF_ID_AWARD_INSTRUMENT_TYPE_FSS",
+        "AS_GSS_REF_ID_AWARD_INSTRUMENT_TYPE_GWAC",
+        "AS_GSS_REF_ID_AWARD_INSTRUMENT_TYPE_IDDQ",
+        "AS_GSS_REF_ID_AWARD_INSTRUMENT_TYPE_IDIQ",
+        "AS_GSS_REF_ID_AWARD_INSTRUMENT_TYPE_REQUIREMENTS"
+      ],
+      "called_by": [
+        "AS_GSS_CPS_evaluationBasicDetails",
+        "AS_GSS_dynamicFieldPropertiesCreateEvaluation",
+        "AS_GSS_returnFieldByFieldIdentifier"
+      ]
+    },
+    {
       "uuid": "_a-0000eb69-8eb8-8000-9d24-011c48011c48_10389864",
       "name": "AS_GSS_UT_isBlank",
       "type": "Expression Rule",
@@ -5661,7 +5828,9 @@
       "parameters": [],
       "calls": [
         "AS_CO_ENUM_PARAGRAPH_LENGTH_LONG",
+        "AS_CO_UT_checkIsNullOrEmpty",
         "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+        "AS_CO_UT_whereContains",
         "AS_GAM_ENUM_TEXT_LENGTH_LARGE",
         "AS_GAM_VD_datesValidation",
         "AS_GSS_APPREF_AM_APPVERSION_UT_VersionTrackerWrapper_exists",
@@ -5684,7 +5853,8 @@
         "AS_GSS_TOGGLE_EVALUATION_CHIEF_VISIBILITY",
         "AS_GSS_TXT_VALID_FILE_TYPES_FOR_EVALUATION_DOCUMENT",
         "AS_GSS_TXT_documentUploadInstructions",
-        "AS_GSS_UT_createMap"
+        "AS_GSS_UT_createMap",
+        "AS_GSS_UT_idvInstrumentTypes"
       ],
       "called_by": [
         "AS_GSS_CPS_createEvaluationFormContents",
@@ -5748,11 +5918,16 @@
         "AS_CO_CP_radioButtonField",
         "AS_CO_INP_dateField",
         "AS_CO_UT_formatDate",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_whereContains",
+        "AS_GSS_CO_CP_dropdownField",
         "AS_GSS_CO_CP_radioButtonField",
         "AS_GSS_CO_UT_loadBundleFromFolder",
         "AS_GSS_Evaluation_SYNCEDRECORD",
         "AS_GSS_QR_getRefDataByTypes",
+        "AS_GSS_REF_ID_IDV_AWARD_TYPE_SINGLE",
         "AS_GSS_REF_TYPE_EVALUATION_METHOD",
+        "AS_GSS_UT_idvInstrumentTypes",
         "AS_GSS_dynamicFieldPropertiesCreateEvaluation"
       ],
       "called_by": [
@@ -6382,6 +6557,7 @@
         "AS_CO_INP_dateField",
         "AS_CO_INP_paragraphField",
         "AS_CO_INP_textField",
+        "AS_GSS_CO_CP_dropdownField",
         "AS_GSS_CO_CP_radioButtonField"
       ]
     },
@@ -6941,6 +7117,7 @@
         "AS_GSS_Evaluation_SYNCEDRECORD",
         "AS_GSS_REF_ID_EVALUATION_METHOD_BEST_VALUE",
         "AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP",
+        "AS_GSS_REF_ID_IDV_AWARD_TYPE_SINGLE",
         "AS_GSS_REF_ID_SOURCE_APPLICATION_GSS",
         "AS_GSS_TOGGLE_CONSENSUS_REPORT_SIGNATURE",
         "AS_GSS_UT_updateRecordsByModelRecord"
@@ -7005,13 +7182,187 @@
         "AS_GSS_CO_NULL_REPLACEABLE_TEXT",
         "AS_GSS_CO_UT_loadBundleFromFolder",
         "AS_GSS_Evaluation_RECORD",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP",
         "AS_GSS_UT_checkIfNullOrZero",
         "AS_GSS_UT_checkIfZero",
         "AS_GSS_returnEvaluatorsStampList"
       ],
       "called_by": [
         "AS_GSS_CPS_activeEvaluations"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef0d-9c9a-8000-9e64-011c48011c48_17965609",
+      "name": "AS_GSS_CO_CP_dropdownField",
+      "type": "Interface",
+      "description": "Generic single select dropdown field that handles read-only logic dynamically. \n\nFor instances where a custom value should be displayed when the component is read-only, pass it into the \"readOnlyValue\" input.",
+      "parameters": [
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "labelPosition",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        },
+        {
+          "name": "instructions",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 2
+        },
+        {
+          "name": "required",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 3
+        },
+        {
+          "name": "readOnly",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 4
+        },
+        {
+          "name": "disabled",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 5
+        },
+        {
+          "name": "choiceLabels",
+          "type": "http://www.appian.com/ae/types/2009:Text?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 6
+        },
+        {
+          "name": "choiceValues",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "display_order": 7
+        },
+        {
+          "name": "placeholderLabel",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 8
+        },
+        {
+          "name": "value",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "display_order": 9
+        },
+        {
+          "name": "validations",
+          "type": "http://www.appian.com/ae/types/2009:Text?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 10
+        },
+        {
+          "name": "saveInto",
+          "type": "http://www.appian.com/ae/types/2009:Save?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Save?list",
+          "required": false,
+          "default_value": null,
+          "display_order": 11
+        },
+        {
+          "name": "validationGroup",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 12
+        },
+        {
+          "name": "requiredMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 13
+        },
+        {
+          "name": "helpTooltip",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 14
+        },
+        {
+          "name": "noPlaceholderLabel",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 15
+        },
+        {
+          "name": "readOnlyValue",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 16
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 17
+        },
+        {
+          "name": "accessibilityText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "display_order": 18
+        }
+      ],
+      "calls": [
+        "AS_CO_DSP_standardReadOnlyField",
+        "AS_CO_UT_displayCommonObjectBundleLabel",
+        "AS_CO_UT_displayRequiredMessage",
+        "AS_CO_UT_formatFieldEntryPlaceHolder",
+        "AS_CO_UT_getLabelPosition",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GSS_CPS_evaluationBasicDetails",
+        "AS_GSS_returnFieldByFieldIdentifier"
       ]
     },
     {
@@ -7543,16 +7894,23 @@
         "AS_CO_INP_paragraphField",
         "AS_CO_INP_textField",
         "AS_CO_UT_formatDate",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_whereContains",
         "AS_GSS_BL_validateIfEvalNumberAlreadyExists",
+        "AS_GSS_CO_CP_dropdownField",
         "AS_GSS_CO_UT_loadBundleFromFolder",
         "AS_GSS_EvaluationDocument_SYNCEDRECORD",
         "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_MSG_messageBannerForAwardTypeField",
         "AS_GSS_QR_getRefDataByTypes",
         "AS_GSS_REF_ID_DOC_TYPE_REFERENCE",
         "AS_GSS_REF_ID_EVALUATION_METHOD_BEST_VALUE",
+        "AS_GSS_REF_ID_IDV_AWARD_TYPE_SINGLE",
         "AS_GSS_REF_ID_SOURCE_APPLICATION_GCW",
         "AS_GSS_REF_ID_SOURCE_APPLICATION_GSS",
+        "AS_GSS_REF_TYPE_AWARD_INSTRUMENT_TYPE",
         "AS_GSS_REF_TYPE_EVALUATION_METHOD",
+        "AS_GSS_UT_idvInstrumentTypes",
         "AS_GSS_dynamicFieldPropertiesCreateEvaluation"
       ],
       "called_by": [
@@ -8220,7 +8578,9 @@
         "AS_GSS_HCL_createEvaluation",
         "AS_GSS_QR_getRefDataByTypes",
         "AS_GSS_REF_ID_SOURCE_APPLICATION_GCW",
+        "AS_GSS_REF_TYPE_AWARD_INSTRUMENT_TYPE",
         "AS_GSS_REF_TYPE_EVALUATION_METHOD",
+        "AS_GSS_REF_TYPE_IDV_AWARD_TYPE",
         "AS_GSS_R_Data_SYNCEDRECORD",
         "AS_GSS_dynamicFieldPropertiesCreateEvaluation"
       ],
@@ -8292,6 +8652,7 @@
         "AS_GSS_QR_getCriteria",
         "AS_GSS_QR_getCriteriaAssignment",
         "AS_GSS_QR_getEvaluatorTeamMembershipByUser",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
         "AS_GSS_TMG_QR_getTasks",
@@ -8520,6 +8881,34 @@
       ],
       "called_by": [
         "Source Selection"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef29-4c7b-8000-9e6a-011c48011c48_18149749",
+      "name": "AS_GSS_MSG_messageBannerForAwardTypeField",
+      "type": "Interface",
+      "description": "The interface for the message banner in when the award type field is either added/removed from the form",
+      "parameters": [
+        {
+          "name": "isAddInteraction",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "display_order": 0
+        },
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [],
+      "called_by": [
+        "AS_GSS_CPS_evaluationBasicDetails"
       ]
     },
     {
@@ -8948,7 +9337,9 @@
         "deleteVendor",
         "updateVendorDetails",
         "viewBreakdown",
-        "viewVendorDecision"
+        "viewVendorDecision",
+        "viewConsensusRatings",
+        "viewVendorDecisionForAwardees"
       ],
       "views": [
         "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
@@ -9004,7 +9395,9 @@
         "updateWeights",
         "updateTeams",
         "updateAssignment",
-        "addTeams"
+        "addTeams",
+        "selectAwardees",
+        "updateDueDate"
       ],
       "views": [
         "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",

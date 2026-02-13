@@ -3,80 +3,80 @@
     "bundle_id": "AS_GSS_Update_Vendor_With_GSM_SLG"
   },
   "objects": {
-    "000aee6b-81b2-8000-dc50-7f0000014e7a": {
-      "name": "AS GSS Update Vendor With GSM SLG",
-      "type": "Process Model",
-      "sail_code": "// Input: ?\n={pv!vendorDetails}\n\n// Input: ?\n={recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD}\n\n// Input: ?\nrule!AS_GSS_APPREF_GSM_STARTPROCESS_createVendor_SLG(\n  vendor: rule!AS_GSS_BL_mapVendorDataForGSMCreation(\n    evaluationVendor: pv!vendorDetails,\n    isActiveInSource: pv!isActiveInSource\n  )\n).processModel\n\n// Input: ?\nrule!AS_GSS_APPREF_GSM_STARTPROCESS_createVendor_SLG(\n  vendor: rule!AS_GSS_BL_mapVendorDataForGSMCreation(\n    evaluationVendor: pv!vendorDetails,\n    isActiveInSource: pv!isActiveInSource\n  )\n).processParameters\n\n// Input: ?\n= rule!AS_GSS_APPREF_GSM_GETDATA_getVendorDetailsState( tin: pv!vendorDetails[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.tin], status: { true, false })\n\n// Output: ?\nrule!AS_GSS_UT_updateVendorWithAdditionalInfoFromSuite(\n  gsmVendorMap: ac!gsmVendorMap,\n  vendor: pv!vendorDetails\n)"
+    "_a-0000e6cd-618a-8000-9bd9-011c48011c48_1688557": {
+      "name": "AS_CO_UT_checkIsNullOrEmpty",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  or(\n    isnull(\n      ri!value\n    ),\n    trim(\n      ri!value\n    ) = \"\"\n  ),\n  true(),\n  if(\n    length(\n      ri!value\n    ) = 0,\n    true(),\n    false()\n  )\n)"
     },
     "_a-0000e571-774f-8000-b919-01ef9001ef90_28790": {
       "name": "AS_FRM_getRuleReferenceOrNoOp",
       "type": "Expression Rule",
       "sail_code": "if(\n  and(\n    cons!AS_FRM_BOOL_APPREF_ENTRYPOINT_FRAMEWORK_ENABLED,\n    rule!AS_FRM_doesRuleExist(ri!ruleName)\n  ),\n  rulereferencebyname(ruleName: ri!ruleName),\n  rule!AS_FRM_noOp\n)"
     },
-    "_a-0001ed6e-54f1-8000-9df6-011c48011c48_15245604": {
-      "name": "AS_GSS_EnableOrDisableStateAndLocalGovernment_wrapper",
+    "_a-0000ee67-7064-8000-9e36-011c48011c48_16808539": {
+      "name": "AS_GSS_UT_updateVendorWithAdditionalInfoFromSuite",
       "type": "Expression Rule",
-      "sail_code": "if(\n  cons!AS_GSS_TOGGLE_AUTOMATION_TESTING_ENABLED,\n  cons!AS_GSS_TOGGLE_SLG_CONFIG_FOR_AUTOMATION_TESTING,\n  a!localVariables(\n    /*Determine whether to execute the _default or _custom rule*/\n    local!runtimeRule: a!refreshVariable(\n      value: rule!AS_FRM_determineRuntimeRule(\n        defaultRuleReference: rule!AS_GSS_EnableOrDisableStateAndLocalGovernment_v1_default\n      ),\n      refreshAlways: true\n    ),\n    local!runtimeRule()\n  )\n)"
-    },
-    "_a-0000ee30-1118-8000-9e27-011c48011c48_16437749": {
-      "name": "AS_GSS_APPREF_GSM_GETDATA_getVendorDetailsState",
-      "type": "Expression Rule",
-      "sail_code": "a!localVariables(\n  /* Return the entry-point rule if it exists, or else returns a no-op */\n  /* Make sure you use a refreshAlways: true */\n  local!rule: a!refreshVariable(\n    value: rule!AS_FRM_getRuleReferenceOrNoOp(\n      ruleName: \"AS_GSM_ENTRYPOINT_GETDATA_getVendorDetails_Slg_v1\"\n    ),\n    refreshAlways: true\n  ),\n  /* Actually execute the rule */\n  local!rule(\n    /* This should always be passed in every app reference rule */\n    /* which returns a default value if the rule does not exist */\n    ifNull_default: {},\n    /* Entrypoint-specific inputs for that rule */\n    tin: ri!tin,\n    returnAllData: ri!returnAllData,\n    status: ri!status\n  )\n)"
-    },
-    "_a-0000ee42-8707-8000-9e2b-011c48011c48_16524669": {
-      "name": "AS_GSS_DRM_BL_handleBusinessTypeForEvalVendor",
-      "type": "Expression Rule",
-      "sail_code": "a!localVariables(\n  local!gsmBusinessTypes: touniformstring(\n    rule!AS_CO_UT_indexPath(\n      cdt: ri!GSMVendorData,\n      field: \"vendor.business.businessTypeMapping.businessTypeRefId\",\n      indexDefault: {}\n    )\n  ),\n  local!newEntries: difference(\n    touniformstring(local!gsmBusinessTypes),\n    touniformstring(\n      ri!evalVendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.businessTypes.typeCode]\n    )\n  ),\n  if(\n    rule!AS_CO_UT_checkIsNullOrEmpty(\n      value: ri!GSMVendorData\n    ),\n    {},\n    rule!AS_CO_UT_rejectNullValuesFromArray(\n      array: {\n        #\"SYSTEM_SYSRULES_forEach\"(\n          items: local!newEntries,\n          expression: recordType!AS_GSS_EvaluationVendorBusinessType_SYNCEDRECORD(\n            recordType!AS_GSS_EvaluationVendorBusinessType_SYNCEDRECORD.typeCode: fv!item\n          )\n        )\n      }\n    )\n  )\n)"
+      "sail_code": "if(\n  rule!AS_CO_UT_checkIsNullOrEmpty(\n    value: ri!vendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.legalName]\n  ),\n  {},\n  rule!AS_GSS_UT_updateRecordsByModelRecord(\n    records: ri!vendor,\n    modelRecord: recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD(\n      recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.gsmVendorRefId: rule!AS_CO_UT_indexPath(\n        cdt: ri!gsmVendorMap,\n        field: \"vendor.vendorId\",\n        indexDefault: {}\n      ),\n      recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.businessName: rule!AS_CO_UT_indexPath(\n        cdt: ri!gsmVendorMap,\n        field: \"vendor.doingBusinessAs\",\n        indexDefault: ri!vendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.businessName]\n      ),\n      recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.status: rule!AS_CO_UT_indexPath(\n        cdt: ri!gsmVendorMap,\n        field: \"vendor.registrationStatusId\",\n        indexDefault: ri!vendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.status]\n      ),\n      recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.expirationDate: rule!AS_CO_UT_indexPath(\n        cdt: ri!gsmVendorMap,\n        field: \"vendor.registrationExpirationDate\",\n        indexDefault: ri!vendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.expirationDate]\n      ),\n      recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.businessTypes: rule!AS_GSS_DRM_BL_handleBusinessTypeForEvalVendor(\n        GSMVendorData: ri!gsmVendorMap,\n        evalVendor: ri!vendor\n      ),\n      recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.modifiedDatetime: now()\n    )\n  ),\n)"
     },
     "_a-0000ee67-7064-8000-9e36-011c48011c48_16801601": {
       "name": "AS_GSS_BL_mapVendorDataForGSMCreation",
       "type": "Expression Rule",
       "sail_code": "a!localVariables(\n  local!isStateOrLocal: rule!AS_GSS_EnableOrDisableStateAndLocalGovernment_wrapper(),\n  if(\n    local!isStateOrLocal,\n    a!map(\n      vendorLegalName: ri!evaluationVendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.legalName],\n      isActive: ri!isActiveInSource,\n      tin: ri!evaluationVendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.tin],\n      fein: ri!evaluationVendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.fein],\n      vin: ri!evaluationVendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.vin],\n      doingBusinessAs: ri!evaluationVendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.businessName],\n      registrationExpirationDate: ri!evaluationVendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.expirationDate],\n      business: a!map(\n        businessTypeMapping: {\n          #\"SYSTEM_SYSRULES_forEach\"(\n            items: ri!evaluationVendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.businessTypes.typeCode],\n            expression: a!map(\n              businessTypeRefId: fv!item,\n              isDeleted: false()\n            )\n          )\n        }\n      ),\n      physicalAndMailingAddress: {\n        #\"SYSTEM_SYSRULES_forEach\"(\n          items: ri!evaluationVendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.address],\n          expression: a!map(\n            addressType: fv!item[recordType!AS_GSS_EvaluationVendorAddress_SYNCEDRECORD.referenceAddressType.refLabel],\n            addressLine1: fv!item[recordType!AS_GSS_EvaluationVendorAddress_SYNCEDRECORD.vendorAddressLine1],\n            addressLine2: fv!item[recordType!AS_GSS_EvaluationVendorAddress_SYNCEDRECORD.vendorAddressLine2],\n            city: fv!item[recordType!AS_GSS_EvaluationVendorAddress_SYNCEDRECORD.vendorCity],\n            stateOrProvinceCode: fv!item[recordType!AS_GSS_EvaluationVendorAddress_SYNCEDRECORD.state.stateCode],\n            countryCode: fv!item[recordType!AS_GSS_EvaluationVendorAddress_SYNCEDRECORD.country.samGovCode],\n            zipCode: fv!item[recordType!AS_GSS_EvaluationVendorAddress_SYNCEDRECORD.vendorZipCode],\n            zipCodeExt: fv!item[recordType!AS_GSS_EvaluationVendorAddress_SYNCEDRECORD.vendorZipCodeExt],\n            foreignPostalCode: fv!item[recordType!AS_GSS_EvaluationVendorAddress_SYNCEDRECORD.vendorForeignPostalCode],\n            isDeleted: false()\n          )\n        )\n      }\n    ),\n    a!map(\n      vendorLegalName: ri!evaluationVendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.legalName],\n      isActive: ri!isActiveInSource,\n      uniqueEntityId: ri!evaluationVendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.uniqueEntityId],\n      cageCode: ri!evaluationVendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.cageCode],\n      doingBusinessAs: ri!evaluationVendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.businessName],\n      registrationExpirationDate: ri!evaluationVendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.expirationDate],\n      business: a!map(\n        businessTypeMapping: {\n          #\"SYSTEM_SYSRULES_forEach\"(\n            items: ri!evaluationVendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.businessTypes.typeCode],\n            expression: a!map(\n              businessTypeRefId: fv!item,\n              isDeleted: false()\n            )\n          )\n        }\n      ),\n      physicalAndMailingAddress: {\n        #\"SYSTEM_SYSRULES_forEach\"(\n          items: ri!evaluationVendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.address],\n          expression: a!map(\n            addressType: fv!item[recordType!AS_GSS_EvaluationVendorAddress_SYNCEDRECORD.referenceAddressType.refLabel],\n            addressLine1: fv!item[recordType!AS_GSS_EvaluationVendorAddress_SYNCEDRECORD.vendorAddressLine1],\n            addressLine2: fv!item[recordType!AS_GSS_EvaluationVendorAddress_SYNCEDRECORD.vendorAddressLine2],\n            city: fv!item[recordType!AS_GSS_EvaluationVendorAddress_SYNCEDRECORD.vendorCity],\n            stateOrProvinceCode: fv!item[recordType!AS_GSS_EvaluationVendorAddress_SYNCEDRECORD.state.stateCode],\n            countryCode: fv!item[recordType!AS_GSS_EvaluationVendorAddress_SYNCEDRECORD.country.samGovCode],\n            zipCode: fv!item[recordType!AS_GSS_EvaluationVendorAddress_SYNCEDRECORD.vendorZipCode],\n            zipCodeExt: fv!item[recordType!AS_GSS_EvaluationVendorAddress_SYNCEDRECORD.vendorZipCodeExt],\n            foreignPostalCode: fv!item[recordType!AS_GSS_EvaluationVendorAddress_SYNCEDRECORD.vendorForeignPostalCode],\n            isDeleted: false()\n          )\n        )\n      }\n    )\n  )\n)"
     },
-    "_a-0000eb16-753f-8000-9d01-011c48011c48_9522362": {
-      "name": "AS_GSS_UT_updateRecordsByModelRecord",
+    "_a-0000ee42-8707-8000-9e2b-011c48011c48_16524669": {
+      "name": "AS_GSS_DRM_BL_handleBusinessTypeForEvalVendor",
       "type": "Expression Rule",
-      "sail_code": "cast(\n  typeof(a!flatten(ri!records)),\n  a!localVariables(\n    local!fieldsToUpdate: a!keys(ri!modelRecord),\n    apply(\n      reduce(\n        rule!AS_GSS_UT_zINTERNAL_updateRecordsByModelRecord(\n          record: _,\n          fieldValuePair: _,\n        ),\n        _,\n        #\"SYSTEM_SYSRULES_forEach\"(\n          items: local!fieldsToUpdate,\n          expression: a!map(\n            field: fv!item,\n            value: ri!modelRecord[fv!item]\n          )\n        )\n      ),\n      a!flatten(ri!records)\n    )\n  )\n)"
-    },
-    "_a-0000ee67-7064-8000-9e36-011c48011c48_16808539": {
-      "name": "AS_GSS_UT_updateVendorWithAdditionalInfoFromSuite",
-      "type": "Expression Rule",
-      "sail_code": "if(\n  rule!AS_CO_UT_checkIsNullOrEmpty(\n    value: ri!vendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.legalName]\n  ),\n  {},\n  rule!AS_GSS_UT_updateRecordsByModelRecord(\n    records: ri!vendor,\n    modelRecord: recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD(\n      recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.gsmVendorRefId: rule!AS_CO_UT_indexPath(\n        cdt: ri!gsmVendorMap,\n        field: \"vendor.vendorId\",\n        indexDefault: {}\n      ),\n      recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.businessName: rule!AS_CO_UT_indexPath(\n        cdt: ri!gsmVendorMap,\n        field: \"vendor.doingBusinessAs\",\n        indexDefault: ri!vendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.businessName]\n      ),\n      recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.status: rule!AS_CO_UT_indexPath(\n        cdt: ri!gsmVendorMap,\n        field: \"vendor.registrationStatusId\",\n        indexDefault: ri!vendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.status]\n      ),\n      recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.expirationDate: rule!AS_CO_UT_indexPath(\n        cdt: ri!gsmVendorMap,\n        field: \"vendor.registrationExpirationDate\",\n        indexDefault: ri!vendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.expirationDate]\n      ),\n      recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.businessTypes: rule!AS_GSS_DRM_BL_handleBusinessTypeForEvalVendor(\n        GSMVendorData: ri!gsmVendorMap,\n        evalVendor: ri!vendor\n      ),\n      recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.modifiedDatetime: now()\n    )\n  ),\n)"
-    },
-    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76433": {
-      "name": "AS_CO_UT_indexPath",
-      "type": "Expression Rule",
-      "sail_code": "with(\n  local!fieldsAndIndices: rule!AS_CO_UT_zINTERNAL_indexPath_nestedFieldArrayHandler(field: ri!field),\n\n  reduce(\n    index(_, _, ri!indexDefault),\n    ri!cdt,\n    local!fieldsAndIndices\n  )\n)"
-    },
-    "_a-0000ee70-ab52-8000-9e39-011c48011c48_16862817": {
-      "name": "AS_GSS_UT_constructUeiCageCombo",
-      "type": "Expression Rule",
-      "sail_code": "concat(\n  ri!uei,\n  \"-\",\n  ri!cageCode\n)"
-    },
-    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367": {
-      "name": "AS_CO_UT_rejectNullValuesFromArray",
-      "type": "Expression Rule",
-      "sail_code": "cast(\n  typeof(ri!array),\n  reject(\n    rule!AS_CO_UT_isBlank(_),\n    a!flatten(ri!array)\n  )\n)"
-    },
-    "_a-0000ee30-1118-8000-9e27-011c48011c48_16437741": {
-      "name": "AS_GSS_APPREF_GSM_GETDATA_getVendorDetailsFederal",
-      "type": "Expression Rule",
-      "sail_code": "a!localVariables(\n  /* Return the entry-point rule if it exists, or else returns a no-op */\n  /* Make sure you use a refreshAlways: true */\n  local!rule: a!refreshVariable(\n    value: rule!AS_FRM_getRuleReferenceOrNoOp(\n      ruleName: \"AS_GSM_ENTRYPOINT_GETDATA_getVendorDetails_Federal_v1\"\n    ),\n    refreshAlways: true\n  ),\n  /* Actually execute the rule */\n  local!rule(\n    /* This should always be passed in every app reference rule */\n    /* which returns a default value if the rule does not exist */\n    ifNull_default: {},\n    /* Entrypoint-specific inputs for that rule */\n    uei: ri!uei,\n    cageCode: ri!cage,\n    status: ri!status,\n    ueiCageCombo: ri!ueiCageCombo,\n    name: ri!name\n  )\n)"
-    },
-    "_a-0000ee62-35ac-8000-9e34-011c48011c48_16755356": {
-      "name": "AS_GSS_APPREF_GSM_GETDATA_doesVendorExist",
-      "type": "Expression Rule",
-      "sail_code": "a!localVariables(\n  /* Return the entry-point rule if it exists, or else returns a no-op */\n  /* Make sure you use a refreshAlways: true */\n  local!rule: a!refreshVariable(\n    value: rule!AS_FRM_getRuleReferenceOrNoOp(\n      ruleName: \"AS_GSM_ENTRYPOINT_GETDATA_doesVendorExist_v1\"\n    ),\n    refreshAlways: true\n  ),\n  /* Actually execute the rule */\n  local!rule(\n    /* This should always be passed in every app reference rule */\n    /* which returns a default value if the rule does not exist */\n    ifNull_default: {},\n    /* Entrypoint-specific inputs for that rule */\n    uei: ri!uei,\n    cageCode: ri!cageCode,\n    tin: ri!tin\n  )\n)"
+      "sail_code": "a!localVariables(\n  local!gsmBusinessTypes: touniformstring(\n    rule!AS_CO_UT_indexPath(\n      cdt: ri!GSMVendorData,\n      field: \"vendor.business.businessTypeMapping.businessTypeRefId\",\n      indexDefault: {}\n    )\n  ),\n  local!newEntries: difference(\n    touniformstring(local!gsmBusinessTypes),\n    touniformstring(\n      ri!evalVendor[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.businessTypes.typeCode]\n    )\n  ),\n  if(\n    rule!AS_CO_UT_checkIsNullOrEmpty(\n      value: ri!GSMVendorData\n    ),\n    {},\n    rule!AS_CO_UT_rejectNullValuesFromArray(\n      array: {\n        #\"SYSTEM_SYSRULES_forEach\"(\n          items: local!newEntries,\n          expression: recordType!AS_GSS_EvaluationVendorBusinessType_SYNCEDRECORD(\n            recordType!AS_GSS_EvaluationVendorBusinessType_SYNCEDRECORD.typeCode: fv!item\n          )\n        )\n      }\n    )\n  )\n)"
     },
     "_a-0000ee62-35ac-8000-9e34-011c48011c48_16757675": {
       "name": "AS_GSS_APPREF_GSM_STARTPROCESS_createVendor_SLG",
       "type": "Expression Rule",
       "sail_code": "a!localVariables(\n  /* Return the entry-point rule if it exists, or else returns a no-op */\n  /* Make sure you use a refreshAlways: true */\n  local!rule: a!refreshVariable(\n    value: rule!AS_FRM_getRuleReferenceOrNoOp(\n      ruleName: \"AS_GSM_ENTRYPOINT_STARTPROCESS_createVendor_Slg_v1\"\n    ),\n    refreshAlways: true\n  ),\n  /* Actually execute the rule */\n  local!rule(\n    /* This should always be passed in every app reference rule */\n    /* which returns a default value if the rule does not exist */\n    ifNull_default: {},\n    /* Entrypoint-specific inputs for that rule */\n    vendor: ri!vendor,\n    cachedVendor: ri!cachedVendor\n  )\n)"
     },
-    "_a-0000e6cd-618a-8000-9bd9-011c48011c48_1688557": {
-      "name": "AS_CO_UT_checkIsNullOrEmpty",
+    "_a-0001ed6e-54f1-8000-9df6-011c48011c48_15245604": {
+      "name": "AS_GSS_EnableOrDisableStateAndLocalGovernment_wrapper",
       "type": "Expression Rule",
-      "sail_code": "if(\n  or(\n    isnull(\n      ri!value\n    ),\n    trim(\n      ri!value\n    ) = \"\"\n  ),\n  true(),\n  if(\n    length(\n      ri!value\n    ) = 0,\n    true(),\n    false()\n  )\n)"
+      "sail_code": "if(\n  cons!AS_GSS_TOGGLE_AUTOMATION_TESTING_ENABLED,\n  cons!AS_GSS_TOGGLE_SLG_CONFIG_FOR_AUTOMATION_TESTING,\n  a!localVariables(\n    /*Determine whether to execute the _default or _custom rule*/\n    local!runtimeRule: a!refreshVariable(\n      value: rule!AS_FRM_determineRuntimeRule(\n        defaultRuleReference: rule!AS_GSS_EnableOrDisableStateAndLocalGovernment_v1_default\n      ),\n      refreshAlways: true\n    ),\n    local!runtimeRule()\n  )\n)"
+    },
+    "_a-0000ee70-ab52-8000-9e39-011c48011c48_16862817": {
+      "name": "AS_GSS_UT_constructUeiCageCombo",
+      "type": "Expression Rule",
+      "sail_code": "concat(\n  ri!uei,\n  \"-\",\n  ri!cageCode\n)"
+    },
+    "000aee6b-81b2-8000-dc50-7f0000014e7a": {
+      "name": "AS GSS Update Vendor With GSM SLG",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n={pv!vendorDetails}\n\n// Input: ?\n={recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD}\n\n// Input: ?\nrule!AS_GSS_APPREF_GSM_STARTPROCESS_createVendor_SLG(\n  vendor: rule!AS_GSS_BL_mapVendorDataForGSMCreation(\n    evaluationVendor: pv!vendorDetails,\n    isActiveInSource: pv!isActiveInSource\n  )\n).processModel\n\n// Input: ?\nrule!AS_GSS_APPREF_GSM_STARTPROCESS_createVendor_SLG(\n  vendor: rule!AS_GSS_BL_mapVendorDataForGSMCreation(\n    evaluationVendor: pv!vendorDetails,\n    isActiveInSource: pv!isActiveInSource\n  )\n).processParameters\n\n// Input: ?\n= rule!AS_GSS_APPREF_GSM_GETDATA_getVendorDetailsState( tin: pv!vendorDetails[recordType!AS_GSS_EvaluationVendor_SYNCEDRECORD.tin], status: { true, false })\n\n// Output: ?\nrule!AS_GSS_UT_updateVendorWithAdditionalInfoFromSuite(\n  gsmVendorMap: ac!gsmVendorMap,\n  vendor: pv!vendorDetails\n)"
+    },
+    "_a-0000ee30-1118-8000-9e27-011c48011c48_16437741": {
+      "name": "AS_GSS_APPREF_GSM_GETDATA_getVendorDetailsFederal",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  /* Return the entry-point rule if it exists, or else returns a no-op */\n  /* Make sure you use a refreshAlways: true */\n  local!rule: a!refreshVariable(\n    value: rule!AS_FRM_getRuleReferenceOrNoOp(\n      ruleName: \"AS_GSM_ENTRYPOINT_GETDATA_getVendorDetails_Federal_v1\"\n    ),\n    refreshAlways: true\n  ),\n  /* Actually execute the rule */\n  local!rule(\n    /* This should always be passed in every app reference rule */\n    /* which returns a default value if the rule does not exist */\n    ifNull_default: {},\n    /* Entrypoint-specific inputs for that rule */\n    uei: ri!uei,\n    cageCode: ri!cage,\n    status: ri!status,\n    ueiCageCombo: ri!ueiCageCombo,\n    name: ri!name\n  )\n)"
+    },
+    "_a-0000ee30-1118-8000-9e27-011c48011c48_16437749": {
+      "name": "AS_GSS_APPREF_GSM_GETDATA_getVendorDetailsState",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  /* Return the entry-point rule if it exists, or else returns a no-op */\n  /* Make sure you use a refreshAlways: true */\n  local!rule: a!refreshVariable(\n    value: rule!AS_FRM_getRuleReferenceOrNoOp(\n      ruleName: \"AS_GSM_ENTRYPOINT_GETDATA_getVendorDetails_Slg_v1\"\n    ),\n    refreshAlways: true\n  ),\n  /* Actually execute the rule */\n  local!rule(\n    /* This should always be passed in every app reference rule */\n    /* which returns a default value if the rule does not exist */\n    ifNull_default: {},\n    /* Entrypoint-specific inputs for that rule */\n    tin: ri!tin,\n    returnAllData: ri!returnAllData,\n    status: ri!status\n  )\n)"
+    },
+    "_a-0000ee62-35ac-8000-9e34-011c48011c48_16755356": {
+      "name": "AS_GSS_APPREF_GSM_GETDATA_doesVendorExist",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  /* Return the entry-point rule if it exists, or else returns a no-op */\n  /* Make sure you use a refreshAlways: true */\n  local!rule: a!refreshVariable(\n    value: rule!AS_FRM_getRuleReferenceOrNoOp(\n      ruleName: \"AS_GSM_ENTRYPOINT_GETDATA_doesVendorExist_v1\"\n    ),\n    refreshAlways: true\n  ),\n  /* Actually execute the rule */\n  local!rule(\n    /* This should always be passed in every app reference rule */\n    /* which returns a default value if the rule does not exist */\n    ifNull_default: {},\n    /* Entrypoint-specific inputs for that rule */\n    uei: ri!uei,\n    cageCode: ri!cageCode,\n    tin: ri!tin\n  )\n)"
+    },
+    "_a-0000eb16-753f-8000-9d01-011c48011c48_9522362": {
+      "name": "AS_GSS_UT_updateRecordsByModelRecord",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n  typeof(a!flatten(ri!records)),\n  a!localVariables(\n    local!fieldsToUpdate: a!keys(ri!modelRecord),\n    apply(\n      reduce(\n        rule!AS_GSS_UT_zINTERNAL_updateRecordsByModelRecord(\n          record: _,\n          fieldValuePair: _,\n        ),\n        _,\n        #\"SYSTEM_SYSRULES_forEach\"(\n          items: local!fieldsToUpdate,\n          expression: a!map(\n            field: fv!item,\n            value: ri!modelRecord[fv!item]\n          )\n        )\n      ),\n      a!flatten(ri!records)\n    )\n  )\n)"
+    },
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76433": {
+      "name": "AS_CO_UT_indexPath",
+      "type": "Expression Rule",
+      "sail_code": "with(\n  local!fieldsAndIndices: rule!AS_CO_UT_zINTERNAL_indexPath_nestedFieldArrayHandler(field: ri!field),\n\n  reduce(\n    index(_, _, ri!indexDefault),\n    ri!cdt,\n    local!fieldsAndIndices\n  )\n)"
+    },
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367": {
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n  typeof(ri!array),\n  reject(\n    rule!AS_CO_UT_isBlank(_),\n    a!flatten(ri!array)\n  )\n)"
     }
   }
 }

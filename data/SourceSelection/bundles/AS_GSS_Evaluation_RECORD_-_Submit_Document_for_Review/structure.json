@@ -154,15 +154,15 @@
         ]
       },
       {
-        "name": "AS GSS TMG Task Completion",
-        "complexity_score": 9.0,
-        "total_nodes": 6,
+        "name": "AS GSS TMG Task Action Audit",
+        "complexity_score": 8.0,
+        "total_nodes": 5,
         "nodes": [
           {
             "name": "Start Node",
             "type": "START_EVENT",
             "next": [
-              "Update Current Task Status"
+              "data?"
             ]
           },
           {
@@ -170,34 +170,26 @@
             "type": "END_EVENT"
           },
           {
-            "name": "Update Current Task Status",
-            "type": "SCRIPT_TASK",
+            "name": "data?",
+            "type": "XOR_GATEWAY",
             "next": [
-              "Current Tasks"
+              "End Node",
+              "Create Task Action Audit CDTs"
             ]
           },
           {
-            "name": "Current Tasks",
+            "name": "Write to Task Action Audit",
             "type": "Write to Data Store Entity",
             "next": [
-              "Task Complete Audit"
+              "End Node"
             ]
           },
           {
-            "name": "Task Dependency",
-            "type": "SUBPROCESS",
+            "name": "Create Task Action Audit CDTs",
+            "type": "SCRIPT_TASK",
             "next": [
-              "End Node"
-            ],
-            "subprocess": "AS GSS TMG Task Dependency"
-          },
-          {
-            "name": "Task Complete Audit",
-            "type": "SUBPROCESS",
-            "next": [
-              "Task Dependency"
-            ],
-            "subprocess": "AS GSS TMG Task Action Audit"
+              "Write to Task Action Audit"
+            ]
           }
         ]
       },
@@ -286,15 +278,15 @@
         ]
       },
       {
-        "name": "AS GSS TMG Task Action Audit",
-        "complexity_score": 8.0,
-        "total_nodes": 5,
+        "name": "AS GSS TMG Task Completion",
+        "complexity_score": 9.0,
+        "total_nodes": 6,
         "nodes": [
           {
             "name": "Start Node",
             "type": "START_EVENT",
             "next": [
-              "data?"
+              "Update Current Task Status"
             ]
           },
           {
@@ -302,26 +294,34 @@
             "type": "END_EVENT"
           },
           {
-            "name": "data?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "End Node",
-              "Create Task Action Audit CDTs"
-            ]
-          },
-          {
-            "name": "Write to Task Action Audit",
-            "type": "Write to Data Store Entity",
-            "next": [
-              "End Node"
-            ]
-          },
-          {
-            "name": "Create Task Action Audit CDTs",
+            "name": "Update Current Task Status",
             "type": "SCRIPT_TASK",
             "next": [
-              "Write to Task Action Audit"
+              "Current Tasks"
             ]
+          },
+          {
+            "name": "Current Tasks",
+            "type": "Write to Data Store Entity",
+            "next": [
+              "Task Complete Audit"
+            ]
+          },
+          {
+            "name": "Task Dependency",
+            "type": "SUBPROCESS",
+            "next": [
+              "End Node"
+            ],
+            "subprocess": "AS GSS TMG Task Dependency"
+          },
+          {
+            "name": "Task Complete Audit",
+            "type": "SUBPROCESS",
+            "next": [
+              "Task Dependency"
+            ],
+            "subprocess": "AS GSS TMG Task Action Audit"
           }
         ]
       }
@@ -887,6 +887,22 @@
       ]
     },
     {
+      "uuid": "_a-0000eed7-628f-8000-9e56-011c48011c48_17651910",
+      "name": "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
+      "type": "Constant",
+      "description": "Value: 79\n",
+      "value": "79",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_returnEvaluationInfoForLandingPage",
+        "AS_GSS_CARD_evaluationInfo",
+        "AS_GSS_GRD_EvaluationRecordList",
+        "AS_GSS_QE_getEvaluation",
+        "AS_GSS_QR_getEvaluation"
+      ]
+    },
+    {
       "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1061416",
       "name": "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE",
       "type": "Constant",
@@ -928,6 +944,7 @@
       "called_by": [
         "AS_GSS_BL_returnEvaluationAdditionalInfoForCards",
         "AS_GSS_BL_returnEvaluationInfoForLandingPage",
+        "AS_GSS_CARD_evaluationInfo",
         "AS_GSS_QE_getEvaluation",
         "AS_GSS_QR_getEvaluation"
       ]
@@ -2345,17 +2362,6 @@
       ]
     },
     {
-      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_162769",
-      "name": "AS_CO_UT_typeCompare",
-      "type": "Expression Rule",
-      "description": "Returns true if the two input types match",
-      "parameters": [],
-      "calls": [],
-      "called_by": [
-        "AS_CO_UT_whereContains"
-      ]
-    },
-    {
       "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_260165",
       "name": "AS_CO_UT_updateCdtFields",
       "type": "Expression Rule",
@@ -2440,8 +2446,7 @@
       "description": "Enhanced wherecontains() which avoids type-casting issues and properly handles for document and group types",
       "parameters": [],
       "calls": [
-        "AS_CO_UT_isBlank",
-        "AS_CO_UT_typeCompare"
+        "AS_CO_UT_isBlank"
       ],
       "called_by": [
         "AS_CO_UT_returnCdtIndicesByField",
@@ -2676,6 +2681,7 @@
         "AS_GSS_Evaluation_SYNCEDRECORD",
         "AS_GSS_MAX_LIMIT_FOR_EVALUATIONS_IN_HOME_PAGE",
         "AS_GSS_QR_getEvaluation",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
         "AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP"
       ],
@@ -2775,6 +2781,7 @@
         "AS_CO_UT_isNotBlank",
         "AS_CO_UT_queryEntity",
         "AS_GSS_ENT_EVALUATION",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
         "AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP"
@@ -2867,6 +2874,7 @@
         "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
         "AS_CO_UT_queryRecord",
         "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
         "AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP"
@@ -5089,7 +5097,9 @@
         "AS_GSS_CO_NULL_REPLACEABLE_TEXT",
         "AS_GSS_CO_UT_loadBundleFromFolder",
         "AS_GSS_Evaluation_RECORD",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP",
         "AS_GSS_UT_checkIfNullOrZero",
         "AS_GSS_UT_checkIfZero",
         "AS_GSS_returnEvaluatorsStampList"
@@ -5933,6 +5943,7 @@
         "AS_GSS_QR_getCriteria",
         "AS_GSS_QR_getCriteriaAssignment",
         "AS_GSS_QR_getEvaluatorTeamMembershipByUser",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
         "AS_GSS_TMG_QR_getTasks",
@@ -6653,7 +6664,9 @@
         "deleteVendor",
         "updateVendorDetails",
         "viewBreakdown",
-        "viewVendorDecision"
+        "viewVendorDecision",
+        "viewConsensusRatings",
+        "viewVendorDecisionForAwardees"
       ],
       "views": [
         "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
@@ -6705,7 +6718,9 @@
         "updateWeights",
         "updateTeams",
         "updateAssignment",
-        "addTeams"
+        "addTeams",
+        "selectAwardees",
+        "updateDueDate"
       ],
       "views": [
         "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",

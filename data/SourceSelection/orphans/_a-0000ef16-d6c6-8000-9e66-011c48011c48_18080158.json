@@ -1,0 +1,61 @@
+{
+  "uuid": "_a-0000ef16-d6c6-8000-9e66-011c48011c48_18080158",
+  "name": "AS_GSS_GCW_getWinningVendorAndBasicInformation_V1",
+  "type": "Expression Rule",
+  "description": "The rule to fetch and format the Winning vendors and their basic information for solicitation",
+  "sail_code": "a!localVariables(\n  local!data: rule!AS_GSS_UT_constructEvalVendorAndDocsForAwardCreation(\n    evaluationId: ri!evaluationId,\n    includeAllVendors: true(),\n    fieldsToFetch: rule!AS_GSS_BL_recordFieldsToQueryForWinningVendorsBasicDetails()\n  ),\n  if(\n    rule!AS_CO_UT_checkIsNullOrEmpty(value: local!data),\n    a!map(),\n    a!map(\n      evalId: local!data.evaluationId,\n      evaluationNumber: local!data.evaluationNumber,\n      vendors: #\"SYSTEM_SYSRULES_forEach\"(\n        items: local!data.vendor,\n        expression: a!map(\n          gsmVendorRefId: fv!item.gsmVendorRefId,\n          vendorLegalName: fv!item.legalName,\n          isWinningVendor: tointeger(\n            rule!AS_CO_UT_indexPath(\n              cdt: fv!item,\n              field: \"decisionType.refDataId\",\n              indexDefault: 0\n            )\n          ) = cons!AS_GSS_REF_ID_VENDOR_DECISION_SELECT,\n          appianDocumentIds: rule!AS_CO_UT_rejectNullValuesFromArray(array: fv!item.documents.appianDocId)\n        )\n      )\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_UT_constructEvalVendorAndDocsForAwardCreation",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_BL_recordFieldsToQueryForWinningVendorsBasicDetails",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_checkIsNullOrEmpty",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_indexPath",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_REF_ID_VENDOR_DECISION_SELECT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_QR_getEvaluation",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_Evaluation_SYNCEDRECORD",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_ENTRYPOINT_GETDATA_getWinningVendorAndBasicInformation",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

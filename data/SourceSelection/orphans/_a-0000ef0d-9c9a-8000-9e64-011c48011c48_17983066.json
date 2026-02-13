@@ -1,0 +1,71 @@
+{
+  "uuid": "_a-0000ef0d-9c9a-8000-9e64-011c48011c48_17983066",
+  "name": "AS_GSS_GCW_getEvaluationVendorAndDocumentDetails_V1",
+  "type": "Expression Rule",
+  "description": "The rule to fetch and format the Evaluation, Vendor and Document details for Award Creation",
+  "sail_code": "a!localVariables(\n  local!data: rule!AS_GSS_UT_constructEvalVendorAndDocsForAwardCreation(\n    evaluationId: ri!evaluationId,\n    gsmVendorRefId: ri!gsmVendorRefId,\n    includeAllVendors: ri!includeAllVendors,\n    fieldsToFetch: rule!AS_GSS_BL_recordFieldsToQueryForAwardCreation()\n  ),\n  if(\n    rule!AS_CO_UT_checkIsNullOrEmpty(\n      value: local!data\n    ),\n    a!map(),\n    a!map(\n      evalId: local!data.evaluationId,\n      title: local!data.evaluationTitle,\n      evaluationNumber: local!data.evaluationNumber,\n      description: local!data.evaluationDescription,\n      startDate: local!data.evaluationStartDate,\n      endDate: local!data.evaluationDueDate,\n      instrumentType: rule!AS_CO_UT_indexPath(\n        cdt: local!data,\n        field: \"instrumentType.refDataId\",\n        indexDefault: null\n      ),\n      multipleOrSingleAwardIdv: rule!AS_CO_UT_indexPath(\n        cdt: local!data,\n        field: \"idvAwardType.refDataId\",\n        indexDefault: null\n      ),\n      contractingOfficer: rule!AS_CO_UT_indexPath(\n        cdt: local!data,\n        field: \"contractingOfficer.id\",\n        indexDefault: null\n      ),\n      contractingSpecialist: rule!AS_CO_UT_indexPath(\n        cdt: local!data,\n        field: \"contractingSpecialist.id\",\n        indexDefault: null\n      ),\n      vendors: #\"SYSTEM_SYSRULES_forEach\"(\n        items: local!data.vendor,\n        expression: a!map(\n          gsmVendorRefId: fv!item.gsmVendorRefId,\n          isWinningVendor: tointeger(\n            rule!AS_CO_UT_indexPath(\n              cdt: fv!item,\n              field: \"decisionType.refDataId\",\n              indexDefault: 0\n            )\n          ) = cons!AS_GSS_REF_ID_VENDOR_DECISION_SELECT,\n          vendorLegalName: fv!item.legalName,\n          cageCode: fv!item.cageCode,\n          uniqueEntityId: fv!item.uniqueEntityId,\n          internalStatus: tointeger(fv!item.isActive),\n          samStatus: fv!item.status,\n          expirationDate: fv!item.expirationDate,\n          physicalAndMailingAddress: #\"SYSTEM_SYSRULES_forEach\"(\n            items: fv!item.address,\n            expression: a!map(\n              addressType: rule!AS_CO_UT_indexPath(\n                cdt: fv!item,\n                field: \"referenceAddressType.refLabel\",\n                indexDefault: null\n              ),\n              addressLine1: fv!item.vendorAddressLine1,\n              addressLine2: fv!item.vendorAddressLine2,\n              city: fv!item.vendorCity,\n              stateCode: rule!AS_CO_UT_indexPath(\n                cdt: fv!item,\n                field: \"state.stateCode\",\n                indexDefault: null\n              ),\n              countryCode: rule!AS_CO_UT_indexPath(\n                cdt: fv!item,\n                field: \"country.samGovCode\",\n                indexDefault: null\n              ),\n              zipCode: fv!item.vendorZipCode,\n              zipCodeExt: fv!item.vendorZipCodeExt,\n              foreignPostalCode: fv!item.vendorForeignPostalCode\n            )\n          ),\n          businessTypes: #\"SYSTEM_SYSRULES_forEach\"(\n            items: fv!item.businessTypes,\n            expression: a!map(businessTypeCode: fv!item.typeCode)\n          ),\n          documents: #\"SYSTEM_SYSRULES_forEach\"(\n            items: fv!item.documents,\n            expression: a!map(\n              appianDocId: fv!item.appianDocId,\n              title: fv!item.documentName,\n              documentName: fv!item.docNameWithExtension,\n              docExtension: fv!item.fileType,\n              documentDescription: fv!item.documentDescription,\n              uploadedBy: rule!AS_CO_UT_indexPath(\n                cdt: fv!item,\n                field: \"createdBy.id\",\n                indexDefault: null\n              ),\n              uploadedOn: fv!item.createdDatetime,\n              sourceApplication: rule!AS_CO_UT_indexPath(\n                cdt: fv!item,\n                field: \"sourceApplication.refDataId\",\n                indexDefault: null\n              ),\n              documentDownloadLink: if(\n                rule!AS_CO_UT_indexPath(\n                  cdt: fv!item,\n                  field: \"sourceApplication.refDataId\",\n                  indexDefault: null\n                ) = cons!AS_GSS_REF_ID_SOURCE_APPLICATION_VM,\n                rule!AS_GSS_UT_formatDocumentSingleClickDownloadLink(\n                  source: cons!AS_GSS_ENUM_TXT_PROPOSAL_DOC_DOWNLOAD_SOURCE_VM,\n                  appianDocId: fv!item.appianDocId\n                ),\n                null\n              )\n            )\n          )\n        )\n      )\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GSS_UT_constructEvalVendorAndDocsForAwardCreation",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_BL_recordFieldsToQueryForAwardCreation",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_checkIsNullOrEmpty",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_indexPath",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_UT_formatDocumentSingleClickDownloadLink",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GSS_REF_ID_VENDOR_DECISION_SELECT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_REF_ID_SOURCE_APPLICATION_VM",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_ENUM_TXT_PROPOSAL_DOC_DOWNLOAD_SOURCE_VM",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_QR_getEvaluation",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GSS_Evaluation_SYNCEDRECORD",
+      "type": "Record Type",
+      "dep_type": "USES_RECORD_TYPE"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GSS_ENTRYPOINT_GETDATA_getEvaluationandVendordetails",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

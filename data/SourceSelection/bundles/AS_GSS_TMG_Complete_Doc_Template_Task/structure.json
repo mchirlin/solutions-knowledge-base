@@ -3,7 +3,7 @@
     "bundle_type": "process",
     "root_name": "AS GSS TMG Complete Doc Template Task",
     "parent_name": null,
-    "total_objects": 398
+    "total_objects": 399
   },
   "entry_point": {
     "complexity_score": 22.0,
@@ -101,6 +101,494 @@
       ]
     },
     "subprocesses": [
+      {
+        "name": "AS GSS Download Document from Sharepoint",
+        "complexity_score": 6.0,
+        "total_nodes": 4,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Document Id null?"
+            ]
+          },
+          {
+            "name": "Terminate",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Document Id null?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Download Doc from SharePoint (No)",
+              "Terminate (Yes)"
+            ]
+          },
+          {
+            "name": "Download Doc from SharePoint",
+            "type": "Call Integration",
+            "next": [
+              "Terminate"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AS GAM Create Folder in SharePoint",
+        "complexity_score": 3.0,
+        "total_nodes": 3,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Call Integration"
+            ]
+          },
+          {
+            "name": "Terminate",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Call Integration",
+            "type": "Call Integration",
+            "next": [
+              "Terminate"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AS GSS TMG Task Action Audit",
+        "complexity_score": 8.0,
+        "total_nodes": 5,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "data?"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "data?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "End Node",
+              "Create Task Action Audit CDTs"
+            ]
+          },
+          {
+            "name": "Write to Task Action Audit",
+            "type": "Write to Data Store Entity",
+            "next": [
+              "End Node"
+            ]
+          },
+          {
+            "name": "Create Task Action Audit CDTs",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Write to Task Action Audit"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AS GSS Upload Documents",
+        "complexity_score": 26.0,
+        "total_nodes": 12,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Vendor Record Upload?"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Delete Doc from evaluation folder",
+            "type": "Delete Document",
+            "next": [
+              "End Node"
+            ]
+          },
+          {
+            "name": "Join",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Action?"
+            ]
+          },
+          {
+            "name": "Update document details and nullify testing",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Upload documents"
+            ]
+          },
+          {
+            "name": "Write to Eval doc and Capture Audit",
+            "type": "SUBPROCESS",
+            "next": [
+              "End Node"
+            ],
+            "subprocess": "AS GAM ADT Audit Process"
+          },
+          {
+            "name": "Write to AS_GSS_FactorDocumentMapping",
+            "type": "Write to Data Store Entity",
+            "next": [
+              "Write to Eval doc and Capture Audit"
+            ]
+          },
+          {
+            "name": "Write to Eval doc",
+            "type": "Write to Data Store Entity",
+            "next": [
+              "Is Factor Document Mapping Empty?"
+            ]
+          },
+          {
+            "name": "Vendor Record Upload?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Upload documents",
+              "Write to Eval doc"
+            ]
+          },
+          {
+            "name": "Is Factor Document Mapping Empty?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Write to Eval doc and Capture Audit (yes)",
+              "Write to AS_GSS_FactorDocumentMapping"
+            ]
+          },
+          {
+            "name": "Action?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Update document details and nullify testing (Upload)",
+              "Delete Doc from evaluation folder (Canceled with docs)",
+              "End Node (Cancel)",
+              "Write to Eval doc"
+            ]
+          },
+          {
+            "name": "Upload documents",
+            "type": "USER_TASK",
+            "next": [
+              "Join"
+            ],
+            "interface": "AS_GSS_FM_uploadEvaluationDocuments"
+          }
+        ]
+      },
+      {
+        "name": "AS GSS TMG Task Dependency",
+        "complexity_score": 22.0,
+        "total_nodes": 11,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Get Tasks To Start"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Tasks to Start?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Write Tasks To Start",
+              "End Node"
+            ]
+          },
+          {
+            "name": "Automated Tasks to Start?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Start Automated Tasks",
+              "End Node"
+            ]
+          },
+          {
+            "name": "Get Automated Tasks",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Automated Tasks to Start?"
+            ]
+          },
+          {
+            "name": "Get Tasks To Start",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Tasks to Start?"
+            ]
+          },
+          {
+            "name": "Start Automated Tasks",
+            "type": "Start Process (v2)",
+            "next": [
+              "End Node"
+            ]
+          },
+          {
+            "name": "Create Task Audit",
+            "type": "SUBPROCESS",
+            "next": [
+              "Are assignees present?"
+            ],
+            "subprocess": "AS GSS TMG Task Action Audit"
+          },
+          {
+            "name": "Write Tasks To Start",
+            "type": "Write to Data Store Entity",
+            "next": [
+              "Create Task Audit"
+            ]
+          },
+          {
+            "name": "Send Email for Assigned Tasks",
+            "type": "Start Process (v2)",
+            "next": [
+              "Get Automated Tasks"
+            ]
+          },
+          {
+            "name": "Are assignees present?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Send Email for Assigned Tasks (Yes)",
+              "Get Automated Tasks (No)"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AS GSS Move Word Doc To Sharepoint and Get Document Link",
+        "complexity_score": 20.0,
+        "total_nodes": 10,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Integration ON?"
+            ]
+          },
+          {
+            "name": "Terminate",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Integration ON?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Terminate (Integration OFF)",
+              "Create folder in SharePoint (Yes & Folder Null)",
+              "Upload Doc to Sharepoint (Yes & Folder not null)"
+            ]
+          },
+          {
+            "name": "Skip Write to task?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Write to Task (No)",
+              "Terminate"
+            ]
+          },
+          {
+            "name": "Set evaluation",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Update evaluation"
+            ]
+          },
+          {
+            "name": "Write to Task",
+            "type": "Write to Data Store Entity",
+            "next": [
+              "Terminate"
+            ]
+          },
+          {
+            "name": "Update evaluation",
+            "type": "Write to Data Store Entity",
+            "next": [
+              "Upload Doc to Sharepoint"
+            ]
+          },
+          {
+            "name": "Create folder in SharePoint",
+            "type": "SUBPROCESS",
+            "next": [
+              "Set evaluation"
+            ],
+            "subprocess": "AS GAM Create Folder in SharePoint"
+          },
+          {
+            "name": "Get document link from Sharepoint",
+            "type": "Call Integration",
+            "next": [
+              "Skip Write to task?"
+            ]
+          },
+          {
+            "name": "Upload Doc to Sharepoint",
+            "type": "Call Integration",
+            "next": [
+              "Get document link from Sharepoint"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AS GAM ADT Audit Process",
+        "complexity_score": 22.0,
+        "total_nodes": 11,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Audit Params Multiple?"
+            ]
+          },
+          {
+            "name": "Terminate",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Write to Audit Multiple",
+            "type": "Write to Multiple DSE",
+            "next": [
+              "Terminate"
+            ]
+          },
+          {
+            "name": "Audit Params Multiple?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Mul Object DSE exists? (Yes)",
+              "Object DSE exists? (No)"
+            ]
+          },
+          {
+            "name": "Write to Audit",
+            "type": "Write to Data Store Entity",
+            "next": [
+              "Terminate"
+            ]
+          },
+          {
+            "name": "Mul Object DSE exists?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Write to Audit Multiple",
+              "Get Original Objects"
+            ]
+          },
+          {
+            "name": "Object DSE exists?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Write to Audit",
+              "Get Original Objects"
+            ]
+          },
+          {
+            "name": "Get Original Objects",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Write to Object Data Multiple"
+            ]
+          },
+          {
+            "name": "Write to Object Data Multiple",
+            "type": "Write to Multiple DSE",
+            "next": [
+              "Write to Audit Multiple"
+            ]
+          },
+          {
+            "name": "Write to Object Data",
+            "type": "Write to Data Store Entity",
+            "next": [
+              "Write to Audit"
+            ]
+          },
+          {
+            "name": "Get Original Objects",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Write to Object Data"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AS GSS TMG Task Completion",
+        "complexity_score": 9.0,
+        "total_nodes": 6,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Update Current Task Status"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Update Current Task Status",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Current Tasks"
+            ]
+          },
+          {
+            "name": "Current Tasks",
+            "type": "Write to Data Store Entity",
+            "next": [
+              "Task Complete Audit"
+            ]
+          },
+          {
+            "name": "Task Dependency",
+            "type": "SUBPROCESS",
+            "next": [
+              "End Node"
+            ],
+            "subprocess": "AS GSS TMG Task Dependency"
+          },
+          {
+            "name": "Task Complete Audit",
+            "type": "SUBPROCESS",
+            "next": [
+              "Task Dependency"
+            ],
+            "subprocess": "AS GSS TMG Task Action Audit"
+          }
+        ]
+      },
       {
         "name": "AS GSS Create Word Doc from Template",
         "complexity_score": 33.0,
@@ -216,494 +704,6 @@
             "type": "MS Word 2007 Doc from Template",
             "next": [
               "Join"
-            ]
-          }
-        ]
-      },
-      {
-        "name": "AS GSS Download Document from Sharepoint",
-        "complexity_score": 6.0,
-        "total_nodes": 4,
-        "nodes": [
-          {
-            "name": "Start Node",
-            "type": "START_EVENT",
-            "next": [
-              "Document Id null?"
-            ]
-          },
-          {
-            "name": "Terminate",
-            "type": "END_EVENT"
-          },
-          {
-            "name": "Document Id null?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "Download Doc from SharePoint (No)",
-              "Terminate (Yes)"
-            ]
-          },
-          {
-            "name": "Download Doc from SharePoint",
-            "type": "Call Integration",
-            "next": [
-              "Terminate"
-            ]
-          }
-        ]
-      },
-      {
-        "name": "AS GSS TMG Task Completion",
-        "complexity_score": 9.0,
-        "total_nodes": 6,
-        "nodes": [
-          {
-            "name": "Start Node",
-            "type": "START_EVENT",
-            "next": [
-              "Update Current Task Status"
-            ]
-          },
-          {
-            "name": "End Node",
-            "type": "END_EVENT"
-          },
-          {
-            "name": "Update Current Task Status",
-            "type": "SCRIPT_TASK",
-            "next": [
-              "Current Tasks"
-            ]
-          },
-          {
-            "name": "Current Tasks",
-            "type": "Write to Data Store Entity",
-            "next": [
-              "Task Complete Audit"
-            ]
-          },
-          {
-            "name": "Task Dependency",
-            "type": "SUBPROCESS",
-            "next": [
-              "End Node"
-            ],
-            "subprocess": "AS GSS TMG Task Dependency"
-          },
-          {
-            "name": "Task Complete Audit",
-            "type": "SUBPROCESS",
-            "next": [
-              "Task Dependency"
-            ],
-            "subprocess": "AS GSS TMG Task Action Audit"
-          }
-        ]
-      },
-      {
-        "name": "AS GSS Upload Documents",
-        "complexity_score": 26.0,
-        "total_nodes": 12,
-        "nodes": [
-          {
-            "name": "Start Node",
-            "type": "START_EVENT",
-            "next": [
-              "Vendor Record Upload?"
-            ]
-          },
-          {
-            "name": "End Node",
-            "type": "END_EVENT"
-          },
-          {
-            "name": "Delete Doc from evaluation folder",
-            "type": "Delete Document",
-            "next": [
-              "End Node"
-            ]
-          },
-          {
-            "name": "Join",
-            "type": "SCRIPT_TASK",
-            "next": [
-              "Action?"
-            ]
-          },
-          {
-            "name": "Update document details and nullify testing",
-            "type": "SCRIPT_TASK",
-            "next": [
-              "Upload documents"
-            ]
-          },
-          {
-            "name": "Write to Eval doc and Capture Audit",
-            "type": "SUBPROCESS",
-            "next": [
-              "End Node"
-            ],
-            "subprocess": "AS GAM ADT Audit Process"
-          },
-          {
-            "name": "Write to AS_GSS_FactorDocumentMapping",
-            "type": "Write to Data Store Entity",
-            "next": [
-              "Write to Eval doc and Capture Audit"
-            ]
-          },
-          {
-            "name": "Write to Eval doc",
-            "type": "Write to Data Store Entity",
-            "next": [
-              "Is Factor Document Mapping Empty?"
-            ]
-          },
-          {
-            "name": "Vendor Record Upload?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "Upload documents",
-              "Write to Eval doc"
-            ]
-          },
-          {
-            "name": "Is Factor Document Mapping Empty?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "Write to Eval doc and Capture Audit (yes)",
-              "Write to AS_GSS_FactorDocumentMapping"
-            ]
-          },
-          {
-            "name": "Action?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "Update document details and nullify testing (Upload)",
-              "Delete Doc from evaluation folder (Canceled with docs)",
-              "End Node (Cancel)",
-              "Write to Eval doc"
-            ]
-          },
-          {
-            "name": "Upload documents",
-            "type": "USER_TASK",
-            "next": [
-              "Join"
-            ],
-            "interface": "AS_GSS_FM_uploadEvaluationDocuments"
-          }
-        ]
-      },
-      {
-        "name": "AS GAM ADT Audit Process",
-        "complexity_score": 22.0,
-        "total_nodes": 11,
-        "nodes": [
-          {
-            "name": "Start Node",
-            "type": "START_EVENT",
-            "next": [
-              "Audit Params Multiple?"
-            ]
-          },
-          {
-            "name": "Terminate",
-            "type": "END_EVENT"
-          },
-          {
-            "name": "Write to Audit Multiple",
-            "type": "Write to Multiple DSE",
-            "next": [
-              "Terminate"
-            ]
-          },
-          {
-            "name": "Audit Params Multiple?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "Mul Object DSE exists? (Yes)",
-              "Object DSE exists? (No)"
-            ]
-          },
-          {
-            "name": "Write to Audit",
-            "type": "Write to Data Store Entity",
-            "next": [
-              "Terminate"
-            ]
-          },
-          {
-            "name": "Mul Object DSE exists?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "Write to Audit Multiple",
-              "Get Original Objects"
-            ]
-          },
-          {
-            "name": "Object DSE exists?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "Write to Audit",
-              "Get Original Objects"
-            ]
-          },
-          {
-            "name": "Get Original Objects",
-            "type": "SCRIPT_TASK",
-            "next": [
-              "Write to Object Data Multiple"
-            ]
-          },
-          {
-            "name": "Write to Object Data Multiple",
-            "type": "Write to Multiple DSE",
-            "next": [
-              "Write to Audit Multiple"
-            ]
-          },
-          {
-            "name": "Write to Object Data",
-            "type": "Write to Data Store Entity",
-            "next": [
-              "Write to Audit"
-            ]
-          },
-          {
-            "name": "Get Original Objects",
-            "type": "SCRIPT_TASK",
-            "next": [
-              "Write to Object Data"
-            ]
-          }
-        ]
-      },
-      {
-        "name": "AS GSS TMG Task Dependency",
-        "complexity_score": 22.0,
-        "total_nodes": 11,
-        "nodes": [
-          {
-            "name": "Start Node",
-            "type": "START_EVENT",
-            "next": [
-              "Get Tasks To Start"
-            ]
-          },
-          {
-            "name": "End Node",
-            "type": "END_EVENT"
-          },
-          {
-            "name": "Tasks to Start?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "Write Tasks To Start",
-              "End Node"
-            ]
-          },
-          {
-            "name": "Automated Tasks to Start?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "Start Automated Tasks",
-              "End Node"
-            ]
-          },
-          {
-            "name": "Get Automated Tasks",
-            "type": "SCRIPT_TASK",
-            "next": [
-              "Automated Tasks to Start?"
-            ]
-          },
-          {
-            "name": "Get Tasks To Start",
-            "type": "SCRIPT_TASK",
-            "next": [
-              "Tasks to Start?"
-            ]
-          },
-          {
-            "name": "Start Automated Tasks",
-            "type": "Start Process (v2)",
-            "next": [
-              "End Node"
-            ]
-          },
-          {
-            "name": "Create Task Audit",
-            "type": "SUBPROCESS",
-            "next": [
-              "Are assignees present?"
-            ],
-            "subprocess": "AS GSS TMG Task Action Audit"
-          },
-          {
-            "name": "Write Tasks To Start",
-            "type": "Write to Data Store Entity",
-            "next": [
-              "Create Task Audit"
-            ]
-          },
-          {
-            "name": "Send Email for Assigned Tasks",
-            "type": "Start Process (v2)",
-            "next": [
-              "Get Automated Tasks"
-            ]
-          },
-          {
-            "name": "Are assignees present?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "Send Email for Assigned Tasks (Yes)",
-              "Get Automated Tasks (No)"
-            ]
-          }
-        ]
-      },
-      {
-        "name": "AS GAM Create Folder in SharePoint",
-        "complexity_score": 3.0,
-        "total_nodes": 3,
-        "nodes": [
-          {
-            "name": "Start Node",
-            "type": "START_EVENT",
-            "next": [
-              "Call Integration"
-            ]
-          },
-          {
-            "name": "Terminate",
-            "type": "END_EVENT"
-          },
-          {
-            "name": "Call Integration",
-            "type": "Call Integration",
-            "next": [
-              "Terminate"
-            ]
-          }
-        ]
-      },
-      {
-        "name": "AS GSS TMG Task Action Audit",
-        "complexity_score": 8.0,
-        "total_nodes": 5,
-        "nodes": [
-          {
-            "name": "Start Node",
-            "type": "START_EVENT",
-            "next": [
-              "data?"
-            ]
-          },
-          {
-            "name": "End Node",
-            "type": "END_EVENT"
-          },
-          {
-            "name": "data?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "End Node",
-              "Create Task Action Audit CDTs"
-            ]
-          },
-          {
-            "name": "Write to Task Action Audit",
-            "type": "Write to Data Store Entity",
-            "next": [
-              "End Node"
-            ]
-          },
-          {
-            "name": "Create Task Action Audit CDTs",
-            "type": "SCRIPT_TASK",
-            "next": [
-              "Write to Task Action Audit"
-            ]
-          }
-        ]
-      },
-      {
-        "name": "AS GSS Move Word Doc To Sharepoint and Get Document Link",
-        "complexity_score": 20.0,
-        "total_nodes": 10,
-        "nodes": [
-          {
-            "name": "Start Node",
-            "type": "START_EVENT",
-            "next": [
-              "Integration ON?"
-            ]
-          },
-          {
-            "name": "Terminate",
-            "type": "END_EVENT"
-          },
-          {
-            "name": "Integration ON?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "Terminate (Integration OFF)",
-              "Create folder in SharePoint (Yes & Folder Null)",
-              "Upload Doc to Sharepoint (Yes & Folder not null)"
-            ]
-          },
-          {
-            "name": "Skip Write to task?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "Write to Task (No)",
-              "Terminate"
-            ]
-          },
-          {
-            "name": "Set evaluation",
-            "type": "SCRIPT_TASK",
-            "next": [
-              "Update evaluation"
-            ]
-          },
-          {
-            "name": "Write to Task",
-            "type": "Write to Data Store Entity",
-            "next": [
-              "Terminate"
-            ]
-          },
-          {
-            "name": "Update evaluation",
-            "type": "Write to Data Store Entity",
-            "next": [
-              "Upload Doc to Sharepoint"
-            ]
-          },
-          {
-            "name": "Create folder in SharePoint",
-            "type": "SUBPROCESS",
-            "next": [
-              "Set evaluation"
-            ],
-            "subprocess": "AS GAM Create Folder in SharePoint"
-          },
-          {
-            "name": "Get document link from Sharepoint",
-            "type": "Call Integration",
-            "next": [
-              "Skip Write to task?"
-            ]
-          },
-          {
-            "name": "Upload Doc to Sharepoint",
-            "type": "Call Integration",
-            "next": [
-              "Get document link from Sharepoint"
             ]
           }
         ]
@@ -1816,6 +1816,22 @@
       ]
     },
     {
+      "uuid": "_a-0000eed7-628f-8000-9e56-011c48011c48_17651910",
+      "name": "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
+      "type": "Constant",
+      "description": "Value: 79\n",
+      "value": "79",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GSS_BL_returnEvaluationInfoForLandingPage",
+        "AS_GSS_CARD_evaluationInfo",
+        "AS_GSS_GRD_EvaluationRecordList",
+        "AS_GSS_QE_getEvaluation",
+        "AS_GSS_QR_getEvaluation"
+      ]
+    },
+    {
       "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1061416",
       "name": "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE",
       "type": "Constant",
@@ -1857,6 +1873,7 @@
       "called_by": [
         "AS_GSS_BL_returnEvaluationAdditionalInfoForCards",
         "AS_GSS_BL_returnEvaluationInfoForLandingPage",
+        "AS_GSS_CARD_evaluationInfo",
         "AS_GSS_QE_getEvaluation",
         "AS_GSS_QR_getEvaluation"
       ]
@@ -4737,6 +4754,7 @@
         "AS_GSS_Evaluation_SYNCEDRECORD",
         "AS_GSS_MAX_LIMIT_FOR_EVALUATIONS_IN_HOME_PAGE",
         "AS_GSS_QR_getEvaluation",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
         "AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP"
       ],
@@ -4894,6 +4912,7 @@
         "AS_CO_UT_isNotBlank",
         "AS_CO_UT_queryEntity",
         "AS_GSS_ENT_EVALUATION",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
         "AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP"
@@ -5061,6 +5080,7 @@
         "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
         "AS_CO_UT_queryRecord",
         "AS_GSS_Evaluation_SYNCEDRECORD",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
         "AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP"
@@ -7756,7 +7776,9 @@
         "AS_GSS_CO_NULL_REPLACEABLE_TEXT",
         "AS_GSS_CO_UT_loadBundleFromFolder",
         "AS_GSS_Evaluation_RECORD",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_SETTING_UP",
         "AS_GSS_UT_checkIfNullOrZero",
         "AS_GSS_UT_checkIfZero",
         "AS_GSS_returnEvaluatorsStampList"
@@ -8716,6 +8738,7 @@
         "AS_GSS_QR_getCriteria",
         "AS_GSS_QR_getCriteriaAssignment",
         "AS_GSS_QR_getEvaluatorTeamMembershipByUser",
+        "AS_GSS_REF_ID_EVALUATION_STATUS_AWARDEES_SELECTED",
         "AS_GSS_REF_ID_EVALUATION_STATUS_COMPLETE",
         "AS_GSS_REF_ID_EVALUATION_STATUS_INPROGRESS",
         "AS_GSS_TMG_QR_getTasks",
@@ -9963,7 +9986,9 @@
         "deleteVendor",
         "updateVendorDetails",
         "viewBreakdown",
-        "viewVendorDecision"
+        "viewVendorDecision",
+        "viewConsensusRatings",
+        "viewVendorDecisionForAwardees"
       ],
       "views": [
         "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
@@ -10015,7 +10040,9 @@
         "updateWeights",
         "updateTeams",
         "updateAssignment",
-        "addTeams"
+        "addTeams",
+        "selectAwardees",
+        "updateDueDate"
       ],
       "views": [
         "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",

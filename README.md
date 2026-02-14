@@ -137,23 +137,39 @@ usage: appian-atlas [-h] (--data-dir DATA_DIR | --github OWNER/REPO)
 
 ---
 
-### Step 3: Set Up GitHub Token (Private Repos Only)
+### Step 3: Set Up GitHub Token
 
-If this is a private repository, the MCP server needs a GitHub token to read data.
+The MCP server fetches data from GitHub at runtime, so it needs authentication.
 
-1. Go to GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic).
-2. Generate a new token with `repo` scope.
-3. Set it as an environment variable:
+1. **Generate a GitHub Personal Access Token**:
+   - Go to GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
+   - Click "Generate new token (classic)"
+   - Give it a name (e.g., "Appian Atlas MCP")
+   - Select scope: `repo` (for private repos) or just `public_repo` (for public repos)
+   - Click "Generate token" and copy it
 
-```bash
-# macOS/Linux — add to your ~/.zshrc or ~/.bashrc
-export GITHUB_TOKEN=ghp_your_token_here
+2. **Set the token as an environment variable**:
 
-# Windows PowerShell
-$env:GITHUB_TOKEN = "ghp_your_token_here"
-```
+   **macOS/Linux** — Add to your shell config file:
+   ```bash
+   # Add to ~/.zshrc (for zsh) or ~/.bashrc (for bash)
+   export GITHUB_TOKEN="ghp_your_token_here"
+   ```
+   
+   Then reload your shell:
+   ```bash
+   source ~/.zshrc  # or source ~/.bashrc
+   ```
 
-Restart your terminal (or Kiro) after setting this.
+   **Windows PowerShell** — Add to your PowerShell profile:
+   ```powershell
+   # Add to $PROFILE
+   $env:GITHUB_TOKEN = "ghp_your_token_here"
+   ```
+
+3. **Restart Kiro IDE** after setting the token so it picks up the environment variable.
+
+> **Important**: Without this token, you'll get 401 authentication errors when the MCP server tries to fetch data.
 
 ---
 
@@ -317,6 +333,18 @@ Returns full detail including code for an orphaned object.
 ---
 
 ## Troubleshooting
+
+### 401 Authentication Error
+
+**Symptom**: MCP server shows 401 errors or fails to fetch data.
+
+**Cause**: `GITHUB_TOKEN` environment variable is not set or invalid.
+
+**Solution**:
+1. Verify your token is set: `echo $GITHUB_TOKEN` (macOS/Linux) or `echo $env:GITHUB_TOKEN` (Windows)
+2. If empty, follow Step 3 to set up the token
+3. Restart Kiro IDE after setting the token
+4. Reconnect the MCP server from the Kiro MCP Servers panel
 
 ### MCP server not found after pip install
 

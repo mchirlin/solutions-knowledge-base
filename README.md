@@ -65,16 +65,29 @@ Launch Kiro IDE and open any workspace you want to work in. The knowledge base d
 
 ### Step 2: Install the MCP Server
 
-Open the integrated terminal in Kiro (`` Ctrl+` `` or `` Cmd+` ``) and run:
+Open the integrated terminal in Kiro (`` Ctrl+` `` or `` Cmd+` ``).
 
-```bash
-pip install "appian-atlas @ git+https://github.com/ram-020998/gam-knowledge-base.git#subdirectory=mcp_server"
-```
+**Option A: Using pipx (Recommended)**
 
-Or with pipx (recommended for isolated installation):
+pipx automatically creates an isolated environment:
 
 ```bash
 pipx install "appian-atlas @ git+https://github.com/ram-020998/gam-knowledge-base.git#subdirectory=mcp_server"
+```
+
+**Option B: Using pip**
+
+If using pip, create a virtual environment first to avoid conflicts:
+
+```bash
+# Create and activate virtual environment
+python -m venv ~/.venvs/appian-atlas
+source ~/.venvs/appian-atlas/bin/activate  # macOS/Linux
+# OR
+~/.venvs/appian-atlas/Scripts/activate     # Windows
+
+# Install the package
+pip install "appian-atlas @ git+https://github.com/ram-020998/gam-knowledge-base.git#subdirectory=mcp_server"
 ```
 
 This installs only the MCP server Python package. The data files in this repo are not downloaded to your machine — the server fetches them from GitHub at runtime.

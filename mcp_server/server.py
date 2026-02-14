@@ -1,9 +1,9 @@
 """
-GAM Appian Knowledge Base — MCP Server.
+Appian Atlas — MCP Server.
 
 Exposes parsed Appian application data (bundles, manifests, dependencies)
-to LLM clients via the Model Context Protocol. Designed as the central
-knowledge base for all Government Acquisition Management (GAM) Appian solutions.
+to LLM clients via the Model Context Protocol. Designed as a universal
+knowledge base for Appian applications across all solutions.
 
 Usage:
     # Local mode (reads from filesystem)
@@ -27,7 +27,7 @@ from mcp_server.datasource import DataSource, GitHubDataSource, LocalDataSource
 # ── Globals ─────────────────────────────────────────────────────────────
 
 _ds: DataSource | None = None
-mcp = FastMCP("gam-appian-kb")
+mcp = FastMCP("appian-atlas")
 
 
 def _datasource() -> DataSource:
@@ -271,10 +271,10 @@ def get_orphan(app_name: str, object_uuid: str) -> dict:
 def main():
     import argparse
 
-    parser = argparse.ArgumentParser(description="GAM Appian Knowledge Base MCP Server")
+    parser = argparse.ArgumentParser(description="Appian Atlas MCP Server")
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--data-dir", help="Local directory containing parsed application folders")
-    group.add_argument("--github", metavar="OWNER/REPO", help="GitHub repository (e.g. myorg/gam-appian-kb)")
+    group.add_argument("--github", metavar="OWNER/REPO", help="GitHub repository (e.g. myorg/appian-atlas)")
     parser.add_argument("--branch", default="main", help="Git branch (default: main)")
     parser.add_argument("--data-prefix", default="data", help="Path prefix in repo for app folders (default: data)")
 

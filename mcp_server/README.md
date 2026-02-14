@@ -20,14 +20,14 @@ python -m mcp_server --data-dir ./data
 ### GitHub mode (shared team access)
 ```bash
 # Public repo
-python -m mcp_server --github myorg/gam-appian-kb
+python -m mcp_server --github myorg/appian-atlas
 
 # Private repo
 export GITHUB_TOKEN=ghp_...
-python -m mcp_server --github myorg/gam-appian-kb
+python -m mcp_server --github myorg/appian-atlas
 
 # Custom branch or data path
-python -m mcp_server --github myorg/gam-appian-kb --branch develop --data-prefix output
+python -m mcp_server --github myorg/appian-atlas --branch develop --data-prefix output
 ```
 
 ## Data Layout
@@ -68,7 +68,7 @@ data/
 ```json
 {
   "mcpServers": {
-    "gam-appian-kb": {
+    "appian-atlas": {
       "command": "/path/to/.venv/bin/python",
       "args": ["-m", "mcp_server", "--data-dir", "/path/to/data"],
       "cwd": "/path/to/appian-parser"
@@ -81,9 +81,9 @@ data/
 ```json
 {
   "mcpServers": {
-    "gam-appian-kb": {
+    "appian-atlas": {
       "command": "/path/to/.venv/bin/python",
-      "args": ["-m", "mcp_server", "--github", "myorg/gam-appian-kb"],
+      "args": ["-m", "mcp_server", "--github", "myorg/appian-atlas"],
       "cwd": "/path/to/appian-parser",
       "env": {
         "GITHUB_TOKEN": "ghp_..."

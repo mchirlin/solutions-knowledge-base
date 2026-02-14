@@ -68,7 +68,7 @@ Launch Kiro IDE and open any workspace you want to work in. The knowledge base d
 Open the integrated terminal in Kiro (`` Ctrl+` `` or `` Cmd+` ``) and run:
 
 ```bash
-pip install "gam-appian-kb @ git+https://github.com/ram-020998/gam-knowledge-base.git"
+pip install "appian-atlas @ git+https://github.com/ram-020998/gam-knowledge-base.git"
 ```
 
 This installs only the MCP server Python package. The data files in this repo are not downloaded to your machine — the server fetches them from GitHub at runtime.
@@ -76,24 +76,24 @@ This installs only the MCP server Python package. The data files in this repo ar
 Verify the installation:
 
 ```bash
-gam-appian-kb --help
+appian-atlas --help
 ```
 
 You should see:
 
 ```
-usage: gam-appian-kb [-h] (--data-dir DATA_DIR | --github OWNER/REPO)
+usage: appian-atlas [-h] (--data-dir DATA_DIR | --github OWNER/REPO)
                      [--branch BRANCH] [--data-prefix DATA_PREFIX]
 ```
 
-> If `gam-appian-kb` is not found on your PATH after install, use the full Python module path instead:
+> If `appian-atlas` is not found on your PATH after install, use the full Python module path instead:
 > ```bash
 > python -m mcp_server --help
 > ```
 > You can find the installed location with:
 > ```bash
-> which gam-appian-kb        # macOS/Linux
-> where gam-appian-kb        # Windows
+> which appian-atlas        # macOS/Linux
+> where appian-atlas        # Windows
 > ```
 
 ---
@@ -134,7 +134,7 @@ The power automatically configures the MCP server connection. Once installed, th
 ### Step 5: Verify Everything Works
 
 1. Open the Kiro sidebar and look for the MCP Servers section.
-2. You should see `gam-appian-kb` listed with a green status indicator.
+2. You should see `appian-atlas` listed with a green status indicator.
 3. Open the Kiro chat and ask:
 
 ```
@@ -277,7 +277,7 @@ python -m mcp_server --github ram-020998/gam-knowledge-base
 Or find the install location:
 
 ```bash
-pip show -f gam-appian-kb | grep "Location"
+pip show -f appian-atlas | grep "Location"
 ```
 
 ### GitHub rate limiting (403 errors)
@@ -287,10 +287,10 @@ Unauthenticated GitHub API requests are limited to 60/hour. Set a `GITHUB_TOKEN`
 ### Server shows as disconnected in Kiro
 
 1. Check that Python 3.10+ is available: `python --version`
-2. Check that the package is installed: `pip list | grep gam-appian-kb`
+2. Check that the package is installed: `pip list | grep appian-atlas`
 3. Try running the server manually to see errors:
    ```bash
-   gam-appian-kb --github ram-020998/gam-knowledge-base
+   appian-atlas --github ram-020998/gam-knowledge-base
    ```
    The server runs on stdio — it will appear to hang (that's normal). Press `Ctrl+C` to stop.
 4. Click the reconnect button in the Kiro MCP Servers panel.

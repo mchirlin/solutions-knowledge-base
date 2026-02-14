@@ -137,7 +137,7 @@ usage: appian-atlas [-h] (--data-dir DATA_DIR | --github OWNER/REPO)
 
 ---
 
-### Step 3: Set Up GitHub Token
+### Step 3: Configure GitHub Token
 
 The MCP server fetches data from GitHub at runtime, so it needs authentication.
 
@@ -148,26 +148,17 @@ The MCP server fetches data from GitHub at runtime, so it needs authentication.
    - Select scope: `repo` (for private repos) or just `public_repo` (for public repos)
    - Click "Generate token" and copy it
 
-2. **Set the token as an environment variable**:
+2. **Add the token to Kiro**:
+   - In Kiro IDE, go to the **Powers** tab
+   - Find your installed Appian Atlas power
+   - Click **Open Power Config**
+   - In the MCP server configuration, find the line with `"GITHUB_TOKEN": "${GITHUB_TOKEN}"`
+   - Replace `${GITHUB_TOKEN}` with your actual token: `"GITHUB_TOKEN": "ghp_your_token_here"`
+   - Save the config
 
-   **macOS/Linux** — Add to your shell config file:
-   ```bash
-   # Add to ~/.zshrc (for zsh) or ~/.bashrc (for bash)
-   export GITHUB_TOKEN="ghp_your_token_here"
-   ```
-   
-   Then reload your shell:
-   ```bash
-   source ~/.zshrc  # or source ~/.bashrc
-   ```
-
-   **Windows PowerShell** — Add to your PowerShell profile:
-   ```powershell
-   # Add to $PROFILE
-   $env:GITHUB_TOKEN = "ghp_your_token_here"
-   ```
-
-3. **Restart Kiro IDE** after setting the token so it picks up the environment variable.
+3. **Reconnect the MCP server**:
+   - Go to the **MCP Servers** panel in Kiro
+   - Find `appian-atlas` and click reconnect (or restart Kiro)
 
 > **Important**: Without this token, you'll get 401 authentication errors when the MCP server tries to fetch data.
 
@@ -338,13 +329,13 @@ Returns full detail including code for an orphaned object.
 
 **Symptom**: MCP server shows 401 errors or fails to fetch data.
 
-**Cause**: `GITHUB_TOKEN` environment variable is not set or invalid.
+**Cause**: GitHub token is not configured in the Power Config.
 
 **Solution**:
-1. Verify your token is set: `echo $GITHUB_TOKEN` (macOS/Linux) or `echo $env:GITHUB_TOKEN` (Windows)
-2. If empty, follow Step 3 to set up the token
-3. Restart Kiro IDE after setting the token
-4. Reconnect the MCP server from the Kiro MCP Servers panel
+1. Go to **Powers** tab in Kiro
+2. Find your Appian Atlas power and click **Open Power Config**
+3. Replace `${GITHUB_TOKEN}` with your actual token
+4. Save and reconnect the MCP server from the MCP Servers panel
 
 ### MCP server not found after pip install
 

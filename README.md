@@ -120,14 +120,24 @@ Restart your terminal (or Kiro) after setting this.
 
 ### Step 4: Install the Kiro Power
 
-The Kiro Power connects the MCP server to your AI assistant and provides steering files that help it use the knowledge base effectively.
+Choose the power that matches your role. Each power uses the same MCP server but presents information differently:
 
-1. Open the Command Palette (`Cmd+Shift+P` on macOS, `Ctrl+Shift+P` on Windows/Linux).
-2. Type `Powers` and select `Kiro: Open Powers Panel`.
-3. Search for `power-gam-appian`.
-4. Click Install.
+**For Developers** (technical details, UUIDs, SAIL code):
+```bash
+kiro power add https://github.com/ram-020998/power-appian-atlas/developer
+```
 
-The power automatically configures the MCP server connection. Once installed, the AI assistant has access to all knowledge base tools.
+**For Product Owners** (business language, no jargon):
+```bash
+kiro power add https://github.com/ram-020998/power-appian-atlas/product-owner
+```
+
+**For UX Designers** (UI/UX focus, interfaces, user flows):
+```bash
+kiro power add https://github.com/ram-020998/power-appian-atlas/ux-designer
+```
+
+The power automatically configures the MCP server connection. Once installed, the AI assistant has access to all knowledge base tools with responses tailored to your role.
 
 ---
 

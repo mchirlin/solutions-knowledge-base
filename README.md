@@ -174,17 +174,17 @@ The Kiro Power connects the MCP server to your AI assistant and provides steerin
 
 **For Developers** (technical details, UUIDs, SAIL code):
 ```
-https://github.com/ram-020998/power-appian-atlas/developer
+https://github.com/ram-020998/power-appian-atlas-developer
 ```
 
 **For Product Owners** (business language, no jargon):
 ```
-https://github.com/ram-020998/power-appian-atlas/product-owner
+https://github.com/ram-020998/power-appian-atlas-product-owner
 ```
 
 **For UX Designers** (UI/UX focus, interfaces, user flows):
 ```
-https://github.com/ram-020998/power-appian-atlas/ux-designer
+https://github.com/ram-020998/power-appian-atlas-ux-designer
 ```
 
 The power automatically configures the MCP server connection. Once installed, the AI assistant has access to all knowledge base tools with responses tailored to your role.

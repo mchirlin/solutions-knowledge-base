@@ -1,373 +1,305 @@
-# appian-parser
+# GAM Appian Knowledge Base
 
-A standalone Python library that parses Appian application packages (ZIP files containing XML/XSD) into structured JSON. Zero external dependencies at runtime — runs entirely on Python stdlib.
+Pre-parsed, LLM-ready knowledge base for Government Acquisition Management (GAM) Appian applications. Contains structured JSON data for all Appian objects, self-contained documentation bundles, dependency graphs, and a MCP server that makes it all queryable from your IDE.
 
-Extracts all 15 Appian object types, resolves UUID/URN references to human-readable names, builds a complete inter-object dependency graph, and writes everything to a structured JSON output directory with self-contained LLM-readable bundles.
-
-## Requirements
-
-- Python 3.10+
-- No runtime dependencies (stdlib only)
-- Dev dependencies: `pytest`, `pytest-cov`
-
-## Installation
-
-```bash
-cd appian-parser
-
-# Create and activate a virtual environment
-python3 -m venv .venv
-source .venv/bin/activate    # macOS/Linux
-# .venv\Scripts\activate     # Windows
-
-# Install in editable mode
-pip install -e .
-
-# Install dev dependencies
-pip install pytest pytest-cov
-
-# Verify
-python -m appian_parser types
-```
-
-Once the venv is activated, both `python` and `appian-parser` commands are available:
-
-```bash
-# These are equivalent
-python -m appian_parser dump <package.zip> <output_dir>
-appian-parser dump <package.zip> <output_dir>
-```
-
-## Quick Start
-
-```bash
-# Parse a package and dump JSON + bundles
-python -m appian_parser dump MyApplication.zip ./output
-
-# List supported object types
-python -m appian_parser types
-```
-
-Output:
-```
-Parsing MyApplication.zip...
-Done! Parsed 2304 objects (0 errors)
-Output: ./output
-```
-
-## CLI Reference
-
-### `dump` — Parse package and write JSON
-
-```bash
-python -m appian_parser dump <package.zip> <output_dir> [options]
-```
-
-| Option | Default | Description |
-|---|---|---|
-| `--locale LOCALE` | `en-US` | Locale for translation string resolution |
-| `--exclude-types TYPES` | none | Comma-separated object types to exclude |
-| `--no-deps` | false | Skip dependency analysis and bundle generation |
-| `--no-pretty` | false | Disable JSON pretty-printing (smaller files) |
-
-Examples:
-
-```bash
-# Basic usage
-python -m appian_parser dump MyApp.zip ./output
-
-# Skip dependency analysis (faster, no bundles)
-python -m appian_parser dump MyApp.zip ./output --no-deps
-
-# Spanish locale, exclude groups
-python -m appian_parser dump MyApp.zip ./output --locale es-ES --exclude-types "Group,Translation String"
-```
-
-### `types` — List supported object types
-
-```bash
-python -m appian_parser types
-```
-
-## Output Directory Structure
+## What's Inside
 
 ```
-output_dir/
-├── manifest.json              # Package metadata, object inventory
-├── dependencies.json          # Complete inter-object dependency graph
-├── errors.json                # Parsing errors (only if errors occurred)
-└── bundles/                   # Self-contained LLM documentation bundles
-    ├── _index.json            # Bundle index with coverage stats
-    ├── _orphans.json          # Objects not reachable from any entry point
-    ├── actions/               # Record type action bundles
-    ├── processes/             # Standalone process model bundles
-    ├── pages/                 # Record type view/page bundles
-    ├── sites/                 # Site navigation bundles
-    ├── dashboards/            # Control panel/dashboard bundles
-    └── web_apis/              # Web API endpoint bundles
+data/
+├── CaseManagementStudio/
+│   ├── app_overview.json          # Full application map (metadata, bundles, deps, coverage)
+│   ├── search_index.json          # Fast object name lookup index
+│   ├── bundles/                   # Self-contained documentation bundles
+│   │   └── <BundleName>/
+│   │       ├── structure.json     # Flow, relationships, object metadata (no code)
+│   │       └── code.json          # SAIL code keyed by UUID (loaded on demand)
+│   ├── objects/                   # Per-object dependency files
+│   │   └── <uuid>.json            # calls[], called_by[], bundles[]
+│   └── orphans/                   # Objects not reachable from any entry point
+│       ├── _index.json            # Orphan catalog grouped by type
+│       └── <uuid>.json            # Individual orphan with code
+└── SourceSelection/
+    └── (same structure)
 ```
 
-## Bundle System
+### Available Applications
 
-Each bundle is a self-contained JSON file representing a complete functional flow with its full transitive dependency tree. Designed for LLM consumption — all UUIDs and URNs are resolved to human-readable names.
-
-| Bundle Type | Entry Point | Description |
-|---|---|---|
-| `action` | Record Type Action | Record action + target process model + all deps |
-| `process` | Standalone Process Model | PM not triggered by any action or subprocess |
-| `page` | Record Type Views | Summary/detail views with their interfaces |
-| `site` | Site | Navigation container + all page targets |
-| `dashboard` | Control Panel | Dashboard + interfaces + record types |
-| `web_api` | Web API | API endpoint + all called rules/integrations |
-
-## Reference Resolution
-
-The parser automatically resolves three types of opaque identifiers in SAIL code and structured fields:
-
-| Type | Before (raw XML) | After (output JSON) |
-|---|---|---|
-| UUID references | `#"_a-0006eed1-..._43398"` | `rule!GetCustomerAddress` |
-| Record type URNs | `urn:appian:record-field:v1:{rt}/{field}` | `recordType!Addresses.addressId` |
-| Translation URNs | `urn:appian:translation-string:v1:{uuid}` | `"Bonding Required To Bid"` |
-
-Resolution is performed in-memory using data from the parsed objects themselves — no external database or API needed.
-
-### Resolution Accuracy
-
-| Package | UUID Resolution | RT URN Resolution |
-|---|---|---|
-| SourceSelection (2,327 objects) | 99.97% | 98.1% |
-| RequirementsManagement (3,494 objects) | ~99.9% | ~92% |
-
-## Supported Object Types
-
-| Object Type | Key Fields Extracted |
+| Application | Description |
 |---|---|
-| Interface | SAIL code, parameters, test inputs, security |
-| Expression Rule | SAIL code, inputs, output type, test cases |
-| Process Model | Nodes, flows, variables, gateway conditions, complexity score |
-| Record Type | Fields, relationships, views, actions with expressions |
-| CDT | Namespace, field definitions (name, type, required) |
-| Integration | Connected system, HTTP method, URL, headers, request body |
-| Web API | SAIL code, URL alias, HTTP method, security |
-| Site | Hierarchical pages, roles, branding expressions |
-| Group | Members, parent group, group type |
-| Constant | Value, type, scope |
-| Connected System | Base URL, auth type, auth details |
-| Control Panel | JSON settings, interfaces, record type references |
-| Translation Set | Default locale, enabled locales |
-| Translation String | Translations per locale |
+| SourceSelection | Source selection and vendor evaluation workflows |
+| CaseManagementStudio | Case management configuration and automation |
 
-## Architecture
+### Bundle Types
 
-```
-ZIP Input
-    │
-    ▼
-PackageReader          → Extract ZIP, discover XML/XSD files
-    │
-    ▼
-TypeDetector           → Determine object type from XML root tag
-    │
-    ▼
-ParserRegistry         → Route to appropriate parser (15 types)
-    │
-    ▼
-Object Parsers (15)    → Extract structured data from XML
-    │
-    ▼
-DiffHashService        → SHA-512 content hash per object
-    │
-    ▼
-ReferenceResolver      → Resolve UUIDs, RT URNs, translation URNs
-    │                     Coordinates: UUIDResolver, RecordTypeURNResolver,
-    │                     TranslationResolver
-    ▼
-DependencyAnalyzer     → Extract inter-object dependency graph
-    │
-    ▼
-Output Layer           → JSONDumper (per-object files)
-                         BundleBuilder (self-contained LLM bundles)
-                         ManifestBuilder (package metadata)
-```
+Each bundle is a self-contained JSON file representing a complete functional flow with its full transitive dependency tree. All UUIDs and URNs are resolved to human-readable names.
 
-## Project Structure
+| Type | Entry Point | Contents |
+|---|---|---|
+| action | Record Type Action | Action → process model → form interface → all deps |
+| process | Standalone Process Model | PM → subprocesses → interfaces → deps |
+| page | Record Type Views | Summary/detail views → interfaces → supporting objects |
+| site | Site | Navigation → all page targets → interfaces |
+| dashboard | Control Panel | Dashboard → interfaces → record types |
+| web_api | Web API | Endpoint → all called rules/integrations |
 
-```
-appian_parser/
-├── __init__.py                         # Package version
-├── __main__.py                         # python -m entry point
-├── cli.py                              # CLI orchestration
-├── package_reader.py                   # ZIP extraction
-├── type_detector.py                    # XML type detection
-├── parser_registry.py                  # Parser factory/registry
-├── diff_hash.py                        # SHA-512 content hashing
-│
-├── parsers/                            # 15 type-specific XML parsers
-│   ├── base_parser.py                  # Abstract base class (ABC)
-│   ├── interface_parser.py
-│   ├── expression_rule_parser.py
-│   ├── process_model_parser.py
-│   ├── record_type_parser.py
-│   ├── cdt_parser.py
-│   ├── integration_parser.py
-│   ├── web_api_parser.py
-│   ├── site_parser.py
-│   ├── group_parser.py
-│   ├── constant_parser.py
-│   ├── connected_system_parser.py
-│   ├── control_panel_parser.py
-│   ├── translation_set_parser.py
-│   ├── translation_string_parser.py
-│   └── unknown_object_parser.py
-│
-├── domain/                             # Domain knowledge & shared config
-│   ├── constants.py                    # Shared regex patterns, field paths, type maps
-│   ├── field_walker.py                 # Dotted field path walker utility
-│   ├── enums.py                        # DependencyTypeEnum
-│   ├── appian_type_resolver.py         # XSD/Appian type name resolution
-│   └── node_types/                     # Process model node type registry
-│       ├── categories.py
-│       └── registry.py
-│
-├── resolution/                         # UUID/URN reference resolution
-│   ├── reference_resolver.py           # Coordinator: builds caches, walks fields
-│   ├── uuid_resolver.py               # UUID → rule!/cons!/type!
-│   ├── record_type_resolver.py         # RT URN → recordType!Name.field
-│   ├── translation_resolver.py         # Translation URN → translated text
-│   └── uuid_utils.py                  # UUID format detection and extraction
-│
-├── dependencies/                       # Dependency extraction
-│   └── analyzer.py                     # Pattern-based dependency graph builder
-│
-└── output/                             # JSON output generation
-    ├── json_dumper.py                  # Per-object JSON files
-    ├── manifest_builder.py             # Package metadata
-    └── bundle_builder.py              # Self-contained LLM bundles
+---
 
-tests/                                  # Test suite (pytest)
-├── conftest.py                         # Shared fixtures and sample XML
-├── test_type_detector.py
-├── test_package_reader.py
-├── test_diff_hash.py
-├── test_field_walker.py
-├── test_cli.py                         # End-to-end integration tests
-├── parsers/
-│   └── test_parsers.py
-├── resolution/
-│   ├── test_uuid_resolver.py
-│   ├── test_record_type_resolver.py
-│   ├── test_translation_resolver.py
-│   └── test_reference_resolver.py
-└── dependencies/
-    └── test_analyzer.py
+## Getting Started with Kiro IDE
 
-docs/                                   # Steering documents
-├── PROJECT_OVERVIEW.md                 # Architecture and domain context
-└── BEST_PRACTICES.md                   # OOP standards and coding conventions
-```
+Follow these steps to set up the GAM Appian Knowledge Base in your Kiro IDE. The knowledge base data lives on GitHub — nothing is stored locally on your machine. The MCP server fetches data on demand at runtime.
 
-## Testing
+### Prerequisites
+
+- [Kiro IDE](https://kiro.dev) installed
+- Python 3.10 or later
+- `pip` available in your terminal
+- A GitHub personal access token (if this is a private repo)
+
+---
+
+### Step 1: Open Kiro IDE
+
+Launch Kiro IDE and open any workspace you want to work in. The knowledge base doesn't need to be cloned — the MCP server reads data directly from GitHub.
+
+---
+
+### Step 2: Install the MCP Server
+
+Open the integrated terminal in Kiro (`` Ctrl+` `` or `` Cmd+` ``) and run:
 
 ```bash
-# Run all tests
-python -m pytest tests/ -v
-
-# Run with coverage
-python -m pytest tests/ --cov=appian_parser --cov-report=term-missing
-
-# Run specific test module
-python -m pytest tests/resolution/test_uuid_resolver.py -v
+pip install "gam-appian-kb @ git+https://github.com/ram-020998/gam-knowledge-base.git"
 ```
 
-### Test Coverage
+This installs only the MCP server Python package. The data files in this repo are not downloaded to your machine — the server fetches them from GitHub at runtime.
 
-Core modules have high coverage:
+Verify the installation:
 
-| Module | Coverage |
-|---|---|
-| `reference_resolver.py` | 96% |
-| `translation_resolver.py` | 100% |
-| `uuid_resolver.py` | 89% |
-| `record_type_resolver.py` | 73% |
-| `field_walker.py` | 93% |
-| `uuid_utils.py` | 96% |
-| `package_reader.py` | 100% |
-| `parser_registry.py` | 100% |
-| `type_detector.py` | 93% |
-| `manifest_builder.py` | 100% |
-| `constants.py` | 94% |
-| `diff_hash.py` | 100% |
-
-## Python API
-
-```python
-from appian_parser.package_reader import PackageReader
-from appian_parser.type_detector import TypeDetector
-from appian_parser.parser_registry import ParserRegistry
-from appian_parser.diff_hash import DiffHashService
-from appian_parser.resolution.reference_resolver import ReferenceResolver
-from appian_parser.dependencies.analyzer import DependencyAnalyzer
-from appian_parser.output.json_dumper import ParsedObject
-
-# 1. Read package
-reader = PackageReader()
-contents = reader.read("MyApp.zip")
-
-# 2. Detect types and parse
-detector = TypeDetector()
-registry = ParserRegistry()
-parsed_objects = []
-
-for xml_file in contents.xml_files:
-    detection = detector.detect(xml_file)
-    if detection.is_excluded or detection.is_unknown:
-        continue
-    parser = registry.get_parser(detection.mapped_type)
-    data = parser.parse(xml_file)
-    if data and data.get("uuid"):
-        parsed_objects.append(ParsedObject(
-            uuid=data["uuid"],
-            name=data.get("name", "Unknown"),
-            object_type=detection.mapped_type,
-            data=data,
-            diff_hash=DiffHashService.generate_hash(data),
-            source_file=xml_file,
-        ))
-
-# 3. Resolve references (mutates in place)
-resolver = ReferenceResolver(parsed_objects)
-resolver.resolve_all(parsed_objects, locale="en-US")
-
-# 4. Analyze dependencies
-analyzer = DependencyAnalyzer()
-dependencies = analyzer.analyze(parsed_objects)
-
-# 5. Use the data
-for obj in parsed_objects:
-    print(f"{obj.object_type}: {obj.name}")
-
-reader.cleanup(contents.temp_dir)
+```bash
+gam-appian-kb --help
 ```
 
-## Design Principles
+You should see:
 
-- **Zero runtime dependencies** — stdlib only
-- **Single Responsibility** — each class has one job
-- **Open/Closed** — new object types = new parser class, no existing code changes
-- **Declarative configuration** — field paths for resolution/analysis are data, not code
-- **In-memory resolution** — all lookups built from parsed objects, no external APIs
-- **Immutable value objects** — `Dependency` is a frozen dataclass
-- **Shared constants** — regex patterns, field paths, type maps centralized in `domain/constants.py`
+```
+usage: gam-appian-kb [-h] (--data-dir DATA_DIR | --github OWNER/REPO)
+                     [--branch BRANCH] [--data-prefix DATA_PREFIX]
+```
 
-See `docs/BEST_PRACTICES.md` for full coding standards and `docs/PROJECT_OVERVIEW.md` for detailed architecture.
+> If `gam-appian-kb` is not found on your PATH after install, use the full Python module path instead:
+> ```bash
+> python -m mcp_server --help
+> ```
+> You can find the installed location with:
+> ```bash
+> which gam-appian-kb        # macOS/Linux
+> where gam-appian-kb        # Windows
+> ```
 
-## Performance
+---
 
-| Package | Objects | Time |
+### Step 3: Set Up GitHub Token (Private Repos Only)
+
+If this is a private repository, the MCP server needs a GitHub token to read data.
+
+1. Go to GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic).
+2. Generate a new token with `repo` scope.
+3. Set it as an environment variable:
+
+```bash
+# macOS/Linux — add to your ~/.zshrc or ~/.bashrc
+export GITHUB_TOKEN=ghp_your_token_here
+
+# Windows PowerShell
+$env:GITHUB_TOKEN = "ghp_your_token_here"
+```
+
+Restart your terminal (or Kiro) after setting this.
+
+---
+
+### Step 4: Install the Kiro Power
+
+The Kiro Power connects the MCP server to your AI assistant and provides steering files that help it use the knowledge base effectively.
+
+1. Open the Command Palette (`Cmd+Shift+P` on macOS, `Ctrl+Shift+P` on Windows/Linux).
+2. Type `Powers` and select `Kiro: Open Powers Panel`.
+3. Search for `power-gam-appian`.
+4. Click Install.
+
+The power automatically configures the MCP server connection. Once installed, the AI assistant has access to all knowledge base tools.
+
+---
+
+### Step 5: Verify Everything Works
+
+1. Open the Kiro sidebar and look for the MCP Servers section.
+2. You should see `gam-appian-kb` listed with a green status indicator.
+3. Open the Kiro chat and ask:
+
+```
+What GAM applications are available?
+```
+
+You should get a response listing the available applications (SourceSelection, CaseManagementStudio, etc.) with object counts and bundle stats.
+
+---
+
+### Step 6: Start Exploring
+
+Here are some things you can ask:
+
+```
+Give me an overview of SourceSelection
+```
+
+```
+Find all evaluation-related actions in SourceSelection
+```
+
+```
+How does the Complete LPTA Evaluation action work? Show me the full flow.
+```
+
+```
+What depends on AS_GSS_BL_validateVendors?
+```
+
+```
+Are there any unused expression rules in SourceSelection?
+```
+
+```
+Show me the SAIL code for the Add Vendors form
+```
+
+---
+
+## MCP Server Tools Reference
+
+The MCP server exposes 9 tools that the AI assistant calls automatically based on your questions.
+
+### list_applications
+
+Lists all available GAM applications with object counts and bundle coverage stats. This is typically the first call the assistant makes.
+
+### get_app_overview
+
+Returns a comprehensive map of a single application in one call — package metadata, all bundles with key objects, dependency summary, and coverage stats.
+
+| Parameter | Required | Description |
 |---|---|---|
-| SourceSelection v2.6.0 | 2,327 | ~2s |
-| RequirementsManagement v2.3.0 | 3,494 | ~3s |
+| app_name | Yes | Application folder name from `list_applications` |
+
+### search_bundles
+
+Finds bundles by keyword match against bundle names and parent names.
+
+| Parameter | Required | Description |
+|---|---|---|
+| app_name | Yes | Application folder name |
+| query | Yes | Case-insensitive search term |
+| bundle_type | No | Filter: action, process, page, site, dashboard, web_api |
+
+### search_objects
+
+Searches parsed objects by name using the search index.
+
+| Parameter | Required | Description |
+|---|---|---|
+| app_name | Yes | Application folder name |
+| query | Yes | Case-insensitive search term |
+| object_type | No | Filter: Interface, Expression Rule, Process Model, Record Type, CDT, Integration, Web API, Constant, etc. |
+
+### get_bundle
+
+Loads a bundle at the requested detail level. Start with `summary` and escalate to `full` only when you need code.
+
+| Parameter | Required | Description |
+|---|---|---|
+| app_name | Yes | Application folder name |
+| bundle_id | Yes | Bundle ID from search results or app overview |
+| detail_level | No | `summary` (default, ~5KB), `structure` (~5-50KB), `full` (~50KB-2MB) |
+
+Detail levels:
+- `summary` — metadata, entry point, flow outline, object names only
+- `structure` — full structure with relationships, parameters, calls/called_by — no code
+- `full` — structure + SAIL code merged into each object
+
+### get_dependencies
+
+Returns the dependency subgraph for a specific object — what it calls and what calls it.
+
+| Parameter | Required | Description |
+|---|---|---|
+| app_name | Yes | Application folder name |
+| object_name | Yes | Case-insensitive object name |
+
+### get_object_detail
+
+Returns dependency and bundle info for an object by UUID. Faster than name lookup when you already have the UUID.
+
+| Parameter | Required | Description |
+|---|---|---|
+| app_name | Yes | Application folder name |
+| object_uuid | Yes | Object UUID |
+
+### list_orphans
+
+Lists all objects not reachable from any entry point, grouped by type.
+
+| Parameter | Required | Description |
+|---|---|---|
+| app_name | Yes | Application folder name |
+
+### get_orphan
+
+Returns full detail including code for an orphaned object.
+
+| Parameter | Required | Description |
+|---|---|---|
+| app_name | Yes | Application folder name |
+| object_uuid | Yes | Orphan UUID from `list_orphans` |
+
+---
+
+## Troubleshooting
+
+### MCP server not found after pip install
+
+pip may have installed the executable in a location not on your shell's PATH. Try:
+
+```bash
+# Use the Python module directly
+python -m mcp_server --github ram-020998/gam-knowledge-base
+```
+
+Or find the install location:
+
+```bash
+pip show -f gam-appian-kb | grep "Location"
+```
+
+### GitHub rate limiting (403 errors)
+
+Unauthenticated GitHub API requests are limited to 60/hour. Set a `GITHUB_TOKEN` to get 5,000/hour (see Step 3).
+
+### Server shows as disconnected in Kiro
+
+1. Check that Python 3.10+ is available: `python --version`
+2. Check that the package is installed: `pip list | grep gam-appian-kb`
+3. Try running the server manually to see errors:
+   ```bash
+   gam-appian-kb --github ram-020998/gam-knowledge-base
+   ```
+   The server runs on stdio — it will appear to hang (that's normal). Press `Ctrl+C` to stop.
+4. Click the reconnect button in the Kiro MCP Servers panel.
+
+### Data not loading / FileNotFoundError
+
+The server reads from the `data/` folder on the `main` branch by default. If your data is on a different branch, update the power's MCP server config to include `--branch your-branch`.
+
+---
 
 ## License
 

@@ -75,20 +75,24 @@ pipx automatically creates an isolated environment:
 pipx install "appian-atlas @ git+https://github.com/ram-020998/gam-knowledge-base.git#subdirectory=mcp_server"
 ```
 
-**Option B: Using pip**
+**Option B: Using pip with virtual environment**
 
-If using pip, create a virtual environment first to avoid conflicts:
+Create and activate a virtual environment first:
 
 ```bash
-# Create and activate virtual environment
+# Create virtual environment
 python -m venv ~/.venvs/appian-atlas
+
+# Activate it
 source ~/.venvs/appian-atlas/bin/activate  # macOS/Linux
 # OR
 ~/.venvs/appian-atlas/Scripts/activate     # Windows
 
 # Install the package
-pip install "appian-atlas @ git+https://github.com/ram-020998/gam-knowledge-base.git#subdirectory=mcp_server"
+pip install "git+https://github.com/ram-020998/gam-knowledge-base.git#subdirectory=mcp_server"
 ```
+
+> **Note**: Always use a virtual environment or pipx. Do not install globally to avoid conflicts with other Python packages.
 
 This installs only the MCP server Python package. The data files in this repo are not downloaded to your machine — the server fetches them from GitHub at runtime.
 

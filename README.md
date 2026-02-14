@@ -81,12 +81,15 @@ Create and activate a virtual environment first:
 
 ```bash
 # Create virtual environment
-python -m venv ~/.venvs/appian-atlas
+python3 -m venv ~/.venvs/appian-atlas
 
 # Activate it
 source ~/.venvs/appian-atlas/bin/activate  # macOS/Linux
 # OR
 ~/.venvs/appian-atlas/Scripts/activate     # Windows
+
+# Upgrade pip to latest version
+pip install --upgrade pip
 
 # Install the package
 pip install "git+https://github.com/ram-020998/gam-knowledge-base.git#subdirectory=mcp_server"

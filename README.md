@@ -67,6 +67,19 @@ Launch Kiro IDE and open any workspace you want to work in. The knowledge base d
 
 Open the integrated terminal in Kiro (`` Ctrl+` `` or `` Cmd+` ``).
 
+**First, verify Python version** (requires 3.10 or later):
+
+```bash
+python3 --version
+```
+
+If you have Python 3.9 or earlier, you'll need to install Python 3.10+ first:
+- **macOS**: `brew install python@3.10` or download from [python.org](https://www.python.org/downloads/)
+- **Windows**: Download from [python.org](https://www.python.org/downloads/)
+- **Linux**: `sudo apt install python3.10` or equivalent for your distro
+
+---
+
 **Option A: Using pipx (Recommended)**
 
 pipx automatically creates an isolated environment:
@@ -80,7 +93,7 @@ pipx install "appian-atlas @ git+https://github.com/ram-020998/gam-knowledge-bas
 Create and activate a virtual environment first:
 
 ```bash
-# Create virtual environment
+# Create virtual environment (use python3.10 or python3.11 if python3 is too old)
 python3 -m venv ~/.venvs/appian-atlas
 
 # Activate it

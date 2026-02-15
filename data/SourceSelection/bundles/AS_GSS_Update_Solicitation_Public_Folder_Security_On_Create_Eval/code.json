@@ -3,26 +3,6 @@
     "bundle_id": "AS_GSS_Update_Solicitation_Public_Folder_Security_On_Create_Eval"
   },
   "objects": {
-    "0006eca9-eb24-8000-ba82-7f0000014e7a": {
-      "name": "AS GSS Update Solicitation Public Folder Security On Create Eval",
-      "type": "Process Model",
-      "sail_code": "// Output: ?\n/*STATUS PROCESS MAP*/\nrule!AS_GSS_APPREF_GCW_STARTPROCESS_updateSolicPublicFolderSecurityOnCreateEval(\n  groupsToUpdate: pv!groupsToUpdate,\n  solicitationId: pv!solicitationId\n)\n\n// Input: ?\n= pv!groupProcessMap.processModel\n\n// Input: ?\n= pv!groupProcessMap.processParameters"
-    },
-    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76433": {
-      "name": "AS_CO_UT_indexPath",
-      "type": "Expression Rule",
-      "sail_code": "with(\n  local!fieldsAndIndices: rule!AS_CO_UT_zINTERNAL_indexPath_nestedFieldArrayHandler(field: ri!field),\n\n  reduce(\n    index(_, _, ri!indexDefault),\n    ri!cdt,\n    local!fieldsAndIndices\n  )\n)"
-    },
-    "_a-0000e571-774f-8000-b919-01ef9001ef90_28790": {
-      "name": "AS_FRM_getRuleReferenceOrNoOp",
-      "type": "Expression Rule",
-      "sail_code": "if(\n  and(\n    cons!AS_FRM_BOOL_APPREF_ENTRYPOINT_FRAMEWORK_ENABLED,\n    rule!AS_FRM_doesRuleExist(ri!ruleName)\n  ),\n  rulereferencebyname(ruleName: ri!ruleName),\n  rule!AS_FRM_noOp\n)"
-    },
-    "_a-0000eb72-c933-8000-9d28-011c48011c48_10457793": {
-      "name": "AS_GSS_UT_checkIfNullOrZero",
-      "type": "Expression Rule",
-      "sail_code": "or(\n  rule!AS_GSS_UT_isBlank(value: ri!input),\n  ri!input = 0\n)"
-    },
     "_a-0000ecac-819c-8000-9db6-011c48011c48_13754759": {
       "name": "AS_GSS_APPREF_GCW_STARTPROCESS_updateSolicPublicFolderSecurityOnCreateEval",
       "type": "Expression Rule",
@@ -33,35 +13,55 @@
       "type": "Expression Rule",
       "sail_code": "rule!AS_FRM_doesRuleExist(\n  ruleName: \"AS_GCW_ENTRYPOINT_APPVERSION_UT_VersionTrackerWrapper\"\n)"
     },
-    "_a-0000e571-774f-8000-b919-01ef9001ef90_29043": {
-      "name": "AS_FRM_doesRuleExist",
+    "_a-0000e40a-de32-8000-9ba8-011c48011c48_272151": {
+      "name": "AS_CO_UT_whereContains",
       "type": "Expression Rule",
-      "sail_code": "a!localVariables(\n  local!ruleExists: doesruleexist(ri!ruleName),\n  local!ruleExists\n)"
+      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Integer?list',\n  with(\n    local!array: a!flatten(ri!array),\n  \n    if(\n    \n      /*Have to handle separately for document types due to how it casts to string*/\n      rule!AS_CO_UT_typeCompare(\n        value1: local!array,\n        value2: {todocument(null)}\n      ),\n      wherecontains(\n        todocument(ri!values),\n        local!array\n      ),\n    \n      /*Have to handle separately for group types due to how it casts to string*/\n      rule!AS_CO_UT_typeCompare(\n        value1: local!array,\n        value2: {togroup(null)}\n      ),\n      wherecontains(\n        togroup(ri!values),\n        local!array\n      ),\n    \n      /*Casting to string accounts for any primitive type (integer, boolean, ect.)*/\n      wherecontains(\n        if(\n          rule!AS_CO_UT_isBlank(ri!values),\n          touniformstring(ri!values),\n          touniformstring(a!flatten(ri!values))\n        ),\n        touniformstring(local!array)\n      )\n    )\n  )\n)"
     },
-    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536": {
-      "name": "AS_CO_UT_isBlank",
+    "_a-0000e571-774f-8000-b919-01ef9001ef90_28790": {
+      "name": "AS_FRM_getRuleReferenceOrNoOp",
       "type": "Expression Rule",
-      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  length(a!flatten(ri!value)) = 0\n)"
+      "sail_code": "if(\n  and(\n    cons!AS_FRM_BOOL_APPREF_ENTRYPOINT_FRAMEWORK_ENABLED,\n    rule!AS_FRM_doesRuleExist(ri!ruleName)\n  ),\n  rulereferencebyname(ruleName: ri!ruleName),\n  rule!AS_FRM_noOp\n)"
     },
     "_a-0000eb69-8eb8-8000-9d24-011c48011c48_10389864": {
       "name": "AS_GSS_UT_isBlank",
       "type": "Expression Rule",
       "sail_code": "/*\nThis rule null checks below scenarios, \n\n-- null value\n-- an empty list\n-- an empty string\n-- list of null values\n-- all fields of the CDT are null\n      While passing a CDT, make sure ri!checkIfAllCdtFieldsAreNull is TRUE to handle\n    this scenario\n-- string with only spaces\n*/\na!localVariables(\n  local!checkIfAllCdtFieldsAreNull: a!defaultValue(\n    value: ri!checkIfAllCdtFieldsAreNull, \n    default: false\n  ),\n  local!keys: if(\n    local!checkIfAllCdtFieldsAreNull,\n    a!keys(value: index(ri!value, 1, null)),\n    null\n  ),\n  local!indicesOfCdtsWhereAllFieldsAreNull: if(\n    local!checkIfAllCdtFieldsAreNull,\n    rule!AS_CO_UT_rejectNullValuesFromArray(\n      #\"SYSTEM_SYSRULES_forEach\"(\n        rule!AS_CO_UT_castToMapList(ri!value),\n        a!localVariables(\n          local!currentItem: fv!item,\n          local!currentIndex: fv!index,\n          if(\n            length(\n              a!flatten(\n                #\"SYSTEM_SYSRULES_forEach\"(\n                  local!keys,\n                  rule!AS_CO_UT_whereContains(\n                    values: null,\n                    array: rule!AS_CO_UT_indexPath(\n                      cdt: a!flatten(local!currentItem),\n                      field: fv!item\n                    )\n                  )\n                )\n              )\n            ) = length(local!keys),\n            local!currentIndex,\n            null\n          )\n        )\n      )\n    ),\n    null\n  ),\n  local!filteredCdt: if(\n    local!checkIfAllCdtFieldsAreNull,\n    remove(\n      a!flatten(ri!value),\n      local!indicesOfCdtsWhereAllFieldsAreNull\n    ),\n    null\n  ),\n  cast(\n    'type!{http://www.appian.com/ae/types/2009}Boolean',\n    or(\n      length(a!flatten(ri!value)) = 0,\n      a!isNullOrEmpty(\n        if(\n          local!checkIfAllCdtFieldsAreNull,\n          local!filteredCdt,\n          trim(ri!value)\n        )\n      )\n    )\n  )\n)"
     },
+    "_a-0000e571-774f-8000-b919-01ef9001ef90_29043": {
+      "name": "AS_FRM_doesRuleExist",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!ruleExists: doesruleexist(ri!ruleName),\n  local!ruleExists\n)"
+    },
     "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367": {
       "name": "AS_CO_UT_rejectNullValuesFromArray",
       "type": "Expression Rule",
       "sail_code": "cast(\n  typeof(ri!array),\n  reject(\n    rule!AS_CO_UT_isBlank(_),\n    a!flatten(ri!array)\n  )\n)"
     },
-    "_a-0000e40a-de32-8000-9ba8-011c48011c48_272151": {
-      "name": "AS_CO_UT_whereContains",
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536": {
+      "name": "AS_CO_UT_isBlank",
       "type": "Expression Rule",
-      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Integer?list',\n  with(\n    local!array: a!flatten(ri!array),\n  \n    if(\n    \n      /*Have to handle separately for document types due to how it casts to string*/\n      rule!AS_CO_UT_typeCompare(\n        value1: local!array,\n        value2: {todocument(null)}\n      ),\n      wherecontains(\n        todocument(ri!values),\n        local!array\n      ),\n    \n      /*Have to handle separately for group types due to how it casts to string*/\n      rule!AS_CO_UT_typeCompare(\n        value1: local!array,\n        value2: {togroup(null)}\n      ),\n      wherecontains(\n        togroup(ri!values),\n        local!array\n      ),\n    \n      /*Casting to string accounts for any primitive type (integer, boolean, ect.)*/\n      wherecontains(\n        if(\n          rule!AS_CO_UT_isBlank(ri!values),\n          touniformstring(ri!values),\n          touniformstring(a!flatten(ri!values))\n        ),\n        touniformstring(local!array)\n      )\n    )\n  )\n)"
+      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  length(a!flatten(ri!value)) = 0\n)"
+    },
+    "0006eca9-eb24-8000-ba82-7f0000014e7a": {
+      "name": "AS GSS Update Solicitation Public Folder Security On Create Eval",
+      "type": "Process Model",
+      "sail_code": "// Output: ?\n/*STATUS PROCESS MAP*/\nrule!AS_GSS_APPREF_GCW_STARTPROCESS_updateSolicPublicFolderSecurityOnCreateEval(\n  groupsToUpdate: pv!groupsToUpdate,\n  solicitationId: pv!solicitationId\n)\n\n// Input: ?\n= pv!groupProcessMap.processModel\n\n// Input: ?\n= pv!groupProcessMap.processParameters"
+    },
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76433": {
+      "name": "AS_CO_UT_indexPath",
+      "type": "Expression Rule",
+      "sail_code": "with(\n  local!fieldsAndIndices: rule!AS_CO_UT_zINTERNAL_indexPath_nestedFieldArrayHandler(field: ri!field),\n\n  reduce(\n    index(_, _, ri!indexDefault),\n    ri!cdt,\n    local!fieldsAndIndices\n  )\n)"
     },
     "_a-0000e583-8ce5-8000-9bb7-011c48011c48_734490": {
       "name": "AS_CO_UT_castToMapList",
       "type": "Expression Rule",
       "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Map?list',\n  if(\n    rule!AS_CO_UT_isBlank(ri!value),\n    {},\n    ri!value\n  )\n)"
+    },
+    "_a-0000eb72-c933-8000-9d28-011c48011c48_10457793": {
+      "name": "AS_GSS_UT_checkIfNullOrZero",
+      "type": "Expression Rule",
+      "sail_code": "or(\n  rule!AS_GSS_UT_isBlank(value: ri!input),\n  ri!input = 0\n)"
     }
   }
 }

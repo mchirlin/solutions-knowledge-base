@@ -8,90 +8,90 @@
       "type": "Interface",
       "sail_code": "#\"SYSTEM_SYSRULES_richTextDisplayField\"(\n  labelPosition: rule!AS_CO_UT_replaceNull(nullableValue: ri!labelPosition,replacementValue: \"COLLAPSED\"),\n  align: ri!align,\n  value: #\"SYSTEM_SYSRULES_richTextHeader\"(\n    text: {\n      if(\n        rule!AS_CO_UT_isBlank(ri!headerIcon),\n        \"\",\n        {\n          #\"SYSTEM_SYSRULES_richTextIcon\"(\n            icon: ri!headerIcon,\n            caption: ri!iconCaption\n          ),\n          \" \"\n        }\n      ),\n      ri!headerText\n    },\n    size: rule!AS_CO_UT_displayValue(\n      value: ri!headerLevel,\n      inArray: rule!AS_CO_CONS_HEADER_LEVELS(),\n      replacement: {\n        \"LARGE\",\n        \"MEDIUM\",\n        \"SMALL\"\n      },\n      firstIsDefault: true\n    )\n  ),\n  showWhen: ri!showWhen\n)"
     },
+    "_a-0000e447-9390-8000-9baa-011c48011c48_64097-am-am": {
+      "name": "AS_GSS_TMG_CPS_taskManagementPage",
+      "type": "Interface",
+      "sail_code": "a!localVariables(\n  local!adminActions: rule!AS_GSS_TMG_BL_taskManagementOptions(),\n  local!adminSubActions: a!flatten(\n    #\"SYSTEM_SYSRULES_forEach\"(\n      items: local!adminActions,\n      expression: fv!item.subActions\n    )\n  ),\n  local!selectedSubActionId: if(\n    or(\n      isnull(ri!selectedSubActionId),\n      ri!selectedSubActionId = 0\n    ),\n    local!adminSubActions[1].subActionId,\n    ri!selectedSubActionId\n  ),\n  local!selectedSubAction: rule!AS_CO_UT_displayValue(\n    value: local!selectedSubActionId,\n    inArray: local!adminSubActions.subActionId,\n    replacement: local!adminSubActions\n  ),\n  local!i18nData: rule!AS_GSS_CO_UT_loadBundleFromFolder(langISOCode: null),\n  rule!AS_GSS_HCL_displayWrapperContents(\n    contents: #\"SYSTEM_SYSRULES_columnsLayout\"(\n      columns: {\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: {\n            rule!AS_GSS_CPS_cardsAsSectionedSideNavigation(\n              choices: #\"SYSTEM_SYSRULES_forEach\"(\n                items: local!adminActions,\n                expression: {\n                  label: fv!item.label,\n                  choiceLabels: fv!item.subActions.label,\n                  choiceValues: fv!item.subActions.subActionId,\n                  choiceLinks: #\"SYSTEM_SYSRULES_forEach\"(\n                    items: fv!item.subActions,\n                    expression: #\"SYSTEM_SYSRULES_startProcessLink\"(\n                      label: if(\n                        cons!AS_GSS_TOGGLE_AUTOMATION_TESTING_ENABLED,\n                        fv!item.label,\n                        \"\"\n                      ),\n                      processModel: cons!AS_GSS_TMG_PM_TASK_MANAGEMENT,\n                      processParameters: {\n                        selectedSubActionId: fv!item.subActionId\n                      }\n                    )\n                  )\n                }\n              ),\n              value: local!selectedSubActionId,\n              saveInto: local!selectedSubActionId,\n              i18nData: local!i18nData\n            )\n          },\n          width: \"NARROW\"\n        ),\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: local!selectedSubAction.interface()\n        )\n      }\n    ),\n    backgroundColor: rule!AS_GSS_BrandingValueByKey(\n      brandingKey: \"DefaultBackground\",\n      useSuiteBranding: true\n    )\n  )\n)"
+    },
     "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782": {
       "name": "AS_CO_UT_isNotBlank",
       "type": "Expression Rule",
       "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Boolean',\n  not(rule!AS_CO_UT_isBlank(ri!input))\n)"
-    },
-    "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_187421": {
-      "name": "AS_CO_UT_displayValue",
-      "type": "Expression Rule",
-      "sail_code": "displayvalue(\n  \n  ri!value,\n  \n  ri!inArray,\n  \n  ri!replacement,\n  \n  if(\n    \n    ri!firstIsDefault,\n    ri!replacement[1],\n    \n    ri!lastIsDefault,\n    ri!replacement[count(ri!replacement)],\n    \n    ri!customDefault\n  )\n)"
-    },
-    "_a-0000e643-f7f1-8000-9bca-011c48011c48_1369557": {
-      "name": "AS_GSS_BrandingValueByKey",
-      "type": "Expression Rule",
-      "sail_code": "a!localVariables(\n  local!output: if(\n    rule!AS_CO_UT_replaceNull(\n      nullableValue: ri!useSuiteBranding,\n      replacementValue: false\n    ),\n    rule!AS_FRM_getBrandingValueByKey(\n      defaultBrandingConfigDoc: cons!AS_GSS_DOC_BRANDING_DEFAULT,\n      brandingKey: ri!brandingKey\n    ),\n    rule!AS_FRM_getBrandingValueByKey(\n      defaultBrandingConfigDoc: cons!AS_GAM_DOC_BRANDING_DEFAULT,\n      brandingKey: ri!brandingKey\n    )\n  ),\n  if(\n    typename(typeof(local!output)) = cons!AS_GSS_TXT_DOCUMENT,\n    local!output,\n    tostring(local!output)\n  )\n)"
     },
     "_a-0000ea13-fcbd-8000-9c86-011c48011c48_6408986": {
       "name": "AS_GSS_CPS_cardsAsSectionedSideNavigation",
       "type": "Interface",
       "sail_code": "#\"SYSTEM_SYSRULES_forEach\"(\n  items: ri!choices,\n  expression: rule!AS_CO_CPS_richTextSection(\n    sectionLabel: fv!item.label,\n    contents: rule!AS_GSS_CRD_cardsAsSideNavigation(\n      choiceIcons: fv!item.choiceIcons,\n      choiceLabels: fv!item.choiceLabels,\n      choiceValues: fv!item.choiceValues,\n      choiceLinks: fv!item.choiceLinks,\n      value: ri!value,\n      saveInto: ri!saveInto,\n      disabled: ri!disabled,\n      selectedIcon: ri!selectedIcon,\n      showItemCount: false,\n      isChecklistStatus: false,\n      i18nData: ri!i18nData\n    )\n  )\n)"
     },
-    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75636": {
-      "name": "AS_CO_UT_not",
-      "type": "Expression Rule",
-      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Boolean',\n  not(rule!AS_CO_UT_booleanDefaultFalse(ri!input))\n)\n\n/*True returns False*/\n/*False returns True*/\n/*Null returns True*/"
-    },
-    "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_180253": {
-      "name": "AS_CO_CONS_HEADER_LEVELS",
-      "type": "Expression Rule",
-      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Text?list',\n  {\n    cons!AS_CO_ENUM_HEADER_LEVEL_ONE,\n    cons!AS_CO_ENUM_HEADER_LEVEL_TWO,\n    cons!AS_CO_ENUM_HEADER_LEVEL_THREE\n  }\n)"
-    },
-    "_a-0000ee42-8707-8000-9e2b-011c48011c48_16537431": {
-      "name": "AS_GSS_HCL_displayWrapperContents",
-      "type": "Interface",
-      "sail_code": "#\"SYSTEM_SYSRULES_headerContentLayout\"(\n  header: ri!header,\n  contents: {\n    #\"SYSTEM_SYSRULES_cardLayout\"(\n      contents: {\n        #\"SYSTEM_SYSRULES_columnsLayout\"(\n          columns: { #\"SYSTEM_SYSRULES_columnLayout\"(contents: { ri!contents }) },\n          alignVertical: \"MIDDLE\",\n          marginBelow: \"MORE\"\n        )\n      },\n      style: rule!AS_GSS_BrandingValueByKey(\n        brandingKey: \"BackgroundColor\",\n        useSuiteBranding: true\n      ),\n      padding: \"LESS\",\n      marginAbove: \"NONE\",\n      marginBelow: \"NONE\",\n      showBorder: false\n    )\n  },\n  backgroundColor: ri!backgroundColor,\n  contentsPadding: \"NONE\"\n)"
-    },
-    "_a-0000e447-9390-8000-9baa-011c48011c48_64103-am-am": {
-      "name": "AS_GSS_TMG_BL_taskManagementOptions",
-      "type": "Expression Rule",
-      "sail_code": "a!localVariables(\n  local!i18nData: rule!AS_GSS_CO_UT_loadBundleFromFolder(langISOCode: null),\n  {\n    /*Checklists*/\n    {\n      actionId: 1,\n      label: \"Approaches\",\n      icon: \"sitemap\",\n      subActions: {\n        /*Welcome*/\n        {\n          subActionId: 1,\n          label: \n          \"Welcome\",\n          icon: \"\",\n          interface: rule!AS_GSS_TMG_CPS_managementWelcomePage\n        },\n        /*Categories*/\n        {\n          subActionId: 2,\n          label: \n          \"Phases\",\n          icon: \"\",\n          interface: rule!AS_GSS_TMG_CPS_viewOrManageTaskCategoriesSettings,\n          image: cons!AS_GSS_TMG_DOC_WELCOME_IMAGE_CATEGORIES,\n          instructions: \"Manage groupings of approach tasks\"\n        },\n        /*Checklist Items*/\n        {\n          subActionId: 3,\n          label: \n          \"Tasks\",\n          icon: \"\",\n          interface: rule!AS_GSS_TMG_CPS_viewOrManageReferenceTaskSettings,\n          image: cons!AS_GSS_TMG_DOC_WELCOME_IMAGE_TASKS,\n          instructions: \"Add and edit approach tasks for users to complete during source selection approach\"\n        },\n        /*Processes*/\n        {\n          subActionId: 4,\n          label: \n          \"Approaches\",\n          icon: \"\",\n          interface: rule!AS_GSS_TMG_CPS_viewOrManageReferenceTemplateSettings,\n          image: cons!AS_GSS_TMG_DOC_WELCOME_IMAGE_TEMPLATES,\n          instructions: \"Configure which approach tasks will be selected for each approach\"\n        }\n      }\n    },\n    /*Documents*/\n    {\n      actionId: 2,\n      label: \"Documents\",\n      subActions: {\n        /*Reviews*/\n        {\n          subActionId: 5,\n          label: \"Reviews\",\n          interface: rule!AS_GSS_TMG_CPS_viewOrManageDocumentReviewSettings\n        }\n      }\n    }\n  }\n)"
-    },
     "_a-0000e9b7-c1f0-8000-9c5e-011c48011c48_5222074": {
       "name": "AS_GSS_CRD_cardsAsSideNavigation",
       "type": "Interface",
       "sail_code": "a!localVariables(\n  #\"SYSTEM_SYSRULES_forEach\"(\n    items: ri!choiceValues,\n    expression: a!localVariables(\n      local!isSelected: rule!AS_CO_UT_compare(\n        value1: ri!value,\n        value2: ri!choiceValues[fv!index]\n      ),\n      local!hasLabel: rule!AS_CO_UT_isNotBlank(rule!AS_CO_UT_indexPath(cdt: ri!choiceLabels, field: fv!index)),\n      local!itemIcon: rule!AS_CO_UT_indexPath(cdt:ri!choiceIcons, field: fv!index),\n      local!itemLink: rule!AS_CO_UT_indexPath(cdt:ri!choiceLinks, field: fv!index),\n      local!iconToShow: if(\n        local!isSelected,\n        rule!AS_CO_UT_replaceNull(\n          nullableValue: ri!selectedIcon,\n          replacementValue: local!itemIcon\n        ),\n        local!itemIcon\n      ),\n      #\"SYSTEM_SYSRULES_cardLayout\"(\n        contents: {\n          #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n            labelPosition: \"COLLAPSED\",\n            value: {\n              #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                text: {\n                  #\"SYSTEM_SYSRULES_richTextIcon\"(icon: local!iconToShow, size: \"MEDIUM\"),\n                  \" \"\n                },\n                showWhen: rule!AS_CO_UT_isNotBlank(local!iconToShow)\n              ),\n              #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                text: ri!choiceLabels[fv!index],\n                size: \"MEDIUM\",\n                showWhen: local!hasLabel,\n                color: if(ri!isChecklistStatus, \"ACCENT\", {})\n              ),\n              #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                text: \" (\" & ri!itemCount[fv!index] & \")\",\n                size: \"MEDIUM\",\n                color: if(ri!isChecklistStatus, \"ACCENT\", {}),\n                showWhen: ri!showItemCount\n              )\n            }\n          )\n        },\n        link: if(\n          rule!AS_CO_UT_isBlank(local!itemLink),\n          #\"SYSTEM_SYSRULES_dynamicLink\"(\n            value: ri!choiceValues[fv!index],\n            saveInto: ri!saveInto,\n            showWhen: rule!AS_CO_UT_not(ri!disabled)\n          ),\n          local!itemLink\n        ),\n        accessibilityText: if(\n          local!isSelected,\n          \"Selected\",\n          \"\"\n        ),\n        style: if(\n          rule!AS_CO_UT_not(local!isSelected),\n          \"NONE\",\n          ri!disabled,\n          \"STANDARD\",\n          \"ACCENT\"\n        ),\n        showBorder: false\n      )\n    )\n  )\n)"
-    },
-    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73624": {
-      "name": "AS_CO_UT_compare",
-      "type": "Expression Rule",
-      "sail_code": "/*Do a \"fuzzy\" comparison where all we care about is the data*/\n/*This will match a list of variant/dictionary/cdt if their fields have the same values*/\ncast(\n   'type!{http://www.appian.com/ae/types/2009}Boolean',\n  tostring(ri!value1) = tostring(ri!value2)\n)"
-    },
-    "_a-0000e447-9390-8000-9baa-011c48011c48_64097-am-am": {
-      "name": "AS_GSS_TMG_CPS_taskManagementPage",
-      "type": "Interface",
-      "sail_code": "a!localVariables(\n  local!adminActions: rule!AS_GSS_TMG_BL_taskManagementOptions(),\n  local!adminSubActions: a!flatten(\n    #\"SYSTEM_SYSRULES_forEach\"(\n      items: local!adminActions,\n      expression: fv!item.subActions\n    )\n  ),\n  local!selectedSubActionId: if(\n    or(\n      isnull(ri!selectedSubActionId),\n      ri!selectedSubActionId = 0\n    ),\n    local!adminSubActions[1].subActionId,\n    ri!selectedSubActionId\n  ),\n  local!selectedSubAction: rule!AS_CO_UT_displayValue(\n    value: local!selectedSubActionId,\n    inArray: local!adminSubActions.subActionId,\n    replacement: local!adminSubActions\n  ),\n  local!i18nData: rule!AS_GSS_CO_UT_loadBundleFromFolder(langISOCode: null),\n  rule!AS_GSS_HCL_displayWrapperContents(\n    contents: #\"SYSTEM_SYSRULES_columnsLayout\"(\n      columns: {\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: {\n            rule!AS_GSS_CPS_cardsAsSectionedSideNavigation(\n              choices: #\"SYSTEM_SYSRULES_forEach\"(\n                items: local!adminActions,\n                expression: {\n                  label: fv!item.label,\n                  choiceLabels: fv!item.subActions.label,\n                  choiceValues: fv!item.subActions.subActionId,\n                  choiceLinks: #\"SYSTEM_SYSRULES_forEach\"(\n                    items: fv!item.subActions,\n                    expression: #\"SYSTEM_SYSRULES_startProcessLink\"(\n                      label: if(\n                        cons!AS_GSS_TOGGLE_AUTOMATION_TESTING_ENABLED,\n                        fv!item.label,\n                        \"\"\n                      ),\n                      processModel: cons!AS_GSS_TMG_PM_TASK_MANAGEMENT,\n                      processParameters: {\n                        selectedSubActionId: fv!item.subActionId\n                      }\n                    )\n                  )\n                }\n              ),\n              value: local!selectedSubActionId,\n              saveInto: local!selectedSubActionId,\n              i18nData: local!i18nData\n            )\n          },\n          width: \"NARROW\"\n        ),\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: local!selectedSubAction.interface()\n        )\n      }\n    ),\n    backgroundColor: rule!AS_GSS_BrandingValueByKey(\n      brandingKey: \"DefaultBackground\",\n      useSuiteBranding: true\n    )\n  )\n)"
-    },
-    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73980": {
-      "name": "AS_CO_UT_replaceNull",
-      "type": "Expression Rule",
-      "sail_code": "if(\n  rule!AS_CO_UT_isBlank(ri!nullableValue),\n  ri!replacementValue,\n  ri!nullableValue\n)"
-    },
-    "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_236965": {
-      "name": "AS_CO_CPS_richTextSection",
-      "type": "Interface",
-      "sail_code": "if(\n  rule!AS_CO_UT_booleanDefaultTrue(ri!showWhen),\n  {\n    #\"SYSTEM_SYSRULES_sectionLayout_v1\"(\n      divider: \"BELOW\",\n      marginBelow: \"STANDARD\",\n      contents: {\n        rule!AS_CO_DSP_displayHeader(\n          headerText: upper(ri!sectionLabel),\n          headerLevel: rule!AS_CO_UT_replaceNull(nullableValue: ri!headerLevel, replacementValue: cons!AS_CO_ENUM_HEADER_LEVEL_TWO),\n          align: \"LEFT\",\n          headerIcon: ri!sectionIcon,\n          iconCaption: ri!iconCaption\n        )\n      }\n    ),\n    ri!contents,\n    #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n      labelPosition: \"COLLAPSED\"\n    )\n  },\n  {}\n)"
-    },
-    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536": {
-      "name": "AS_CO_UT_isBlank",
-      "type": "Expression Rule",
-      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  length(a!flatten(ri!value)) = 0\n)"
     },
     "_a-0000e643-f7f1-8000-9bca-011c48011c48_1319026": {
       "name": "AS_GSS_CO_UT_loadBundleFromFolder",
       "type": "Expression Rule",
       "sail_code": "with(\n  local!lang: \"en_US\",\n  /* below is deprecated for now, uncomment to support multi-language display */\n  /*if(*/\n  /*isnull(ri!langISOCode),*/\n  /*userlocale(loggedInUser()),*/\n  /*ri!langISOCode*/\n  /*),*/\n  local!bundleName: /*rule!AS_GCM_determineValueBySolutionFlavor(\n    options: cons!AS_GCM_TXT_VALID_SOLUTION_FLAVORS\n  )*/\"AS.GSS.General\",\n  /*local!bundleName*/\n  local!output: loadbundlepropertiesfile(\n    cons!AS_GSS_FLD_PROPERTIES_FILES,\n    local!lang,\n    local!bundleName\n  )[local!bundleName],\n  local!output\n)"
     },
-    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76433": {
-      "name": "AS_CO_UT_indexPath",
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73980": {
+      "name": "AS_CO_UT_replaceNull",
       "type": "Expression Rule",
-      "sail_code": "with(\n  local!fieldsAndIndices: rule!AS_CO_UT_zINTERNAL_indexPath_nestedFieldArrayHandler(field: ri!field),\n\n  reduce(\n    index(_, _, ri!indexDefault),\n    ri!cdt,\n    local!fieldsAndIndices\n  )\n)"
+      "sail_code": "if(\n  rule!AS_CO_UT_isBlank(ri!nullableValue),\n  ri!replacementValue,\n  ri!nullableValue\n)"
+    },
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73624": {
+      "name": "AS_CO_UT_compare",
+      "type": "Expression Rule",
+      "sail_code": "/*Do a \"fuzzy\" comparison where all we care about is the data*/\n/*This will match a list of variant/dictionary/cdt if their fields have the same values*/\ncast(\n   'type!{http://www.appian.com/ae/types/2009}Boolean',\n  tostring(ri!value1) = tostring(ri!value2)\n)"
+    },
+    "_a-0000ee42-8707-8000-9e2b-011c48011c48_16537431": {
+      "name": "AS_GSS_HCL_displayWrapperContents",
+      "type": "Interface",
+      "sail_code": "#\"SYSTEM_SYSRULES_headerContentLayout\"(\n  header: ri!header,\n  contents: {\n    #\"SYSTEM_SYSRULES_cardLayout\"(\n      contents: {\n        #\"SYSTEM_SYSRULES_columnsLayout\"(\n          columns: { #\"SYSTEM_SYSRULES_columnLayout\"(contents: { ri!contents }) },\n          alignVertical: \"MIDDLE\",\n          marginBelow: \"MORE\"\n        )\n      },\n      style: rule!AS_GSS_BrandingValueByKey(\n        brandingKey: \"BackgroundColor\",\n        useSuiteBranding: true\n      ),\n      padding: \"LESS\",\n      marginAbove: \"NONE\",\n      marginBelow: \"NONE\",\n      showBorder: false\n    )\n  },\n  backgroundColor: ri!backgroundColor,\n  contentsPadding: \"NONE\"\n)"
+    },
+    "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_180253": {
+      "name": "AS_CO_CONS_HEADER_LEVELS",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Text?list',\n  {\n    cons!AS_CO_ENUM_HEADER_LEVEL_ONE,\n    cons!AS_CO_ENUM_HEADER_LEVEL_TWO,\n    cons!AS_CO_ENUM_HEADER_LEVEL_THREE\n  }\n)"
+    },
+    "_a-0000e447-9390-8000-9baa-011c48011c48_64103-am-am": {
+      "name": "AS_GSS_TMG_BL_taskManagementOptions",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!i18nData: rule!AS_GSS_CO_UT_loadBundleFromFolder(langISOCode: null),\n  {\n    /*Checklists*/\n    {\n      actionId: 1,\n      label: \"Approaches\",\n      icon: \"sitemap\",\n      subActions: {\n        /*Welcome*/\n        {\n          subActionId: 1,\n          label: \n          \"Welcome\",\n          icon: \"\",\n          interface: rule!AS_GSS_TMG_CPS_managementWelcomePage\n        },\n        /*Categories*/\n        {\n          subActionId: 2,\n          label: \n          \"Phases\",\n          icon: \"\",\n          interface: rule!AS_GSS_TMG_CPS_viewOrManageTaskCategoriesSettings,\n          image: cons!AS_GSS_TMG_DOC_WELCOME_IMAGE_CATEGORIES,\n          instructions: \"Manage groupings of approach tasks\"\n        },\n        /*Checklist Items*/\n        {\n          subActionId: 3,\n          label: \n          \"Tasks\",\n          icon: \"\",\n          interface: rule!AS_GSS_TMG_CPS_viewOrManageReferenceTaskSettings,\n          image: cons!AS_GSS_TMG_DOC_WELCOME_IMAGE_TASKS,\n          instructions: \"Add and edit approach tasks for users to complete during source selection approach\"\n        },\n        /*Processes*/\n        {\n          subActionId: 4,\n          label: \n          \"Approaches\",\n          icon: \"\",\n          interface: rule!AS_GSS_TMG_CPS_viewOrManageReferenceTemplateSettings,\n          image: cons!AS_GSS_TMG_DOC_WELCOME_IMAGE_TEMPLATES,\n          instructions: \"Configure which approach tasks will be selected for each approach\"\n        }\n      }\n    },\n    /*Documents*/\n    {\n      actionId: 2,\n      label: \"Documents\",\n      subActions: {\n        /*Reviews*/\n        {\n          subActionId: 5,\n          label: \"Reviews\",\n          interface: rule!AS_GSS_TMG_CPS_viewOrManageDocumentReviewSettings\n        }\n      }\n    }\n  }\n)"
+    },
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536": {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  length(a!flatten(ri!value)) = 0\n)"
+    },
+    "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_236965": {
+      "name": "AS_CO_CPS_richTextSection",
+      "type": "Interface",
+      "sail_code": "if(\n  rule!AS_CO_UT_booleanDefaultTrue(ri!showWhen),\n  {\n    #\"SYSTEM_SYSRULES_sectionLayout_v1\"(\n      divider: \"BELOW\",\n      marginBelow: \"STANDARD\",\n      contents: {\n        rule!AS_CO_DSP_displayHeader(\n          headerText: upper(ri!sectionLabel),\n          headerLevel: rule!AS_CO_UT_replaceNull(nullableValue: ri!headerLevel, replacementValue: cons!AS_CO_ENUM_HEADER_LEVEL_TWO),\n          align: \"LEFT\",\n          headerIcon: ri!sectionIcon,\n          iconCaption: ri!iconCaption\n        )\n      }\n    ),\n    ri!contents,\n    #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n      labelPosition: \"COLLAPSED\"\n    )\n  },\n  {}\n)"
     },
     "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39082": {
       "name": "AS_CO_UT_booleanDefaultTrue",
       "type": "Expression Rule",
       "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  if(\n    isnull(ri!boolean),\n    true,\n    ri!boolean\n  )\n)"
+    },
+    "_a-0000e643-f7f1-8000-9bca-011c48011c48_1369557": {
+      "name": "AS_GSS_BrandingValueByKey",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!output: if(\n    rule!AS_CO_UT_replaceNull(\n      nullableValue: ri!useSuiteBranding,\n      replacementValue: false\n    ),\n    rule!AS_FRM_getBrandingValueByKey(\n      defaultBrandingConfigDoc: cons!AS_GSS_DOC_BRANDING_DEFAULT,\n      brandingKey: ri!brandingKey\n    ),\n    rule!AS_FRM_getBrandingValueByKey(\n      defaultBrandingConfigDoc: cons!AS_GAM_DOC_BRANDING_DEFAULT,\n      brandingKey: ri!brandingKey\n    )\n  ),\n  if(\n    typename(typeof(local!output)) = cons!AS_GSS_TXT_DOCUMENT,\n    local!output,\n    tostring(local!output)\n  )\n)"
+    },
+    "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_187421": {
+      "name": "AS_CO_UT_displayValue",
+      "type": "Expression Rule",
+      "sail_code": "displayvalue(\n  \n  ri!value,\n  \n  ri!inArray,\n  \n  ri!replacement,\n  \n  if(\n    \n    ri!firstIsDefault,\n    ri!replacement[1],\n    \n    ri!lastIsDefault,\n    ri!replacement[count(ri!replacement)],\n    \n    ri!customDefault\n  )\n)"
+    },
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75636": {
+      "name": "AS_CO_UT_not",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Boolean',\n  not(rule!AS_CO_UT_booleanDefaultFalse(ri!input))\n)\n\n/*True returns False*/\n/*False returns True*/\n/*Null returns True*/"
+    },
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76433": {
+      "name": "AS_CO_UT_indexPath",
+      "type": "Expression Rule",
+      "sail_code": "with(\n  local!fieldsAndIndices: rule!AS_CO_UT_zINTERNAL_indexPath_nestedFieldArrayHandler(field: ri!field),\n\n  reduce(\n    index(_, _, ri!indexDefault),\n    ri!cdt,\n    local!fieldsAndIndices\n  )\n)"
     }
   }
 }

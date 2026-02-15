@@ -3,6 +3,16 @@
     "bundle_id": "AS_GSS_Create_Evaluation_Document_Folders"
   },
   "objects": {
+    "_a-0000e447-9390-8000-9baa-011c48011c48_41575": {
+      "name": "AS_CO_UT_cleanFolderName",
+      "type": "Expression Rule",
+      "sail_code": "cleanwith(\n  ri!folderName,\n  \" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890\"\n)"
+    },
+    "_a-0000e643-f7f1-8000-9bca-011c48011c48_1320201": {
+      "name": "AS_GSS_BL_checkIfFolderSecurityNeedsUpdate",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  /*Getting the current security configuration of the folder*/\n  local!currentSecurity: returncontentrolemap(tofolder(ri!folderId), true),\n  if(\n    /*Returns true if the folder security is improper or needs update, else returns false*/\n    or(\n      rule!AS_CO_UT_not(\n        contains(\n          togroup(local!currentSecurity.editorGroups),\n          togroup(rule!AS_GSS_evaluationDocumentFolderSecurity())\n        )\n      ),\n      rule!AS_CO_UT_not(\n        contains(\n          togroup(local!currentSecurity.adminGroups),\n          togroup(cons!AS_GAM_GRP_APPIAN_ADMINISTRATORS)\n        )\n      )\n    ),\n    true,\n    false\n  )\n)"
+    },
     "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_956401": {
       "name": "AS_GSS_evaluationDocumentFolderSecurity",
       "type": "Expression Rule",
@@ -12,16 +22,6 @@
       "name": "AS GSS Create Evaluation Document Folders",
       "type": "Process Model",
       "sail_code": "// Input: ?\n=pv!evaluation.folderId\n\n// Input: ?\n=rule!AS_GSS_evaluationDocumentFolderSecurity()\n\n// Input: ?\n=cons!AS_GAM_GRP_APPIAN_ADMINISTRATORS\n\n// Output: ?\npv!mainFolder\n\n// Output: ?\npv!office365FolderId\n\n// Input: ?\n=pv!evaluation.evaluationNumber\n\n// Input: ?\n=cons!AS_GSS_EVALUATION_DOCUMENT_FOLDERS\n\n// Input: ?\n=pv!evaluation.evaluationId\n\n// Input: ?\n=cons!AS_GSS_SHAREPOINT_FOLDER_ID\n\n// Input: ?\n=pv!evaluation.evaluationNumber\n\n// Input: ?\n=pv!evaluation.folderId\n\n// Input: ?\n=pv!evaluation.office365FolderId\n\n// Input: ?\n=true()"
-    },
-    "_a-0000e447-9390-8000-9baa-011c48011c48_41575": {
-      "name": "AS_CO_UT_cleanFolderName",
-      "type": "Expression Rule",
-      "sail_code": "cleanwith(\n  ri!folderName,\n  \" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890\"\n)"
-    },
-    "0000e50c-64fd-8000-fd6c-7f0000014e7a": {
-      "name": "AS GAM Create Folders in Appian and SP",
-      "type": "Process Model",
-      "sail_code": "// Input: ?\n=pv!parentAppFolder\n\n// Input: ?\n=rule!AS_CO_UT_cleanFolderName(folderName:pv!mainFolderName)\n\n// Output: ?\nAC!NewFolder\n\n// Output: ?\nac!NewFolder\n\n// Input: ?\n= { contractingFolders: pv!contractingFolders, mainFolder: pv!mainFolder, primaryKey: pv!primaryKey}\n\n// Input: ?\n=pv!spFolderName\n\n// Input: ?\n=pv!parentSpFolderId\n\n// Output: ?\nac!Result.body.id"
     },
     "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536": {
       "name": "AS_CO_UT_isBlank",
@@ -33,10 +33,10 @@
       "type": "Expression Rule",
       "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Boolean',\n  not(rule!AS_CO_UT_booleanDefaultFalse(ri!input))\n)\n\n/*True returns False*/\n/*False returns True*/\n/*Null returns True*/"
     },
-    "_a-0000e643-f7f1-8000-9bca-011c48011c48_1320201": {
-      "name": "AS_GSS_BL_checkIfFolderSecurityNeedsUpdate",
-      "type": "Expression Rule",
-      "sail_code": "a!localVariables(\n  /*Getting the current security configuration of the folder*/\n  local!currentSecurity: returncontentrolemap(tofolder(ri!folderId), true),\n  if(\n    /*Returns true if the folder security is improper or needs update, else returns false*/\n    or(\n      rule!AS_CO_UT_not(\n        contains(\n          togroup(local!currentSecurity.editorGroups),\n          togroup(rule!AS_GSS_evaluationDocumentFolderSecurity())\n        )\n      ),\n      rule!AS_CO_UT_not(\n        contains(\n          togroup(local!currentSecurity.adminGroups),\n          togroup(cons!AS_GAM_GRP_APPIAN_ADMINISTRATORS)\n        )\n      )\n    ),\n    true,\n    false\n  )\n)"
+    "0000e50c-64fd-8000-fd6c-7f0000014e7a": {
+      "name": "AS GAM Create Folders in Appian and SP",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n=pv!parentAppFolder\n\n// Input: ?\n=rule!AS_CO_UT_cleanFolderName(folderName:pv!mainFolderName)\n\n// Output: ?\nAC!NewFolder\n\n// Output: ?\nac!NewFolder\n\n// Input: ?\n= { contractingFolders: pv!contractingFolders, mainFolder: pv!mainFolder, primaryKey: pv!primaryKey}\n\n// Input: ?\n=pv!spFolderName\n\n// Input: ?\n=pv!parentSpFolderId\n\n// Output: ?\nac!Result.body.id"
     }
   }
 }

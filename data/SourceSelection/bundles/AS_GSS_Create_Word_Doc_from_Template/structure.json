@@ -3,7 +3,7 @@
     "bundle_type": "process",
     "root_name": "AS GSS Create Word Doc from Template",
     "parent_name": null,
-    "total_objects": 29
+    "total_objects": 26
   },
   "entry_point": {
     "complexity_score": 33.0,
@@ -132,6 +132,31 @@
     },
     "subprocesses": [
       {
+        "name": "AS GAM Create Folder in SharePoint",
+        "complexity_score": 3.0,
+        "total_nodes": 3,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Call Integration"
+            ]
+          },
+          {
+            "name": "Terminate",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Call Integration",
+            "type": "Call Integration",
+            "next": [
+              "Terminate"
+            ]
+          }
+        ]
+      },
+      {
         "name": "AS GSS Move Word Doc To Sharepoint and Get Document Link",
         "complexity_score": 20.0,
         "total_nodes": 10,
@@ -208,31 +233,6 @@
             ]
           }
         ]
-      },
-      {
-        "name": "AS GAM Create Folder in SharePoint",
-        "complexity_score": 3.0,
-        "total_nodes": 3,
-        "nodes": [
-          {
-            "name": "Start Node",
-            "type": "START_EVENT",
-            "next": [
-              "Call Integration"
-            ]
-          },
-          {
-            "name": "Terminate",
-            "type": "END_EVENT"
-          },
-          {
-            "name": "Call Integration",
-            "type": "Call Integration",
-            "next": [
-              "Terminate"
-            ]
-          }
-        ]
       }
     ]
   },
@@ -246,7 +246,6 @@
       "value_type": "http://www.w3.org/2001/XMLSchema:string",
       "calls": [],
       "called_by": [
-        "AS_CO_UT_queryEntity",
         "AS_GSS_QE_getEvaluationCriteria",
         "AS_GSS_QE_getEvaluationVendor",
         "AS_GSS_UT_constructFactorandvendorDetailsForTemplateMapping"
@@ -337,18 +336,6 @@
       ]
     },
     {
-      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_950297",
-      "name": "AS_GSS_ENT_EVALUATION_VENDOR",
-      "type": "Constant",
-      "description": "Value: AS_GSS_EvaluationVendor",
-      "value": null,
-      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
-      "calls": [],
-      "called_by": [
-        "AS_GSS_QE_getEvaluationVendor"
-      ]
-    },
-    {
       "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_942267",
       "name": "AS_GSS_SHAREPOINT_FOLDER_ID",
       "type": "Constant",
@@ -417,7 +404,6 @@
       "called_by": [
         "AS GSS Move Word Doc To Sharepoint and Get Document Link",
         "AS_CO_UT_isNotBlank",
-        "AS_CO_UT_queryEntity",
         "AS_CO_UT_rejectNullValuesFromArray",
         "AS_CO_UT_updateCdtFields",
         "AS_GAM_UT_concatUserFirstNameLastName",
@@ -437,35 +423,6 @@
       "called_by": [
         "AS GSS Create Word Doc from Template",
         "AS GSS Move Word Doc To Sharepoint and Get Document Link",
-        "AS_CO_UT_queryEntity",
-        "AS_GSS_QE_getEvaluationCriteria",
-        "AS_GSS_QE_getEvaluationVendor"
-      ]
-    },
-    {
-      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75636",
-      "name": "AS_CO_UT_not",
-      "type": "Expression Rule",
-      "description": "Null handles for not -- null returns true (null acts like false)",
-      "parameters": [],
-      "calls": [],
-      "called_by": [
-        "AS_GSS_QE_getEvaluationCriteria",
-        "AS_GSS_QE_getEvaluationVendor"
-      ]
-    },
-    {
-      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157870",
-      "name": "AS_CO_UT_queryEntity",
-      "type": "Expression Rule",
-      "description": "Helper rule to execute queries with minimal overhead, pass `returnType` based on the query purpose",
-      "parameters": [],
-      "calls": [
-        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
-        "AS_CO_UT_isBlank",
-        "AS_CO_UT_isNotBlank"
-      ],
-      "called_by": [
         "AS_GSS_QE_getEvaluationCriteria",
         "AS_GSS_QE_getEvaluationVendor"
       ]
@@ -532,9 +489,7 @@
       "parameters": [],
       "calls": [
         "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
-        "AS_CO_UT_isNotBlank",
-        "AS_CO_UT_not",
-        "AS_CO_UT_queryEntity"
+        "AS_CO_UT_isNotBlank"
       ],
       "called_by": [
         "AS_GSS_UT_constructFactorandvendorDetailsForTemplateMapping"
@@ -548,10 +503,7 @@
       "parameters": [],
       "calls": [
         "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
-        "AS_CO_UT_isNotBlank",
-        "AS_CO_UT_not",
-        "AS_CO_UT_queryEntity",
-        "AS_GSS_ENT_EVALUATION_VENDOR"
+        "AS_CO_UT_isNotBlank"
       ],
       "called_by": [
         "AS_GSS_UT_constructFactorandvendorDetailsForTemplateMapping"

@@ -153,6 +153,138 @@
     },
     "subprocesses": [
       {
+        "name": "AS GSS TMG Task Completion",
+        "complexity_score": 9.0,
+        "total_nodes": 6,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Update Current Task Status"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Update Current Task Status",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Current Tasks"
+            ]
+          },
+          {
+            "name": "Current Tasks",
+            "type": "Write to Data Store Entity",
+            "next": [
+              "Task Complete Audit"
+            ]
+          },
+          {
+            "name": "Task Dependency",
+            "type": "SUBPROCESS",
+            "next": [
+              "End Node"
+            ],
+            "subprocess": "AS GSS TMG Task Dependency"
+          },
+          {
+            "name": "Task Complete Audit",
+            "type": "SUBPROCESS",
+            "next": [
+              "Task Dependency"
+            ],
+            "subprocess": "AS GSS TMG Task Action Audit"
+          }
+        ]
+      },
+      {
+        "name": "AS GAM ADT Audit Process",
+        "complexity_score": 22.0,
+        "total_nodes": 11,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Audit Params Multiple?"
+            ]
+          },
+          {
+            "name": "Terminate",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Write to Audit Multiple",
+            "type": "Write to Multiple DSE",
+            "next": [
+              "Terminate"
+            ]
+          },
+          {
+            "name": "Audit Params Multiple?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Mul Object DSE exists? (Yes)",
+              "Object DSE exists? (No)"
+            ]
+          },
+          {
+            "name": "Write to Audit",
+            "type": "Write to Data Store Entity",
+            "next": [
+              "Terminate"
+            ]
+          },
+          {
+            "name": "Mul Object DSE exists?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Write to Audit Multiple",
+              "Get Original Objects"
+            ]
+          },
+          {
+            "name": "Object DSE exists?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Write to Audit",
+              "Get Original Objects"
+            ]
+          },
+          {
+            "name": "Get Original Objects",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Write to Object Data Multiple"
+            ]
+          },
+          {
+            "name": "Write to Object Data Multiple",
+            "type": "Write to Multiple DSE",
+            "next": [
+              "Write to Audit Multiple"
+            ]
+          },
+          {
+            "name": "Write to Object Data",
+            "type": "Write to Data Store Entity",
+            "next": [
+              "Write to Audit"
+            ]
+          },
+          {
+            "name": "Get Original Objects",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Write to Object Data"
+            ]
+          }
+        ]
+      },
+      {
         "name": "AS GSS TMG Task Dependency",
         "complexity_score": 22.0,
         "total_nodes": 11,
@@ -274,138 +406,6 @@
             "next": [
               "Write to Task Action Audit"
             ]
-          }
-        ]
-      },
-      {
-        "name": "AS GAM ADT Audit Process",
-        "complexity_score": 22.0,
-        "total_nodes": 11,
-        "nodes": [
-          {
-            "name": "Start Node",
-            "type": "START_EVENT",
-            "next": [
-              "Audit Params Multiple?"
-            ]
-          },
-          {
-            "name": "Terminate",
-            "type": "END_EVENT"
-          },
-          {
-            "name": "Write to Audit Multiple",
-            "type": "Write to Multiple DSE",
-            "next": [
-              "Terminate"
-            ]
-          },
-          {
-            "name": "Audit Params Multiple?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "Mul Object DSE exists? (Yes)",
-              "Object DSE exists? (No)"
-            ]
-          },
-          {
-            "name": "Write to Audit",
-            "type": "Write to Data Store Entity",
-            "next": [
-              "Terminate"
-            ]
-          },
-          {
-            "name": "Mul Object DSE exists?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "Write to Audit Multiple",
-              "Get Original Objects"
-            ]
-          },
-          {
-            "name": "Object DSE exists?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "Write to Audit",
-              "Get Original Objects"
-            ]
-          },
-          {
-            "name": "Get Original Objects",
-            "type": "SCRIPT_TASK",
-            "next": [
-              "Write to Object Data Multiple"
-            ]
-          },
-          {
-            "name": "Write to Object Data Multiple",
-            "type": "Write to Multiple DSE",
-            "next": [
-              "Write to Audit Multiple"
-            ]
-          },
-          {
-            "name": "Write to Object Data",
-            "type": "Write to Data Store Entity",
-            "next": [
-              "Write to Audit"
-            ]
-          },
-          {
-            "name": "Get Original Objects",
-            "type": "SCRIPT_TASK",
-            "next": [
-              "Write to Object Data"
-            ]
-          }
-        ]
-      },
-      {
-        "name": "AS GSS TMG Task Completion",
-        "complexity_score": 9.0,
-        "total_nodes": 6,
-        "nodes": [
-          {
-            "name": "Start Node",
-            "type": "START_EVENT",
-            "next": [
-              "Update Current Task Status"
-            ]
-          },
-          {
-            "name": "End Node",
-            "type": "END_EVENT"
-          },
-          {
-            "name": "Update Current Task Status",
-            "type": "SCRIPT_TASK",
-            "next": [
-              "Current Tasks"
-            ]
-          },
-          {
-            "name": "Current Tasks",
-            "type": "Write to Data Store Entity",
-            "next": [
-              "Task Complete Audit"
-            ]
-          },
-          {
-            "name": "Task Dependency",
-            "type": "SUBPROCESS",
-            "next": [
-              "End Node"
-            ],
-            "subprocess": "AS GSS TMG Task Dependency"
-          },
-          {
-            "name": "Task Complete Audit",
-            "type": "SUBPROCESS",
-            "next": [
-              "Task Dependency"
-            ],
-            "subprocess": "AS GSS TMG Task Action Audit"
           }
         ]
       }
@@ -1120,7 +1120,8 @@
       "value_type": "http://www.w3.org/2001/XMLSchema:int",
       "calls": [],
       "called_by": [
-        "AS_GSS_BL_constructFieldChangesForEvalDocs"
+        "AS_GSS_BL_constructFieldChangesForEvalDocs",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD"
       ]
     },
     {
@@ -1590,6 +1591,8 @@
       "called_by": [
         "AS GSS TMG Task Dependency",
         "AS_GSS_BL_returnEvaluationAdditionalInfoForCards",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
         "AS_GSS_GRD_activeTasks",
         "AS_GSS_TMG_isClaimTaskDisabled",
         "AS_GSS_TMG_isMarkCompletedDisabled",
@@ -1609,7 +1612,10 @@
         "AS GSS TMG Task Completion",
         "AS GSS Write Evaluation Task",
         "AS_GSS_BL_returnEvaluationAdditionalInfoForCards",
+        "AS_GSS_Criteria_SYNCEDRECORD",
         "AS_GSS_DSP_recordActionsMarkComplete",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
         "AS_GSS_TMG_isClaimTaskDisabled",
         "AS_GSS_TMG_isMarkCompletedDisabled",
         "AS_GSS_TMG_isMarkNotNeededDisabled",
@@ -1626,6 +1632,8 @@
       "calls": [],
       "called_by": [
         "AS_GSS_BL_returnEvaluationAdditionalInfoForCards",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD",
         "AS_GSS_GRD_activeTasks",
         "AS_GSS_TMG_isClaimTaskDisabled",
         "AS_GSS_TMG_isMarkCompletedDisabled",
@@ -1655,7 +1663,9 @@
       "value_type": "http://www.w3.org/2001/XMLSchema:int",
       "calls": [],
       "called_by": [
-        "AS_GSS_BL_returnEvaluationAdditionalInfoForCards"
+        "AS_GSS_BL_returnEvaluationAdditionalInfoForCards",
+        "AS_GSS_EvaluationVendor_SYNCEDRECORD",
+        "AS_GSS_Evaluation_SYNCEDRECORD"
       ]
     },
     {
@@ -3819,6 +3829,7 @@
         "AS_CO_UT_isNotBlank"
       ],
       "called_by": [
+        "AS_GSS_Evaluation_RECORD",
         "AS_GSS_GRD_activeTasks",
         "AS_GSS_UT_emailInstructionForTaskAssignment",
         "AS_GSS_UT_emailSubjectForTaskAssignment"
@@ -4115,6 +4126,7 @@
           "raw_type": "http://www.appian.com/ae/types/2009:Map",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 0
         },
         {
@@ -4123,6 +4135,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 1
         },
         {
@@ -4131,6 +4144,7 @@
           "raw_type": "http://www.appian.com/ae/types/2009:Variant",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 2
         },
         {
@@ -4139,6 +4153,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:string",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 3
         },
         {
@@ -4147,6 +4162,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:dateTime",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 4
         }
       ],
@@ -4182,6 +4198,7 @@
           "raw_type": "http://www.appian.com/ae/types/2009:DataSubset",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 0
         },
         {
@@ -4190,6 +4207,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 1
         },
         {
@@ -4198,6 +4216,7 @@
           "raw_type": "http://www.appian.com/ae/types/2009:PagingInfo",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 2
         },
         {
@@ -4206,6 +4225,7 @@
           "raw_type": "http://www.appian.com/ae/types/2009:Variant",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 3
         },
         {
@@ -4214,6 +4234,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:string",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 4
         },
         {
@@ -4222,6 +4243,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:dateTime",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 5
         },
         {
@@ -4230,6 +4252,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 6
         }
       ],
@@ -4259,6 +4282,7 @@
           "raw_type": "http://www.appian.com/ae/types/2009:User",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 0
         },
         {
@@ -4267,6 +4291,7 @@
           "raw_type": "http://www.appian.com/ae/types/2009:Variant",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 1
         },
         {
@@ -4275,6 +4300,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 2
         },
         {
@@ -4283,6 +4309,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 3
         },
         {
@@ -4291,6 +4318,7 @@
           "raw_type": "urn:com:appian:recordtype:datatype:9a04b944-b726-41f5-9b37-8ec71b6cc370?list",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 4
         },
         {
@@ -4299,6 +4327,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:dateTime",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 5
         },
         {
@@ -4307,6 +4336,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 6
         }
       ],
@@ -4332,6 +4362,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:int",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 0
         },
         {
@@ -4340,6 +4371,7 @@
           "raw_type": "http://www.appian.com/ae/types/2009:PagingInfo",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 1
         },
         {
@@ -4348,6 +4380,7 @@
           "raw_type": "http://www.appian.com/ae/types/2009:Variant",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 2
         },
         {
@@ -4356,6 +4389,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:int",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 3
         },
         {
@@ -4364,6 +4398,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:int",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 4
         }
       ],
@@ -4387,6 +4422,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 0
         }
       ],
@@ -4411,6 +4447,7 @@
           "raw_type": "http://www.appian.com/ae/types/2009:Variant",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 0
         },
         {
@@ -4419,6 +4456,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 1
         }
       ],
@@ -4444,6 +4482,7 @@
           "raw_type": "http://www.appian.com/ae/types/2009:Variant",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 0
         },
         {
@@ -4452,6 +4491,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 1
         }
       ],
@@ -4477,6 +4517,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:string",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 0
         },
         {
@@ -4485,6 +4526,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:string",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 1
         },
         {
@@ -4493,6 +4535,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:string",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 2
         },
         {
@@ -4501,6 +4544,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:string",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 3
         },
         {
@@ -4509,6 +4553,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:string",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 4
         },
         {
@@ -4517,6 +4562,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 5
         },
         {
@@ -4525,6 +4571,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:int",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 6
         },
         {
@@ -4533,6 +4580,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:string",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 7
         },
         {
@@ -4541,6 +4589,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:int",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 8
         },
         {
@@ -4549,6 +4598,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:string",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 9
         },
         {
@@ -4557,6 +4607,7 @@
           "raw_type": "http://www.appian.com/ae/types/2009:Variant",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 10
         },
         {
@@ -4565,6 +4616,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 11
         },
         {
@@ -4573,6 +4625,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:string",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 12
         },
         {
@@ -4581,6 +4634,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 13
         },
         {
@@ -4589,6 +4643,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:string",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 14
         },
         {
@@ -4597,6 +4652,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:string",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 15
         },
         {
@@ -4605,6 +4661,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:string",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 16
         },
         {
@@ -4613,6 +4670,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:string",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 17
         }
       ],
@@ -4637,6 +4695,7 @@
           "raw_type": "http://www.appian.com/ae/types/2009:Variant",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 0
         },
         {
@@ -4645,6 +4704,7 @@
           "raw_type": "urn:com:appian:recordtype:datatype:9a04b944-b726-41f5-9b37-8ec71b6cc370?list",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 1
         },
         {
@@ -4653,6 +4713,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 2
         }
       ],
@@ -4679,6 +4740,7 @@
           "raw_type": "http://www.appian.com/ae/types/2009:Variant",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 0
         },
         {
@@ -4687,6 +4749,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 1
         },
         {
@@ -4695,6 +4758,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:int",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 2
         }
       ],
@@ -4719,6 +4783,7 @@
           "raw_type": "http://www.appian.com/ae/types/2009:Variant",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 0
         },
         {
@@ -4727,6 +4792,7 @@
           "raw_type": "urn:com:appian:recordtype:datatype:9a04b944-b726-41f5-9b37-8ec71b6cc370?list",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 1
         },
         {
@@ -4735,6 +4801,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 2
         }
       ],
@@ -4761,6 +4828,7 @@
           "raw_type": "http://www.appian.com/ae/types/2009:Variant",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 0
         },
         {
@@ -4769,6 +4837,7 @@
           "raw_type": "urn:com:appian:recordtype:datatype:9a04b944-b726-41f5-9b37-8ec71b6cc370?list",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 1
         },
         {
@@ -4777,6 +4846,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 2
         }
       ],
@@ -4803,6 +4873,7 @@
           "raw_type": "http://www.appian.com/ae/types/2009:Variant",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 0
         },
         {
@@ -4811,6 +4882,7 @@
           "raw_type": "urn:com:appian:recordtype:datatype:9a04b944-b726-41f5-9b37-8ec71b6cc370?list",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 1
         },
         {
@@ -4819,6 +4891,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 2
         }
       ],
@@ -4846,6 +4919,7 @@
           "raw_type": "http://www.appian.com/ae/types/2009:Variant",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 0
         },
         {
@@ -4854,6 +4928,7 @@
           "raw_type": "urn:com:appian:recordtype:datatype:9a04b944-b726-41f5-9b37-8ec71b6cc370?list",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 1
         },
         {
@@ -4862,6 +4937,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 2
         }
       ],
@@ -4929,6 +5005,7 @@
           "raw_type": "http://www.appian.com/ae/types/2009:Variant",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 0
         },
         {
@@ -4937,6 +5014,7 @@
           "raw_type": "http://www.appian.com/ae/types/2009:User",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 1
         },
         {
@@ -4945,6 +5023,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 2
         },
         {
@@ -4953,6 +5032,7 @@
           "raw_type": "urn:com:appian:recordtype:datatype:9a04b944-b726-41f5-9b37-8ec71b6cc370?list",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 3
         },
         {
@@ -4961,6 +5041,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:dateTime",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 4
         },
         {
@@ -4969,6 +5050,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 5
         },
         {
@@ -4977,6 +5059,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:int",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 6
         },
         {
@@ -4985,6 +5068,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:string",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 7
         }
       ],
@@ -5036,6 +5120,7 @@
           "raw_type": "http://www.appian.com/ae/types/2009:Variant",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 0
         },
         {
@@ -5044,6 +5129,7 @@
           "raw_type": "http://www.appian.com/ae/types/2009:Variant",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 1
         }
       ],
@@ -5066,6 +5152,7 @@
           "raw_type": "http://www.appian.com/ae/types/2009:Variant",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 0
         },
         {
@@ -5074,6 +5161,7 @@
           "raw_type": "http://www.appian.com/ae/types/2009:Variant",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 1
         }
       ],
@@ -5109,6 +5197,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:string",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 0
         },
         {
@@ -5117,6 +5206,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:string",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 1
         }
       ],
@@ -5142,6 +5232,7 @@
           "raw_type": "http://www.appian.com/ae/types/2009:Variant",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 0
         },
         {
@@ -5150,6 +5241,7 @@
           "raw_type": "urn:com:appian:recordtype:datatype:9a04b944-b726-41f5-9b37-8ec71b6cc370?list",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 1
         },
         {
@@ -5158,6 +5250,7 @@
           "raw_type": "http://www.appian.com/ae/types/2009:User",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 2
         },
         {
@@ -5166,6 +5259,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:int",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 3
         },
         {
@@ -5174,6 +5268,7 @@
           "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
           "required": false,
           "default_value": null,
+          "description": null,
           "display_order": 4
         }
       ],
@@ -5419,6 +5514,7 @@
         "AS_GSS_CriteriaAssignment_SYNCEDRECORD",
         "AS_GSS_Evaluation_SYNCEDRECORD",
         "AS_GSS_EvaluatorTeam_SYNCEDRECORD",
+        "AS_GSS_TMG_REF_ID_TASK_STATUS_COMPLETE",
         "AS_GSS_TMG_Task_SYNCEDRECORD"
       ],
       "called_by": [
@@ -5501,6 +5597,11 @@
         "AS_GSS_Evaluation_SYNCEDRECORD",
         "AS_GSS_QR_getCriteria",
         "AS_GSS_QR_getEvaluation",
+        "AS_GSS_REF_ID_DOC_TYPE_VENDOR",
+        "AS_GSS_TMG_REF_ID_TASK_STATUS_ASSIGNED",
+        "AS_GSS_TMG_REF_ID_TASK_STATUS_COMPLETE",
+        "AS_GSS_TMG_REF_ID_TASK_STATUS_IN_PROGRESS",
+        "AS_GSS_TMG_REF_ID_TASK_STATUS_QUEUED",
         "AS_GSS_TMG_Task_SYNCEDRECORD"
       ],
       "called_by": [
@@ -5569,7 +5670,8 @@
         "AS_GSS_QR_getCriteria",
         "AS_GSS_QR_getEvaluation",
         "AS_GSS_QR_getEvaluationByIdentifier",
-        "AS_GSS_TOGGLE_AUTOMATION_TESTING_ENABLED"
+        "AS_GSS_TOGGLE_AUTOMATION_TESTING_ENABLED",
+        "AS_GSS_UT_displayEvaluationRecordTitle"
       ],
       "called_by": [
         "AS_GSS_CARD_evaluationInfo",
@@ -5605,6 +5707,10 @@
         "AS_GSS_EvaluationVendor_SYNCEDRECORD",
         "AS_GSS_EvaluatorTeam_SYNCEDRECORD",
         "AS_GSS_QR_getEvaluation",
+        "AS_GSS_TMG_REF_ID_TASK_STATUS_ASSIGNED",
+        "AS_GSS_TMG_REF_ID_TASK_STATUS_COMPLETE",
+        "AS_GSS_TMG_REF_ID_TASK_STATUS_IN_PROGRESS",
+        "AS_GSS_TMG_REF_ID_TASK_STATUS_QUEUED",
         "AS_GSS_TMG_Task_SYNCEDRECORD"
       ],
       "called_by": [

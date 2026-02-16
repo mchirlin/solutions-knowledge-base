@@ -1,0 +1,15 @@
+{
+  "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_97040",
+  "name": "AS_CO_UT_validateEmailAddress",
+  "type": "Expression Rule",
+  "description": "Rule to validate an email address. returns false if invalid and true if valid",
+  "sail_code": "/*Allows the 'name' to contain letters, numbers, plus period and special characters: _ - + ' & %*/\n/*Allows the 'domain' to contain only letters, numbers, period and dash.*/\n\nif(\n  or(\n    rule!AS_CO_UT_isBlank(ri!address),\n    len(trim(ri!address)) > 255,\n    length(split(trim(ri!address), \" \")) > 1,\n    count(split(ri!address, \"@\")) <> 2\n  ),\n  false,\n\n  with(\n    local!localPart: split(trim(ri!address),\"@\")[1],\n    local!domainPart: split(trim(ri!address),\"@\")[2],\n\n    if(\n      or(\n        length(split(local!domainPart, \".\")) < 2,\n        contains(split(local!localPart, \".\"), \"\"),\n        contains(split(local!domainPart, \".\"), \"\"),\n        not(isnull(stripwith(lower(local!domainPart), \"abcdefghijklmnopqrstuvwxyz1234567890-.\"))),\n        not(isnull(stripwith(lower(local!localPart), \"abcdefghijklmnopqrstuvwxyz1234567890-._+'&%\"))),\n        not(isnull(cleanwith(right(local!domainPart, 1), \"1234567890-\"))),\n        not(isnull(cleanwith(left(local!localPart, 1), \"-._+'&%\")))\n      ),\n\n      false,\n\n      true\n\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

@@ -1,0 +1,26 @@
+{
+  "uuid": "cfc14993-8c94-4edb-9990-4efc96139247",
+  "name": "AS_GCM_UI_showMoreOrShowLessLinkForArray",
+  "type": "Interface",
+  "description": "Displaying the list of text with show more and show less link",
+  "sail_code": "a!localVariables(\n  local!showLess: true,\n  local!isDisplayLink: count(ri!item) > ri!shortenIfLongerThanCount,\n  local!itemsToShow: rule!AS_CO_UT_rejectNullValuesFromArray(\n    if(\n      local!showLess = true,\n      index(\n        ri!item,\n        enumerate(ri!shortenIfLongerThanCount) + 1,\n        null\n      ),\n      ri!item\n    )\n  ),\n  {\n    #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n      text: if(\n        local!showLess = true,\n        ri!showMoreText,\n        ri!showLessText\n      ),\n      link: #\"SYSTEM_SYSRULES_dynamicLink\"(\n        saveInto: a!save(\n          local!showLess,\n          if(local!showLess = true, false, true)\n        )\n      ),\n      size: a!defaultValue(\n        value: ri!linkTextSize,\n        default: \"STANDARD\"\n      ),\n      linkStyle: a!defaultValue(\n        value: ri!linkStyle,\n        default: \"STANDALONE\"\n      ),\n      showWhen: and(\n        ri!displayLinkAboveContent = true(),\n        local!isDisplayLink\n      ),\n      style: a!defaultValue(\n        value: ri!linkTextStyle,\n        default: \"STRONG\"\n      )\n    ),\n    #\"SYSTEM_SYSRULES_richTextBulletedList\"(\n      items: { local!itemsToShow },\n      showWhen: ri!isBulletedList = true()\n    ),\n    #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n      text: {\n        if(\n          and(\n            ri!displayLinkAboveContent = true(),\n            local!isDisplayLink,\n            ri!showLinkInNewLine = true()\n          ),\n          char(10),\n          null()\n        ),\n        joinarray({ local!itemsToShow }, char(10)),\n        if(\n          and(\n            ri!displayLinkAboveContent <> true(),\n            local!isDisplayLink,\n            ri!showLinkInNewLine = true()\n          ),\n          char(10),\n          {}\n        )\n      },\n      showWhen: ri!isBulletedList <> true()\n    ),\n    #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n      text: if(\n        local!showLess = true,\n        ri!showMoreText,\n        ri!showLessText\n      ),\n      link: #\"SYSTEM_SYSRULES_dynamicLink\"(\n        saveInto: a!save(\n          local!showLess,\n          if(local!showLess = true, false, true)\n        )\n      ),\n      size: a!defaultValue(\n        value: ri!linkTextSize,\n        default: \"STANDARD\"\n      ),\n      linkStyle: a!defaultValue(\n        value: ri!linkStyle,\n        default: \"STANDALONE\"\n      ),\n      style: a!defaultValue(\n        value: ri!linkTextStyle,\n        default: \"STRONG\"\n      ),\n      showWhen: and(\n        ri!displayLinkAboveContent <> true(),\n        local!isDisplayLink\n      )\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GCM_CPS_ruleConditionContractMethod",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_CPS_ruleConditionContractTypes",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "uuid": "_a-0000e994-0db4-8000-9c52-011c48011c48_4938421",
+  "name": "AS_GCM_QE_getClauseSetByAwardIdOrSolicitation_V1",
+  "type": "Expression Rule",
+  "description": "QE to get Clause set details by Award id or Solicitation id ",
+  "sail_code": "rule!AS_CO_UT_queryEntity(\n  entity: cons!AS_GCM_ENT_CLAUSE_SET,\n  entityType: 'type!{urn:com:appian:types:AS:GCM}AS_GCM_ClauseSet',\n  returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY,\n  executeWhen: and(\n    ri!executeWhen,\n    or(\n      any(\n        rule!AS_CO_UT_isNotBlank(_),\n        {\n          ri!additionalFilters,\n          ri!logicalExpression,\n          ri!aggregation\n        }\n      ),\n      rule!AS_CO_UT_isNotBlank(input: ri!setId),\n      rule!AS_CO_UT_isNotBlank(input: ri!solicitationId),\n      rule!AS_CO_UT_isNotBlank(input: ri!awardId)\n    )\n  ),\n  /* To ensure proper null checks, we'll force all queryFilter values to not be null */\n  logicalExpression: ri!logicalExpression,\n  pagingInfo: ri!pagingInfo,\n  sort: ri!sort,\n  triggerRefresh: ri!triggerRefresh,\n  filters: {\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: \"setId\",\n      operator: \"=\",\n      value: ri!setId\n    ),\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: \"solicitationId\",\n      operator: \"in\",\n      value: ri!solicitationId,\n      applyWhen: rule!AS_CO_UT_isNotBlank(ri!solicitationId)\n    ),\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: \"awardId\",\n      operator: \"in\",\n      value: ri!awardId,\n      applyWhen: rule!AS_CO_UT_isNotBlank(ri!awardId)\n    ),\n    ri!additionalFilters\n  },\n  aggregation: ri!aggregation\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_queryEntity",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_ENT_CLAUSE_SET",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GCM_ENTRYPOINT_GETDATA_getClauseSet",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "_metadata": {
+    "bundle_id": "AS_GCM_QNM_Delete_Template_Responses"
+  },
+  "objects": {
+    "_a-0000ec62-ac34-8000-9d9a-011c48011c48_13170714": {
+      "name": "AS_GCM_QNM_populateResponseRequirementsToBeDeleted",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  rule!AS_CO_UT_isBlank(ri!initialResponseRequirements),\n  null,\n  a!localVariables(\n    local!responseIdstobeDeleted: if(\n      rule!AS_CO_UT_isBlank(ri!writtenResponseRequirements),\n      ri!initialResponseRequirements[recordType!AS GCM QNM T Response Requirement.responseRequirementTemplateId],\n      difference(\n        tointeger(\n          ri!initialResponseRequirements[recordType!AS GCM QNM T Response Requirement.responseRequirementTemplateId]\n        ),\n        tointeger(\n          ri!writtenResponseRequirements[recordType!AS GCM QNM T Response Requirement.responseRequirementTemplateId]\n        )\n      )\n    ),\n    rule!AS_CO_UT_indexWhere(\n      value: local!responseIdstobeDeleted,\n      initialArray: ri!initialResponseRequirements[recordType!AS GCM QNM T Response Requirement.responseRequirementTemplateId],\n      finalArray: ri!initialResponseRequirements\n    )\n  )\n)"
+    },
+    "_a-0000ec62-ac34-8000-9d9a-011c48011c48_13169774": {
+      "name": "AS_GCM_QNM_populateResponsesToBeDeleted",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  rule!AS_CO_UT_isBlank(ri!initialResponseOptions),\n  null,\n  a!localVariables(\n    local!responseIdstobeDeleted: if(\n      rule!AS_CO_UT_isBlank(ri!writtenResponseOptions),\n      ri!initialResponseOptions[recordType!AS GCM QNM T Response.responseTemplateId],\n      difference(\n        tointeger(\n          ri!initialResponseOptions[recordType!AS GCM QNM T Response.responseTemplateId]\n        ),\n        tointeger(\n          ri!writtenResponseOptions[recordType!AS GCM QNM T Response.responseTemplateId]\n        )\n      )\n    ),\n    rule!AS_CO_UT_indexWhere(\n      value: local!responseIdstobeDeleted,\n      initialArray: ri!initialResponseOptions[recordType!AS GCM QNM T Response.responseTemplateId],\n      finalArray: ri!initialResponseOptions\n    )\n  )\n)"
+    },
+    "_a-0000e6a4-3c85-8000-9ba5-011c48011c48_45984": {
+      "name": "AS_CO_UT_indexWhere",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  rule!AS_CO_UT_isBlank(value: ri!initialArray),\n  {},\n  if(\n    ri!isRemove,\n    remove(\n      ri!finalArray,\n      wherecontains(\n        cast(typeof({ \"\" }), ri!value),\n        cast(typeof({ \"\" }), ri!initialArray)\n      )\n    ),\n    index(\n      ri!finalArray,\n      wherecontains(\n        cast(typeof({ \"\" }), ri!value),\n        cast(typeof({ \"\" }), ri!initialArray)\n      ),\n      {}\n    )\n  )\n)"
+    },
+    "0002e4d4-c334-8000-1229-7f0000014e7a-gcm": {
+      "name": "AS GCM QNM Delete Template Responses",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n=pv!deletedTemplateResponseRequirements\n\n// Input: ?\n=pv!deletedTemplateResponses\n\n// Output: ?\nrule!AS_GCM_QNM_populateResponsesToBeDeleted(\n  writtenResponseOptions: pv!templateQuestions[recordType!AS GCM QNM T Question.responseOptions],\n  initialResponseOptions: pv!initialTemplateQuestions[recordType!AS GCM QNM T Question.responseOptions]\n)\n\n// Output: ?\nrule!AS_GCM_QNM_populateResponseRequirementsToBeDeleted(\n  writtenResponseRequirements: pv!templateQuestions[recordType!AS GCM QNM T Question.responseRequirements],\n  initialResponseRequirements: pv!initialTemplateQuestions[recordType!AS GCM QNM T Question.responseRequirements]\n)"
+    },
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536": {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  length(a!flatten(ri!value)) = 0\n)"
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "uuid": "_a-0000e63a-a5cb-8000-9bc6-011c48011c48_1237185",
+  "name": "AS_GCM_BL_COCSFilterClauseSetRecords",
+  "type": "Expression Rule",
+  "description": "Returns CO/CS filter for clause set",
+  "sail_code": "a!localVariables(\n  local!returnAllCoCsUsers: rule!AS_CO_UT_returnMembersOfAnyGroups(\n    groups: {\n      cons!AS_GAM_GRP_CONTRACTING_OFFICER,\n      cons!AS_GAM_GRP_CONTRACT_SPECIALIST\n    },\n    memberType: \"USER\"\n  ),\n  #\"SYSTEM_SYSRULES_recordFilterList\"(\n    name: \"CO/CS\",\n    options: #\"SYSTEM_SYSRULES_forEach\"(\n      items: local!returnAllCoCsUsers,\n      expression: #\"SYSTEM_SYSRULES_recordFilterListOption\"(\n        id: fv!index,\n        name: rule!AS_GAM_UT_concatUserFirstNameLastName(\n          firstName: user(fv!item, \"firstName\"),\n          lastName: user(fv!item, \"lastName\")\n        ),\n        filter: if(\n          rule!AS_GCM_DPL_CO_UT_isUserMemberOfGroups(\n            groups: cons!AS_GAM_GRP_CONTRACTING_OFFICER,\n            user: fv!item\n          ),\n          /*Contracting Officer*/\n          #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: ri!filterFields[1],\n            operator: \"=\",\n            value: fv!item\n          ),\n          /*Contract Specialist*/\n          #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: ri!filterFields[2],\n            operator: \"=\",\n            value: fv!item\n          )\n        )\n      )\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_returnMembersOfAnyGroups",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_UT_concatUserFirstNameLastName",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_DPL_CO_UT_isUserMemberOfGroups",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_GRP_CONTRACTING_OFFICER",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GAM_GRP_CONTRACT_SPECIALIST",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

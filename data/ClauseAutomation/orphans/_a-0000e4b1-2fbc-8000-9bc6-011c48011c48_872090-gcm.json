@@ -1,0 +1,35 @@
+{
+  "uuid": "_a-0000e4b1-2fbc-8000-9bc6-011c48011c48_872090-gcm",
+  "name": "AS_GCM_QNM_getPossibleActivePrecedentQuestions",
+  "type": "Expression Rule",
+  "description": "Returns all the possible active questions for an questionnnaire",
+  "sail_code": "/* To be a precedent for question A, question B must...\nbe in the same category\nhave a selection based field\nnot already be in the follow up question chain of question A */\ncast(\n  #\"urn:appian:function:v1:a:listtype?okey=a!listType\"(\n    recordType!AS GCM QNM T Question\n  ),\n  rule!AS_GAM_filterCdtOrRecordDataByField(\n    cdtOrRecord: filter(\n      rule!AS_GCM_QNM_UT_containsSelectionBasedField(question: _),\n      rule!AS_GAM_rejectCdtOrRecordDataByField(\n        cdtOrRecord: ri!allQuestions,\n        field: recordType!AS GCM QNM T Question.questionTemplateId,\n        value: append(\n          ri!question[recordType!AS GCM QNM T Question.questionTemplateId],\n          rule!AS_GCM_QNM_UT_retrieveAllFollowUpQuestions(\n            question: ri!question,\n            allQuestions: ri!allQuestions\n          )[recordType!AS GCM QNM T Question.questionTemplateId]\n        )\n      )\n    ),\n    field: recordType!AS GCM QNM T Question.questionCategoryTemplateId,\n    value: ri!question[recordType!AS GCM QNM T Question.questionCategoryTemplateId]\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GAM_filterCdtOrRecordDataByField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QNM_UT_containsSelectionBasedField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_rejectCdtOrRecordDataByField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QNM_UT_retrieveAllFollowUpQuestions",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QNM_TST_T_Questionnaire",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

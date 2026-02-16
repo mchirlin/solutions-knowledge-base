@@ -1,0 +1,31 @@
+{
+  "uuid": "_a-0000ee62-35ac-8000-9e34-011c48011c48_16747233",
+  "name": "AS_GCM_updateClauseTextForContractWriting",
+  "type": "Expression Rule",
+  "description": "update the clause text for contract writing",
+  "sail_code": "a!localVariables(\n  local!clauseSetClauseText: if(\n    rule!AS_CO_UT_booleanDefaultTrue(boolean: ri!removeAllHiddenTags),\n    #\"urn:appian:function:v1:a:update\"(\n      ri!clauseSetClauseText,\n      \"clauseText\",\n      rule!AS_GCM_removeHiddenSpanTagsFromHtml(text: ri!clauseSetClauseText.clauseText)\n    ),\n    ri!clauseSetClauseText\n  ),\n  if(\n    rule!AS_CO_UT_booleanDefaultTrue(boolean: ri!removeAllCiteTags),\n    #\"urn:appian:function:v1:a:update\"(\n      local!clauseSetClauseText,\n      \"clauseText\",\n      rule!AS_GCM_removeCiteTagsFromHTML(\n        text: local!clauseSetClauseText.clauseText\n      )\n    ),\n    local!clauseSetClauseText\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_booleanDefaultTrue",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_removeHiddenSpanTagsFromHtml",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_removeCiteTagsFromHTML",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GCM_QE_getClauseSetClauseTextsWithBatching_V1",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "uuid": "_a-0000e9ef-12bc-8000-9c7a-011c48011c48_6025298",
+  "name": "AS_GCM_removeBlankFieldsFromRecordData",
+  "type": "Expression Rule",
+  "description": "Removes the blank fields from record data.",
+  "sail_code": "cast(\n  runtimetypeof(ri!recordData),\n  #\"SYSTEM_SYSRULES_forEach\"(\n    items: ri!recordData,\n    expression: a!localVariables(\n      local!item: fv!item,\n      remove(\n        local!item,\n        a!flatten(\n          #\"SYSTEM_SYSRULES_forEach\"(\n            items: a!keys(local!item),\n            expression: if(\n              rule!AS_CO_UT_isBlank(local!item[fv!item]),\n              fv!item,\n              {}\n            )\n          )\n        )\n      )\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GCM_ENTRYPOINT_STARTPROCESS_updateSpecificClauseSetFields",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

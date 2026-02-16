@@ -1,0 +1,166 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GCM Send Sync File Format Error Email",
+    "parent_name": null,
+    "total_objects": 10
+  },
+  "entry_point": {
+    "complexity_score": 3.0,
+    "total_nodes": 3,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GCM Send Sync File Format Error Email",
+      "complexity_score": 3.0,
+      "total_nodes": 3,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Send Failure E-Mail"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Send Failure E-Mail",
+          "type": "internal.sendemail2",
+          "next": [
+            "End Node"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e447-9390-8000-9baa-011c48011c48_43624",
+      "name": "AS_GAM_GRP_APPIAN_ADMINISTRATORS",
+      "type": "Constant",
+      "description": "Value: AS GAM Appian Administrators",
+      "value": "AS GAM Appian Administrators",
+      "value_type": "http://www.appian.com/ae/types/2009:Group",
+      "calls": [],
+      "called_by": [
+        "AS GCM Send Sync File Format Error Email"
+      ]
+    },
+    {
+      "uuid": "_a-0000ebbc-9d1b-8000-9d4f-011c48011c48_11588649",
+      "name": "AS_GCM_REF_ID_SOURCE_DFARS",
+      "type": "Constant",
+      "description": "Value: 112",
+      "value": "112",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_emailContentForClauseSyncFileFormatFailures"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1308525",
+      "name": "AS_GCM_REF_ID_SOURCE_FAR",
+      "type": "Constant",
+      "description": "Value: 1",
+      "value": "1",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_emailContentForClauseSyncFileFormatFailures"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1262107",
+      "name": "AS_GCM_REF_ID_TYPE_CLAUSE",
+      "type": "Constant",
+      "description": "Value: 4",
+      "value": "4",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_DFARS_getRefTypeFromSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1262114",
+      "name": "AS_GCM_REF_ID_TYPE_PROVISION",
+      "type": "Constant",
+      "description": "Value: 5",
+      "value": "5",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_DFARS_getRefTypeFromSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75800",
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "description": "Filters a CDT by a matching a single value or list of values in a single field, if a list is passed, all matches are returned",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_emailContentForClauseSyncFileFormatFailures"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53654",
+      "name": "AS_GCM_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "description": "Loads a property bundle file by name from a folder, returns a dictionary of the key-value pairs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_emailContentForClauseSyncFileFormatFailures"
+      ]
+    },
+    {
+      "uuid": "_a-0000ebbc-9d1b-8000-9d4f-011c48011c48_11603130",
+      "name": "AS_GCM_DFARS_getRefTypeFromSync",
+      "type": "Expression Rule",
+      "description": "Returns the ref type of DFARS clauses",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_REF_ID_TYPE_CLAUSE",
+        "AS_GCM_REF_ID_TYPE_PROVISION"
+      ],
+      "called_by": [
+        "AS_GCM_emailContentForClauseSyncFileFormatFailures"
+      ]
+    },
+    {
+      "uuid": "_a-0000e915-02bc-8000-9c1f-011c48011c48_4011828",
+      "name": "AS_GCM_emailContentForClauseSyncFileFormatFailures",
+      "type": "Expression Rule",
+      "description": "Email subject and body for file format failures",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_filterCdtByField",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_DFARS_getRefTypeFromSync",
+        "AS_GCM_REF_ID_SOURCE_DFARS",
+        "AS_GCM_REF_ID_SOURCE_FAR"
+      ],
+      "called_by": [
+        "AS GCM Send Sync File Format Error Email"
+      ]
+    },
+    {
+      "uuid": "0004e930-7379-8000-4c43-7f0000014e7a",
+      "name": "AS GCM Send Sync File Format Error Email",
+      "type": "Process Model",
+      "description": "Send an email for clause sync file format failures",
+      "calls": [
+        "AS_GAM_GRP_APPIAN_ADMINISTRATORS",
+        "AS_GCM_emailContentForClauseSyncFileFormatFailures"
+      ],
+      "called_by": []
+    }
+  ]
+}

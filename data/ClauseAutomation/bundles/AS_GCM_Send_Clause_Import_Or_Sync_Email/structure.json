@@ -1,0 +1,247 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GCM Send Clause Import Or Sync Email",
+    "parent_name": null,
+    "total_objects": 15
+  },
+  "entry_point": {
+    "complexity_score": 3.0,
+    "total_nodes": 3,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GCM Send Clause Import Or Sync Email",
+      "complexity_score": 3.0,
+      "total_nodes": 3,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Send E-Mail"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Send E-Mail",
+          "type": "internal.sendemail2",
+          "next": [
+            "End Node"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290163",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "description": "OBJECT_ARRAY - Returns an array type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "OBJECT_ARRAY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_QR_getAquisitionHelperDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000ebbc-9d1b-8000-9d4f-011c48011c48_11588649",
+      "name": "AS_GCM_REF_ID_SOURCE_DFARS",
+      "type": "Constant",
+      "description": "Value: 112",
+      "value": "112",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_emailSubjectForClauseSyncOrZipImport",
+        "AS_GCM_emailBodyForClauseSyncOrZipImport"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73758",
+      "name": "AS_CO_UT_distinct",
+      "type": "Expression Rule",
+      "description": "Returns the distinct values from a list.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_emailBodyForClauseSyncOrZipImport"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GCM_emailBodyForClauseSyncOrZipImport"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around AS_CO_UT_isBlank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_emailBodyForClauseSyncOrZipImport"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6c8-d132-8000-9bbe-011c48011c48_469266",
+      "name": "AS_CO_UT_queryRecord",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_GCM_QR_getAquisitionHelperDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367",
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_errorMessageForClauseSyncFailure"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53662",
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "description": "Displays a label by the `bundleKey` from passed in bundle data, optionally accepts arguments",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_errorMessageForClauseSyncFailure"
+      ]
+    },
+    {
+      "uuid": "_a-0000e86e-0144-8000-9c00-011c48011c48_2789370",
+      "name": "AS_GCM_BL_emailSubjectForClauseSyncOrZipImport",
+      "type": "Expression Rule",
+      "description": "Returns the email subject based on the sync type",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_REF_ID_SOURCE_DFARS"
+      ],
+      "called_by": [
+        "AS GCM Send Clause Import Or Sync Email"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53654",
+      "name": "AS_GCM_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "description": "Loads a property bundle file by name from a folder, returns a dictionary of the key-value pairs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_emailSubjectForClauseSyncOrZipImport",
+        "AS_GCM_emailBodyForClauseSyncOrZipImport",
+        "AS_GCM_errorMessageForClauseSyncFailure"
+      ]
+    },
+    {
+      "uuid": "_a-0000e69a-ff03-8000-9bd0-011c48011c48_1584548",
+      "name": "AS_GCM_QR_getAquisitionHelperDetails",
+      "type": "Expression Rule",
+      "description": "Get Acquisition helper details",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_queryRecord"
+      ],
+      "called_by": [
+        "AS_GCM_emailBodyForClauseSyncOrZipImport"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1475078",
+      "name": "AS_GCM_emailBodyForClauseSyncOrZipImport",
+      "type": "Expression Rule",
+      "description": "Email body for weekly Sync of clauses",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_distinct",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_QR_getAquisitionHelperDetails",
+        "AS_GCM_REF_ID_SOURCE_DFARS",
+        "AS_GCM_errorMessageForClauseSyncFailure",
+        "AS_GCM_filterRecords"
+      ],
+      "called_by": [
+        "AS GCM Send Clause Import Or Sync Email"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1475624",
+      "name": "AS_GCM_errorMessageForClauseSyncFailure",
+      "type": "Expression Rule",
+      "description": "Error Message for clause sync failure",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GCM_CO_UT_loadBundleFromFolder"
+      ],
+      "called_by": [
+        "AS_GCM_emailBodyForClauseSyncOrZipImport"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9761091",
+      "name": "AS_GCM_filterRecords",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_emailBodyForClauseSyncOrZipImport"
+      ]
+    },
+    {
+      "uuid": "0002e680-0460-8000-1c8b-7f0000014e7a",
+      "name": "AS GCM Send Clause Import Or Sync Email",
+      "type": "Process Model",
+      "description": "Send email for clause import or sync",
+      "calls": [
+        "AS_GCM_BL_emailSubjectForClauseSyncOrZipImport",
+        "AS_GCM_emailBodyForClauseSyncOrZipImport"
+      ],
+      "called_by": []
+    }
+  ]
+}

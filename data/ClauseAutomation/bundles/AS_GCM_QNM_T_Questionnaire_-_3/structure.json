@@ -1,0 +1,1644 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "AS GCM QNM T Questionnaire - \"\"",
+    "parent_name": "AS GCM QNM T Questionnaire",
+    "total_objects": 82
+  },
+  "entry_point": {
+    "action_type": "RECORD_ACTION",
+    "record_type": "AS GCM QNM T Questionnaire",
+    "target_process": "AS GCM QNM Deactivate Questionnaire Template",
+    "form_interface": "AS_GCM_QNM_FM_deactivateQuestionnaireTemplate",
+    "expressions": {
+      "TITLE": "\"\"",
+      "DESCRIPTION": null,
+      "VISIBILITY": null,
+      "CONTEXT": "a!localVariables(\n  local!questionnaireTemplate: rule!AS_GCM_QNM_QR_getQuestionnaire_Template_BatchQueryQuestions(questionnaireTemplateId: rv!identifier),\n  {\n    questionnaireTemplate: local!questionnaireTemplate,\n    originalQuestionnaireTemplate: local!questionnaireTemplate,\n    /* AS_GCM_QNM_T_Questionnaire */\n    userAction: null/* Text */\n\n  }\n)"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GCM QNM Deactivate Questionnaire Template",
+      "complexity_score": 8.0,
+      "total_nodes": 5,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "User Action?"
+          ]
+        },
+        {
+          "name": "User Action?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node (Cancel)",
+            "Write Questionnaire"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Write Questionnaire",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Capture audit"
+          ]
+        },
+        {
+          "name": "Capture audit",
+          "type": "Write to Multiple DSE",
+          "next": [
+            "End Node"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_181584-adt",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_ADD",
+      "type": "Constant",
+      "description": "ADD - used by the auditing module",
+      "value": "ADD",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_determineAuditActionCode"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_181602-adt",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_DEACTIVATE",
+      "type": "Constant",
+      "description": "DEACTIVATE - used by the auditing module",
+      "value": "DEACTIVATE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_determineAuditActionCode"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_181590-adt",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_DELETE",
+      "type": "Constant",
+      "description": "DELETE - used by the auditing module",
+      "value": "DELETE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_determineAuditActionCode"
+      ]
+    },
+    {
+      "uuid": "_a-0000e583-8ce5-8000-9bb7-011c48011c48_810929",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_INITIATED",
+      "type": "Constant",
+      "description": "INITIATED - used by the auditing module",
+      "value": "INITIATED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject"
+      ]
+    },
+    {
+      "uuid": "_a-0000e69a-ff03-8000-9bd0-011c48011c48_1592551",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_MANUAL_SYNC",
+      "type": "Constant",
+      "description": "Audit Action Code - \"MANUAL_SYNC\"\nAction Code to track that the clause is modified using manual sync",
+      "value": "MANUAL_SYNC",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject"
+      ]
+    },
+    {
+      "uuid": "_a-0000e4ea-0367-8000-9ba7-011c48011c48_308539",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_MANUAL_UPDATE",
+      "type": "Constant",
+      "description": "MANUAL UPDATE - used by the auditing module",
+      "value": "MANUAL_UPDATE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_181596-adt",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_MODIFY",
+      "type": "Constant",
+      "description": "MODIFY - used by the auditing module",
+      "value": "MODIFY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_ADT_UT_determineAuditActionCode"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_181608-adt",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_REACTIVATE",
+      "type": "Constant",
+      "description": "REACTIVATE - used by the auditing module",
+      "value": "REACTIVATE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_determineAuditActionCode"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_232728-adt",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_UNCHANGED",
+      "type": "Constant",
+      "description": "UNCHANGED - used by the auditing module",
+      "value": "UNCHANGED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290163",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "description": "OBJECT_ARRAY - Returns an array type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "OBJECT_ARRAY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_QNM_QR_getQuestionnaire_Template"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290157",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "description": "SINGLE_OBJECT - Returns a single type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "SINGLE_OBJECT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_QNM_QR_getQuestionnaire_Template",
+        "AS_GCM_QNM_QR_getQuestionnaire_Template_BatchQueryQuestions"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73173",
+      "name": "AS_CO_ENUM_USER_ACTION_CANCEL",
+      "type": "Constant",
+      "description": "CANCEL.USER_ACTION - Value to use to drive process logic after a user performs a \"Cancel\" action",
+      "value": "CANCEL.USER_ACTION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM QNM Deactivate Questionnaire Template",
+        "AS_GCM_QNM_FM_deactivateQuestionnaireTemplate"
+      ]
+    },
+    {
+      "uuid": "_a-0000e430-f270-8000-9bbc-011c48011c48_357481",
+      "name": "AS_CO_ENUM_USER_ACTION_DELETE",
+      "type": "Constant",
+      "description": "DELETE.USER_ACTION - Value to use to drive process logic after a user performs a \"Delete\" action",
+      "value": "DELETE.USER_ACTION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QNM_FM_deactivateQuestionnaireTemplate"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_941756",
+      "name": "AS_GAM_ADT_TXT_AUDIT_TYPE_ACTION_ONLY",
+      "type": "Constant",
+      "description": "Value: ACTION_ONLY",
+      "value": "ACTION_ONLY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GAM_ADT_UT_buildAuditEntityData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_941763",
+      "name": "AS_GAM_ADT_TXT_AUDIT_TYPE_MANIPULATION",
+      "type": "Constant",
+      "description": "Value: MANIPULATION",
+      "value": "MANIPULATION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GAM_ADT_UT_buildAuditEntityData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e4b1-2fbc-8000-9bc6-011c48011c48_941337-gcm",
+      "name": "AS_GCM_QNM_ENT_A_T_QUESTIONNAIRE",
+      "type": "Constant",
+      "description": "Value - AS_GCM_QNM_A_T_Questionnaire",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QNM_ADT_UT_startAuditProcess_Parameters_Questionnaire_Template"
+      ]
+    },
+    {
+      "uuid": "_a-0000e4b1-2fbc-8000-9bc6-011c48011c48_863602-gcm",
+      "name": "AS_GCM_QNM_INT_DEFAULT_QUESTIONNAIRE_TEMPLATE_ID",
+      "type": "Constant",
+      "description": "If the QNM implementation uses a programmatic method of questionnaire template selection, this constant can be used to indicate a default when there is no programmatic match",
+      "value": null,
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QNM_FM_deactivateQuestionnaireTemplate"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-79a3-8000-7714-45ef9045ef90_8682-adt",
+      "name": "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+      "type": "Expression Rule",
+      "description": "Audit config for the AS_ADT_SAMPLE_Parent CDT",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit",
+        "AS_ADT_UT_calculateAudit_MultipleObjects",
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_ADT_UT_determineAuditActionCode",
+        "AS_GAM_ADT_UT_buildAuditEntityData",
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructManipulatedAuditData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_237233-adt",
+      "name": "AS_ADT_UT_buildSimpleFieldChanges",
+      "type": "Expression Rule",
+      "description": "Given a list of simple fields from an auditing configuration, an old object, and a new object, returns  list of simple field dictionaries which can be cast to the simple field auditing type of any complex auditing object.",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_UT_buildSimpleFieldChangesDictionary"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_162005-adt",
+      "name": "AS_ADT_UT_buildSimpleFieldChangesDictionary",
+      "type": "Expression Rule",
+      "description": "Given the fieldName, original object, and the new object, determines if a simple field change was made, returning {} if not, and returning a dictionary representation of the simple field audit if so.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_compare",
+        "AS_CO_UT_dynamicDictionary",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_toString"
+      ],
+      "called_by": [
+        "AS_ADT_UT_buildSimpleFieldChanges"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_161361-adt",
+      "name": "AS_ADT_UT_calculateAudit",
+      "type": "Expression Rule",
+      "description": "Primary rule to calculate audits between old and new objects (handles arrays or single objects)",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_ADT_UT_calculateAudit_MultipleObjects"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_buildFieldLevelAuditEntityData",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_165782-adt",
+      "name": "AS_ADT_UT_calculateAudit_MultipleObjects",
+      "type": "Expression Rule",
+      "description": "[DO NOT CALL DIRECTLY] Calculates audit CDTs for an array of original and new objects",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_CO_UT_distinct",
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit",
+        "AS_ADT_UT_calculateAudit_SingleObject"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_165180-adt",
+      "name": "AS_ADT_UT_calculateAudit_SingleObject",
+      "type": "Expression Rule",
+      "description": "[DO NOT CALL DIRECTLY] Calculates audit CDTs for a single of original and new object",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_INITIATED",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_MANUAL_SYNC",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_MANUAL_UPDATE",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_MODIFY",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_UNCHANGED",
+        "AS_ADT_UT_buildSimpleFieldChanges",
+        "AS_ADT_UT_calculateAudit_MultipleObjects",
+        "AS_ADT_UT_determineAuditActionCode",
+        "AS_CO_UT_compareStrong",
+        "AS_CO_UT_dynamicDictionary",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_not",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_updateCdtFields"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_MultipleObjects"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_161958-adt",
+      "name": "AS_ADT_UT_determineAuditActionCode",
+      "type": "Expression Rule",
+      "description": "Given a newObject, an oldObject, and the auditConfig, determines the auditActionCode",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_ADD",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_DEACTIVATE",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_DELETE",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_MODIFY",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_REACTIVATE",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-91f4-8000-9bc0-011c48011c48_584965-adt",
+      "name": "AS_ADT_UT_startAuditProcess_Parameters",
+      "type": "Expression Rule",
+      "description": "Populated the parameters for starting the audit process",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_getTypeNamespace",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_returnArrayTypeNumber",
+        "AS_CO_UT_returnTypeNumber"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_ADT_UT_startAuditProcess_Parameters_Questionnaire_Template"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39070",
+      "name": "AS_CO_UT_booleanDefaultFalse",
+      "type": "Expression Rule",
+      "description": "Default a null value to false, otherwise returns the boolean value",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_not"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157603",
+      "name": "AS_CO_UT_cast",
+      "type": "Expression Rule",
+      "description": "Casts a variable to the type of either the input `type`, or the typeof of the input `typeof`, and properly handles for null inputs",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_returnTypeNumber"
+      ],
+      "called_by": [
+        "AS_ADT_UT_startAuditProcess_Parameters",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_returnArrayTypeNumber",
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructManipulatedAuditData",
+        "AS_GCM_QNM_ADT_UT_startAuditProcess_Parameters_Questionnaire_Template",
+        "AS_GCM_UT_queryRecordByIdentifier"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_279147",
+      "name": "AS_CO_UT_castToDictionary",
+      "type": "Expression Rule",
+      "description": "Casts the input to dictionary, either a list or a non-list depending on the input",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_292117",
+      "name": "AS_CO_UT_castToDictionaryList",
+      "type": "Expression Rule",
+      "description": "Casts the input to a dictionary list",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73624",
+      "name": "AS_CO_UT_compare",
+      "type": "Expression Rule",
+      "description": "Compares two values and returns true if both the content of the values match (regardless of type).",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_buildSimpleFieldChangesDictionary"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_243040",
+      "name": "AS_CO_UT_compareStrong",
+      "type": "Expression Rule",
+      "description": "Compares two values and returns true if both the values and their types match.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_typeCompare"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73758",
+      "name": "AS_CO_UT_distinct",
+      "type": "Expression Rule",
+      "description": "Returns the distinct values from a list.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_MultipleObjects"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73856",
+      "name": "AS_CO_UT_dynamicDictionary",
+      "type": "Expression Rule",
+      "description": "Creates a dictionary based on the provided field-value pairs. An example implementation is provided as a test case. Returns a dictionary.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_returnNullDictionary",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs"
+      ],
+      "called_by": [
+        "AS_ADT_UT_buildSimpleFieldChangesDictionary",
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_GAM_ADT_UT_constructActionOnlyAuditData",
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75800",
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "description": "Filters a CDT by a matching a single value or list of values in a single field, if a list is passed, all matches are returned",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_returnCdtIndicesByField"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_MultipleObjects",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_174191",
+      "name": "AS_CO_UT_getTypeNamespace",
+      "type": "Expression Rule",
+      "description": "Returns the namespace from the type! input",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_startAuditProcess_Parameters"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76433",
+      "name": "AS_CO_UT_indexPath",
+      "type": "Expression Rule",
+      "description": "Pass in a field (i.e. member[1].name) and this will index(index(index( for each field",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_buildSimpleFieldChangesDictionary",
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_CO_UT_returnCdtIndicesByField",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_MultipleObjects",
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_ADT_UT_determineAuditActionCode",
+        "AS_CO_CPS_cancelSaveButtons",
+        "AS_CO_FM_startPageForAction",
+        "AS_CO_UT_castToDictionary",
+        "AS_CO_UT_castToDictionaryList",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectCdtByField",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_updateCdtFields",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+        "AS_CO_UT_whereContains",
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GAM_UT_ArrayLength",
+        "AS_GCM_QNM_ADT_UT_startAuditProcess_Parameters_Questionnaire_Template",
+        "AS_GCM_dropNonWritableRelationshipsFromRecord_Reducer",
+        "AS_GCM_mergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around AS_CO_UT_isBlank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_ADT_UT_determineAuditActionCode",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_queryRecord",
+        "AS_GAM_ADT_UT_constructActionOnlyAuditData",
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructManipulatedAuditData",
+        "AS_GCM_dropNonWritableRelationshipsFromRecord_Reducer"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75636",
+      "name": "AS_CO_UT_not",
+      "type": "Expression Rule",
+      "description": "Null handles for not -- null returns true (null acts like false)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_booleanDefaultFalse"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6c8-d132-8000-9bbe-011c48011c48_469266",
+      "name": "AS_CO_UT_queryRecord",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_returnArrayTypeNumber",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_QR_getQuestionnaire_Template"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_271202",
+      "name": "AS_CO_UT_rejectCdtByField",
+      "type": "Expression Rule",
+      "description": "Removes CDT indices where a match of a single value or list of values in a single field is found, if a list is passed, all matches are rejected",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_returnCdtIndicesByField"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367",
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_QR_getQuestionnaire_Template",
+        "AS_GCM_UT_queryRecordByIdentifier",
+        "AS_GCM_setRecordFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73980",
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "description": "Returns nullableValue only if it is not null. Else returns replacementValue.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_ADT_UT_startAuditProcess_Parameters",
+        "AS_CO_CPS_cancelSaveButtons",
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GCM_QNM_QR_getQuestionnaire_Template",
+        "AS_GCM_setRecordFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39610",
+      "name": "AS_CO_UT_returnArrayTypeNumber",
+      "type": "Expression Rule",
+      "description": "Returns the array type number from the input type. If type number being passed is already that of a array, returns the same number.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast"
+      ],
+      "called_by": [
+        "AS_ADT_UT_startAuditProcess_Parameters",
+        "AS_CO_UT_queryRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_269546",
+      "name": "AS_CO_UT_returnCdtIndicesByField",
+      "type": "Expression Rule",
+      "description": "Returns the indices of a CDT by a matching a single value or list of values in a single field, if a list is passed, all matches are returned",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_whereContains"
+      ],
+      "called_by": [
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_rejectCdtByField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_101148",
+      "name": "AS_CO_UT_returnNullDictionary",
+      "type": "Expression Rule",
+      "description": "Returns a null dictionary",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_dynamicDictionary"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157503",
+      "name": "AS_CO_UT_returnTypeNumber",
+      "type": "Expression Rule",
+      "description": "Returns the typeNumber of either `type` or `typeOf`",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_startAuditProcess_Parameters",
+        "AS_CO_UT_cast"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_112825",
+      "name": "AS_CO_UT_toString",
+      "type": "Expression Rule",
+      "description": "casts a value to a string with correct handling for integer and decimal formatting",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_buildSimpleFieldChangesDictionary"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_162769",
+      "name": "AS_CO_UT_typeCompare",
+      "type": "Expression Rule",
+      "description": "Returns true if the two input types match",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_compareStrong",
+        "AS_CO_UT_whereContains"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_260165",
+      "name": "AS_CO_UT_updateCdtFields",
+      "type": "Expression Rule",
+      "description": "Updates one or more fields of a CDT, with an optional input for indices",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_269170",
+      "name": "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+      "type": "Expression Rule",
+      "description": "Allows passing field-value pairs to handle for use cases where you have to set newValues as arrays",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_dynamicDictionary",
+        "AS_CO_UT_queryRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_272151",
+      "name": "AS_CO_UT_whereContains",
+      "type": "Expression Rule",
+      "description": "Enhanced wherecontains() which avoids type-casting issues and properly handles for document and group types",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_typeCompare"
+      ],
+      "called_by": [
+        "AS_CO_UT_returnCdtIndicesByField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_958752",
+      "name": "AS_GAM_ADT_UT_buildAuditEntityData",
+      "type": "Expression Rule",
+      "description": "Rule to build audit data for GAM",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_GAM_ADT_TXT_AUDIT_TYPE_ACTION_ONLY",
+        "AS_GAM_ADT_TXT_AUDIT_TYPE_MANIPULATION",
+        "AS_GAM_ADT_UT_buildFieldLevelAuditEntityData",
+        "AS_GAM_ADT_UT_constructActionOnlyAuditData",
+        "AS_GAM_ADT_UT_constructManipulatedAuditData"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_ADT_UT_startAuditProcess_Parameters_Questionnaire_Template"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_981349",
+      "name": "AS_GAM_ADT_UT_buildFieldLevelAuditEntityData",
+      "type": "Expression Rule",
+      "description": "Calculates the field level entity data to write for GAM",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_UT_calculateAudit"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_buildAuditEntityData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_936427",
+      "name": "AS_GAM_ADT_UT_constructActionOnlyAuditData",
+      "type": "Expression Rule",
+      "description": "Rule to construct action only audit data",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_dynamicDictionary",
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_buildAuditEntityData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_983591",
+      "name": "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+      "type": "Expression Rule",
+      "description": "Rule to construct dynamic dictionary for Manipulated audit",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_castToDictionaryList",
+        "AS_CO_UT_dynamicDictionary",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_constructManipulatedAuditData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_983535",
+      "name": "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+      "type": "Expression Rule",
+      "description": "Rule to construct dynamic audit dictionary for manipulation audit",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_UNCHANGED",
+        "AS_ADT_UT_calculateAudit",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_castToDictionary",
+        "AS_CO_UT_castToDictionaryList",
+        "AS_CO_UT_dynamicDictionary",
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_not",
+        "AS_CO_UT_rejectCdtByField",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_updateCdtFields"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_constructManipulatedAuditData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_936866",
+      "name": "AS_GAM_ADT_UT_constructManipulatedAuditData",
+      "type": "Expression Rule",
+      "description": "Rule to construct Manipulated audit data",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isNotBlank",
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_buildAuditEntityData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53662",
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "description": "Displays a label by the `bundleKey` from passed in bundle data, optionally accepts arguments",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_FM_deactivateQuestionnaireTemplate"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1021202",
+      "name": "AS_GAM_UT_ArrayLength",
+      "type": "Expression Rule",
+      "description": "Gives length of an array based on input of array",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_QR_getQuestionnaire_Template"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53654",
+      "name": "AS_GCM_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "description": "Loads a property bundle file by name from a folder, returns a dictionary of the key-value pairs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QNM_FM_deactivateQuestionnaireTemplate"
+      ]
+    },
+    {
+      "uuid": "_a-0000e4b1-2fbc-8000-9bc6-011c48011c48_941303-gcm",
+      "name": "AS_GCM_QNM_ADT_BL_Template_Questionnaire_auditConfig",
+      "type": "Expression Rule",
+      "description": "Audit config for the AS_GCM_QNM_T_Questionnaire CDT",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QNM_ADT_UT_startAuditProcess_Parameters_Questionnaire_Template"
+      ]
+    },
+    {
+      "uuid": "_a-0000e4b1-2fbc-8000-9bc6-011c48011c48_941315-gcm",
+      "name": "AS_GCM_QNM_ADT_UT_startAuditProcess_Parameters_Questionnaire_Template",
+      "type": "Expression Rule",
+      "description": "Creates an instance of AS_GCM_ADT_P_AuditProcessParameters for auditing changes to a QNM Questionnaire Template",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_UT_startAuditProcess_Parameters",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_GAM_ADT_UT_buildAuditEntityData",
+        "AS_GCM_QNM_ADT_BL_Template_Questionnaire_auditConfig",
+        "AS_GCM_QNM_ENT_A_T_QUESTIONNAIRE"
+      ],
+      "called_by": [
+        "AS GCM QNM Deactivate Questionnaire Template"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_39379-gcm",
+      "name": "AS_GCM_QNM_QR_getQuestionnaire_Template",
+      "type": "Expression Rule",
+      "description": "Query expression for AS GCM QNM T Questionnaire",
+      "parameters": [],
+      "calls": [
+        "AS GCM QNM T Questionnaire",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_replaceNull",
+        "AS_GAM_UT_ArrayLength",
+        "AS_GCM_UT_queryRecordByIdentifier"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_QR_getQuestionnaire_Template_BatchQueryQuestions"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec90-d194-8000-9dac-011c48011c48_13575960",
+      "name": "AS_GCM_QNM_QR_getQuestionnaire_Template_BatchQueryQuestions",
+      "type": "Expression Rule",
+      "description": "Queries the questionnaire by batch querying the questions when the questions count of a questionnaire exceeds the related record query limit of 100.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_GCM_QNM_QR_getQuestionnaire_Template",
+        "AS_GCM_setRecordFields"
+      ],
+      "called_by": [
+        "AS GCM QNM T Questionnaire"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec46-fcf4-8000-9d91-011c48011c48_12816472",
+      "name": "AS_GCM_QNM_setMetaDataForTemplateQuestionCategoryRecord",
+      "type": "Expression Rule",
+      "description": "Rule to capture metadata for AS GCM QNM T Question Category",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_setRecordFields"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_setMetaDataForTemplateQuestionnaireRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec46-fcf4-8000-9d91-011c48011c48_12823624",
+      "name": "AS_GCM_QNM_setMetaDataForTemplateQuestionnaireRecord",
+      "type": "Expression Rule",
+      "description": "Rule to capture metadata for AS GCM QNM T Questionnaire",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_QNM_setMetaDataForTemplateQuestionCategoryRecord",
+        "AS_GCM_QNM_setMetaDataForTemplateQuestionsRecord",
+        "AS_GCM_setRecordFields"
+      ],
+      "called_by": [
+        "AS GCM QNM Deactivate Questionnaire Template"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec46-fcf4-8000-9d91-011c48011c48_12812729",
+      "name": "AS_GCM_QNM_setMetaDataForTemplateQuestionsRecord",
+      "type": "Expression Rule",
+      "description": "Rule to capture metadata for AS GCM QNM T Question",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_setRecordFields"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_setMetaDataForTemplateQuestionnaireRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec46-fcf4-8000-9d91-011c48011c48_12823611",
+      "name": "AS_GCM_QNM_writeRecordsPropertiesForTemplateQuestionnaire",
+      "type": "Expression Rule",
+      "description": "Contains the write properties to drop and update the record data in the process while writing.",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_dropNonWritableRelationshipsFromRecord",
+        "AS_GCM_mergeWriteRecordIdsToProcessVariable"
+      ],
+      "called_by": [
+        "AS GCM QNM Deactivate Questionnaire Template"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec50-376f-8000-9d94-011c48011c48_12937069",
+      "name": "AS_GCM_UT_queryRecordByIdentifier",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_rejectNullValuesFromArray"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_QR_getQuestionnaire_Template"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9749583",
+      "name": "AS_GCM_dropNonWritableRelationshipsFromRecord",
+      "type": "Expression Rule",
+      "description": "Drops the specified non writable relationships. Retains the writable relationships if provided",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_dropNonWritableRelationshipsFromRecord_Reducer",
+        "AS_GCM_getAllPresentRelationshipsFromRecord"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_writeRecordsPropertiesForTemplateQuestionnaire"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9756924",
+      "name": "AS_GCM_dropNonWritableRelationshipsFromRecord_Reducer",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_GCM_dropNonWritableRelationshipsFromRecord`",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_getAllPresentRelationshipsFromRecord"
+      ],
+      "called_by": [
+        "AS_GCM_dropNonWritableRelationshipsFromRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9761091",
+      "name": "AS_GCM_filterRecords",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_mergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9760625",
+      "name": "AS_GCM_getAllPresentRelationshipsFromRecord",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_GAM_dropNonWritableRelationshipsFromRecord`",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_getAllPresentRelationshipsFromRecord_Apply"
+      ],
+      "called_by": [
+        "AS_GCM_dropNonWritableRelationshipsFromRecord",
+        "AS_GCM_dropNonWritableRelationshipsFromRecord_Reducer",
+        "AS_GCM_getAllPresentRelationshipsFromRecord_Apply"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9760686",
+      "name": "AS_GCM_getAllPresentRelationshipsFromRecord_Apply",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_GCM_dropNonWritableRelationshipsFromRecord`",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_getAllPresentRelationshipsFromRecord"
+      ],
+      "called_by": [
+        "AS_GCM_getAllPresentRelationshipsFromRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9756839",
+      "name": "AS_GCM_mergeWriteRecordIdsToProcessVariable",
+      "type": "Expression Rule",
+      "description": "The main rule to merge the ID-output of a write records nodes to the input process variable (including all child FKs). IMPORTANT NOTES in comments in the rule.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_GCM_filterRecords",
+        "AS_GCM_setRecordFields"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_writeRecordsPropertiesForTemplateQuestionnaire"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9760853",
+      "name": "AS_GCM_setRecordFields",
+      "type": "Expression Rule",
+      "description": "Runs a bulk update on a record object, setting new values for its fields",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_QR_getQuestionnaire_Template_BatchQueryQuestions",
+        "AS_GCM_QNM_setMetaDataForTemplateQuestionCategoryRecord",
+        "AS_GCM_QNM_setMetaDataForTemplateQuestionnaireRecord",
+        "AS_GCM_QNM_setMetaDataForTemplateQuestionsRecord",
+        "AS_GCM_mergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3d1-f4dc-8000-9ba4-011c48011c48_134344",
+      "name": "AS_CO_CPS_cancelSaveButtons",
+      "type": "Interface",
+      "description": "Section with cancel and save buttons",
+      "parameters": [
+        {
+          "name": "confirmLabel",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "cancelLabel",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "confirmSaveInto",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "cancelSaveInto",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "includeDivider",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "confirmSubmit",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "cancelSubmit",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 6
+        },
+        {
+          "name": "confirmDisabled",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 7
+        },
+        {
+          "name": "cancelDisabled",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 8
+        },
+        {
+          "name": "confirmHeader",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 9
+        },
+        {
+          "name": "confirmMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 10
+        },
+        {
+          "name": "confirmStyle",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 11
+        },
+        {
+          "name": "cancelStyle",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 12
+        },
+        {
+          "name": "cancelHeader",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 13
+        },
+        {
+          "name": "cancelMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 14
+        },
+        {
+          "name": "confirmAccessibilityText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 15
+        },
+        {
+          "name": "cancelAccessibilityText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 16
+        },
+        {
+          "name": "cancelShowWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 17
+        },
+        {
+          "name": "confirmSize",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 18
+        },
+        {
+          "name": "cancelSize",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 19
+        },
+        {
+          "name": "confirmValidationGroup",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 20
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 21
+        }
+      ],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_CO_FM_startPageForAction"
+      ]
+    },
+    {
+      "uuid": "_a-0000e4b1-2fbc-8000-9bc6-011c48011c48_933789",
+      "name": "AS_CO_FM_startPageForAction",
+      "type": "Interface",
+      "description": "Common form which can be used in all start pages for an action",
+      "parameters": [
+        {
+          "name": "formLabel",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "primaryName",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "instructions",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "formContents",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "confirmLabel",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "cancelLabel",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "confirmSaveInto",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 6
+        },
+        {
+          "name": "confirmDisabled",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 7
+        },
+        {
+          "name": "cancelSaveInto",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 8
+        },
+        {
+          "name": "formIcon",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 9
+        },
+        {
+          "name": "formValidations",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 10
+        },
+        {
+          "name": "confirmSubmit",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 11
+        },
+        {
+          "name": "confirmHeader",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 12
+        },
+        {
+          "name": "confirmMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 13
+        }
+      ],
+      "calls": [
+        "AS_CO_CPS_cancelSaveButtons",
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_FM_deactivateQuestionnaireTemplate"
+      ]
+    },
+    {
+      "uuid": "_a-0000e4b1-2fbc-8000-9bc6-011c48011c48_857474-gcm",
+      "name": "AS_GCM_QNM_FM_deactivateQuestionnaireTemplate",
+      "type": "Interface",
+      "description": "Confirmation screen to delete a questionnaire template",
+      "parameters": [
+        {
+          "name": "questionnaireTemplate",
+          "type": "urn:com:appian:recordtype:datatype:9f80ae61-036a-46c1-8975-aebefe443c6e",
+          "raw_type": "urn:com:appian:recordtype:datatype:9f80ae61-036a-46c1-8975-aebefe443c6e",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "userAction",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "originalQuestionnaireTemplate",
+          "type": "urn:com:appian:recordtype:datatype:9f80ae61-036a-46c1-8975-aebefe443c6e",
+          "raw_type": "urn:com:appian:recordtype:datatype:9f80ae61-036a-46c1-8975-aebefe443c6e",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        }
+      ],
+      "calls": [
+        "AS_CO_ENUM_USER_ACTION_CANCEL",
+        "AS_CO_ENUM_USER_ACTION_DELETE",
+        "AS_CO_FM_startPageForAction",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_QNM_INT_DEFAULT_QUESTIONNAIRE_TEMPLATE_ID"
+      ],
+      "called_by": [
+        "AS GCM QNM Deactivate Questionnaire Template"
+      ]
+    },
+    {
+      "uuid": "0002e4d2-ba0c-8000-11bf-7f0000014e7a-gcm",
+      "name": "AS GCM QNM Deactivate Questionnaire Template",
+      "type": "Process Model",
+      "description": "Used to mark a questionnaire template as deactivated",
+      "calls": [
+        "AS_CO_ENUM_USER_ACTION_CANCEL",
+        "AS_GCM_QNM_ADT_UT_startAuditProcess_Parameters_Questionnaire_Template",
+        "AS_GCM_QNM_FM_deactivateQuestionnaireTemplate",
+        "AS_GCM_QNM_setMetaDataForTemplateQuestionnaireRecord",
+        "AS_GCM_QNM_writeRecordsPropertiesForTemplateQuestionnaire"
+      ],
+      "called_by": [
+        "AS GCM QNM T Questionnaire"
+      ]
+    },
+    {
+      "uuid": "9f80ae61-036a-46c1-8975-aebefe443c6e",
+      "name": "AS GCM QNM T Questionnaire",
+      "type": "Record Type",
+      "description": "Sync record for AS_GCM_QNM_T_Questionnaire",
+      "actions": [
+        "newQuestionnaire",
+        "update",
+        "setAsDefault",
+        "deleteQuestionnaire",
+        "cloneQuestionnaire",
+        "viewAuditHistory"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS GCM QNM Deactivate Questionnaire Template",
+        "AS_GCM_QNM_QR_getQuestionnaire_Template_BatchQueryQuestions"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_QR_getQuestionnaire_Template"
+      ]
+    }
+  ]
+}

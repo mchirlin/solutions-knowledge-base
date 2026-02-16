@@ -1,0 +1,2011 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GCM Write Clause Set Related Details",
+    "parent_name": null,
+    "total_objects": 131
+  },
+  "entry_point": {
+    "complexity_score": 42.0,
+    "total_nodes": 20,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GCM Write Clause Set Related Details",
+      "complexity_score": 42.0,
+      "total_nodes": 20,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Is Questionnaire null?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Skip Clause Inclusion reason?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Clause Set Clause Inclusion reasons",
+            "Create Folders"
+          ]
+        },
+        {
+          "name": "Skip Clause Text Handling?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Clause Text Handling",
+            "Set ClauseSet Status to Draft"
+          ]
+        },
+        {
+          "name": "Is Questionnaire null?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Get Original Clause set Clauses (Yes)",
+            "Save questionnaire (No)"
+          ]
+        },
+        {
+          "name": "Split",
+          "type": "Complex Gateway",
+          "next": [
+            "Capture Audit",
+            "Write Clauses (Copy Clause Set Clauses / Create award from solicitation)",
+            "Manage Clause Set Causes (Create/Update Clause Set)"
+          ]
+        },
+        {
+          "name": "Sync Clause Set Clauses and Section",
+          "type": "Start Process",
+          "next": [
+            "Filter Active Clauses in Clause Set"
+          ]
+        },
+        {
+          "name": "Join",
+          "type": "AND_GATEWAY",
+          "next": [
+            "DUMMY"
+          ]
+        },
+        {
+          "name": "Get Original Clause set Clauses",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Split"
+          ]
+        },
+        {
+          "name": "Write Clauses",
+          "type": "Write to Multiple DSE",
+          "next": [
+            "Filter Active Clauses in Clause Set"
+          ]
+        },
+        {
+          "name": "Filter Active Clauses in Clause Set",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Join"
+          ]
+        },
+        {
+          "name": "DUMMY",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Skip Clause Text Handling?"
+          ]
+        },
+        {
+          "name": "Clause Text Handling",
+          "type": "Start Process",
+          "next": [
+            "Set ClauseSet Status to Draft"
+          ]
+        },
+        {
+          "name": "Set ClauseSet Status to Draft",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Skip Clause Inclusion reason?"
+          ]
+        },
+        {
+          "name": "Create Folders",
+          "type": "Start Process (v2)",
+          "next": [
+            "Capture Clause Metrics"
+          ]
+        },
+        {
+          "name": "Capture Clause Metrics",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Manage Clause Set Causes",
+          "type": "Execute Stored Procedure",
+          "next": [
+            "Sync Clause Set Clauses and Section"
+          ]
+        },
+        {
+          "name": "Clause Set Clause Inclusion reasons",
+          "type": "Start Process (v2)",
+          "next": [
+            "Create Folders"
+          ]
+        },
+        {
+          "name": "Save questionnaire",
+          "type": "Start Process",
+          "next": [
+            "Get Original Clause set Clauses"
+          ]
+        },
+        {
+          "name": "Capture Audit",
+          "type": "Start Process",
+          "next": [
+            "Join"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290131",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+      "type": "Constant",
+      "description": "DATA_SUBSET - Returns a type of DataSubset when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "DATA_SUBSET",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_GCM_BL_GetPreviousSetIdForAmendmentOrModification",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_QNM_QE_getQuestionnaireAudits",
+        "AS_GCM_UT_formatDataBasedOnReturnType",
+        "AS_GCM_UT_getIdentifiersInBatches"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290163",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "description": "OBJECT_ARRAY - Returns an array type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "OBJECT_ARRAY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details",
+        "AS_CO_UT_queryEntity",
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_QNM_QE_getQuestionnaireAudits",
+        "AS_GCM_UT_formatDataBasedOnReturnType"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290157",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "description": "SINGLE_OBJECT - Returns a single type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "SINGLE_OBJECT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details",
+        "AS_CO_UT_queryEntity",
+        "AS_GCM_UT_formatDataBasedOnReturnType"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5d4-2024-8000-9baf-011c48011c48_336091",
+      "name": "AS_FRM_BOOL_RULE_CUSTOMIZATION_1_0_ENABLED",
+      "type": "Constant",
+      "description": "Returns true if customizable rules using the 1.0 SDK is enabled",
+      "value": "true",
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "AS_FRM_determineRuntimeRule"
+      ]
+    },
+    {
+      "uuid": "_a-0000e675-e3a8-8000-9bcb-011c48011c48_1455048",
+      "name": "AS_GCM_CONTRACT_TYPE_ID_AE",
+      "type": "Constant",
+      "description": "Value: 13 - Architect-Engineering (AE)",
+      "value": "13",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_returnSmartMatrixColumnForRefClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e675-e3a8-8000-9bcb-011c48011c48_1455027",
+      "name": "AS_GCM_CONTRACT_TYPE_ID_COM_SVC",
+      "type": "Constant",
+      "description": "Value: 11 - Communication Services (COM SVC)",
+      "value": "11",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_returnSmartMatrixColumnForRefClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000eafa-c1cb-8000-9cf0-011c48011c48_9227104",
+      "name": "AS_GCM_CONTRACT_TYPE_ID_CP_CS",
+      "type": "Constant",
+      "description": "Value: 20 - Commercial Products/Commercial Services",
+      "value": "20",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_returnSmartMatrixColumnForRefClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e675-e3a8-8000-9bcb-011c48011c48_1457076",
+      "name": "AS_GCM_CONTRACT_TYPE_ID_CR_CON",
+      "type": "Constant",
+      "description": "Value: 8 - Cost Reimbursement Construction",
+      "value": "8",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_returnSmartMatrixColumnForRefClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e825-ca6c-8000-9bf8-011c48011c48_2525177",
+      "name": "AS_GCM_CONTRACT_TYPE_ID_CR_RD",
+      "type": "Constant",
+      "description": "Value: 4 - Cost Reimbursement Research & Development",
+      "value": "4",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_returnSmartMatrixColumnForRefClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e825-ca6c-8000-9bf8-011c48011c48_2525163",
+      "name": "AS_GCM_CONTRACT_TYPE_ID_CR_SUP",
+      "type": "Constant",
+      "description": "Value: 2 - Cost Reimbursement Supply",
+      "value": "2",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_returnSmartMatrixColumnForRefClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e825-ca6c-8000-9bf8-011c48011c48_2525185",
+      "name": "AS_GCM_CONTRACT_TYPE_ID_CR_SVC",
+      "type": "Constant",
+      "description": "Value: 6 - Cost Reimbursement Service",
+      "value": "6",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_returnSmartMatrixColumnForRefClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e675-e3a8-8000-9bcb-011c48011c48_1455042",
+      "name": "AS_GCM_CONTRACT_TYPE_ID_DDR",
+      "type": "Constant",
+      "description": "Value: 12 - Dismantling, Demolition, or Removal of Improvements (DDR)",
+      "value": "12",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_returnSmartMatrixColumnForRefClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e675-e3a8-8000-9bcb-011c48011c48_1455056",
+      "name": "AS_GCM_CONTRACT_TYPE_ID_FAC",
+      "type": "Constant",
+      "description": "Value: 14- Facilities (FAC)",
+      "value": "14",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_returnSmartMatrixColumnForRefClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e825-ca6c-8000-9bf8-011c48011c48_2525215",
+      "name": "AS_GCM_CONTRACT_TYPE_ID_FP_CON",
+      "type": "Constant",
+      "description": "Value: 7 - Fixed Price Construction",
+      "value": "7",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_returnSmartMatrixColumnForRefClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e675-e3a8-8000-9bcb-011c48011c48_1457090",
+      "name": "AS_GCM_CONTRACT_TYPE_ID_FP_RD",
+      "type": "Constant",
+      "description": "Value: 3 - Fixed Price Research & Development",
+      "value": "3",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_returnSmartMatrixColumnForRefClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e675-e3a8-8000-9bcb-011c48011c48_1457097",
+      "name": "AS_GCM_CONTRACT_TYPE_ID_FP_SUP",
+      "type": "Constant",
+      "description": "Value: 1 - Fixed Price Supply",
+      "value": "1",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_returnSmartMatrixColumnForRefClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e675-e3a8-8000-9bcb-011c48011c48_1457083",
+      "name": "AS_GCM_CONTRACT_TYPE_ID_FP_SVC",
+      "type": "Constant",
+      "description": "Value: 5 - Fixed Price Service",
+      "value": "5",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_returnSmartMatrixColumnForRefClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e675-e3a8-8000-9bcb-011c48011c48_1455432",
+      "name": "AS_GCM_CONTRACT_TYPE_ID_IND_DEL",
+      "type": "Constant",
+      "description": "Value: 15 - Infinite Delivery (IND DEL)",
+      "value": "15",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_returnSmartMatrixColumnForRefClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e675-e3a8-8000-9bcb-011c48011c48_1455021",
+      "name": "AS_GCM_CONTRACT_TYPE_ID_LMV",
+      "type": "Constant",
+      "description": "Value: 10 - Leasing of Motor Vehicles (LMV)",
+      "value": "10",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_returnSmartMatrixColumnForRefClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e675-e3a8-8000-9bcb-011c48011c48_1457061",
+      "name": "AS_GCM_CONTRACT_TYPE_ID_SAP",
+      "type": "Constant",
+      "description": "Value: 17- Simplified Acquisition Procedures  (excluding micro-purchase)",
+      "value": "17",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_returnSmartMatrixColumnForRefClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e675-e3a8-8000-9bcb-011c48011c48_1457069",
+      "name": "AS_GCM_CONTRACT_TYPE_ID_TM_LH",
+      "type": "Constant",
+      "description": "Value: 9 - Labor Hours",
+      "value": "9",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_returnSmartMatrixColumnForRefClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e675-e3a8-8000-9bcb-011c48011c48_1455763",
+      "name": "AS_GCM_CONTRACT_TYPE_ID_TRN",
+      "type": "Constant",
+      "description": "Value: 16 - Transportation(TRN)",
+      "value": "16",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_returnSmartMatrixColumnForRefClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e675-e3a8-8000-9bcb-011c48011c48_1455770",
+      "name": "AS_GCM_CONTRACT_TYPE_ID_UTL_SVC",
+      "type": "Constant",
+      "description": "Value: 18 - Utility Services (UTL SVC)",
+      "value": "18",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_returnSmartMatrixColumnForRefClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb72-c933-8000-9d28-011c48011c48_10487326",
+      "name": "AS_GCM_CO_INT_QUERY_RECORD_MAX_BATCH_SIZE",
+      "type": "Constant",
+      "description": "Batch size: 5000",
+      "value": "5000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000e63a-a5cb-8000-9bc6-011c48011c48_1229082",
+      "name": "AS_GCM_ENT_CLAUSE_SET",
+      "type": "Constant",
+      "description": "Data Store Entity constant for AS_GCM_Clause_Set",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details",
+        "AS_GCM_QE_getClauseSetDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1196828",
+      "name": "AS_GCM_ENT_CLAUSE_SET_CLAUSE",
+      "type": "Constant",
+      "description": "Data Store Entity constant for AS_GCM_ClauseSet_Clause",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details",
+        "AS_GCM_QE_getClauseSetClauseDetails",
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed52-a319-8000-9df0-011c48011c48_15065746",
+      "name": "AS_GCM_ENUM_WRITE_CLAUSE_SET_CLAUSES_MILESTONE",
+      "type": "Constant",
+      "description": "Represents the Write Clause Set Clauses milestone in Clause Set Creation or update process\nValue: 2",
+      "value": "2",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed52-a319-8000-9df0-011c48011c48_15040672",
+      "name": "AS_GCM_INT_CLAUSE_SET_TOTAL_GENERATION_STEPS",
+      "type": "Constant",
+      "description": "Total no of milestones involved in clause create, update, copy and create award from solicitation actions\nvalue : 6",
+      "value": "6",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0001ee5e-3671-8000-9e32-011c48011c48_16717036",
+      "name": "AS_GCM_INT_MAP_CLAUSE_SET_CLAUSES_SP_TIME_OUT",
+      "type": "Constant",
+      "description": "Value: 30",
+      "value": "30",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3128242",
+      "name": "AS_GCM_INT_QUERY_BATCH_SIZE_LARGE",
+      "type": "Constant",
+      "description": "Batch size: 500",
+      "value": "500",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3111916",
+      "name": "AS_GCM_INT_QUERY_BATCH_SIZE_TINY",
+      "type": "Constant",
+      "description": "Batch size: 10",
+      "value": "10",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching",
+        "AS_GCM_UT_getIdentifiersInBatches"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb8e-789f-8000-9d34-011c48011c48_11021562",
+      "name": "AS_GCM_PM_CREATE_CLAUSE_SET_DOCUMENT_FOLDER",
+      "type": "Constant",
+      "description": "Value: AS GCM Create Clause Set Document Folder",
+      "value": "AS GCM Create Clause Set Document Folder",
+      "value_type": "http://www.appian.com/ae/types/2009:ProcessModel",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000ebe1-785a-8000-9d61-011c48011c48_11947123",
+      "name": "AS_GCM_PM_MANAGE_CLAUSE_INCLUSION_REASON",
+      "type": "Constant",
+      "description": "Process model constant: AS GCM Manage Clause Inclusion Reasons",
+      "value": "AS GCM Manage Clause Inclusion Reasons",
+      "value_type": "http://www.appian.com/ae/types/2009:ProcessModel",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000e471-623a-8000-9bc3-011c48011c48_706629-gcm",
+      "name": "AS_GCM_QNM_ENT_A_QUESTIONNAIRE",
+      "type": "Constant",
+      "description": "Audit table DSE for questionnaires",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QNM_QE_getQuestionnaireAudits"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3262324",
+      "name": "AS_GCM_REF_ID_AFTER_OPERATOR",
+      "type": "Constant",
+      "description": "Operator value: After\nRef ID: 88",
+      "value": "88",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_SP_EvaluateRules"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3299024",
+      "name": "AS_GCM_REF_ID_AND_OPERATOR",
+      "type": "Constant",
+      "description": "Operator value: AND\nRef Id: 100",
+      "value": "100",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_SP_EvaluateRules"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3262286",
+      "name": "AS_GCM_REF_ID_BEFORE_OPERATOR",
+      "type": "Constant",
+      "description": "Operator value: Before\nREF ID: 87",
+      "value": "87",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_SP_EvaluateRules"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1404475",
+      "name": "AS_GCM_REF_ID_CATEGORY_AMENDMENT",
+      "type": "Constant",
+      "description": "Value: 14",
+      "value": "14",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details",
+        "AS_GCM_BL_GetPreviousSetIdForAmendmentOrModification",
+        "AS_GCM_BL_returnSmartMatrixColumnForRefClauses",
+        "AS_GCM_SP_EvaluateRules"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1404467",
+      "name": "AS_GCM_REF_ID_CATEGORY_MODIFICATION",
+      "type": "Constant",
+      "description": "Value: 42",
+      "value": "42",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details",
+        "AS_GCM_BL_GetPreviousSetIdForAmendmentOrModification",
+        "AS_GCM_BL_returnSmartMatrixColumnForRefClauses",
+        "AS_GCM_SP_EvaluateRules"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1308644",
+      "name": "AS_GCM_REF_ID_CLAUSE_ADDED_VIA_FAR_MATRIX",
+      "type": "Constant",
+      "description": "Value: 50",
+      "value": "50",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000e675-e3a8-8000-9bcb-011c48011c48_1460675",
+      "name": "AS_GCM_REF_ID_CLAUSE_ADDED_VIA_PREVIOUS_SET",
+      "type": "Constant",
+      "description": "Value: 64",
+      "value": "64",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1310909",
+      "name": "AS_GCM_REF_ID_CLAUSE_ADDED_VIA_RULE",
+      "type": "Constant",
+      "description": "Value: 48",
+      "value": "48",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1310902",
+      "name": "AS_GCM_REF_ID_CLAUSE_ADDED_VIA_TEMPLATE",
+      "type": "Constant",
+      "description": "Value: 49",
+      "value": "49",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1308531",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_CLAUSE_STATUS_COMPLETE",
+      "type": "Constant",
+      "description": "Contains Ref data Id for status Complete\nValue: 47",
+      "value": "47",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1308544",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_CLAUSE_STATUS_INCOMPLETE",
+      "type": "Constant",
+      "description": "Contains Ref data Id for status Incomplete\nValue: 46",
+      "value": "46",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea8c-0452-8000-9cbc-011c48011c48_7952400",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_DATA_CLAUSE_SET_TYPE",
+      "type": "Constant",
+      "description": "Constant for RefId : 104\n",
+      "value": "104",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_SP_EvaluateRules"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3290164",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACTING_OFFICER",
+      "type": "Constant",
+      "description": "Label: Contracting office\nRef Id: 95",
+      "value": "95",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_SP_EvaluateRules"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3290126",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_CATEGORY",
+      "type": "Constant",
+      "description": "Label: Contract category\nRef Id: 90",
+      "value": "90",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_SP_EvaluateRules"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3290209",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_END_DATE",
+      "type": "Constant",
+      "description": "Label: Contract end date\nRef Id: 99",
+      "value": "99",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_SP_EvaluateRules"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3290112",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_METHOD",
+      "type": "Constant",
+      "description": "Label: Contract method\nRef Id: 91",
+      "value": "91",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_SP_EvaluateRules"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3290183",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_OFFICER_REP",
+      "type": "Constant",
+      "description": "Label: Contracting office representative\nRef Id: 97",
+      "value": "97",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_SP_EvaluateRules"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3290171",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_SPECIALIST",
+      "type": "Constant",
+      "description": "Label: Contract specialist\nRef Id: 96",
+      "value": "96",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_SP_EvaluateRules"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3290203",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_START_DATE",
+      "type": "Constant",
+      "description": "Label: Contract start date\nRef Id: 98",
+      "value": "98",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_SP_EvaluateRules"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3290141",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_DATA_ESTIMATED_DOLLAR_AMOUNT",
+      "type": "Constant",
+      "description": "Label: Estimated dollar amount\nRef Id: 92",
+      "value": "92",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_SP_EvaluateRules"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3290153",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_DATA_NAICS_CODE",
+      "type": "Constant",
+      "description": "Label: Naics\nRef Id: 94",
+      "value": "94",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_SP_EvaluateRules"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3290147",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_DATA_PSC",
+      "type": "Constant",
+      "description": "Label: Psc\nRef Id: 93",
+      "value": "93",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_SP_EvaluateRules"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1487457",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_STATUS_DRAFT",
+      "type": "Constant",
+      "description": "Contains Ref data Id for status Draft\nValue: 38",
+      "value": "38",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1276927",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_STATUS_FINALIZED",
+      "type": "Constant",
+      "description": "Contains Ref data Id for status Finalized\nValue: 40",
+      "value": "40",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_GetPreviousSetIdForAmendmentOrModification"
+      ]
+    },
+    {
+      "uuid": "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1214447",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_TYPE_AWARD",
+      "type": "Constant",
+      "description": "Value: 12",
+      "value": "12",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed9c-6a3c-8000-9e00-011c48011c48_15616071",
+      "name": "AS_GCM_REF_ID_CONTRACT_FORMAT_UCF",
+      "type": "Constant",
+      "description": "Contains Ref data Id for UCF contract format\nValue: 114",
+      "value": "114",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3285469",
+      "name": "AS_GCM_REF_ID_CONTRACT_TYPE_DATA",
+      "type": "Constant",
+      "description": "Label: Contract type\nRef Id: 89",
+      "value": "89",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_SP_EvaluateRules"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3262177",
+      "name": "AS_GCM_REF_ID_EQUALS_OPERATOR",
+      "type": "Constant",
+      "description": "Operator value: Equals\nRef Id: 62",
+      "value": "62",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_SP_EvaluateRules"
+      ]
+    },
+    {
+      "uuid": "_a-0000e69a-ff03-8000-9bd0-011c48011c48_1621530",
+      "name": "AS_GCM_REF_ID_FORMAT_FULL_TEXT",
+      "type": "Constant",
+      "description": "Value: 6\nNote: It was formerly AS_GCM_REF_ID_FORMAT_UCF. Its renamed because of ref_label change in AS_GCM_R_DATA table.",
+      "value": "6",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3262165",
+      "name": "AS_GCM_REF_ID_GREATER_THAN_OPERATOR",
+      "type": "Constant",
+      "description": "Operator value: Greater than\nRef Id: 82",
+      "value": "82",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_SP_EvaluateRules"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3262066",
+      "name": "AS_GCM_REF_ID_IS_BETWEEN_OPERATOR",
+      "type": "Constant",
+      "description": "Operator value: Is between\nRef Id: 84",
+      "value": "84",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_SP_EvaluateRules"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3262043",
+      "name": "AS_GCM_REF_ID_IS_NOT_OPERATOR",
+      "type": "Constant",
+      "description": "Operator value: Is not\nRef Id: 86",
+      "value": "86",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_SP_EvaluateRules"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3262073",
+      "name": "AS_GCM_REF_ID_IS_OPERATOR",
+      "type": "Constant",
+      "description": "Operator value: Is\nRef Id: 85",
+      "value": "85",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_SP_EvaluateRules"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3261992",
+      "name": "AS_GCM_REF_ID_LESS_THAN_OPERATOR",
+      "type": "Constant",
+      "description": "Operator value: Less than\nRef Id: 83",
+      "value": "83",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_SP_EvaluateRules"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3262280",
+      "name": "AS_GCM_REF_ID_NOT_EQUALS_OPERATOR",
+      "type": "Constant",
+      "description": "Operator value: Not Equals\nRef Id: 63",
+      "value": "63",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_SP_EvaluateRules"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3311688",
+      "name": "AS_GCM_REF_ID_QUESTIONNAIRE_QUESTION_DATA",
+      "type": "Constant",
+      "description": "Label: Questionnaire Question\nRef Id: 102",
+      "value": "102",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_SP_EvaluateRules"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1374072",
+      "name": "AS_GCM_REF_ID_USAGE_EXCLUDED",
+      "type": "Constant",
+      "description": "Ref data id - 57",
+      "value": "57",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details",
+        "AS_GCM_QE_getClauseSetDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1499526",
+      "name": "AS_GCM_REF_ID_USAGE_INCLUDED",
+      "type": "Constant",
+      "description": "Ref ID: Required - 66",
+      "value": "66",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1409860",
+      "name": "AS_GCM_REF_ID_USAGE_REQUIRED",
+      "type": "Constant",
+      "description": "Ref ID: Required - 8",
+      "value": "8",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000eafa-c1cb-8000-9cf0-011c48011c48_9139218",
+      "name": "AS_GCM_TXT_CLAUSE_ADD_VIA_FAR_MATRIX",
+      "type": "Constant",
+      "description": "Value: FAR Matrix",
+      "value": "FAR Matrix",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000eafa-c1cb-8000-9cf0-011c48011c48_9139205",
+      "name": "AS_GCM_TXT_CLAUSE_ADD_VIA_RULES",
+      "type": "Constant",
+      "description": "Value: Rules",
+      "value": "Rules",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000eafa-c1cb-8000-9cf0-011c48011c48_9139211",
+      "name": "AS_GCM_TXT_CLAUSE_ADD_VIA_TEMPLATE",
+      "type": "Constant",
+      "description": "Value: Template",
+      "value": "Template",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee01-ec73-8000-9e19-011c48011c48_16159442",
+      "name": "AS_GCM_TXT_DATA_SOURCE",
+      "type": "Constant",
+      "description": "Value: jdbc/Appian\nHolds data source of business data",
+      "value": "jdbc/Appian",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details",
+        "AS_GCM_SP_EvaluateRules"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee01-ec73-8000-9e19-011c48011c48_16159450",
+      "name": "AS_GCM_TXT_SP_EVALUATE_RULES",
+      "type": "Constant",
+      "description": "Value: AS_GCM_EVALUATE_RULES\nHolds Stored Procedure Name - used at AS_GCM_SP_EvaluateRules rule in Clause set creation/update process",
+      "value": "AS_GCM_EVALUATE_RULES",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_SP_EvaluateRules"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee01-ec73-8000-9e19-011c48011c48_16175613",
+      "name": "AS_GCM_TXT_SP_MANAGE_CLS_ST_CLSES",
+      "type": "Constant",
+      "description": "Value: AS_GCM_MANAGE_CLS_ST_CLSES\nHolds Stored Procedure Name - used at AS GCM Write Clause Set Related Details process in Clause set creation/update process",
+      "value": "AS_GCM_MANAGE_CLS_ST_CLSES",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_291284",
+      "name": "AS_CO_CONS_PRIMITIVE_TYPE_ARRAY",
+      "type": "Expression Rule",
+      "description": "Array of type numbers of primitive types (1 text, 2 int, 3 dec, 4 boolean, 5 date, 6 datetime, 7 time, 8 user, 9 group, 10 user or group, 11 document, 12 folder)",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_zINTERNAL_returnCdtFields_primitiveTypeCheckHandler"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed08-d796-8000-9dda-011c48011c48_14567642",
+      "name": "AS_CO_UT_ContainsValueByField",
+      "type": "Expression Rule",
+      "description": "it's only used by `AS_CO_UT_Filter`.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_Filter_Reducer"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed08-d796-8000-9dda-011c48011c48_14552299",
+      "name": "AS_CO_UT_Filter",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_Example_RECORD",
+        "AS_CO_UT_Filter_Reducer"
+      ],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details",
+        "AS_GCM_BL_returnSmartMatrixColumnForRefClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed08-d796-8000-9dda-011c48011c48_14552306",
+      "name": "AS_CO_UT_Filter_Reducer",
+      "type": "Expression Rule",
+      "description": "Do not call this rule directly, it's only used by `AS_CO_UT_Filter`.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_ContainsValueByField"
+      ],
+      "called_by": [
+        "AS_CO_UT_Filter"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39070",
+      "name": "AS_CO_UT_booleanDefaultFalse",
+      "type": "Expression Rule",
+      "description": "Default a null value to false, otherwise returns the boolean value",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_displayValueMultiple",
+        "AS_GCM_QE_getClauseSetDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157603",
+      "name": "AS_CO_UT_cast",
+      "type": "Expression Rule",
+      "description": "Casts a variable to the type of either the input `type`, or the typeof of the input `typeof`, and properly handles for null inputs",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details",
+        "AS_CO_UT_queryEntity",
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching",
+        "AS_GCM_UT_formatDataBasedOnReturnType"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_187421",
+      "name": "AS_CO_UT_displayValue",
+      "type": "Expression Rule",
+      "description": "Executes displayValue, but allows setting the default to either the first or last value of the replacement list, or a custom value",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_displayValueMultiple",
+        "AS_CO_UT_queryEntity"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_41232",
+      "name": "AS_CO_UT_displayValueMultiple",
+      "type": "Expression Rule",
+      "description": "For each item in the values list, executes displayValue.  Allows setting the default to either the first or last value of the replacement list, or a custom value.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_booleanDefaultFalse",
+        "AS_CO_UT_displayValue",
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_GCM_BL_returnSmartMatrixColumnForRefClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75800",
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "description": "Filters a CDT by a matching a single value or list of values in a single field, if a list is passed, all matches are returned",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_returnCdtIndicesByField"
+      ],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details",
+        "AS_CO_UT_sortCdt"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76433",
+      "name": "AS_CO_UT_indexPath",
+      "type": "Expression Rule",
+      "description": "Pass in a field (i.e. member[1].name) and this will index(index(index( for each field",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details",
+        "AS_CO_UT_returnCdtIndicesByField",
+        "AS_GCM_BL_returnSmartMatrixColumnForRefClauses",
+        "AS_GCM_SP_EvaluateRules",
+        "AS_GCM_UT_nullifyEmptyNestedCdtFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6a4-3c85-8000-9ba5-011c48011c48_45984",
+      "name": "AS_CO_UT_indexWhere",
+      "type": "Expression Rule",
+      "description": "Will find the index of a value in one array and return the value in a different array at that same index",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details",
+        "AS_CO_UT_indexWhere",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_rejectCdtByField",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_sortCdt",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+        "AS_CO_UT_whereContains",
+        "AS_GAM_UT_queryEntityWithSelection",
+        "AS_GCM_BL_returnSmartMatrixColumnForRefClauses",
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_QNM_QE_getQuestionnaireAudits",
+        "AS_GCM_SP_EvaluateRules",
+        "AS_GCM_UT_formatDataBasedOnReturnType",
+        "AS_GCM_UT_getIdentifiersInBatches",
+        "AS_GCM_UT_nullifyEmptyNestedCdtFields",
+        "AS_GCM_substituteListFromTextUsingReduce"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around AS_CO_UT_isBlank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_displayValueMultiple",
+        "AS_CO_UT_queryEntity",
+        "AS_GCM_BL_GetPreviousSetIdForAmendmentOrModification",
+        "AS_GCM_QE_getClauseSetClauseDetails",
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_updateDataByModifierMaps",
+        "AS_GCM_updateDataByModifierMaps_Reducer"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157870",
+      "name": "AS_CO_UT_queryEntity",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_displayValue",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_returnCdtFields"
+      ],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetClauseDetails",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_QNM_QE_getQuestionnaireAudits"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_271202",
+      "name": "AS_CO_UT_rejectCdtByField",
+      "type": "Expression Rule",
+      "description": "Removes CDT indices where a match of a single value or list of values in a single field is found, if a list is passed, all matches are rejected",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_returnCdtIndicesByField"
+      ],
+      "called_by": [
+        "AS_CO_UT_sortCdt"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367",
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_BL_returnSmartMatrixColumnForRefClauses",
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73980",
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "description": "Returns nullableValue only if it is not null. Else returns replacementValue.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_sortCdt",
+        "AS_GAM_UT_queryEntityWithSelection",
+        "AS_GCM_SP_EvaluateRules"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75660",
+      "name": "AS_CO_UT_returnCdtFields",
+      "type": "Expression Rule",
+      "description": "Returns an array of a CDTs fields. Note that this only works on Appian CDTs, not Dictionary or List of Variant",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_returnSingleTypeObject",
+        "AS_CO_UT_zINTERNAL_returnCdtFields_handler",
+        "AS_CO_UT_zINTERNAL_returnCdtFields_primitiveTypeCheckHandler"
+      ],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_GCM_UT_nullifyEmptyNestedCdtFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_269546",
+      "name": "AS_CO_UT_returnCdtIndicesByField",
+      "type": "Expression Rule",
+      "description": "Returns the indices of a CDT by a matching a single value or list of values in a single field, if a list is passed, all matches are returned",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_whereContains"
+      ],
+      "called_by": [
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_rejectCdtByField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75842",
+      "name": "AS_CO_UT_returnSingleTypeObject",
+      "type": "Expression Rule",
+      "description": "Takes in either an array type or a primitive type and returns the singular type object, works for CDTs or primitive types",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_returnCdtFields",
+        "AS_CO_UT_zINTERNAL_returnCdtFields_handler"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75720",
+      "name": "AS_CO_UT_sortCdt",
+      "type": "Expression Rule",
+      "description": "Sorts a CDT, dictionary, or complex type.  Pass nullsFirst to explicitly sort nulls first or last.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_rejectCdtByField",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_162769",
+      "name": "AS_CO_UT_typeCompare",
+      "type": "Expression Rule",
+      "description": "Returns true if the two input types match",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_whereContains",
+        "AS_CO_UT_zINTERNAL_returnCdtFields_primitiveTypeCheckHandler",
+        "AS_GCM_DetermineFarMatrixEvaluationBehaviour_wrapper",
+        "AS_GCM_IBRValidationDisabled_wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_269170",
+      "name": "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+      "type": "Expression Rule",
+      "description": "Allows passing field-value pairs to handle for use cases where you have to set newValues as arrays",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details",
+        "AS_GCM_UT_nullifyEmptyNestedCdtFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_272151",
+      "name": "AS_CO_UT_whereContains",
+      "type": "Expression Rule",
+      "description": "Enhanced wherecontains() which avoids type-casting issues and properly handles for document and group types",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_typeCompare"
+      ],
+      "called_by": [
+        "AS_CO_UT_returnCdtIndicesByField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_291236",
+      "name": "AS_CO_UT_zINTERNAL_returnCdtFields_handler",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_CO_UT_returnCdtFields`",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_returnSingleTypeObject"
+      ],
+      "called_by": [
+        "AS_CO_UT_returnCdtFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e36c-7599-8000-9ba2-011c48011c48_64438",
+      "name": "AS_CO_UT_zINTERNAL_returnCdtFields_primitiveTypeCheckHandler",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_CO_UT_returnCdtFields`",
+      "parameters": [],
+      "calls": [
+        "AS_CO_CONS_PRIMITIVE_TYPE_ARRAY",
+        "AS_CO_UT_typeCompare"
+      ],
+      "called_by": [
+        "AS_CO_UT_returnCdtFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5d4-2024-8000-9baf-011c48011c48_320878",
+      "name": "AS_FRM_determineRuntimeRule",
+      "type": "Expression Rule",
+      "description": "Returns the runtime rule for a default rule, uses plugin function `determineRuntimeRule()`",
+      "parameters": [],
+      "calls": [
+        "AS_FRM_BOOL_RULE_CUSTOMIZATION_1_0_ENABLED"
+      ],
+      "called_by": [
+        "AS_GCM_DetermineFarMatrixEvaluationBehaviour_wrapper",
+        "AS_GCM_IBRValidationDisabled_wrapper",
+        "AS_GCM_clauseInclusionAndExclusionLogicForClauseSet_wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-9390-8000-9baa-011c48011c48_134195",
+      "name": "AS_GAM_UT_getExpectedOutputDataFromStoredValue",
+      "type": "Expression Rule",
+      "description": "The rule returns the expected data output from the stored values of Write to Multiple DSE",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1523563",
+      "name": "AS_GAM_UT_queryEntityWithSelection",
+      "type": "Expression Rule",
+      "description": "Generic query entity with query selection (So that huge load can be avoided while querying)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee15-bcab-8000-9e1f-011c48011c48_16270145",
+      "name": "AS_GCM_BL_GetPreviousSetIdForAmendmentOrModification",
+      "type": "Expression Rule",
+      "description": "Returns Previous Set Id for Amendment or modification creation",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_REF_ID_CATEGORY_AMENDMENT",
+        "AS_GCM_REF_ID_CATEGORY_MODIFICATION",
+        "AS_GCM_REF_ID_CLAUSE_SET_STATUS_FINALIZED"
+      ],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000e675-e3a8-8000-9bcb-011c48011c48_1454668",
+      "name": "AS_GCM_BL_returnSmartMatrixColumnForRefClauses",
+      "type": "Expression Rule",
+      "description": "The rule returns the associated smart matrix column to get the usage based on the contracting details",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_Filter",
+        "AS_CO_UT_displayValueMultiple",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GCM_CONTRACT_TYPE_ID_AE",
+        "AS_GCM_CONTRACT_TYPE_ID_COM_SVC",
+        "AS_GCM_CONTRACT_TYPE_ID_CP_CS",
+        "AS_GCM_CONTRACT_TYPE_ID_CR_CON",
+        "AS_GCM_CONTRACT_TYPE_ID_CR_RD",
+        "AS_GCM_CONTRACT_TYPE_ID_CR_SUP",
+        "AS_GCM_CONTRACT_TYPE_ID_CR_SVC",
+        "AS_GCM_CONTRACT_TYPE_ID_DDR",
+        "AS_GCM_CONTRACT_TYPE_ID_FAC",
+        "AS_GCM_CONTRACT_TYPE_ID_FP_CON",
+        "AS_GCM_CONTRACT_TYPE_ID_FP_RD",
+        "AS_GCM_CONTRACT_TYPE_ID_FP_SUP",
+        "AS_GCM_CONTRACT_TYPE_ID_FP_SVC",
+        "AS_GCM_CONTRACT_TYPE_ID_IND_DEL",
+        "AS_GCM_CONTRACT_TYPE_ID_LMV",
+        "AS_GCM_CONTRACT_TYPE_ID_SAP",
+        "AS_GCM_CONTRACT_TYPE_ID_TM_LH",
+        "AS_GCM_CONTRACT_TYPE_ID_TRN",
+        "AS_GCM_CONTRACT_TYPE_ID_UTL_SVC",
+        "AS_GCM_REF_ID_CATEGORY_AMENDMENT",
+        "AS_GCM_REF_ID_CATEGORY_MODIFICATION"
+      ],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb85-3dbf-8000-9d30-011c48011c48_10645109",
+      "name": "AS_GCM_DetermineFarMatrixEvaluationBehaviour_wrapper",
+      "type": "Expression Rule",
+      "description": "A wrapper rule for the FAR Matrix evaluation of multiple contract types solutions hub toggle",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_typeCompare",
+        "AS_FRM_determineRuntimeRule"
+      ],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb97-b2e8-8000-9d39-011c48011c48_11164523",
+      "name": "AS_GCM_IBRValidationDisabled_wrapper",
+      "type": "Expression Rule",
+      "description": "A wrapper rule for the Ignore IBR Validation Errors solutions hub toggle",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_typeCompare",
+        "AS_FRM_determineRuntimeRule"
+      ],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1308946",
+      "name": "AS_GCM_MTR_SAVE_clausesAddedViaProvideDetails",
+      "type": "Expression Rule",
+      "description": "Metrics for clauses added via FAR Matric in a clause set",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1308960",
+      "name": "AS_GCM_MTR_SAVE_clausesAddedViaQuestionnaire",
+      "type": "Expression Rule",
+      "description": "Metrics for clauses added via Rules in a clause set",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1308953",
+      "name": "AS_GCM_MTR_SAVE_clausesAddedViaTemplate",
+      "type": "Expression Rule",
+      "description": "Metrics for clauses added via template in create clause set",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1270237",
+      "name": "AS_GCM_QE_getClauseSetClauseDetails",
+      "type": "Expression Rule",
+      "description": "Query Entity to get clause set clause details",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryEntity",
+        "AS_GCM_ENT_CLAUSE_SET_CLAUSE"
+      ],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3147338",
+      "name": "AS_GCM_QE_getClauseSetClauseDetailsWithBatching",
+      "type": "Expression Rule",
+      "description": "Query Entity to get clause set clause details with batching",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GAM_UT_queryEntityWithSelection",
+        "AS_GCM_ENT_CLAUSE_SET_CLAUSE",
+        "AS_GCM_INT_QUERY_BATCH_SIZE_TINY",
+        "AS_GCM_QE_getClauseSetClauseDetails",
+        "AS_GCM_UT_formatDataBasedOnReturnType",
+        "AS_GCM_UT_getIdentifiersInBatches",
+        "AS_GCM_UT_nullifyEmptyNestedCdtFields"
+      ],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000e63a-a5cb-8000-9bc6-011c48011c48_1230199",
+      "name": "AS_GCM_QE_getClauseSetDetails",
+      "type": "Expression Rule",
+      "description": "Query Entity to get clause set details",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_booleanDefaultFalse",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryEntity",
+        "AS_GCM_ENT_CLAUSE_SET",
+        "AS_GCM_REF_ID_USAGE_EXCLUDED"
+      ],
+      "called_by": [
+        "AS_GCM_BL_GetPreviousSetIdForAmendmentOrModification"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6d1-2aad-8000-9bdd-011c48011c48_1709759",
+      "name": "AS_GCM_QNM_QE_getQuestionnaireAudits",
+      "type": "Expression Rule",
+      "description": "Returns all Questionnaire Audit for Clause set",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_queryEntity",
+        "AS_GCM_QNM_ENT_A_QUESTIONNAIRE"
+      ],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee01-ec73-8000-9e19-011c48011c48_16155128",
+      "name": "AS_GCM_SP_EvaluateRules",
+      "type": "Expression Rule",
+      "description": "Executes Stored Procedure to retrieve rule ids that are applicable during clause set creation/update",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull",
+        "AS_GCM_REF_ID_AFTER_OPERATOR",
+        "AS_GCM_REF_ID_AND_OPERATOR",
+        "AS_GCM_REF_ID_BEFORE_OPERATOR",
+        "AS_GCM_REF_ID_CATEGORY_AMENDMENT",
+        "AS_GCM_REF_ID_CATEGORY_MODIFICATION",
+        "AS_GCM_REF_ID_CLAUSE_SET_DATA_CLAUSE_SET_TYPE",
+        "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACTING_OFFICER",
+        "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_CATEGORY",
+        "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_END_DATE",
+        "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_METHOD",
+        "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_OFFICER_REP",
+        "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_SPECIALIST",
+        "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_START_DATE",
+        "AS_GCM_REF_ID_CLAUSE_SET_DATA_ESTIMATED_DOLLAR_AMOUNT",
+        "AS_GCM_REF_ID_CLAUSE_SET_DATA_NAICS_CODE",
+        "AS_GCM_REF_ID_CLAUSE_SET_DATA_PSC",
+        "AS_GCM_REF_ID_CONTRACT_TYPE_DATA",
+        "AS_GCM_REF_ID_EQUALS_OPERATOR",
+        "AS_GCM_REF_ID_GREATER_THAN_OPERATOR",
+        "AS_GCM_REF_ID_IS_BETWEEN_OPERATOR",
+        "AS_GCM_REF_ID_IS_NOT_OPERATOR",
+        "AS_GCM_REF_ID_IS_OPERATOR",
+        "AS_GCM_REF_ID_LESS_THAN_OPERATOR",
+        "AS_GCM_REF_ID_NOT_EQUALS_OPERATOR",
+        "AS_GCM_REF_ID_QUESTIONNAIRE_QUESTION_DATA",
+        "AS_GCM_TXT_DATA_SOURCE",
+        "AS_GCM_TXT_SP_EVALUATE_RULES"
+      ],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3261182",
+      "name": "AS_GCM_UT_formatDataBasedOnReturnType",
+      "type": "Expression Rule",
+      "description": "Returns the data after formatting based on return type",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_GCM_updateDataByModifierMaps"
+      ],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching"
+      ]
+    },
+    {
+      "uuid": "5f18e821-865e-464d-b974-57c20096c58f",
+      "name": "AS_GCM_UT_getIdentifiersInBatches",
+      "type": "Expression Rule",
+      "description": "Returns the Identifiers in batches based on the batchingSize",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_UT_isBlank",
+        "AS_GCM_INT_QUERY_BATCH_SIZE_TINY"
+      ],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3284363",
+      "name": "AS_GCM_UT_getPrimaryKeyFieldByType",
+      "type": "Expression Rule",
+      "description": "Returns PrimaryKey Field based on type",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_nullifyEmptyNestedCdtFields"
+      ]
+    },
+    {
+      "uuid": "f28850a6-d0cc-4841-a587-a36a568d70a3",
+      "name": "AS_GCM_UT_nullifyEmptyNestedCdtFields",
+      "type": "Expression Rule",
+      "description": "Nulls out the nested cdt fields which are blank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_returnCdtFields",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+        "AS_GCM_UT_getPrimaryKeyFieldByType"
+      ],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb0d-4479-8000-9cfa-011c48011c48_9421873",
+      "name": "AS_GCM_clauseInclusionAndExclusionLogicForClauseSet_wrapper",
+      "type": "Expression Rule",
+      "description": "A wrapper rule to return the value from either custom rule or from default rule",
+      "parameters": [],
+      "calls": [
+        "AS_FRM_determineRuntimeRule"
+      ],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9761091",
+      "name": "AS_GCM_filterRecords",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GCM Write Clause Set Related Details"
+      ]
+    },
+    {
+      "uuid": "_a-0000e915-02bc-8000-9c1f-011c48011c48_3773120",
+      "name": "AS_GCM_substituteListFromTextUsingReduce",
+      "type": "Expression Rule",
+      "description": "This rule calls the fn!substitute in a fn!reduce to replace all the text with the given text. If no input is passed to ri!replaceWith the text will be replaced with empty string",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_updateDataByModifierMaps_Reducer"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec90-d194-8000-9dac-011c48011c48_13571682",
+      "name": "AS_GCM_updateDataByModifierMaps",
+      "type": "Expression Rule",
+      "description": "Modifies the data by applying the values supplied in modifierMaps",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_updateDataByModifierMaps_Reducer"
+      ],
+      "called_by": [
+        "AS_GCM_UT_formatDataBasedOnReturnType"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec90-d194-8000-9dac-011c48011c48_13571757",
+      "name": "AS_GCM_updateDataByModifierMaps_Reducer",
+      "type": "Expression Rule",
+      "description": "Modifies the data by applying the value supplied in modifierMap used in reduce",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_substituteListFromTextUsingReduce"
+      ],
+      "called_by": [
+        "AS_GCM_updateDataByModifierMaps"
+      ]
+    },
+    {
+      "uuid": "0021e9c3-ee68-8000-61d3-7f0000014e7a",
+      "name": "AS GCM Write Clause Set Related Details",
+      "type": "Process Model",
+      "description": "Process for writing the clause set related details",
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_Filter",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_indexWhere",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_sortCdt",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+        "AS_GAM_UT_getExpectedOutputDataFromStoredValue",
+        "AS_GCM_BL_GetPreviousSetIdForAmendmentOrModification",
+        "AS_GCM_BL_returnSmartMatrixColumnForRefClauses",
+        "AS_GCM_CO_INT_QUERY_RECORD_MAX_BATCH_SIZE",
+        "AS_GCM_DetermineFarMatrixEvaluationBehaviour_wrapper",
+        "AS_GCM_ENT_CLAUSE_SET",
+        "AS_GCM_ENT_CLAUSE_SET_CLAUSE",
+        "AS_GCM_ENUM_WRITE_CLAUSE_SET_CLAUSES_MILESTONE",
+        "AS_GCM_IBRValidationDisabled_wrapper",
+        "AS_GCM_INT_CLAUSE_SET_TOTAL_GENERATION_STEPS",
+        "AS_GCM_INT_MAP_CLAUSE_SET_CLAUSES_SP_TIME_OUT",
+        "AS_GCM_INT_QUERY_BATCH_SIZE_LARGE",
+        "AS_GCM_MTR_SAVE_clausesAddedViaProvideDetails",
+        "AS_GCM_MTR_SAVE_clausesAddedViaQuestionnaire",
+        "AS_GCM_MTR_SAVE_clausesAddedViaTemplate",
+        "AS_GCM_PM_CREATE_CLAUSE_SET_DOCUMENT_FOLDER",
+        "AS_GCM_PM_MANAGE_CLAUSE_INCLUSION_REASON",
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching",
+        "AS_GCM_QNM_QE_getQuestionnaireAudits",
+        "AS_GCM_REF_ID_CATEGORY_AMENDMENT",
+        "AS_GCM_REF_ID_CATEGORY_MODIFICATION",
+        "AS_GCM_REF_ID_CLAUSE_ADDED_VIA_FAR_MATRIX",
+        "AS_GCM_REF_ID_CLAUSE_ADDED_VIA_PREVIOUS_SET",
+        "AS_GCM_REF_ID_CLAUSE_ADDED_VIA_RULE",
+        "AS_GCM_REF_ID_CLAUSE_ADDED_VIA_TEMPLATE",
+        "AS_GCM_REF_ID_CLAUSE_SET_CLAUSE_STATUS_COMPLETE",
+        "AS_GCM_REF_ID_CLAUSE_SET_CLAUSE_STATUS_INCOMPLETE",
+        "AS_GCM_REF_ID_CLAUSE_SET_STATUS_DRAFT",
+        "AS_GCM_REF_ID_CLAUSE_SET_TYPE_AWARD",
+        "AS_GCM_REF_ID_CONTRACT_FORMAT_UCF",
+        "AS_GCM_REF_ID_FORMAT_FULL_TEXT",
+        "AS_GCM_REF_ID_USAGE_EXCLUDED",
+        "AS_GCM_REF_ID_USAGE_INCLUDED",
+        "AS_GCM_REF_ID_USAGE_REQUIRED",
+        "AS_GCM_SP_EvaluateRules",
+        "AS_GCM_TXT_CLAUSE_ADD_VIA_FAR_MATRIX",
+        "AS_GCM_TXT_CLAUSE_ADD_VIA_RULES",
+        "AS_GCM_TXT_CLAUSE_ADD_VIA_TEMPLATE",
+        "AS_GCM_TXT_DATA_SOURCE",
+        "AS_GCM_TXT_SP_MANAGE_CLS_ST_CLSES",
+        "AS_GCM_clauseInclusionAndExclusionLogicForClauseSet_wrapper",
+        "AS_GCM_filterRecords"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "382dda7d-5334-4c9b-a96f-b02ae5c6848a",
+      "name": "AS_CO_Example_RECORD",
+      "type": "Record Type",
+      "description": "Example record type",
+      "actions": [],
+      "views": [
+        "Record Header",
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_Filter"
+      ]
+    }
+  ]
+}

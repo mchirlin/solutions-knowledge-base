@@ -1,0 +1,30 @@
+{
+  "uuid": "5f10270b-9129-4268-b723-7cd28c453f02-gcm",
+  "name": "DEPREACTED_AS_GCM_QNM_UT_updateQuestionsOnDeletion",
+  "type": "Expression Rule",
+  "description": "rule to update the questions on the deletion",
+  "sail_code": "a!localVariables(\n  local!allQuestionsMinusSelected: rule!AS_GAM_rejectCdtOrRecordDataByField(\n    cdtOrRecord: ri!questionnaireTemplate[recordType!AS GCM QNM T Questionnaire.questions],\n    field: recordType!AS GCM QNM T Question.questionTemplateId,\n    value: ri!questions[recordType!AS GCM QNM T Question.questionTemplateId]\n  ),\n  local!allFollowUpQuestions: #\"SYSTEM_SYSRULES_forEach\"(\n    items: ri!questions,\n    expression: rule!AS_GCM_QNM_UT_retrieveAllFollowUpQuestions(\n      question: fv!item,\n      /* Avoid duplicating any selected questions */\n      allQuestions: local!allQuestionsMinusSelected\n    )\n  ),\n  rule!AS_GCM_QNM_setMetaDataForTemplateQuestionsRecord(\n    questions: rule!AS_GCM_setRecordFields(\n      record: append(\n        ri!questions,\n        local!allFollowUpQuestions\n      ),\n      alwaysOverwrite: {\n        a!map(\n          field: recordType!AS GCM QNM T Question.isActive,\n          value: false\n        ),\n        a!map(\n          field: recordType!AS GCM QNM T Question.questionnaireTemplateId,\n          value: null\n        )\n      }\n    ),\n    initiator: ri!modifiedBy\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GAM_rejectCdtOrRecordDataByField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QNM_UT_retrieveAllFollowUpQuestions",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QNM_setMetaDataForTemplateQuestionsRecord",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_setRecordFields",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

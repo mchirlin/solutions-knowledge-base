@@ -1,0 +1,352 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GCM Create Clause Set Document Folder",
+    "parent_name": null,
+    "total_objects": 21
+  },
+  "entry_point": {
+    "complexity_score": 13.0,
+    "total_nodes": 7,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GCM Create Clause Set Document Folder",
+      "complexity_score": 13.0,
+      "total_nodes": 7,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Appian folderId/ SP folderId null?"
+          ]
+        },
+        {
+          "name": "Terminate",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Modify Clause Set Doc Folder Security",
+          "type": "Modify Folder Security",
+          "next": [
+            "Terminate"
+          ]
+        },
+        {
+          "name": "Write Folder Ids Into ClauseSet",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Security needs update?"
+          ]
+        },
+        {
+          "name": "Appian folderId/ SP folderId null?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Security needs update? (No)",
+            "Create Doc Folders (Yes)"
+          ]
+        },
+        {
+          "name": "Security needs update?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Modify Clause Set Doc Folder Security (Yes)",
+            "Terminate (No)"
+          ]
+        },
+        {
+          "name": "Create Doc Folders",
+          "type": "Start Process",
+          "next": [
+            "Write Folder Ids Into ClauseSet"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e447-9390-8000-9baa-011c48011c48_43624",
+      "name": "AS_GAM_GRP_APPIAN_ADMINISTRATORS",
+      "type": "Constant",
+      "description": "Value: AS GAM Appian Administrators",
+      "value": "AS GAM Appian Administrators",
+      "value_type": "http://www.appian.com/ae/types/2009:Group",
+      "calls": [],
+      "called_by": [
+        "AS GCM Create Clause Set Document Folder",
+        "AS_GCM_BL_checkIfFolderSecurityNeedsUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_51575",
+      "name": "AS_GCM_FLD_CLAUSE_SET_FOLDERS",
+      "type": "Constant",
+      "description": "Folder  : AS GCM Clause Set Folders",
+      "value": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_51493",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationFolder",
+      "calls": [],
+      "called_by": [
+        "AS GCM Create Clause Set Document Folder"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_51507",
+      "name": "AS_GCM_GRP_ALL_BUSINESS_USERS",
+      "type": "Constant",
+      "description": "Value: AS GCM All Business users",
+      "value": "AS GCM All Business Users",
+      "value_type": "http://www.appian.com/ae/types/2009:Group",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_clauseSetDocumentFolderSecurity"
+      ]
+    },
+    {
+      "uuid": "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1202452",
+      "name": "AS_GCM_SHAREPOINT_FOLDER_ID",
+      "type": "Constant",
+      "description": "Main folder id for all the evaluation documents in Sharepoint Site.\n",
+      "value": null,
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM Create Clause Set Document Folder"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39070",
+      "name": "AS_CO_UT_booleanDefaultFalse",
+      "type": "Expression Rule",
+      "description": "Default a null value to false, otherwise returns the boolean value",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_not"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GCM Create Clause Set Document Folder",
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_dropNonWritableRelationshipsFromRecord_Reducer",
+        "AS_GCM_mergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around AS_CO_UT_isBlank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_dropNonWritableRelationshipsFromRecord_Reducer"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75636",
+      "name": "AS_CO_UT_not",
+      "type": "Expression Rule",
+      "description": "Null handles for not -- null returns true (null acts like false)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_booleanDefaultFalse"
+      ],
+      "called_by": [
+        "AS_GCM_BL_checkIfFolderSecurityNeedsUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1320473",
+      "name": "AS_GCM_BL_checkIfFolderSecurityNeedsUpdate",
+      "type": "Expression Rule",
+      "description": "Checks if the folder security is as expected. Returns true if it needs to be updated",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_not",
+        "AS_GAM_GRP_APPIAN_ADMINISTRATORS",
+        "AS_GCM_clauseSetDocumentFolderSecurity"
+      ],
+      "called_by": [
+        "AS GCM Create Clause Set Document Folder"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1404573",
+      "name": "AS_GCM_DSP_clauseSetRecordTitle",
+      "type": "Expression Rule",
+      "description": "Displays the clause set title - \"Set Number - Category Number\"",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_clauseSetFolderName"
+      ]
+    },
+    {
+      "uuid": "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1214402",
+      "name": "AS_GCM_UT_clauseSetFolderName",
+      "type": "Expression Rule",
+      "description": "Returns the clause set folder name to be used in Appian and SP folders",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_DSP_clauseSetRecordTitle"
+      ],
+      "called_by": [
+        "AS GCM Create Clause Set Document Folder"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1320481",
+      "name": "AS_GCM_clauseSetDocumentFolderSecurity",
+      "type": "Expression Rule",
+      "description": "Returns the group with editor access for clause set folder",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_GRP_ALL_BUSINESS_USERS"
+      ],
+      "called_by": [
+        "AS GCM Create Clause Set Document Folder",
+        "AS_GCM_BL_checkIfFolderSecurityNeedsUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9749583",
+      "name": "AS_GCM_dropNonWritableRelationshipsFromRecord",
+      "type": "Expression Rule",
+      "description": "Drops the specified non writable relationships. Retains the writable relationships if provided",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_dropNonWritableRelationshipsFromRecord_Reducer",
+        "AS_GCM_getAllPresentRelationshipsFromRecord"
+      ],
+      "called_by": [
+        "AS_GCM_writeRecordsPropertiesForClauseSetRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9756924",
+      "name": "AS_GCM_dropNonWritableRelationshipsFromRecord_Reducer",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_GCM_dropNonWritableRelationshipsFromRecord`",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_getAllPresentRelationshipsFromRecord"
+      ],
+      "called_by": [
+        "AS_GCM_dropNonWritableRelationshipsFromRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9761091",
+      "name": "AS_GCM_filterRecords",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_mergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9760625",
+      "name": "AS_GCM_getAllPresentRelationshipsFromRecord",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_GAM_dropNonWritableRelationshipsFromRecord`",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_getAllPresentRelationshipsFromRecord_Apply"
+      ],
+      "called_by": [
+        "AS_GCM_dropNonWritableRelationshipsFromRecord",
+        "AS_GCM_dropNonWritableRelationshipsFromRecord_Reducer",
+        "AS_GCM_getAllPresentRelationshipsFromRecord_Apply"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9760686",
+      "name": "AS_GCM_getAllPresentRelationshipsFromRecord_Apply",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_GCM_dropNonWritableRelationshipsFromRecord`",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_getAllPresentRelationshipsFromRecord"
+      ],
+      "called_by": [
+        "AS_GCM_getAllPresentRelationshipsFromRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9756839",
+      "name": "AS_GCM_mergeWriteRecordIdsToProcessVariable",
+      "type": "Expression Rule",
+      "description": "The main rule to merge the ID-output of a write records nodes to the input process variable (including all child FKs). IMPORTANT NOTES in comments in the rule.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_GCM_filterRecords",
+        "AS_GCM_setRecordFields"
+      ],
+      "called_by": [
+        "AS_GCM_writeRecordsPropertiesForClauseSetRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9760853",
+      "name": "AS_GCM_setRecordFields",
+      "type": "Expression Rule",
+      "description": "Runs a bulk update on a record object, setting new values for its fields",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GCM Create Clause Set Document Folder",
+        "AS_GCM_mergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb8e-789f-8000-9d34-011c48011c48_11021586",
+      "name": "AS_GCM_writeRecordsPropertiesForClauseSetRecord",
+      "type": "Expression Rule",
+      "description": "Contains the write properties to drop and update the record data in the process while writing.",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_dropNonWritableRelationshipsFromRecord",
+        "AS_GCM_mergeWriteRecordIdsToProcessVariable"
+      ],
+      "called_by": [
+        "AS GCM Create Clause Set Document Folder"
+      ]
+    },
+    {
+      "uuid": "0006e631-0584-8000-14ec-7f0000014e7a",
+      "name": "AS GCM Create Clause Set Document Folder",
+      "type": "Process Model",
+      "description": "Process model to create clause related folders",
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_GAM_GRP_APPIAN_ADMINISTRATORS",
+        "AS_GCM_BL_checkIfFolderSecurityNeedsUpdate",
+        "AS_GCM_FLD_CLAUSE_SET_FOLDERS",
+        "AS_GCM_SHAREPOINT_FOLDER_ID",
+        "AS_GCM_UT_clauseSetFolderName",
+        "AS_GCM_clauseSetDocumentFolderSecurity",
+        "AS_GCM_setRecordFields",
+        "AS_GCM_writeRecordsPropertiesForClauseSetRecord"
+      ],
+      "called_by": []
+    }
+  ]
+}

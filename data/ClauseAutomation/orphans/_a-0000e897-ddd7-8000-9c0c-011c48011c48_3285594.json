@@ -1,0 +1,40 @@
+{
+  "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3285594",
+  "name": "AS_GCM_CPS_ruleConditionContractTypes",
+  "type": "Interface",
+  "description": "Component for rule condition contract types ",
+  "sail_code": "a!localVariables(\n  local!values: if(\n    a!isNullOrEmpty(\n      ri!ruleCondition[recordType!AS GCM QNM T Rule Condition.value]\n    ),\n    null,\n    #\"SYSTEM_SYSRULES_fromJson_v1\"(\n      ri!ruleCondition[recordType!AS GCM QNM T Rule Condition.value]\n    )\n  ),\n  if(\n    ri!readOnly,\n    a!localVariables(\n      local!contractTypeValues: rule!AS_CO_UT_filterCdtByField(\n        cdt: ri!refData,\n        field: \"contractTypeId\",\n        value: local!values\n      ),\n      #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n        labelPosition: \"COLLAPSED\",\n        value: rule!AS_GCM_UI_showMoreOrShowLessLinkForArray(\n          item: #\"SYSTEM_SYSRULES_forEach\"(\n            items: local!contractTypeValues,\n            expression: concat(\n              {\n                fv!item.contractCode,\n                \" | \",\n                fv!item.contractTitle\n              }\n            )\n          ),\n          showMoreText: \"Show More\",\n          showLessText: \"Show Less\",\n          displayLinkAboveContent: true(),\n          isBulletedList: false(),\n          showLinkInNewLine: true(),\n          shortenIfLongerThanCount: cons!AS_GCM_INT_LIMIT_FOR_SHOW_MORE_OR_LESS_MEDIUM_PLUS,\n          linkStyle: \"INLINE\",\n          linkTextStyle: \"STRONG\"\n        )\n      )\n    ),\n    rule!AS_CO_CP_multipleDropdownField(\n      required: true,\n      placeholderLabel: \"Choose contract type(s)\",\n      choiceLabels: #\"SYSTEM_SYSRULES_forEach\"(\n        items: ri!refData,\n        expression: concat(\n          {\n            fv!item.contractCode,\n            \" | \",\n            fv!item.contractTitle\n          }\n        )\n      ),\n      choiceValues: ri!refData.contractTypeId,\n      readOnly: ri!readOnly,\n      value: local!values,\n      saveInto: {\n        local!values,\n        a!save(\n          ri!ruleCondition[recordType!AS GCM QNM T Rule Condition.value],\n          #\"SYSTEM_SYSRULES_toJson_v1\"(save!value)\n        ),\n        ri!additionalSaves\n      },\n      label: \"Value\",\n      labelPosition: \"ABOVE\"\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_UI_showMoreOrShowLessLinkForArray",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CP_multipleDropdownField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_INT_LIMIT_FOR_SHOW_MORE_OR_LESS_MEDIUM_PLUS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QR_getRefContractTypeData",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

@@ -1,0 +1,114 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GAM Create Folders in Appian and SP",
+    "parent_name": null,
+    "total_objects": 3
+  },
+  "entry_point": {
+    "complexity_score": 16.0,
+    "total_nodes": 8,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GAM Create Folders in Appian and SP",
+      "complexity_score": 16.0,
+      "total_nodes": 8,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Doc Folder Exists?"
+          ]
+        },
+        {
+          "name": "Terminate",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Create Main Document Folder",
+          "type": "Create Folder",
+          "next": [
+            "Skip Contracting folder creation?"
+          ]
+        },
+        {
+          "name": "Create Contracting Folders Wrapper",
+          "type": "Start Process (v2)",
+          "next": [
+            "Integration with Office 365?"
+          ]
+        },
+        {
+          "name": "Doc Folder Exists?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Create Main Document Folder (No)",
+            "Skip Contracting folder creation? (Yes)"
+          ]
+        },
+        {
+          "name": "Skip Contracting folder creation?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Create Contracting Folders Wrapper (No)",
+            "Integration with Office 365? (Yes)"
+          ]
+        },
+        {
+          "name": "Integration with Office 365?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Terminate (No)",
+            "Create Folder in Sharepoint (Yes)"
+          ]
+        },
+        {
+          "name": "Create Folder in Sharepoint",
+          "type": "Call Integration",
+          "next": [
+            "Terminate"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e49f-7b90-8000-9bac-011c48011c48_192834",
+      "name": "AS_GAM_BOL_OFFICE_365",
+      "type": "Constant",
+      "description": "Boolean constant for Turning ON / OFF  Office 365 Integration",
+      "value": null,
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "AS GAM Create Folders in Appian and SP"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-9390-8000-9baa-011c48011c48_41575",
+      "name": "AS_CO_UT_cleanFolderName",
+      "type": "Expression Rule",
+      "description": "Removes special characters from folder name",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GAM Create Folders in Appian and SP"
+      ]
+    },
+    {
+      "uuid": "0000e50c-64fd-8000-fd6c-7f0000014e7a",
+      "name": "AS GAM Create Folders in Appian and SP",
+      "type": "Process Model",
+      "description": "Process model to create folders in appian and sharepoint",
+      "calls": [
+        "AS_CO_UT_cleanFolderName",
+        "AS_GAM_BOL_OFFICE_365"
+      ],
+      "called_by": []
+    }
+  ]
+}

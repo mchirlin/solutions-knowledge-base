@@ -1,0 +1,140 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GCM QNM Delete Template Responses",
+    "parent_name": null,
+    "total_objects": 5
+  },
+  "entry_point": {
+    "complexity_score": 13.0,
+    "total_nodes": 7,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GCM QNM Delete Template Responses",
+      "complexity_score": 13.0,
+      "total_nodes": 7,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Populate deleted template data"
+          ]
+        },
+        {
+          "name": "Delete T Response Requirements",
+          "type": "Delete Records",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Delete T Responses",
+          "type": "Delete Records",
+          "next": [
+            "Delete T Response Requirements?"
+          ]
+        },
+        {
+          "name": "Delete T Response Requirements?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node (No)",
+            "Delete T Response Requirements (Yes)"
+          ]
+        },
+        {
+          "name": "Delete T Responses?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Delete T Response Requirements? (No)",
+            "Delete T Responses (Yes)"
+          ]
+        },
+        {
+          "name": "Populate deleted template data",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Delete T Responses?"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e6a4-3c85-8000-9ba5-011c48011c48_45984",
+      "name": "AS_CO_UT_indexWhere",
+      "type": "Expression Rule",
+      "description": "Will find the index of a value in one array and return the value in a different array at that same index",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_populateResponseRequirementsToBeDeleted",
+        "AS_GCM_QNM_populateResponsesToBeDeleted"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GCM QNM Delete Template Responses",
+        "AS_CO_UT_indexWhere",
+        "AS_GCM_QNM_populateResponseRequirementsToBeDeleted",
+        "AS_GCM_QNM_populateResponsesToBeDeleted"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec62-ac34-8000-9d9a-011c48011c48_13170714",
+      "name": "AS_GCM_QNM_populateResponseRequirementsToBeDeleted",
+      "type": "Expression Rule",
+      "description": "Populate the response requirements that has to be deleted from the template Questionnaire",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_indexWhere",
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS GCM QNM Delete Template Responses"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec62-ac34-8000-9d9a-011c48011c48_13169774",
+      "name": "AS_GCM_QNM_populateResponsesToBeDeleted",
+      "type": "Expression Rule",
+      "description": "Populate the responses that has to be deleted from the template Questionnaire",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_indexWhere",
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS GCM QNM Delete Template Responses"
+      ]
+    },
+    {
+      "uuid": "0002e4d4-c334-8000-1229-7f0000014e7a-gcm",
+      "name": "AS GCM QNM Delete Template Responses",
+      "type": "Process Model",
+      "description": "Process to delete the question category of a template",
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_GCM_QNM_populateResponseRequirementsToBeDeleted",
+        "AS_GCM_QNM_populateResponsesToBeDeleted"
+      ],
+      "called_by": []
+    }
+  ]
+}

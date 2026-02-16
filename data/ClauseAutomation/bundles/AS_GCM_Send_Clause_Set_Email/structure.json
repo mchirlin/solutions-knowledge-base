@@ -1,0 +1,164 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GCM Send Clause Set Email",
+    "parent_name": null,
+    "total_objects": 10
+  },
+  "entry_point": {
+    "complexity_score": 3.0,
+    "total_nodes": 3,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GCM Send Clause Set Email",
+      "complexity_score": 3.0,
+      "total_nodes": 3,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Send E-Mail"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Send E-Mail",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1357754",
+      "name": "AS_GCM_ENUM_TEXT_CLAUSE_SETS_SITE_PAGE",
+      "type": "Constant",
+      "description": "Value: clause-sets",
+      "value": "clause-sets",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_emailContentForClauseSetCreateAndUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1357668",
+      "name": "AS_GCM_ENUM_TEXT_WEB_ADDRESS_IDENTIFIER",
+      "type": "Constant",
+      "description": "Value : clause-automation",
+      "value": "clause-automation",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_emailContentForClauseSetCreateAndUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_100254",
+      "name": "AS_CO_UT_getSiteUrl",
+      "type": "Expression Rule",
+      "description": "Returns the URL of the site, terminating in /suite/",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_urlForRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around AS_CO_UT_isBlank",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_returnUserFirstName"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6a4-3c85-8000-9ba5-011c48011c48_44806",
+      "name": "AS_CO_UT_returnUserFirstName",
+      "type": "Expression Rule",
+      "description": "Rule to return the user's first name",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_GCM_emailContentForClauseSetCreateAndUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_91843",
+      "name": "AS_CO_UT_urlForRecord",
+      "type": "Expression Rule",
+      "description": "Returns the url for a record for use in a safe link",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_getSiteUrl"
+      ],
+      "called_by": [
+        "AS_GCM_emailContentForClauseSetCreateAndUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53662",
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "description": "Displays a label by the `bundleKey` from passed in bundle data, optionally accepts arguments",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_emailContentForClauseSetCreateAndUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53654",
+      "name": "AS_GCM_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "description": "Loads a property bundle file by name from a folder, returns a dictionary of the key-value pairs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_emailContentForClauseSetCreateAndUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed5b-ded3-8000-9df2-011c48011c48_15088557",
+      "name": "AS_GCM_emailContentForClauseSetCreateAndUpdate",
+      "type": "Expression Rule",
+      "description": "returns email content for Create/Update clause set",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_returnUserFirstName",
+        "AS_CO_UT_urlForRecord",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_ENUM_TEXT_CLAUSE_SETS_SITE_PAGE",
+        "AS_GCM_ENUM_TEXT_WEB_ADDRESS_IDENTIFIER"
+      ],
+      "called_by": [
+        "AS GCM Send Clause Set Email"
+      ]
+    },
+    {
+      "uuid": "0002ed5d-7bb8-8000-c805-7f0000014e7a",
+      "name": "AS GCM Send Clause Set Email",
+      "type": "Process Model",
+      "description": "PM to send email to user after clause set create or update",
+      "calls": [
+        "AS_GCM_emailContentForClauseSetCreateAndUpdate"
+      ],
+      "called_by": []
+    }
+  ]
+}

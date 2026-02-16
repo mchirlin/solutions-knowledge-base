@@ -1,0 +1,46 @@
+{
+  "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_109242-gcm",
+  "name": "AS_GCM_QNM_CPS_dropdownField",
+  "type": "Interface",
+  "description": "QNM wrapper for the generic CO dropdown field.  Used for displaying an editable response.",
+  "sail_code": "/* QUESTION LABEL INCLUDED IN COLLAPSED LABELS FOR ACCESSIBILITY */\n{\n  a!localVariables(\n    local!responseOptions: rule!AS_CO_UT_filterCdtByField(\n      cdt: ri!question.responseOptions,\n      field: \"fieldKey\",\n      value: ri!fieldKey\n    ),\n    rule!AS_GCM_DPL_CO_CP_multipleDropdownField(\n      label: ri!label,\n      labelPosition: a!defaultValue(\n        value: ri!labelPosition,\n        default: \"COLLAPSED\"\n      ),\n      instructions: ri!question.instructions,\n      required: ri!required,\n      readOnly: ri!readOnly,\n      disabled: ri!disabled,\n      choiceLabels: local!responseOptions.label,\n      choiceValues: local!responseOptions.value,\n      placeholderLabel: ri!placeholderLabel,\n      value: rule!AS_GCM_QNM_UT_filterToResponsesForQuestionByFieldKey(\n        question: ri!question,\n        fieldKey: ri!fieldKey\n      ).value,\n      validations: ri!validations,\n      saveInto: if(\n        ri!disableSaves,\n        {},\n        append(\n          a!save(\n            ri!question,\n            rule!AS_GCM_QNM_UT_updateQuestionFieldResponsesForSelectionBasedField(\n              question: ri!question,\n              fieldKey: ri!fieldKey,\n              selectedValues: save!value\n            )\n          ),\n          rule!AS_CO_UT_replaceNull(\n            nullableValue: ri!additionalSaveInto,\n            replacementValue: {}\n          )\n        )\n      ),\n      validationGroup: ri!validationGroup,\n      requiredMessage: rule!AS_CO_UT_displayRequiredMessage(\n        label: ri!label,\n        requiredMessage: ri!requiredMessage\n      ),\n      helpTooltip: ri!helpTooltip,\n      readOnlyValue: ri!readOnlyValue,\n      showWhen: ri!showWhen,\n      accessibilityText: ri!accessibilityText\n    )\n  )\n}",
+  "calls": [
+    {
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_DPL_CO_CP_multipleDropdownField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QNM_UT_filterToResponsesForQuestionByFieldKey",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QNM_UT_updateQuestionFieldResponsesForSelectionBasedField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_displayRequiredMessage",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GCM_QNM_CPS_displayQuestion_DROPDOWN_TEXT",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

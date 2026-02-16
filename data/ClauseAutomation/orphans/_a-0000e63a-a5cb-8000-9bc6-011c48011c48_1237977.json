@@ -1,0 +1,30 @@
+{
+  "uuid": "_a-0000e63a-a5cb-8000-9bc6-011c48011c48_1237977",
+  "name": "AS_GCM_BL_contractPurposeFilterForClauseSetRecord",
+  "type": "Expression Rule",
+  "description": "Returns contract purpose filter for clause sets",
+  "sail_code": "a!localVariables(\n  local!refData: rule!AS_GCM_UT_filterRefDataForSelection(\n    refData: rule!AS_GCM_QR_getRefData(\n      refTypes: cons!AS_GCM_REF_TYPE_CONTRACT_PURPOSE\n    ),\n    refType: cons!AS_GCM_REF_TYPE_CONTRACT_PURPOSE\n  ),\n  #\"SYSTEM_SYSRULES_recordFilterList\"(\n    name: \"\",\n    options: #\"SYSTEM_SYSRULES_forEach\"(\n      items: local!refData,\n      expression: #\"SYSTEM_SYSRULES_recordFilterListOption\"(\n        id: fv!item.refDataId,\n        name: rule!AS_GAM_CO_I18N_UT_displayLabel(\n          bundle: ri!bundle,\n          bundleKey: fv!item.refKey\n        ),\n        filter: #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: ri!filterField,\n          operator: \"=\",\n          value: fv!item.refDataId\n        )\n      )\n    ),\n    allowMultipleSelections: true\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GCM_UT_filterRefDataForSelection",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QR_getRefData",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_REF_TYPE_CONTRACT_PURPOSE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

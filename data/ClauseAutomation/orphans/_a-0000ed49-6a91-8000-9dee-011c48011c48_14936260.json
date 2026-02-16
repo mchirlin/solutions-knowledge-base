@@ -1,0 +1,160 @@
+{
+  "uuid": "_a-0000ed49-6a91-8000-9dee-011c48011c48_14936260",
+  "name": "DEPRECATED_AS_GCM_BL_ClauseSetClausesVariableMap",
+  "type": "Expression Rule",
+  "description": "Returns a Map which contains the variables to use in AS_GCM_FM_createOrUpdateClauseSet",
+  "sail_code": "a!localVariables(\n  local!clauseSetClauses: rule!AS_GCM_QE_getClauseSetClauseDetailsWithBatching(\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY,\n    setId: ri!clauseSet.setId,\n    executeWhen: rule!AS_CO_UT_isNotBlank(ri!clauseSet.setId),\n    showInactive: true(),\n    /*We need only the activeClauseSetClauses or the excluded clauses so filtering only them*/\n    /*by ignoring the isActive filter from the QE rule by passing showInactive: true()*/\n    logicalExpression: #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n      operator: \"OR\",\n      filters: {\n        #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: \"isActive\",\n          operator: \"=\",\n          value: true()\n        ),\n        #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: \"refUsage.refDataId\",\n          operator: \"=\",\n          value: cons!AS_GCM_REF_ID_USAGE_EXCLUDED\n        )\n      }\n    ),\n    batchingSize: cons!AS_GCM_INT_QUERY_BATCH_SIZE_LARGE,\n    onlyGetFieldsForWrite: true()\n  ),\n  local!originalClauseSetClauses: a!refreshVariable(\n    value: local!clauseSetClauses,\n    refreshOnReferencedVarChange: false()\n  ),\n  /*Query latest finalized version of Solicitation/Award ID*/\n  local!latestFinalizedClauseSetDetails: rule!AS_CO_UT_cast(\n    type: 'type!{urn:com:appian:types:AS:GCM}AS_GCM_ClauseSet',\n    value: rule!AS_GCM_QE_getClauseSetDetails(\n      returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET,\n      executeWhen: rule!AS_CO_UT_isNotBlank(ri!clauseSet.setNumber),\n      additionalFilters: {\n        #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: \"setNumber\",\n          operator: \"=\",\n          value: ri!clauseSet.setNumber\n        ),\n        #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: \"setId\",\n          operator: \"<>\",\n          value: ri!clauseSet.setId\n        ),\n        #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: \"refType.refDataId\",\n          operator: \"=\",\n          value: ri!clauseSet.refType.refDataId\n        ),\n        #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: \"refStatus.refDataId\",\n          operator: \"=\",\n          value: cons!AS_GCM_REF_ID_CLAUSE_SET_STATUS_FINALIZED\n        )\n      },\n      pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n        startIndex: 1,\n        batchSize: 1,\n        sort: #\"SYSTEM_SYSRULES_sortInfo\"(field: \"validationDate\", ascending: false)\n      )\n    ).data\n  ),\n  /*If there is no finalized clause set for the set number query the original clause set*/\n  local!existingClauseSetDetails: if(\n    a!isNullOrEmpty(\n      value: local!latestFinalizedClauseSetDetails\n    ),\n    rule!AS_CO_UT_cast(\n      type: 'type!{urn:com:appian:types:AS:GCM}AS_GCM_ClauseSet',\n      value: rule!AS_GCM_QE_getClauseSetDetails(\n        returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET,\n        executeWhen: rule!AS_CO_UT_isNotBlank(ri!clauseSet.setNumber),\n        additionalFilters: {\n          #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: \"setNumber\",\n            operator: \"=\",\n            value: ri!clauseSet.setNumber\n          ),\n          #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: \"setId\",\n            operator: \"<>\",\n            value: ri!clauseSet.setId\n          ),\n          #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: \"refType.refDataId\",\n            operator: \"=\",\n            value: ri!clauseSet.refType.refDataId\n          )\n        },\n        pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n          startIndex: 1,\n          batchSize: 1,\n          sort: #\"SYSTEM_SYSRULES_sortInfo\"(field: \"setId\", ascending: true())\n        )\n      ).data\n    ),\n    local!latestFinalizedClauseSetDetails\n  ),\n  local!existingClauseSetClauses: rule!AS_GCM_QE_getClauseSetClauseDetailsWithBatching(\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY,\n    setId: index(\n      local!existingClauseSetDetails,\n      \"setId\",\n      {}\n    ),\n    executeWhen: rule!AS_CO_UT_isNotBlank(\n      index(\n        local!existingClauseSetDetails,\n        \"setId\",\n        {}\n      )\n    ),\n    batchingSize: cons!AS_GCM_INT_QUERY_BATCH_SIZE_LARGE,\n    onlyGetFieldsForWrite: true()\n  ),\n  local!clauseSet: ri!clauseSet,\n  /*Querying the existing contract type maps*/\n  local!existingContractTypeMaps: rule!AS_CO_UT_cast(\n    type: 'type!{urn:com:appian:types:AS:GCM}AS_GCM_ClauseSet_ContractType_Map?list',\n    value: rule!AS_GCM_QE_getClauseSetContractTypeDetails(\n      setId: local!existingClauseSetDetails.setId,\n      executeWhen: rule!AS_CO_UT_isNotBlank(local!existingClauseSetDetails.setId)\n    )\n  ),\n  /*Making a copy of the original contract type maps*/\n  local!originalClauseSetContractTypes: a!refreshVariable(\n    value: rule!AS_GCM_QE_getClauseSetContractTypeDetails(\n      returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY,\n      setId: ri!clauseSet.setId,\n      executeWhen: a!isNotNullOrEmpty(ri!clauseSet.setId)\n    ),\n    refreshOnReferencedVarChange: false()\n  ),\n  local!clauseSetTemplate: rule!AS_GCM_QE_getClauseSetTemplateDetails(\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT,\n    executeWhen: rule!AS_CO_UT_isNotBlank(ri!clauseSet.setId),\n    setId: ri!clauseSet.setId\n  ),\n  local!originalClauseSetTemplate: a!refreshVariable(\n    value: local!clauseSetTemplate,\n    refreshOnReferencedVarChange: false()\n  ),\n  local!templateClauses: rule!AS_GCM_QR_getTemplateClauseDetailsWithBatching(\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY,\n    executeWhen: a!isNotNullOrEmpty(local!clauseSetTemplate),\n    templateIds: index(\n      local!clauseSetTemplate.refTemplate,\n      \"templateId\",\n      null()\n    ),\n    showInActive: false(),\n    batchingSize: cons!AS_GCM_INT_QUERY_BATCH_SIZE_EXTRA_LARGE,\n    selectionColumns: {\n      recordType!AS GCM Template Clause.relationId,\n      recordType!AS GCM Template Clause.refClause.clauseId,\n      recordType!AS GCM Template Clause.refClause.refType.refDataId,\n      recordType!AS GCM Template Clause.refUsage.refDataId,\n      recordType!AS GCM Template Clause.refClause.clauseTitle,\n      recordType!AS GCM Template Clause.refClause.effectiveDate,\n      recordType!AS GCM Template Clause.isActive\n    }\n  ),\n  local!originalTemplateClauses: a!refreshVariable(\n    value: local!templateClauses,\n    refreshOnReferencedVarChange: false()\n  ),\n  /*Review clauses - Active clause set clauses*/\n  local!reviewClauses: rule!AS_CO_UT_filterCdtByField(\n    cdt: local!clauseSetClauses,\n    field: \"isActive\",\n    value: true\n  ),\n  local!excludedClauses: rule!AS_CO_UT_filterCdtByField(\n    cdt: local!clauseSetClauses,\n    field: \"refUsage.refDataId\",\n    value: cons!AS_GCM_REF_ID_USAGE_EXCLUDED\n  ),\n  local!refData: rule!AS_GCM_QR_getRefData(\n    refTypes: {\n      cons!AS_GCM_REF_TYPE_CLAUSE_SET_TYPE,\n      cons!AS_GCM_REF_TYPE_CONTRACT_PURPOSE,\n      cons!AS_GCM_REF_TYPE_CONTRACT_PURPOSE_TYPE_COMMERCIAL,\n      cons!AS_GCM_REF_TYPE_CONTRACT_PURPOSE_TYPE_NON_COMMERCIAL,\n      cons!AS_GCM_REF_TYPE_PRICING_TYPE,\n      cons!AS_GCM_REF_TYPE_CONTRACT_METHOD,\n      cons!AS_GCM_REF_TYPE_SOLICITATION_TYPE,\n      cons!AS_GCM_REF_TYPE_AWARD_TYPE,\n      cons!AS_GCM_REF_TYPE_CLAUSE_ADDED_VIA,\n      cons!AS_GCM_REF_TYPE_CLAUSE_SET_CLAUSE_STATUS,\n      cons!AS_GCM_REF_TYPE_USAGE,\n      cons!AS_GCM_REF_TYPE_CLAUSE_TYPE,\n      cons!AS_GCM_REF_TYPE_CLAUSE_SOURCE\n    }\n  ),\n  /*Returns a map with multiple properties*/\n  a!map(\n    /*Contains refData*/\n    refData: a!map(\n      /*Contains all refData*/\n      all: local!refData,\n      /*refData separated by refType*/\n      refType: a!map(\n        addedVia: index(\n          local!refData,\n          rule!AS_CO_UT_whereContains(\n            values: cons!AS_GCM_REF_TYPE_CLAUSE_ADDED_VIA,\n            array: local!refData.refType\n          ),\n          {}\n        ),\n        usage: index(\n          local!refData,\n          rule!AS_CO_UT_whereContains(\n            values: cons!AS_GCM_REF_TYPE_USAGE,\n            array: local!refData.refType\n          ),\n          {}\n        )\n      )\n    ),\n    /*Contains all variables*/\n    variable: a!map(\n      existingContractTypeMaps: local!existingContractTypeMaps,\n      originalClauseSetContractTypes: local!originalClauseSetContractTypes,\n      clauseSetTemplate: local!clauseSetTemplate,\n      originalClauseSetTemplate: local!originalClauseSetTemplate,\n      templateClauses: local!templateClauses,\n      originalTemplateClauses: local!originalTemplateClauses,\n      existingClauseSetClauses: local!existingClauseSetClauses,\n      clauseSetClauses: local!clauseSetClauses,\n      originalClauseSetClauses: local!originalClauseSetClauses,\n      reviewClauses: local!reviewClauses,\n      excludedClauses: local!excludedClauses\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GCM_QE_getClauseSetClauseDetailsWithBatching",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_cast",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QE_getClauseSetDetails",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QE_getClauseSetContractTypeDetails",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QE_getClauseSetTemplateDetails",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QR_getTemplateClauseDetailsWithBatching",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QR_getRefData",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_whereContains",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_REF_ID_USAGE_EXCLUDED",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_INT_QUERY_BATCH_SIZE_LARGE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_STATUS_FINALIZED",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_INT_QUERY_BATCH_SIZE_EXTRA_LARGE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_REF_TYPE_CLAUSE_SET_TYPE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_REF_TYPE_CONTRACT_PURPOSE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_REF_TYPE_CONTRACT_PURPOSE_TYPE_COMMERCIAL",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_REF_TYPE_CONTRACT_PURPOSE_TYPE_NON_COMMERCIAL",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_REF_TYPE_PRICING_TYPE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_REF_TYPE_CONTRACT_METHOD",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_REF_TYPE_SOLICITATION_TYPE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_REF_TYPE_AWARD_TYPE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_REF_TYPE_CLAUSE_ADDED_VIA",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_REF_TYPE_CLAUSE_SET_CLAUSE_STATUS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_REF_TYPE_USAGE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_REF_TYPE_CLAUSE_TYPE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_REF_TYPE_CLAUSE_SOURCE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

@@ -1,0 +1,332 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GCM CEDM Document Management",
+    "parent_name": null,
+    "total_objects": 16
+  },
+  "entry_point": {
+    "complexity_score": 21.0,
+    "total_nodes": 11,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GCM CEDM Document Management",
+      "complexity_score": 21.0,
+      "total_nodes": 11,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Log Process Initiation"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Has documents to delete?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Deleting Documents Log (Yes)",
+            "No documents to delete Log (No)"
+          ]
+        },
+        {
+          "name": "Update Transfer Requests",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Deletion Complete Log"
+          ]
+        },
+        {
+          "name": "Delete Documents",
+          "type": "Delete Document",
+          "next": [
+            "Is Transfer Request null?"
+          ]
+        },
+        {
+          "name": "Deletion Complete Log",
+          "type": "Start Process",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Deleting Documents Log",
+          "type": "Start Process",
+          "next": [
+            "Delete Documents"
+          ]
+        },
+        {
+          "name": "No documents to delete Log",
+          "type": "Start Process",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Log Process Initiation",
+          "type": "Start Process",
+          "next": [
+            "Get documents to delete"
+          ]
+        },
+        {
+          "name": "Get documents to delete",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Has documents to delete?"
+          ]
+        },
+        {
+          "name": "Is Transfer Request null?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Update Transfer Requests (No)",
+            "Deletion Complete Log (Yes)"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290131",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+      "type": "Constant",
+      "description": "DATA_SUBSET - Returns a type of DataSubset when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "DATA_SUBSET",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_CEDM_QR_getTransferRequestDetails",
+        "AS_GCM_CEDM_getTransferRequestsForDocDelete"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290163",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "description": "OBJECT_ARRAY - Returns an array type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "OBJECT_ARRAY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_CEDM_QR_getTransferRequestDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec75-2131-8000-9da0-011c48011c48_13316604",
+      "name": "AS_GCM_CEDM_INT_MAINTAIN_EXPORT_DOCUMENT_COUNT",
+      "type": "Constant",
+      "description": "Value: 5",
+      "value": "5",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM CEDM Document Management",
+        "AS_GCM_CEDM_getTransferRequestsForDocDelete"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec75-2131-8000-9da0-011c48011c48_13316610",
+      "name": "AS_GCM_CEDM_INT_MAINTAIN_IMPORT_DOCUMENT_COUNT",
+      "type": "Constant",
+      "description": "Value: 5",
+      "value": "5",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM CEDM Document Management",
+        "AS_GCM_CEDM_getTransferRequestsForDocDelete"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec75-2131-8000-9da0-011c48011c48_13320534",
+      "name": "AS_GCM_CEDM_TXT_REQUEST_TYPE_IMPORT",
+      "type": "Constant",
+      "description": "Value: IMPORT",
+      "value": "IMPORT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM CEDM Document Management",
+        "AS_GCM_CEDM_getTransferRequestsForDocDelete"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3271127",
+      "name": "AS_GCM_INT_QUERY_BATCH_SIZE_EXTRA_LARGE",
+      "type": "Constant",
+      "description": "Batch size: 1000",
+      "value": "1000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CEDM_getTransferRequestsForDocDelete"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GCM CEDM Document Management",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GAM_UT_ArrayLength",
+        "AS_GCM_CEDM_getTransferRequestsForDocDelete"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around AS_CO_UT_isBlank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS GCM CEDM Document Management",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_CEDM_QR_getTransferRequestDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6c8-d132-8000-9bbe-011c48011c48_469266",
+      "name": "AS_CO_UT_queryRecord",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_GCM_CEDM_QR_getTransferRequestDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367",
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS GCM CEDM Document Management"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1021202",
+      "name": "AS_GAM_UT_ArrayLength",
+      "type": "Expression Rule",
+      "description": "Gives length of an array based on input of array",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS GCM CEDM Document Management"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec75-2131-8000-9da0-011c48011c48_13320758",
+      "name": "AS_GCM_CEDM_QR_getTransferRequestDetails",
+      "type": "Expression Rule",
+      "description": "Query Record to get Transfer Request details",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryRecord"
+      ],
+      "called_by": [
+        "AS_GCM_CEDM_getTransferRequestsForDocDelete"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed77-8e71-8000-9df8-011c48011c48_15332486",
+      "name": "AS_GCM_CEDM_constructLogMap",
+      "type": "Expression Rule",
+      "description": "Returns the config map for log",
+      "parameters": [],
+      "calls": [
+        "AS GCM R Data"
+      ],
+      "called_by": [
+        "AS GCM CEDM Document Management"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed77-8e71-8000-9df8-011c48011c48_15352312",
+      "name": "AS_GCM_CEDM_getTransferRequestsForDocDelete",
+      "type": "Expression Rule",
+      "description": "rule to return the transfer request details to delete the documents",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_UT_isBlank",
+        "AS_GCM_CEDM_INT_MAINTAIN_EXPORT_DOCUMENT_COUNT",
+        "AS_GCM_CEDM_INT_MAINTAIN_IMPORT_DOCUMENT_COUNT",
+        "AS_GCM_CEDM_QR_getTransferRequestDetails",
+        "AS_GCM_CEDM_TXT_REQUEST_TYPE_IMPORT",
+        "AS_GCM_INT_QUERY_BATCH_SIZE_EXTRA_LARGE"
+      ],
+      "called_by": [
+        "AS GCM CEDM Document Management"
+      ]
+    },
+    {
+      "uuid": "0002ec79-08a0-8000-b603-7f0000014e7a",
+      "name": "AS GCM CEDM Document Management",
+      "type": "Process Model",
+      "description": "process model to check import and export exceeds the limit and will delete oldest document",
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GAM_UT_ArrayLength",
+        "AS_GCM_CEDM_INT_MAINTAIN_EXPORT_DOCUMENT_COUNT",
+        "AS_GCM_CEDM_INT_MAINTAIN_IMPORT_DOCUMENT_COUNT",
+        "AS_GCM_CEDM_TXT_REQUEST_TYPE_IMPORT",
+        "AS_GCM_CEDM_constructLogMap",
+        "AS_GCM_CEDM_getTransferRequestsForDocDelete"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "12b3d808-5bcd-47fa-8f90-8bc2b78b9553",
+      "name": "AS GCM R Data",
+      "type": "Record Type",
+      "description": "Synced Record for R DATA table",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CEDM_constructLogMap"
+      ]
+    }
+  ]
+}

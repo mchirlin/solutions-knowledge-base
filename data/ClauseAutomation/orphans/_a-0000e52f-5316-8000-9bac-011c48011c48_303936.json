@@ -1,0 +1,51 @@
+{
+  "uuid": "_a-0000e52f-5316-8000-9bac-011c48011c48_303936",
+  "name": "AS_CO_UT_zInternal_queryEntity_determineSort",
+  "type": "Expression Rule",
+  "description": "Used by rule `AS_CO_UT_queryEntity `",
+  "sail_code": "a!localVariables(\n  local!sortToUse: if(\n    /*SINGLE_OBJECT*/\n    ri!returnType = cons!AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT,\n    ri!sort,\n    \n    /*AGGREGATION*/\n    ri!returnType = cons!AS_CO_ENUM_QE_RETURN_TYPE_AGGREGATION,\n    ri!sort,\n    \n    /*TOTAL_COUNT*/\n    ri!returnType = cons!AS_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT,\n    null,\n    \n    /*DATA_SUBSET or OBJECT_ARRAY*/\n    a!localVariables(\n      /*Guess what the primary key is by using the first primitive field in the CDT*/\n      local!primaryKeyField_guess: index(rule!AS_CO_UT_returnCdtFields(\n        type: ri!entityType,\n        onlyPrimitiveFields: true\n      ), 1, null),\n      \n      /*Grab the appropriate input sort by the returnType*/\n      local!inputSort: if(\n        ri!returnType = cons!AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET,\n        ri!pagingInfo.sort,\n        \n        ri!returnType = cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY,\n        ri!sort,\n        \n        null\n      ),\n      \n      /*If the primaryKeyField_guess is not null, build a secondary sort by the PK field*/\n      local!secondaryPkSortToAppend: if(\n        or(isnull(local!primaryKeyField_guess), ri!isAggregation),\n        {},\n        #\"SYSTEM_SYSRULES_sortInfo\"(field: local!primaryKeyField_guess, ascending: true)\n      ),\n      \n      /*Append the secondary PK sort to the sort*/\n      local!sortWithSecondaryPkSortApplied: if(\n        rule!AS_CO_UT_isBlank(local!inputSort),\n        local!secondaryPkSortToAppend,\n        append(local!inputSort, local!secondaryPkSortToAppend)\n      ),\n      \n      local!sortWithSecondaryPkSortApplied\n    )\n  ),\n  \n  local!sortToUse\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_returnCdtFields",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_AGGREGATION",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_CO_UT_queryEntity",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

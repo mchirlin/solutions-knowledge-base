@@ -1,0 +1,46 @@
+{
+  "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_265298",
+  "name": "AS_CO_UT_filterRefDataForSelection",
+  "type": "Expression Rule",
+  "description": "Rule to filter out ref data",
+  "sail_code": "a!localVariables(\n  local!filteredRefData: rule!AS_CO_UT_filterCdtByMultipleFields(\n    cdt: ri!data,\n    fields: rule!AS_CO_UT_rejectNullValuesFromArray(\n      array: {\n        \"isActive\",\n        ri!additionalFilterField\n      }\n    ),\n    values: rule!AS_CO_UT_rejectNullValuesFromArray(\n      array: {\n        true,\n        ri!additionalFilterValue\n      }\n    )\n  ),\n  local!selectedData: rule!AS_CO_UT_filterCdtByMultipleFields(\n    cdt: ri!data,\n    fields: if(\n      rule!AS_CO_UT_isBlank(\n        ri!additionalFilterField\n      ),\n      {\n        ri!valueField\n      },\n      {\n        ri!valueField,\n        ri!additionalFilterField\n      }\n    ),\n    values: if(\n      rule!AS_CO_UT_isBlank(\n        ri!additionalFilterField\n      ),\n      {\n        ri!currentValue\n      },\n      {\n        ri!currentValue,\n        ri!additionalFilterValue\n      }\n    )\n  ),\n  /*Does not refresh to ensure that previously-selected values do not disappear while on a form*/\n  local!initiallySelectedValue: a!refreshVariable(\n    value: local!selectedData,\n    refreshOnReferencedVarChange: false\n  ),\n  local!selectableReferenceData: rule!AS_CO_UT_cdtDistinctOnField(\n    cdt: {\n      local!filteredRefData,\n      /* In case the options are filtered while something is selected */\n      local!selectedData,\n      /* So that the user can always return to the initial value */\n      local!initiallySelectedValue\n    },\n    field: ri!valueField\n  ),\n  local!selectableReferenceDataLabelUpdate: #\"SYSTEM_SYSRULES_forEach\"(\n    items: local!selectableReferenceData,\n    expression: rule!AS_CO_UT_updateCdtFields(\n      cdt: fv!item,\n      fields: ri!labelField,\n      newValues: rule!AS_CO_UT_displayRefDataLabel(\n        value: fv!item[ri!valueField],\n        data: local!selectableReferenceData,\n        valueField: ri!valueField,\n        labelField: ri!labelField,\n        skipInactiveAppend: ri!skipInactiveAppend,\n        i18nData: ri!i18nData\n      )\n    )\n  ),\n  local!selectableReferenceDataLabelUpdate\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_filterCdtByMultipleFields",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_cdtDistinctOnField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_updateCdtFields",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_displayRefDataLabel",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GCM_UT_filterRefDataForSelection",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

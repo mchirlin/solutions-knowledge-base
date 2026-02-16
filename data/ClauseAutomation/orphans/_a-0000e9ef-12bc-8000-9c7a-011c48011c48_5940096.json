@@ -1,0 +1,76 @@
+{
+  "uuid": "_a-0000e9ef-12bc-8000-9c7a-011c48011c48_5940096",
+  "name": "AS_GCM_QE_getClauseSetClauseAudits_V1",
+  "type": "Expression Rule",
+  "description": "Results of V1 to be passed to get clause set clause audit entry-point",
+  "sail_code": "/*\n\nCAUTION: This rule batches the data by querying the primary key from the entities. \nThe number of queries will depend on the batchSize which is passed. The purpose of this approach is to handle the memory heap issue.\n\n*/\na!localVariables(\n  local!returnType: a!defaultValue(\n    value: ri!returnType,\n    default: cons!AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET\n  ),\n  local!clauseSetAuditIds: a!defaultValue(\n    value: ri!clauseSetAuditIds,\n    default: tointeger(\n      index(\n        rule!AS_GAM_UT_queryEntityWithSelection(\n          entity: cons!AS_GCM_ENT_A_R_CLAUSE_SET,\n          returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET,\n          selectionColumns: \"clauseSetAuditId\",\n          executeWhen: and(\n            ri!executeWhen,\n            a!isNotNullOrEmpty(ri!setId),\n            rule!AS_CO_UT_isBlank(ri!relationAuditIds),\n            rule!AS_CO_UT_isBlank(ri!relationIds)\n          ),\n          filters: {\n            #\"SYSTEM_SYSRULES_queryFilter\"(\n              field: \"setId\",\n              operator: \"=\",\n              value: ri!setId\n            ),\n            #\"SYSTEM_SYSRULES_queryFilter\"(\n              field: \"auditActionCode\",\n              operator: \"<>\",\n              value: cons!AS_ADT_ENUM_AUDIT_ACTION_CODE_UNCHANGED\n            )\n          },\n          pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(startIndex: 1, batchSize: - 1)\n        ).data,\n        \"clauseSetAuditId\",\n        null()\n      )\n    )\n  ),\n  local!relationAuditIds: a!defaultValue(\n    value: ri!relationAuditIds,\n    default: tointeger(\n      index(\n        rule!AS_GAM_UT_queryEntityWithSelection(\n          entity: cons!AS_GCM_ENT_A_R_CLAUSE_SET_CLAUSE,\n          returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET,\n          selectionColumns: \"relationAuditId\",\n          executeWhen: and(\n            ri!executeWhen,\n            any(\n              rule!AS_CO_UT_isNotBlank(_),\n              {\n                local!clauseSetAuditIds,\n                ri!relationIds,\n                ri!additionalFilters,\n                ri!logicalExpression\n              }\n            )\n          ),\n          /*To ensure proper null checks, we'll force all queryFilter values to not be null */\n          logicalExpression: ri!logicalExpression,\n          filters: {\n            #\"SYSTEM_SYSRULES_queryFilter\"(\n              field: \"clauseSetAuditId\",\n              operator: \"in\",\n              value: local!clauseSetAuditIds,\n              applyWhen: rule!AS_CO_UT_isNotBlank(local!clauseSetAuditIds)\n            ),\n            #\"SYSTEM_SYSRULES_queryFilter\"(\n              field: \"relationId\",\n              operator: \"in\",\n              value: ri!relationIds,\n              applyWhen: rule!AS_CO_UT_isNotBlank(ri!relationIds)\n            ),\n            #\"SYSTEM_SYSRULES_queryFilter\"(\n              field: \"auditActionCode\",\n              operator: \"<>\",\n              value: cons!AS_ADT_ENUM_AUDIT_ACTION_CODE_UNCHANGED\n            ),\n            ri!additionalFilters\n          },\n          pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(startIndex: 1, batchSize: - 1)\n        ).data,\n        \"relationAuditId\",\n        null()\n      )\n    )\n  ),\n  local!batches: rule!AS_GCM_UT_getIdentifiersInBatches(\n    identifiers: local!relationAuditIds,\n    batchingSize: a!defaultValue(\n      value: ri!batchingSize,\n      default: cons!AS_GCM_INT_QUERY_BATCH_SIZE_TINY\n    ),\n    returnType: local!returnType,\n    pagingInfo: ri!pagingInfo\n  ),\n  local!data: if(\n    rule!AS_CO_UT_isBlank(local!relationAuditIds),\n    {},\n    rule!AS_CO_UT_cast(\n      type: 'type!{urn:com:appian:types:AS:GCM}AS_GCM_A_R_ClauseSet_Clause?list',\n      value: #\"SYSTEM_SYSRULES_forEach\"(\n        items: local!batches,\n        expression: rule!AS_GAM_UT_queryEntityWithSelection(\n          entity: cons!AS_GCM_ENT_A_R_CLAUSE_SET_CLAUSE,\n          entityType: 'type!{urn:com:appian:types:AS:GCM}AS_GCM_A_R_ClauseSet_Clause',\n          executeWhen: and(\n            ri!executeWhen,\n            rule!AS_CO_UT_isNotBlank(local!relationAuditIds)\n          ),\n          pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n            startIndex: 1,\n            batchSize: count(fv!item.identifiers),\n            sort: #\"SYSTEM_SYSRULES_sortInfo\"(\n              field: \"relationAuditId\",\n              ascending: true()\n            )\n          ),\n          filters: {\n            #\"SYSTEM_SYSRULES_queryFilter\"(\n              field: \"relationAuditId\",\n              operator: \"in\",\n              value: tointeger(fv!item.identifiers)\n            )\n          },\n          selectionColumns: ri!selectionColumns\n        ).data\n      )\n    )\n  ),\n  rule!AS_GCM_UT_formatDataBasedOnReturnType(\n    data: local!data,\n    pagingInfo: ri!pagingInfo,\n    returnType: local!returnType\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GAM_UT_queryEntityWithSelection",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_UT_getIdentifiersInBatches",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_cast",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_UT_formatDataBasedOnReturnType",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_ENT_A_R_CLAUSE_SET",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_UNCHANGED",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_ENT_A_R_CLAUSE_SET_CLAUSE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_INT_QUERY_BATCH_SIZE_TINY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GCM_ENTRYPOINT_GETDATA_getClauseSetClauseAudit",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

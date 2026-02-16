@@ -1,0 +1,45 @@
+{
+  "uuid": "_a-0000eb57-1959-8000-9d1c-011c48011c48_10128535",
+  "name": "AS_GCM_BL_codesFilterClauseSetRecords",
+  "type": "Expression Rule",
+  "description": "Returns Codes filter for clause set based on record type and filter field",
+  "sail_code": "a!localVariables(\n  local!bundle: rule!AS_GCM_CO_UT_loadBundleFromFolder(langISOCode: null()),\n  local!codes: rule!AS_CO_UT_distinct(\n    rule!AS_CO_UT_rejectNullValuesFromArray(\n      if(\n        rule!AS_CO_UT_isNotBlank(ri!recordType),\n        rule!AS_CO_UT_queryRecord(\n          recordType: ri!recordType,\n          returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY,\n          executeWhen: rule!AS_CO_UT_isNotBlank(ri!filterField),\n          fields: ri!filterField\n        )[ri!filterField],\n        {}\n      )\n    )\n  ),\n  #\"SYSTEM_SYSRULES_recordFilterList\"(\n    name: rule!AS_GAM_CO_I18N_UT_displayLabel(\n      bundle: local!bundle,\n      bundleKey: ri!bundleKey\n    ),\n    options: #\"SYSTEM_SYSRULES_forEach\"(\n      items: local!codes,\n      expression: {\n        #\"SYSTEM_SYSRULES_recordFilterListOption\"(\n          id: fv!index,\n          name: fv!item,\n          filter: #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: ri!filterField,\n            operator: \"=\",\n            value: fv!item\n          )\n        )\n      }\n    ),\n    allowMultipleSelections: true\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GCM_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_distinct",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_queryRecord",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

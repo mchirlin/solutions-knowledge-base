@@ -1,0 +1,658 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "AS GCM Clause Usage Report - if(\n  rv!record[recordType!AS GCM Clause Usage Report.clauseCount]=0,\n  \"Select Clauses\",\n  \"Update Selection\"\n)",
+    "parent_name": "AS GCM Clause Usage Report",
+    "total_objects": 31
+  },
+  "entry_point": {
+    "action_type": "RECORD_ACTION",
+    "record_type": "AS GCM Clause Usage Report",
+    "target_process": "AS GCM Manage Clause Usage Report Clauses",
+    "form_interface": "AS_GCM_FM_ManageClauseUsageReportClauses",
+    "expressions": {
+      "TITLE": "if(\n  rv!record[recordType!AS GCM Clause Usage Report.clauseCount]=0,\n  \"Select Clauses\",\n  \"Update Selection\"\n)",
+      "DESCRIPTION": "\"\"",
+      "VISIBILITY": null,
+      "CONTEXT": "{\n  clauseUsageReport: rv!record,\n  /* AS GCM Clause Usage Report */\n  removedClauses: null,\n  /* List of AS GCM Clause Usage Report Clauses */\n  userAction: null/* Text */\n\n}"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GCM Manage Clause Usage Report Clauses",
+      "complexity_score": 12.0,
+      "total_nodes": 6,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Cancel?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Write clause usage report clauses",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Is removed clauses empty?"
+          ]
+        },
+        {
+          "name": "Delete removed clauses",
+          "type": "Delete Records",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Is removed clauses empty?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Delete removed clauses (No)",
+            "End Node"
+          ]
+        },
+        {
+          "name": "Cancel?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Write clause usage report clauses (No)",
+            "Is removed clauses empty?",
+            "End Node"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290131",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+      "type": "Constant",
+      "description": "DATA_SUBSET - Returns a type of DataSubset when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "DATA_SUBSET",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_FM_ManageClauseUsageReportClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290163",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "description": "OBJECT_ARRAY - Returns an array type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "OBJECT_ARRAY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_QR_GetClauseUsageReportClauses",
+        "AS_GCM_QR_getRefClause"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290175",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+      "type": "Constant",
+      "description": "TOTAL_COUNT - Returns an Integer when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "TOTAL_COUNT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FM_ManageClauseUsageReportClauses",
+        "AS_GCM_QR_GetClauseUsageReportClauses",
+        "AS_GCM_QR_getRefClause"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73305",
+      "name": "AS_CO_ENUM_USER_ACTION_SUBMIT",
+      "type": "Constant",
+      "description": "SUBMIT.USER_ACTION - Value to use to drive process logic after a user performs a \"Submit\" action",
+      "value": "SUBMIT.USER_ACTION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM Manage Clause Usage Report Clauses",
+        "AS_GCM_FM_ManageClauseUsageReportClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6ec-ba89-8000-9be2-011c48011c48_1918759",
+      "name": "AS_GCM_CLAUSE_TITLE_ALTERNATE",
+      "type": "Constant",
+      "description": "Clause Title: Alternate ",
+      "value": "Alternate",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_DSP_clauseRecordTitle"
+      ]
+    },
+    {
+      "uuid": "_a-0000edef-782d-8000-9e15-011c48011c48_16080555",
+      "name": "AS_GCM_CLAUSE_TITLE_DEVIATION",
+      "type": "Constant",
+      "description": "Clause Title: DEVIATION ",
+      "value": "DEVIATION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_DSP_clauseRecordTitle"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb72-c933-8000-9d28-011c48011c48_10487326",
+      "name": "AS_GCM_CO_INT_QUERY_RECORD_MAX_BATCH_SIZE",
+      "type": "Constant",
+      "description": "Batch size: 5000",
+      "value": "5000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FM_ManageClauseUsageReportClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1546793",
+      "name": "AS_GCM_ENUM_TEXT_LIMIT_FOR_CLAUSE_TITLE",
+      "type": "Constant",
+      "description": "value: 100",
+      "value": "100",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UI_refClauseTitleGridColumn"
+      ]
+    },
+    {
+      "uuid": "_a-0000edca-8e92-8000-9e0b-011c48011c48_15874805",
+      "name": "AS_GCM_INT_CLAUSE_TITLE_CUSTOM_TRUNCATION_LIMIT",
+      "type": "Constant",
+      "description": "Value: 50",
+      "value": "50",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FM_ManageClauseUsageReportClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e944-d782-8000-9bbd-011c48011c48_48151",
+      "name": "AS_GCM_TOGGLE_AUTOMATION_TESTING_ENABLED",
+      "type": "Constant",
+      "description": "Always leave this constant as false, only set to true for automated testing",
+      "value": "false",
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FM_ManageClauseUsageReportClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39070",
+      "name": "AS_CO_UT_booleanDefaultFalse",
+      "type": "Expression Rule",
+      "description": "Default a null value to false, otherwise returns the boolean value",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_DSP_clauseRecordTitle",
+        "AS_GCM_QR_getRefClause",
+        "AS_GCM_UI_refClauseTitleGridColumn"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39082",
+      "name": "AS_CO_UT_booleanDefaultTrue",
+      "type": "Expression Rule",
+      "description": "Default a null value to true, otherwise returns the boolean value",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UI_refClauseTitleGridColumn"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GCM Manage Clause Usage Report Clauses",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_left",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_replaceNull",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GCM_DSP_clauseRecordTitle"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around AS_CO_UT_isBlank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS GCM Manage Clause Usage Report Clauses",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_CO_DSP_primaryRecordListField",
+        "AS_GCM_DSP_clauseRecordTitle",
+        "AS_GCM_FM_ManageClauseUsageReportClauses",
+        "AS_GCM_QR_GetClauseUsageReportClauses",
+        "AS_GCM_QR_getRefClause",
+        "AS_GCM_UI_refClauseTitleGridColumn"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75618",
+      "name": "AS_CO_UT_left",
+      "type": "Expression Rule",
+      "description": "Executes the `left()` function with error handling for a null input",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_DSP_clauseRecordTitle"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6c8-d132-8000-9bbe-011c48011c48_469266",
+      "name": "AS_CO_UT_queryRecord",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_GCM_QR_GetClauseUsageReportClauses",
+        "AS_GCM_QR_getRefClause"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367",
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_DSP_clauseRecordTitle",
+        "AS_GCM_QR_GetClauseUsageReportClauses",
+        "AS_GCM_QR_getRefClause"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73980",
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "description": "Returns nullableValue only if it is not null. Else returns replacementValue.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_left",
+        "AS_GAM_CO_I18N_UT_displayLabel"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53662",
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "description": "Displays a label by the `bundleKey` from passed in bundle data, optionally accepts arguments",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_UI_refClauseTitleGridColumn"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53557",
+      "name": "AS_GCM_CO_DSP_primaryRecordListField",
+      "type": "Expression Rule",
+      "description": "Standard display for a primary record-list field, uses a larger size and strong rich text",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_GCM_UI_refClauseTitleGridColumn"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53654",
+      "name": "AS_GCM_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "description": "Loads a property bundle file by name from a folder, returns a dictionary of the key-value pairs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_DSP_clauseStatus",
+        "AS_GCM_FM_ManageClauseUsageReportClauses",
+        "AS_GCM_UI_refClauseTitleGridColumn"
+      ]
+    },
+    {
+      "uuid": "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1163967",
+      "name": "AS_GCM_DSP_clauseRecordTitle",
+      "type": "Expression Rule",
+      "description": "Displays the clause record title",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_booleanDefaultFalse",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_left",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GCM_CLAUSE_TITLE_ALTERNATE",
+        "AS_GCM_CLAUSE_TITLE_DEVIATION"
+      ],
+      "called_by": [
+        "AS_GCM_UI_refClauseTitleGridColumn"
+      ]
+    },
+    {
+      "uuid": "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1163736",
+      "name": "AS_GCM_DSP_clauseStatus",
+      "type": "Expression Rule",
+      "description": "Rule to display Clause Status",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_CO_UT_loadBundleFromFolder"
+      ],
+      "called_by": [
+        "AS_GCM_FM_ManageClauseUsageReportClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000edca-8e92-8000-9e0b-011c48011c48_15874701",
+      "name": "AS_GCM_QR_GetClauseUsageReportClauses",
+      "type": "Expression Rule",
+      "description": "Returns clause mapping details ",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectNullValuesFromArray"
+      ],
+      "called_by": [
+        "AS_GCM_FM_ManageClauseUsageReportClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1163937",
+      "name": "AS_GCM_QR_getRefClause",
+      "type": "Expression Rule",
+      "description": "Returns ref clause details based on the given filter set",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+        "AS_CO_UT_booleanDefaultFalse",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectNullValuesFromArray"
+      ],
+      "called_by": [
+        "AS GCM R Clause",
+        "AS_GCM_FM_ManageClauseUsageReportClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9761091",
+      "name": "AS_GCM_filterRecords",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FM_ManageClauseUsageReportClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec50-376f-8000-9d94-011c48011c48_12909959",
+      "name": "AS_GCM_getColorBasedOnColorName",
+      "type": "Expression Rule",
+      "description": "The rule returns the hex code when a color name is passed",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FM_ManageClauseUsageReportClauses",
+        "AS_GCM_UI_refClauseTitleGridColumn"
+      ]
+    },
+    {
+      "uuid": "_a-0000edca-8e92-8000-9e0b-011c48011c48_15871423",
+      "name": "AS_GCM_FM_ManageClauseUsageReportClauses",
+      "type": "Interface",
+      "description": "Form to manage clause usage report clauses",
+      "parameters": [
+        {
+          "name": "clauseUsageReport",
+          "type": "urn:com:appian:recordtype:datatype:29dc9f28-ea45-4c45-be53-c031dd2ca92d",
+          "raw_type": "urn:com:appian:recordtype:datatype:29dc9f28-ea45-4c45-be53-c031dd2ca92d",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "removedClauses",
+          "type": "urn:com:appian:recordtype:datatype:9ec22a07-28f5-43db-9666-58d7d26f77ca?list",
+          "raw_type": "urn:com:appian:recordtype:datatype:9ec22a07-28f5-43db-9666-58d7d26f77ca?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "userAction",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        }
+      ],
+      "calls": [
+        "AS GCM R Clause",
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+        "AS_CO_ENUM_USER_ACTION_SUBMIT",
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_CO_INT_QUERY_RECORD_MAX_BATCH_SIZE",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_DSP_clauseStatus",
+        "AS_GCM_INT_CLAUSE_TITLE_CUSTOM_TRUNCATION_LIMIT",
+        "AS_GCM_QR_GetClauseUsageReportClauses",
+        "AS_GCM_QR_getRefClause",
+        "AS_GCM_TOGGLE_AUTOMATION_TESTING_ENABLED",
+        "AS_GCM_UI_refClauseTitleGridColumn",
+        "AS_GCM_filterRecords",
+        "AS_GCM_getColorBasedOnColorName"
+      ],
+      "called_by": [
+        "AS GCM Manage Clause Usage Report Clauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb97-b2e8-8000-9d39-011c48011c48_11129558",
+      "name": "AS_GCM_UI_refClauseTitleGridColumn",
+      "type": "Interface",
+      "description": "Contains the grid column to be shown in the grid for reference clause title",
+      "parameters": [
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "linkShowWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "showTruncatedClauseTitle",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "width",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "showSource",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "showEffectiveDate",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "preventWrapping",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 6
+        },
+        {
+          "name": "customTruncationLimit",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 7
+        },
+        {
+          "name": "showType",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 8
+        },
+        {
+          "name": "disableSorting",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 9
+        }
+      ],
+      "calls": [
+        "AS_CO_UT_booleanDefaultFalse",
+        "AS_CO_UT_booleanDefaultTrue",
+        "AS_CO_UT_isNotBlank",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GCM_CO_DSP_primaryRecordListField",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_DSP_clauseRecordTitle",
+        "AS_GCM_ENUM_TEXT_LIMIT_FOR_CLAUSE_TITLE",
+        "AS_GCM_getColorBasedOnColorName"
+      ],
+      "called_by": [
+        "AS_GCM_FM_ManageClauseUsageReportClauses"
+      ]
+    },
+    {
+      "uuid": "000aedcc-509c-8000-d0ff-7f0000014e7a",
+      "name": "AS GCM Manage Clause Usage Report Clauses",
+      "type": "Process Model",
+      "description": "Process to manage clause usage report clauses",
+      "calls": [
+        "AS_CO_ENUM_USER_ACTION_SUBMIT",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_FM_ManageClauseUsageReportClauses"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "83b74fc4-71d0-456a-8b20-12ea04b76cd1",
+      "name": "AS GCM R Clause",
+      "type": "Record Type",
+      "description": "Synced record for AS_GCM_R_CLAUSE",
+      "actions": [
+        "addClauseManually",
+        "importClauses",
+        "bulkUpdateClauseAttributes",
+        "editClause",
+        "syncWithAcquisitiongov",
+        "viewClausePrescriptionText"
+      ],
+      "views": [
+        "\"Summary\"",
+        "\"Reporting\"",
+        "\"\"",
+        "List View"
+      ],
+      "calls": [
+        "AS_GCM_QR_getRefClause"
+      ],
+      "called_by": [
+        "AS_GCM_FM_ManageClauseUsageReportClauses"
+      ]
+    }
+  ]
+}

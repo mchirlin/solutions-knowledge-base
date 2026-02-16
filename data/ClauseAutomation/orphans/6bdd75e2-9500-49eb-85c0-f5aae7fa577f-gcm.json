@@ -1,0 +1,30 @@
+{
+  "uuid": "6bdd75e2-9500-49eb-85c0-f5aae7fa577f-gcm",
+  "name": "AS_GCM_QNM_UT_updateTemplateQuestionsFromReference",
+  "type": "Expression Rule",
+  "description": null,
+  "sail_code": "a!localVariables(\n  local!templateQuestions: rule!AS_GCM_QNM_QR_getQuestion_Template(\n    questionReferenceId: ri!referenceQuestion[recordType!AS GCM QNM R Question.questionReferenceId],\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY,\n    executeWhen: a!isNotNullOrEmpty(ri!referenceQuestion[recordType!AS GCM QNM R Question.questionReferenceId]),\n    fields: {\n      recordType!AS GCM QNM T Question.createdBy,\n      recordType!AS GCM QNM T Question.createdDatetime,\n      recordType!AS GCM QNM T Question.questionTemplateId\n    }\n  ),\n  #\"urn:appian:function:v1:a:update\"(\n    data: local!templateQuestions,\n    index: recordType!AS GCM QNM T Question.label,\n    value: ri!referenceQuestion[recordType!AS GCM QNM R Question.defaultLabel]\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GCM_QNM_QR_getQuestion_Template",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_QNM_QR_getQuestion_Reference",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

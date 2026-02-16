@@ -1,0 +1,55 @@
+{
+  "uuid": "d47b5a80-85bc-41c0-9c37-0f91e129a92c-gcm",
+  "name": "AS_GCM_QNM_VLD_addNewQuestion",
+  "type": "Expression Rule",
+  "description": "Validations for the addition of new questions",
+  "sail_code": "if(\n  rule!AS_CO_UT_isBlank(\n    ri!question[recordType!AS GCM QNM R Question.questionTypeCode]\n  ),\n  {\n    /* Do not validate until a type code is selected to prevent bad results */\n    \n  },\n  a!localVariables(\n    local!isDuplicateQuestion: rule!AS_GCM_QNM_UT_isDuplicateQuestion_Reference(\n      question: ri!question,\n      returnDuplicate: false\n    ),\n    local!selectionFields: rule!AS_GCM_QNM_UT_selectionFieldList(\n      questionTypeCode: ri!question[recordType!AS GCM QNM R Question.questionTypeCode]\n    ),\n    {\n      #\"SYSTEM_SYSRULES_validationMessage\"(\n        message: rule!AS_GAM_CO_I18N_UT_displayLabel(\n          bundle: ri!bundle,\n          bundleKey: if(\n            rule!AS_CO_UT_isBlank(local!selectionFields),\n            \"vld_DuplicateQuestionName\",\n            \"vld_DuplicateSelectionQuestion\"\n          )\n        ),\n        validateAfter: \"SUBMIT\",\n        showWhen: local!isDuplicateQuestion\n      ),\n      #\"SYSTEM_SYSRULES_validationMessage\"(\n        message: \"\",\n        validateAfter: \"SUBMIT\",\n        showWhen: or(\n          #\"SYSTEM_SYSRULES_forEach\"(\n            items: local!selectionFields.fieldKey,\n            expression: rule!AS_CO_UT_isBlank(\n              rule!AS_GAM_filterCdtOrRecordDataByField(\n                cdtOrRecord: ri!question[recordType!AS GCM QNM R Question.defaultResponseOptions],\n                field: recordType!AS GCM QNM R Response.fieldKey,\n                value: fv!item\n              )\n            )\n          )\n        )\n      ),\n      #\"SYSTEM_SYSRULES_validationMessage\"(\n        message: \"\",\n        validateAfter: \"SUBMIT\",\n        showWhen: and(\n          /* TOBEDONE should ultimately be done for each dropdown field, if more complex questions are implemented */\n          ri!question[recordType!AS GCM QNM R Question.questionTypeCode] = cons!AS_GCM_QNM_ENUM_QUESTION_TYPE_CODE_DROPDOWN_TEXT,\n          length(\n            {\n              ri!question[recordType!AS GCM QNM R Question.defaultResponseOptions]\n            }\n          ) < tointeger(\n            rule!AS_GAM_filterCdtOrRecordDataByField(\n              cdtOrRecord: ri!question[recordType!AS GCM QNM R Question.defaultResponseRequirements],\n              field: recordType!AS GCM QNM R Response Requirement.requirementTypeCode,\n              value: cons!AS_GCM_QNM_ENUM_RESPONSE_REQUIREMENT_TYPE_CODE_MAX_RESPONSES\n            )[recordType!AS GCM QNM R Response Requirement.requirementValue]\n          )\n        )\n      )\n    }\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QNM_UT_isDuplicateQuestion_Reference",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QNM_UT_selectionFieldList",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_filterCdtOrRecordDataByField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QNM_ENUM_QUESTION_TYPE_CODE_DROPDOWN_TEXT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_QNM_ENUM_RESPONSE_REQUIREMENT_TYPE_CODE_MAX_RESPONSES",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QNM_ENUM_QUESTION_TYPE_CODE_SINGLE_RADIO_BUTTON_TEXT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

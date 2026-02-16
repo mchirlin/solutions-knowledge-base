@@ -1,0 +1,30 @@
+{
+  "uuid": "_a-0000eb57-1959-8000-9d1c-011c48011c48_10128713",
+  "name": "AS_GCM_BL_dollarAmountFilterClauseSetRecords",
+  "type": "Expression Rule",
+  "description": "Returns dollar amount filter for clause set",
+  "sail_code": "a!localVariables(\n  local!bundle: rule!AS_GCM_CO_UT_loadBundleFromFolder(langISOCode: null()),\n  #\"SYSTEM_SYSRULES_recordFilterList\"(\n    name: \"Dollar Amount\",\n    options: if(\n      rule!AS_CO_UT_isNotBlank(ri!filterField),\n      {\n        #\"SYSTEM_SYSRULES_recordFilterListOption\"(\n          id: 1,\n          name: concat(\n            \"Under\",\n            \" \",\n            cons!AS_GCM_TEXT_DOLLAR_AMOUNT_FILTER_OPTIONS[1]\n          ),\n          filter: #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: ri!filterField,\n            operator: \"<\",\n            value: cons!AS_GCM_INT_DOLLAR_AMOUNT_FILTER_VALUES[1]\n          )\n        ),\n        #\"SYSTEM_SYSRULES_recordFilterListOption\"(\n          id: 2,\n          name: cons!AS_GCM_TEXT_DOLLAR_AMOUNT_FILTER_OPTIONS[2],\n          filter: #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: ri!filterField,\n            operator: \"between\",\n            value: {\n              cons!AS_GCM_INT_DOLLAR_AMOUNT_FILTER_VALUES[1],\n              cons!AS_GCM_INT_DOLLAR_AMOUNT_FILTER_VALUES[2] + 0.99\n            }\n          )\n        ),\n        #\"SYSTEM_SYSRULES_recordFilterListOption\"(\n          id: 3,\n          name: cons!AS_GCM_TEXT_DOLLAR_AMOUNT_FILTER_OPTIONS[3],\n          filter: #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: ri!filterField,\n            operator: \"between\",\n            value: {\n              cons!AS_GCM_INT_DOLLAR_AMOUNT_FILTER_VALUES[2] + 1,\n              cons!AS_GCM_INT_DOLLAR_AMOUNT_FILTER_VALUES[3]\n            }\n          )\n        ),\n        #\"SYSTEM_SYSRULES_recordFilterListOption\"(\n          id: 4,\n          name: concat(\n            \"Over\",\n            \" \",\n            cons!AS_GCM_TEXT_DOLLAR_AMOUNT_FILTER_OPTIONS[4]\n          ),\n          filter: #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: ri!filterField,\n            operator: \">\",\n            value: cons!AS_GCM_INT_DOLLAR_AMOUNT_FILTER_VALUES[3]\n          )\n        )\n      },\n      {}\n    ),\n    allowMultipleSelections: true\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GCM_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_TEXT_DOLLAR_AMOUNT_FILTER_OPTIONS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_INT_DOLLAR_AMOUNT_FILTER_VALUES",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

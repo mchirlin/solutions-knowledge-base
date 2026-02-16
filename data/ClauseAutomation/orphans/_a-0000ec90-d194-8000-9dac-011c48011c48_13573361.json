@@ -1,0 +1,96 @@
+{
+  "uuid": "_a-0000ec90-d194-8000-9dac-011c48011c48_13573361",
+  "name": "AS_GCM_QE_getClauseSetClauseTextsWithBatching_V1",
+  "type": "Expression Rule",
+  "description": "USED IN ENTRYPOINT FOR GCW - Returns clause set clause text details (AS_GCM_ClauseSet_Clause_Text) based on the dynamic batching of relationIds.",
+  "sail_code": "rule!AS_CO_UT_cast(\n  type: 'type!{urn:com:appian:types:AS:GCM}AS_GCM_ClauseSet_Clause_Text?list',\n  value: rule!AS_GCM_UT_formatDataBasedOnReturnType(\n    data: #\"SYSTEM_SYSRULES_forEach\"(\n      items: a!match(\n        value: ri!relationIds,\n        whenTrue: rule!AS_CO_UT_isBlank(ri!relationIds),\n        then: null(),\n        whenTrue: a!isNullOrEmpty(ri!batchingSize),\n        then: a!localVariables(\n          local!clauseSetClauseTexts: rule!AS_GCM_UT_getClauseSetClauseTextsWithQuerySelection(\n            returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET,\n            relationId: ri!relationIds,\n            executeWhen: a!isNotNullOrEmpty(ri!relationIds),\n            selectionColumns: {\n              \"relationId\",\n              \"clauseTextLength\",\n              if(\n                ri!includeClauseTextOriginal,\n                \"clauseTextOriginalLength\",\n                {}\n              )\n            },\n            pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(startIndex: 1, batchSize: - 1)\n          ).data,\n          local!batchingData: rule!AS_GAM_UT_batchDataByFieldUnderThreshold(\n            data: local!clauseSetClauseTexts,\n            fields: {\n              \"clauseTextLength\",\n              if(\n                ri!includeClauseTextOriginal,\n                \"clauseTextOriginalLength\",\n                {}\n              )\n            },\n            threashold: a!defaultValue(\n              value: ri!batchingThreshold,\n              default: cons!AS_GCM_ENUM_QUERY_THRESHOLD_LIMIT_IN_BYTES\n            )\n          ),\n          if(\n            /* When there is any data which is exceeding the threshold then throw an error to handle/address       */\n            rule!AS_CO_UT_isNotBlank(local!batchingData.exceedingThreshold),\n            error(\n              \"Please review. The threshold[=\" & a!defaultValue(\n                value: ri!batchingThreshold,\n                default: cons!AS_GCM_ENUM_QUERY_THRESHOLD_LIMIT_IN_BYTES\n              ) & \"] is exceeded by \" & rule!AS_GAM_UT_ArrayLength(local!batchingData.exceedingThreshold) & \" clause set clauses: \" & local!batchingData.exceedingThreshold\n            ),\n            a!flatten(\n              #\"SYSTEM_SYSRULES_forEach\"(\n                items: local!batchingData.batches,\n                expression: rule!AS_GCM_UT_getClauseSetClauseTextsWithQuerySelection(\n                  relationId: index(fv!item.data, \"relationId\", null),\n                  returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET,\n                  executeWhen: a!isNotNullOrEmpty(index(fv!item.data, \"relationId\", null)),\n                  pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(startIndex: 1, batchSize: - 1),\n                  selectionColumns: if(\n                    ri!includeClauseTextOriginal,\n                    {},\n                    {\n                      \"textRelationId\",\n                      \"relationId\",\n                      \"setId\",\n                      \"clauseText\",\n                      \"clauseTextLength\",\n                      \"createdBy\",\n                      \"createdDatetime\",\n                      \"modifiedBy\",\n                      \"modifiedDatetime\",\n                      \"isActive\"\n                    }\n                  )\n                ).data\n              )\n            )\n          )\n        ),\n        default: a!flatten(\n          #\"SYSTEM_SYSRULES_forEach\"(\n            items: rule!AS_GCM_UT_getIdentifiersInBatches(\n              identifiers: ri!relationIds,\n              batchingSize: a!defaultValue(\n                value: ri!batchingSize,\n                default: cons!AS_GCM_INT_QUERY_BATCH_SIZE_TINY\n              )\n            ),\n            expression: rule!AS_GCM_UT_getClauseSetClauseTextsWithQuerySelection(\n              relationId: fv!item.identifiers,\n              returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET,\n              executeWhen: a!isNotNullOrEmpty(fv!item.identifiers),\n              pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(startIndex: 1, batchSize: - 1),\n              selectionColumns: if(\n                ri!includeClauseTextOriginal,\n                /* Returns all fields  */\n                {},\n                {\n                  \"textRelationId\",\n                  \"relationId\",\n                  \"setId\",\n                  \"clauseText\",\n                  \"clauseTextLength\",\n                  \"createdBy\",\n                  \"createdDatetime\",\n                  \"modifiedBy\",\n                  \"modifiedDatetime\",\n                  \"isActive\"\n                }\n              )\n            ).data\n          )\n        )\n      ),\n      expression: rule!AS_GCM_updateClauseTextForContractWriting(\n        removeAllCiteTags: ri!removeAllCiteTags,\n        removeAllHiddenTags: ri!removeAllHiddenTags,\n        clauseSetClauseText: fv!item\n      )\n    ),\n    pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n      startIndex: 1,\n      batchSize: - 1,\n      sort: #\"SYSTEM_SYSRULES_sortInfo\"(field: \"textRelationId\", ascending: true)\n    ),\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET,\n    /* Refer Comment in AS_GCM_updateDataByModifierMaps for structure  */\n    modifierMaps: {\n      a!map(\n        field: \"clauseText\",\n        findRegex: cons!AS_GCM_TXT_REGEX_FOR_HIDDEN_SPAN_TAG_FILLIN_METADATA,\n        replaceWith: \"\",\n        applywhen: rule!AS_CO_UT_booleanDefaultTrue(boolean: ri!removeClauseTextMetadata)\n      )\n    }\n  ).data\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_cast",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_UT_formatDataBasedOnReturnType",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_UT_getClauseSetClauseTextsWithQuerySelection",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_UT_batchDataByFieldUnderThreshold",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_UT_ArrayLength",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_UT_getIdentifiersInBatches",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_updateClauseTextForContractWriting",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_booleanDefaultTrue",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_ENUM_QUERY_THRESHOLD_LIMIT_IN_BYTES",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_INT_QUERY_BATCH_SIZE_TINY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_TXT_REGEX_FOR_HIDDEN_SPAN_TAG_FILLIN_METADATA",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GAM_UT_queryEntityWithSelection",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_ENT_CLAUSE_SET_CLAUSE_TEXT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GCM_ENTRYPOINT_GETDATA_getClauseSetsClauseText",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

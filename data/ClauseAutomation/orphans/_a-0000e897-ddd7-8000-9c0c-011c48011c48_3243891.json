@@ -1,0 +1,30 @@
+{
+  "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3243891",
+  "name": "AS_GCM_BL_validationFilterForClauseSetClauseRecord",
+  "type": "Expression Rule",
+  "description": "Validation filter for Clause set clause Record",
+  "sail_code": "a!localVariables(\n  local!refData: rule!AS_GCM_QR_getRefData(\n    refTypes: cons!AS_GCM_REF_TYPE_CLAUSE_SET_CLAUSE_STATUS,\n    doCastToCdt: false\n  ),\n  local!bundle: rule!AS_GCM_CO_UT_loadBundleFromFolder(langISOCode: null()),\n  #\"SYSTEM_SYSRULES_recordFilterList\"(\n    name: \"Validation\",\n    options: #\"SYSTEM_SYSRULES_forEach\"(\n      items: local!refData,\n      expression: #\"SYSTEM_SYSRULES_recordFilterListOption\"(\n        id: fv!item[recordType!AS GCM R Data.refDataId],\n        name: rule!AS_GAM_CO_I18N_UT_displayLabel(\n          bundle: local!bundle,\n          bundleKey: fv!item[recordType!AS GCM R Data.refKey]\n        ),\n        filter: #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: recordType!AS GCM Clause Set Clause Synced.refStatusId,\n          operator: \"=\",\n          value: fv!item[recordType!AS GCM R Data.refDataId]\n        )\n      )\n    ),\n    allowMultipleSelections: true\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GCM_QR_getRefData",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_REF_TYPE_CLAUSE_SET_CLAUSE_STATUS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

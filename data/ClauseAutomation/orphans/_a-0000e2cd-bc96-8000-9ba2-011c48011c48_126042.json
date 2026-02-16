@@ -1,0 +1,30 @@
+{
+  "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_126042",
+  "name": "AS_CO_UT_formatCurrencyValue",
+  "type": "Expression Rule",
+  "description": "takes in a currency code and a dollar value and returns a formatted value",
+  "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Text',\n  if(\n    rule!AS_CO_UT_isBlank(\n      ri!currencyValue\n    ),\n    if(\n      ri!showHyphen,\n      \"-\",\n      \"\"\n    ),\n    with(\n      local!allCurrencies: rule!AS_CO_CONS_CURRENCY_REFERENCE(),\n      local!currencyCode: rule!AS_CO_UT_replaceNull(\n        nullableValue: ri!currencyCode,\n        replacementValue: cons!AS_CO_TXT_DEFAULT_CURRENCY_CODE\n      ),\n      local!symbol: displayvalue(\n        local!currencyCode,\n        local!allCurrencies.currencyCode,\n        local!allCurrencies.symbol,\n        null\n      ),\n      local!currencyDisplay: text(\n        ri!currencyValue,\n        if(\n          ri!showDecimal,\n          \"#,###,###,###,###,###,###,###,###,###,###,###,###,###,###,###,###,###,###,###.00\",\n          \"#,###,###,###,###,###,###,###,###,###,###,###,###,###,###,###,###,###,###,###\"\n        )\n      ),\n      concat(\n        local!symbol,\n        local!currencyDisplay,\n        if(\n          ri!showCurrencyCode,\n          concat(\n            \" \",\n            local!currencyCode\n          ),\n          \"\"\n        )\n      )\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CONS_CURRENCY_REFERENCE",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_TXT_DEFAULT_CURRENCY_CODE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

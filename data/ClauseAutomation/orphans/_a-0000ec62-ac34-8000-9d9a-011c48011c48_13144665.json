@@ -1,0 +1,20 @@
+{
+  "uuid": "_a-0000ec62-ac34-8000-9d9a-011c48011c48_13144665",
+  "name": "DEPRECATED_AS_GCM_CEDM_DSP_dependentRecordsAsNestedList",
+  "type": "Interface",
+  "description": "To display the dependent records of the selected record type ",
+  "sail_code": "if(\n  rule!AS_CO_UT_isNotBlank(ri!childRecordConfigMaps),\n  #\"SYSTEM_SYSRULES_richTextBulletedList\"(\n    items: #\"SYSTEM_SYSRULES_forEach\"(\n      items: ri!childRecordConfigMaps,\n      expression: #\"SYSTEM_SYSRULES_richTextListItem\"(\n        text: concat(\n          fv!item.displayName,\n          char(32),\n          \"(\",\n          \"Only Referenced by Parent\",\n          \")\"\n        ),\n        nestedList: rule!DEPRECATED_AS_GCM_CEDM_DSP_dependentRecordsAsNestedList(\n          bundle: ri!bundle,\n          childRecordConfigMaps: rule!AS_GCM_filterRecords(\n            records: ri!configMaps,\n            field: \"uuid\",\n            value: difference(\n              {\n                fv!item.dependentRecordUuids,\n                fv!item.precedentRecordFieldMaps.precedentRecordUuid\n              },\n              ri!uuidsToExport\n            )\n          ),\n          configMaps: ri!configMaps,\n          uuidsToExport: append(\n            ri!uuidsToExport,\n            ri!childRecordConfigMaps.uuid\n          )\n        )\n      )\n    )\n  ),\n  null\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_filterRecords",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

@@ -1,0 +1,347 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GCM QNM Save Questionnaire",
+    "parent_name": null,
+    "total_objects": 17
+  },
+  "entry_point": {
+    "complexity_score": 17.0,
+    "total_nodes": 9,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GCM QNM Save Questionnaire",
+      "complexity_score": 17.0,
+      "total_nodes": 9,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Set Original Questionnaire"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Update Question",
+          "type": "Write to Data Store Entity",
+          "next": [
+            "Is Delete Questionnaire?"
+          ]
+        },
+        {
+          "name": "Update question category Id",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Update Question"
+          ]
+        },
+        {
+          "name": "Delete Questionnaire",
+          "type": "Delete from Data Store",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "is Existing Questionnaire",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Update question category Id",
+            "Is Delete Questionnaire?"
+          ]
+        },
+        {
+          "name": "Is Delete Questionnaire?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Delete Questionnaire (Yes)",
+            "End Node (No)"
+          ]
+        },
+        {
+          "name": "Write Questionnaire",
+          "type": "Write to Multiple DSE",
+          "next": [
+            "is Existing Questionnaire"
+          ]
+        },
+        {
+          "name": "Set Original Questionnaire",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write Questionnaire"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290163",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "description": "OBJECT_ARRAY - Returns an array type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "OBJECT_ARRAY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_QNM_QR_getQuestionnaire"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290157",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "description": "SINGLE_OBJECT - Returns a single type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "SINGLE_OBJECT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM QNM Save Questionnaire",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_39289-gcm",
+      "name": "AS_GCM_QNM_ENT_QUESTIONNAIRE",
+      "type": "Constant",
+      "description": "DSE for AS_GCM_QNM_Questionnaire",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS GCM QNM Save Questionnaire",
+        "AS_GCM_QNM_QR_getQuestionnaire"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157603",
+      "name": "AS_CO_UT_cast",
+      "type": "Expression Rule",
+      "description": "Casts a variable to the type of either the input `type`, or the typeof of the input `typeof`, and properly handles for null inputs",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_UT_queryRecordByIdentifier"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GCM QNM Save Questionnaire",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+        "AS_GAM_UT_ArrayLength",
+        "AS_GCM_mapQuestionCategoryIdToQuestion"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around AS_CO_UT_isBlank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_QNM_QR_getQuestionnaire"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157870",
+      "name": "AS_CO_UT_queryEntity",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_QR_getQuestionnaire"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6c8-d132-8000-9bbe-011c48011c48_469266",
+      "name": "AS_CO_UT_queryRecord",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_QR_getQuestionnaire"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367",
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_QR_getQuestionnaire",
+        "AS_GCM_UT_queryRecordByIdentifier"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73980",
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "description": "Returns nullableValue only if it is not null. Else returns replacementValue.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS GCM QNM Save Questionnaire",
+        "AS_CO_UT_queryEntity"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_269170",
+      "name": "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+      "type": "Expression Rule",
+      "description": "Allows passing field-value pairs to handle for use cases where you have to set newValues as arrays",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_mapQuestionCategoryIdToQuestion"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1021202",
+      "name": "AS_GAM_UT_ArrayLength",
+      "type": "Expression Rule",
+      "description": "Gives length of an array based on input of array",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_QR_getQuestionnaire"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_39328-gcm",
+      "name": "AS_GCM_QNM_QR_getQuestionnaire",
+      "type": "Expression Rule",
+      "description": "Query Record for AS_GCM_QNM_Questionnaire",
+      "parameters": [],
+      "calls": [
+        "AS GCM QNM Questionnaire",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GAM_UT_ArrayLength",
+        "AS_GCM_QNM_ENT_QUESTIONNAIRE",
+        "AS_GCM_UT_queryRecordByIdentifier"
+      ],
+      "called_by": [
+        "AS GCM QNM Save Questionnaire"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec50-376f-8000-9d94-011c48011c48_12937069",
+      "name": "AS_GCM_UT_queryRecordByIdentifier",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_rejectNullValuesFromArray"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_QR_getQuestionnaire"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1502479",
+      "name": "AS_GCM_mapQuestionCategoryIdToQuestion",
+      "type": "Expression Rule",
+      "description": "Map Category Id to question",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs"
+      ],
+      "called_by": [
+        "AS GCM QNM Save Questionnaire"
+      ]
+    },
+    {
+      "uuid": "000be467-f6e7-8000-0639-7f0000014e7a-gcm",
+      "name": "AS GCM QNM Save Questionnaire",
+      "type": "Process Model",
+      "description": "Handle activities associated with saving a questionnaire",
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull",
+        "AS_GCM_QNM_ENT_QUESTIONNAIRE",
+        "AS_GCM_QNM_QR_getQuestionnaire",
+        "AS_GCM_mapQuestionCategoryIdToQuestion"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "342f2727-9f4e-4c0a-82fe-dabdcb61c90a",
+      "name": "AS GCM QNM Questionnaire",
+      "type": "Record Type",
+      "description": "Sync record for AS_GCM_QNM_QUESTIONNAIRE",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QNM_QR_getQuestionnaire"
+      ]
+    }
+  ]
+}

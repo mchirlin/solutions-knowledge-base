@@ -1,0 +1,192 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GCM Update Specific Clause Set Fields",
+    "parent_name": null,
+    "total_objects": 10
+  },
+  "entry_point": {
+    "complexity_score": 8.0,
+    "total_nodes": 5,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GCM Update Specific Clause Set Fields",
+      "complexity_score": 8.0,
+      "total_nodes": 5,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Validation"
+          ]
+        },
+        {
+          "name": "End Event",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Validation",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Event (Failed)",
+            "Write Clause Set (Passed)"
+          ]
+        },
+        {
+          "name": "Write Clause Set",
+          "type": "internal3.write_records_to_source",
+          "next": [
+            "Capture Audit"
+          ]
+        },
+        {
+          "name": "Capture Audit",
+          "type": "Start Process (v2)",
+          "next": [
+            "End Event"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290175",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+      "type": "Constant",
+      "description": "TOTAL_COUNT - Returns an Integer when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "TOTAL_COUNT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_VD_duplicateValidationForSetNumbAndCategNumbCombo"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_964476",
+      "name": "AS_GAM_ENUM_TEXT_LENGTH_MEDIUM_SHORT",
+      "type": "Constant",
+      "description": "25 - SHORT length for text fields, used for validations and trimming text",
+      "value": "25",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_VLD_isAnyClauseSetFieldInvalid"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb92-18ff-8000-9d35-011c48011c48_11084237",
+      "name": "AS_GCM_PM_CLAUSE_SET_AUDIT",
+      "type": "Constant",
+      "description": "Process model constant: AS GCM Clause Set Audit",
+      "value": "AS GCM Clause Set Audit",
+      "value_type": "http://www.appian.com/ae/types/2009:ProcessModel",
+      "calls": [],
+      "called_by": [
+        "AS GCM Update Specific Clause Set Fields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157603",
+      "name": "AS_CO_UT_cast",
+      "type": "Expression Rule",
+      "description": "Casts a variable to the type of either the input `type`, or the typeof of the input `typeof`, and properly handles for null inputs",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS GCM Update Specific Clause Set Fields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_VLD_isAnyClauseSetFieldInvalid"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around AS_CO_UT_isBlank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_cast",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_VD_duplicateValidationForSetNumbAndCategNumbCombo",
+        "AS_GCM_VLD_isAnyClauseSetFieldInvalid"
+      ]
+    },
+    {
+      "uuid": "_a-0000e63a-a5cb-8000-9bc6-011c48011c48_1230199",
+      "name": "AS_GCM_QE_getClauseSetDetails",
+      "type": "Expression Rule",
+      "description": "Query Entity to get clause set details",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_GCM_VD_duplicateValidationForSetNumbAndCategNumbCombo"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1403938",
+      "name": "AS_GCM_VD_duplicateValidationForSetNumbAndCategNumbCombo",
+      "type": "Expression Rule",
+      "description": "Checks the duplicate validation for Set number and category number combo",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_QE_getClauseSetDetails"
+      ],
+      "called_by": [
+        "AS_GCM_VLD_isAnyClauseSetFieldInvalid"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9ef-12bc-8000-9c7a-011c48011c48_6025489",
+      "name": "AS_GCM_VLD_isAnyClauseSetFieldInvalid",
+      "type": "Expression Rule",
+      "description": "Returns true if any of the fields violates the validation rule, Else returns false.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_GAM_ENUM_TEXT_LENGTH_MEDIUM_SHORT",
+        "AS_GCM_VD_duplicateValidationForSetNumbAndCategNumbCombo"
+      ],
+      "called_by": [
+        "AS GCM Update Specific Clause Set Fields"
+      ]
+    },
+    {
+      "uuid": "0006e9f5-f6ab-8000-6a3e-7f0000014e7a",
+      "name": "AS GCM Update Specific Clause Set Fields",
+      "type": "Process Model",
+      "description": "Updates and captures audit for the specific clause set fields. To be used by GCW.",
+      "calls": [
+        "AS_CO_UT_cast",
+        "AS_GCM_PM_CLAUSE_SET_AUDIT",
+        "AS_GCM_VLD_isAnyClauseSetFieldInvalid"
+      ],
+      "called_by": []
+    }
+  ]
+}

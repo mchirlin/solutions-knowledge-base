@@ -1,0 +1,1839 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "AS GCM Clause Set - \"\"",
+    "parent_name": "AS GCM Clause Set",
+    "total_objects": 113
+  },
+  "entry_point": {
+    "action_type": "RECORD_ACTION",
+    "record_type": "AS GCM Clause Set",
+    "target_process": "AS GCM View Document for Clause Set",
+    "form_interface": null,
+    "expressions": {
+      "TITLE": "\"\"",
+      "DESCRIPTION": null,
+      "VISIBILITY": null,
+      "CONTEXT": "{\n  clauseSet: rule!AS_GCM_QE_getClauseSetDetails(\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT,\n    setId: rv!identifier\n  )/* AS_GCM_ClauseSet */\n\n}"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GCM View Document for Clause Set",
+      "complexity_score": 10.0,
+      "total_nodes": 6,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Clause Set Status = Generating?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "view Document",
+          "type": "USER_TASK",
+          "next": [
+            "End Node"
+          ],
+          "interface": "AS_GCM_FM_viewDocumentForClauseSet"
+        },
+        {
+          "name": "Generate Document",
+          "type": "SUBPROCESS",
+          "next": [
+            "view Document"
+          ],
+          "subprocess": "AS GCM Generated Clause Set Documents"
+        },
+        {
+          "name": "Placeholder",
+          "type": "USER_TASK",
+          "next": [
+            "End Node"
+          ],
+          "interface": "AS_GCM_CPS_ClauseSetRelatedActionPlaceholder"
+        },
+        {
+          "name": "Clause Set Status = Generating?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Generate Document (No)",
+            "Placeholder (Yes)"
+          ]
+        }
+      ]
+    },
+    "subprocesses": [
+      {
+        "name": "AS GCM Generated Clause Set Documents",
+        "complexity_score": 3.0,
+        "total_nodes": 3,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "MS Word 2007 Doc from Template"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "MS Word 2007 Doc from Template",
+            "type": "MS Word 2007 Doc from Template",
+            "next": [
+              "End Node"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290131",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+      "type": "Constant",
+      "description": "DATA_SUBSET - Returns a type of DataSubset when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "DATA_SUBSET",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_UT_formatDataBasedOnReturnType",
+        "AS_GCM_UT_getIdentifiersInBatches"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290163",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "description": "OBJECT_ARRAY - Returns an array type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "OBJECT_ARRAY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_UT_formatDataBasedOnReturnType"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290157",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "description": "SINGLE_OBJECT - Returns a single type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "SINGLE_OBJECT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_UT_createDynamicSectionForClauses",
+        "AS_GCM_UT_createUCFClausesSectionforGenerateDoc",
+        "AS_GCM_UT_formatDataBasedOnReturnType",
+        "AS_GCM_formatClauseTitleForDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73173",
+      "name": "AS_CO_ENUM_USER_ACTION_CANCEL",
+      "type": "Constant",
+      "description": "CANCEL.USER_ACTION - Value to use to drive process logic after a user performs a \"Cancel\" action",
+      "value": "CANCEL.USER_ACTION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CPS_ClauseSetRelatedActionPlaceholder"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6ec-ba89-8000-9be2-011c48011c48_1918759",
+      "name": "AS_GCM_CLAUSE_TITLE_ALTERNATE",
+      "type": "Constant",
+      "description": "Clause Title: Alternate ",
+      "value": "Alternate",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_DSP_clauseRecordTitle"
+      ]
+    },
+    {
+      "uuid": "_a-0000edef-782d-8000-9e15-011c48011c48_16080555",
+      "name": "AS_GCM_CLAUSE_TITLE_DEVIATION",
+      "type": "Constant",
+      "description": "Clause Title: DEVIATION ",
+      "value": "DEVIATION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_DSP_clauseRecordTitle"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed52-a319-8000-9df0-011c48011c48_15047778",
+      "name": "AS_GCM_DOC_CLAUSE_SET_GENERATION_STATE",
+      "type": "Constant",
+      "description": "Constant reference to the AS.GCM.ClauseSetGenerationStateImage document",
+      "value": "_a-0000ed52-a319-8000-9df0-011c48011c48_15047772",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CPS_ClauseSetRelatedActionPlaceholder"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1366941",
+      "name": "AS_GCM_DOC_CONTRACT_DOCUMENT_TEMPLATE",
+      "type": "Constant",
+      "description": null,
+      "value": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1372765",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "AS GCM Generated Clause Set Documents"
+      ]
+    },
+    {
+      "uuid": "_a-0000e63a-a5cb-8000-9bc6-011c48011c48_1229082",
+      "name": "AS_GCM_ENT_CLAUSE_SET",
+      "type": "Constant",
+      "description": "Data Store Entity constant for AS_GCM_Clause_Set",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1196828",
+      "name": "AS_GCM_ENT_CLAUSE_SET_CLAUSE",
+      "type": "Constant",
+      "description": "Data Store Entity constant for AS_GCM_ClauseSet_Clause",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetClauseDetails",
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1543337",
+      "name": "AS_GCM_ENT_CLAUSE_SET_CLAUSE_TEXT",
+      "type": "Constant",
+      "description": "Data Store Entity constant for AS_GCM_ClauseSet_Clause_Text",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_getClauseSetClauseTextsWithQuerySelection"
+      ]
+    },
+    {
+      "uuid": "_a-0000eafa-c1cb-8000-9cf0-011c48011c48_9174111",
+      "name": "AS_GCM_FLD_GENERATED_CLAUSE_SET_DOCUMENTS_FOLDER",
+      "type": "Constant",
+      "description": "Folder: AS GCM Generated Clause Set Documents Folder",
+      "value": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1367060",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationFolder",
+      "calls": [],
+      "called_by": [
+        "AS GCM Generated Clause Set Documents"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3271127",
+      "name": "AS_GCM_INT_QUERY_BATCH_SIZE_EXTRA_LARGE",
+      "type": "Constant",
+      "description": "Batch size: 1000",
+      "value": "1000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_createDynamicSectionForClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3111916",
+      "name": "AS_GCM_INT_QUERY_BATCH_SIZE_TINY",
+      "type": "Constant",
+      "description": "Batch size: 10",
+      "value": "10",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching",
+        "AS_GCM_UT_getIdentifiersInBatches"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1276927",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_STATUS_FINALIZED",
+      "type": "Constant",
+      "description": "Contains Ref data Id for status Finalized\nValue: 40",
+      "value": "40",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM View Document for Clause Set"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed52-a319-8000-9df0-011c48011c48_15021447",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_STATUS_GENERATING",
+      "type": "Constant",
+      "description": "Contains Ref data Id for status Generating\nValue: 113",
+      "value": "113",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM View Document for Clause Set"
+      ]
+    },
+    {
+      "uuid": "_a-0000e69a-ff03-8000-9bd0-011c48011c48_1621530",
+      "name": "AS_GCM_REF_ID_FORMAT_FULL_TEXT",
+      "type": "Constant",
+      "description": "Value: 6\nNote: It was formerly AS_GCM_REF_ID_FORMAT_UCF. Its renamed because of ref_label change in AS_GCM_R_DATA table.",
+      "value": "6",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_createDynamicSectionForClauses",
+        "AS_GCM_UT_createUCFClausesSectionforGenerateDoc"
+      ]
+    },
+    {
+      "uuid": "_a-0000e69a-ff03-8000-9bd0-011c48011c48_1621523",
+      "name": "AS_GCM_REF_ID_FORMAT_IBR",
+      "type": "Constant",
+      "description": "Value: 7",
+      "value": "7",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_createDynamicSectionForClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1374072",
+      "name": "AS_GCM_REF_ID_USAGE_EXCLUDED",
+      "type": "Constant",
+      "description": "Ref data id - 57",
+      "value": "57",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1557074",
+      "name": "AS_GCM_SPECIAL_CHARACTERS_FOR_XML",
+      "type": "Constant",
+      "description": "&,<,>,\",'",
+      "value": [
+        "&",
+        "<",
+        ">",
+        "'",
+        "\""
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_encodeSpecialCharactersToXML"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9b7-c1f0-8000-9c5e-011c48011c48_5239543",
+      "name": "AS_GCM_TEXT_NULL_TABLE_TEXT",
+      "type": "Constant",
+      "description": "value: NULLTABLETEXT, used for formatting from FAR Matrix",
+      "value": "NULLTABLETEXT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_createUCFClausesSectionforGenerateDoc",
+        "AS_GCM_UT_dynamicTableInClauseText",
+        "AS_GCM_UT_formatTableIntoOneRow",
+        "AS_GCM_UT_groupTableRowDataIntoArray"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1526789",
+      "name": "AS_GCM_TXT_DRAFT_FOR_VIEW_DOCUMENT",
+      "type": "Constant",
+      "description": "DRAFT",
+      "value": "DRAFT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM Generated Clause Set Documents"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed80-c90f-8000-9dfa-011c48011c48_15417590",
+      "name": "AS_GCM_TXT_PRESERVE_WORDS_FOR_SPL_CHAR_ENCODING",
+      "type": "Constant",
+      "description": "This constant is used in rule!AS_GCM_UT_encodeSpecialCharactersToXML to preserve the {\"&linebrk, &nbsp;\"} texts as it contains \" & \" itself in it. which in turn considered as a special character",
+      "value": [
+        "&linebrk",
+        "&nbsp;"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_convertHtmlFontAndColorToOoxml",
+        "AS_GCM_UT_insertTableCell"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1557086",
+      "name": "AS_GCM_XML_ENCODED_SPECIAL_CHARACTERS",
+      "type": "Constant",
+      "description": "values : {&amp;\n&lt;\n&gt;\n&apos;\n&quot;}",
+      "value": [
+        "&amp;",
+        "&lt;",
+        "&gt;",
+        "&apos;",
+        "&quot;"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_encodeSpecialCharactersToXML"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_291284",
+      "name": "AS_CO_CONS_PRIMITIVE_TYPE_ARRAY",
+      "type": "Expression Rule",
+      "description": "Array of type numbers of primitive types (1 text, 2 int, 3 dec, 4 boolean, 5 date, 6 datetime, 7 time, 8 user, 9 group, 10 user or group, 11 document, 12 folder)",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_zINTERNAL_returnCdtFields_primitiveTypeCheckHandler"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39070",
+      "name": "AS_CO_UT_booleanDefaultFalse",
+      "type": "Expression Rule",
+      "description": "Default a null value to false, otherwise returns the boolean value",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_DSP_clauseRecordTitle",
+        "AS_GCM_QE_getClauseSetDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157603",
+      "name": "AS_CO_UT_cast",
+      "type": "Expression Rule",
+      "description": "Casts a variable to the type of either the input `type`, or the typeof of the input `typeof`, and properly handles for null inputs",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching",
+        "AS_GCM_UT_formatDataBasedOnReturnType",
+        "AS_GCM_UT_queryRecordByIdentifier"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_292117",
+      "name": "AS_CO_UT_castToDictionaryList",
+      "type": "Expression Rule",
+      "description": "Casts the input to a dictionary list",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_UT_regexsearch"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_81749",
+      "name": "AS_CO_UT_checkIfUserExists",
+      "type": "Expression Rule",
+      "description": "Returns true if the user exists",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_displayUser"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-9390-8000-9baa-011c48011c48_41575",
+      "name": "AS_CO_UT_cleanFolderName",
+      "type": "Expression Rule",
+      "description": "Removes special characters from folder name",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GCM Generated Clause Set Documents"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73660",
+      "name": "AS_CO_UT_displayUser",
+      "type": "Expression Rule",
+      "description": "Returns a display name for a user in the format of \"firstName lastName\". Null-safe.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_checkIfUserExists"
+      ],
+      "called_by": [
+        "AS_GCM_CPS_clauseSetDetailsForClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73758",
+      "name": "AS_CO_UT_distinct",
+      "type": "Expression Rule",
+      "description": "Returns the distinct values from a list.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_sortArrayDistinct"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75800",
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "description": "Filters a CDT by a matching a single value or list of values in a single field, if a list is passed, all matches are returned",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_returnCdtIndicesByField"
+      ],
+      "called_by": [
+        "AS_CO_UT_sortCdt"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76433",
+      "name": "AS_CO_UT_indexPath",
+      "type": "Expression Rule",
+      "description": "Pass in a field (i.e. member[1].name) and this will index(index(index( for each field",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_returnCdtIndicesByField",
+        "AS_GCM_UT_nullifyEmptyNestedCdtFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_castToDictionaryList",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_left",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectCdtByField",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_sortArray",
+        "AS_CO_UT_sortCdt",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+        "AS_CO_UT_whereContains",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GAM_UT_queryEntityWithSelection",
+        "AS_GCM_CPS_clauseSetDetailsForClauseSet",
+        "AS_GCM_DSP_clauseRecordTitle",
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_UT_addClausesTableToDocument",
+        "AS_GCM_UT_clauseTextOoxmlElements",
+        "AS_GCM_UT_convertHtmlToOoxml",
+        "AS_GCM_UT_createDynamicSectionForClauses",
+        "AS_GCM_UT_createUCFClausesSectionforGenerateDoc",
+        "AS_GCM_UT_determineHeadingType",
+        "AS_GCM_UT_docxLineBreak",
+        "AS_GCM_UT_dynamicTableInClauseText",
+        "AS_GCM_UT_findColorCodes",
+        "AS_GCM_UT_formatDataBasedOnReturnType",
+        "AS_GCM_UT_formatTableIntoOneRow",
+        "AS_GCM_UT_formatTheListOfHtmlTagsIntoDictionary",
+        "AS_GCM_UT_getIdentifiersInBatches",
+        "AS_GCM_UT_groupTableRowDataIntoArray",
+        "AS_GCM_UT_nullifyEmptyNestedCdtFields",
+        "AS_GCM_substituteListFromTextUsingReduce"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around AS_CO_UT_isBlank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_checkIfUserExists",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_DSP_clauseRecordTitle",
+        "AS_GCM_QE_getClauseSetClauseDetails",
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_UT_clauseTextOoxmlElements",
+        "AS_GCM_UT_convertHtmlFontAndColorToOoxml",
+        "AS_GCM_UT_createUCFClausesSectionforGenerateDoc",
+        "AS_GCM_UT_encodeSpecialCharactersToXML",
+        "AS_GCM_UT_getClauseSetClauseTextsWithQuerySelection",
+        "AS_GCM_updateDataByModifierMaps",
+        "AS_GCM_updateDataByModifierMaps_Reducer"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75618",
+      "name": "AS_CO_UT_left",
+      "type": "Expression Rule",
+      "description": "Executes the `left()` function with error handling for a null input",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_DSP_clauseRecordTitle"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157870",
+      "name": "AS_CO_UT_queryEntity",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_returnCdtFields"
+      ],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetClauseDetails",
+        "AS_GCM_QE_getClauseSetDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6c8-d132-8000-9bbe-011c48011c48_469266",
+      "name": "AS_CO_UT_queryRecord",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs"
+      ],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_271202",
+      "name": "AS_CO_UT_rejectCdtByField",
+      "type": "Expression Rule",
+      "description": "Removes CDT indices where a match of a single value or list of values in a single field is found, if a list is passed, all matches are rejected",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_returnCdtIndicesByField"
+      ],
+      "called_by": [
+        "AS_CO_UT_sortCdt"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367",
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_DSP_clauseRecordTitle",
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching",
+        "AS_GCM_UT_queryRecordByIdentifier",
+        "AS_GCM_extractBalancedTagThatHasGivenText"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73980",
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "description": "Returns nullableValue only if it is not null. Else returns replacementValue.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_left",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_sortArray",
+        "AS_CO_UT_sortCdt",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GAM_UT_queryEntityWithSelection",
+        "AS_GAM_displayPlaceholderForNullValues"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75660",
+      "name": "AS_CO_UT_returnCdtFields",
+      "type": "Expression Rule",
+      "description": "Returns an array of a CDTs fields. Note that this only works on Appian CDTs, not Dictionary or List of Variant",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_returnSingleTypeObject",
+        "AS_CO_UT_zINTERNAL_returnCdtFields_handler",
+        "AS_CO_UT_zINTERNAL_returnCdtFields_primitiveTypeCheckHandler"
+      ],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_GCM_UT_nullifyEmptyNestedCdtFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_269546",
+      "name": "AS_CO_UT_returnCdtIndicesByField",
+      "type": "Expression Rule",
+      "description": "Returns the indices of a CDT by a matching a single value or list of values in a single field, if a list is passed, all matches are returned",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_whereContains"
+      ],
+      "called_by": [
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_rejectCdtByField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75842",
+      "name": "AS_CO_UT_returnSingleTypeObject",
+      "type": "Expression Rule",
+      "description": "Takes in either an array type or a primitive type and returns the singular type object, works for CDTs or primitive types",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_returnCdtFields",
+        "AS_CO_UT_zINTERNAL_returnCdtFields_handler"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_87660",
+      "name": "AS_CO_UT_sortArray",
+      "type": "Expression Rule",
+      "description": "Sorts an array of primitive types (e.g. text, integers, dates)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_CO_UT_sortArrayDistinct",
+        "AS_GCM_UT_groupTableRowDataIntoArray"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_42922",
+      "name": "AS_CO_UT_sortArrayDistinct",
+      "type": "Expression Rule",
+      "description": "Sorts the distinct elements of an array of primitive types (e.g. text, integers, dates)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_distinct",
+        "AS_CO_UT_sortArray"
+      ],
+      "called_by": [
+        "AS_GCM_UT_createDynamicSectionForClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75720",
+      "name": "AS_CO_UT_sortCdt",
+      "type": "Expression Rule",
+      "description": "Sorts a CDT, dictionary, or complex type.  Pass nullsFirst to explicitly sort nulls first or last.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_rejectCdtByField",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_UT_createDynamicSectionForClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_162769",
+      "name": "AS_CO_UT_typeCompare",
+      "type": "Expression Rule",
+      "description": "Returns true if the two input types match",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_whereContains",
+        "AS_CO_UT_zINTERNAL_returnCdtFields_primitiveTypeCheckHandler"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_269170",
+      "name": "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+      "type": "Expression Rule",
+      "description": "Allows passing field-value pairs to handle for use cases where you have to set newValues as arrays",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_UT_nullifyEmptyNestedCdtFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_272151",
+      "name": "AS_CO_UT_whereContains",
+      "type": "Expression Rule",
+      "description": "Enhanced wherecontains() which avoids type-casting issues and properly handles for document and group types",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_typeCompare"
+      ],
+      "called_by": [
+        "AS_CO_UT_returnCdtIndicesByField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_291236",
+      "name": "AS_CO_UT_zINTERNAL_returnCdtFields_handler",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_CO_UT_returnCdtFields`",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_returnSingleTypeObject"
+      ],
+      "called_by": [
+        "AS_CO_UT_returnCdtFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e36c-7599-8000-9ba2-011c48011c48_64438",
+      "name": "AS_CO_UT_zINTERNAL_returnCdtFields_primitiveTypeCheckHandler",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_CO_UT_returnCdtFields`",
+      "parameters": [],
+      "calls": [
+        "AS_CO_CONS_PRIMITIVE_TYPE_ARRAY",
+        "AS_CO_UT_typeCompare"
+      ],
+      "called_by": [
+        "AS_CO_UT_returnCdtFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53662",
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "description": "Displays a label by the `bundleKey` from passed in bundle data, optionally accepts arguments",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS GCM Generated Clause Set Documents",
+        "AS_GCM_CPS_clauseSetDetailsForClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1523563",
+      "name": "AS_GAM_UT_queryEntityWithSelection",
+      "type": "Expression Rule",
+      "description": "Generic query entity with query selection (So that huge load can be avoided while querying)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching",
+        "AS_GCM_UT_getClauseSetClauseTextsWithQuerySelection"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-80d9-8000-9bc8-011c48011c48_1249489",
+      "name": "AS_GAM_displayPlaceholderForNullValues",
+      "type": "Expression Rule",
+      "description": "Display \"-\" for null values ",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_CPS_clauseSetDetailsForClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1541224",
+      "name": "AS_GCM_CONS_htmlTags",
+      "type": "Expression Rule",
+      "description": "Array of html tags used",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_convertHtmlToOoxml"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53654",
+      "name": "AS_GCM_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "description": "Loads a property bundle file by name from a folder, returns a dictionary of the key-value pairs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GCM Generated Clause Set Documents",
+        "AS_GCM_CPS_ClauseSetRelatedActionPlaceholder",
+        "AS_GCM_FM_viewDocumentForClauseSet",
+        "AS_GCM_UT_addClausesTableToDocument",
+        "AS_GCM_UT_createDynamicSectionForClauses",
+        "AS_GCM_UT_createUCFClausesSectionforGenerateDoc",
+        "AS_GCM_UT_insertTableHeader"
+      ]
+    },
+    {
+      "uuid": "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1163967",
+      "name": "AS_GCM_DSP_clauseRecordTitle",
+      "type": "Expression Rule",
+      "description": "Displays the clause record title",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_booleanDefaultFalse",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_left",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GCM_CLAUSE_TITLE_ALTERNATE",
+        "AS_GCM_CLAUSE_TITLE_DEVIATION"
+      ],
+      "called_by": [
+        "AS_GCM_UT_insertTableRow",
+        "AS_GCM_formatClauseTitleForDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1372587",
+      "name": "AS_GCM_MTR_SAVE_generateDocument",
+      "type": "Expression Rule",
+      "description": "Metrics for Generate Document for GCM",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GCM Generated Clause Set Documents"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1270237",
+      "name": "AS_GCM_QE_getClauseSetClauseDetails",
+      "type": "Expression Rule",
+      "description": "Query Entity to get clause set clause details",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryEntity",
+        "AS_GCM_ENT_CLAUSE_SET_CLAUSE"
+      ],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3147338",
+      "name": "AS_GCM_QE_getClauseSetClauseDetailsWithBatching",
+      "type": "Expression Rule",
+      "description": "Query Entity to get clause set clause details with batching",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GAM_UT_queryEntityWithSelection",
+        "AS_GCM_ENT_CLAUSE_SET_CLAUSE",
+        "AS_GCM_INT_QUERY_BATCH_SIZE_TINY",
+        "AS_GCM_QE_getClauseSetClauseDetails",
+        "AS_GCM_UT_formatDataBasedOnReturnType",
+        "AS_GCM_UT_getIdentifiersInBatches",
+        "AS_GCM_UT_nullifyEmptyNestedCdtFields"
+      ],
+      "called_by": [
+        "AS_GCM_UT_createDynamicSectionForClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e63a-a5cb-8000-9bc6-011c48011c48_1230199",
+      "name": "AS_GCM_QE_getClauseSetDetails",
+      "type": "Expression Rule",
+      "description": "Query Entity to get clause set details",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_booleanDefaultFalse",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_ENT_CLAUSE_SET",
+        "AS_GCM_REF_ID_USAGE_EXCLUDED",
+        "AS_GCM_UT_queryRecordByIdentifier"
+      ],
+      "called_by": [
+        "AS_GCM_UT_createDynamicSectionForClauses",
+        "AS_GCM_formatClauseTitleForDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1362992",
+      "name": "AS_GCM_UT_addClausesTableToDocument",
+      "type": "Expression Rule",
+      "description": "Add Clauses Table to Document",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_UT_defineHeadingforDocument",
+        "AS_GCM_UT_docxLineBreak",
+        "AS_GCM_UT_insertTableHeader",
+        "AS_GCM_UT_insertTableProperties",
+        "AS_GCM_UT_insertTableRow"
+      ],
+      "called_by": [
+        "AS_GCM_UT_createDynamicSectionForClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1548040",
+      "name": "AS_GCM_UT_clauseTextOoxmlElements",
+      "type": "Expression Rule",
+      "description": "OOXML elements for clause text",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_UT_getFontSizeByHeadingType"
+      ],
+      "called_by": [
+        "AS_GCM_UT_convertHtmlFontAndColorToOoxml"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1548684",
+      "name": "AS_GCM_UT_convertHtmlFontAndColorToOoxml",
+      "type": "Expression Rule",
+      "description": null,
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_TXT_PRESERVE_WORDS_FOR_SPL_CHAR_ENCODING",
+        "AS_GCM_UT_clauseTextOoxmlElements",
+        "AS_GCM_UT_determineHeadingType",
+        "AS_GCM_UT_docxLineBreak",
+        "AS_GCM_UT_dynamicTableInClauseText",
+        "AS_GCM_UT_encodeSpecialCharactersToXML"
+      ],
+      "called_by": [
+        "AS_GCM_UT_convertHtmlToOoxml"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1538569",
+      "name": "AS_GCM_UT_convertHtmlToOoxml",
+      "type": "Expression Rule",
+      "description": "Convert HTML to OOXML",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_GCM_CONS_htmlTags",
+        "AS_GCM_UT_convertHtmlFontAndColorToOoxml",
+        "AS_GCM_UT_findBulletedLevel",
+        "AS_GCM_UT_findColorCodes",
+        "AS_GCM_UT_findFontSize",
+        "AS_GCM_UT_formatTableIntoOneRow",
+        "AS_GCM_UT_formatTheListOfHtmlTagsIntoDictionary",
+        "AS_GCM_UT_getAlignmentTagForDoc",
+        "AS_GCM_UT_removeUnwantedHtmlTagsByRegex"
+      ],
+      "called_by": [
+        "AS_GCM_UT_createUCFClausesSectionforGenerateDoc"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1534676",
+      "name": "AS_GCM_UT_createBulletedListForUCFClauses",
+      "type": "Expression Rule",
+      "description": "Create bulleted list for UCF clauses in generated document",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_createUCFClausesSectionforGenerateDoc"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1360846",
+      "name": "AS_GCM_UT_createDynamicSectionForClauses",
+      "type": "Expression Rule",
+      "description": "Create Dynamic Section For Clauses",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_sortArrayDistinct",
+        "AS_CO_UT_sortCdt",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_INT_QUERY_BATCH_SIZE_EXTRA_LARGE",
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_REF_ID_FORMAT_FULL_TEXT",
+        "AS_GCM_REF_ID_FORMAT_IBR",
+        "AS_GCM_UT_addClausesTableToDocument",
+        "AS_GCM_UT_createUCFClausesSectionforGenerateDoc",
+        "AS_GCM_UT_defineHeadingforDocument",
+        "AS_GCM_UT_filterClauseSetClauseByFormat"
+      ],
+      "called_by": [
+        "AS GCM Generated Clause Set Documents"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1372690",
+      "name": "AS_GCM_UT_createUCFClausesSectionforGenerateDoc",
+      "type": "Expression Rule",
+      "description": "Create UCF Clauses Section for Generate Doc",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_REF_ID_FORMAT_FULL_TEXT",
+        "AS_GCM_TEXT_NULL_TABLE_TEXT",
+        "AS_GCM_UT_convertHtmlToOoxml",
+        "AS_GCM_UT_createBulletedListForUCFClauses",
+        "AS_GCM_UT_defineHeadingforDocument",
+        "AS_GCM_UT_getClauseSetClauseTextsWithQuerySelection",
+        "AS_GCM_UT_removeEmptyaragraphs",
+        "AS_GCM_formatClauseTitleForDocument",
+        "AS_GCM_substituteListFromTextUsingReduce"
+      ],
+      "called_by": [
+        "AS_GCM_UT_createDynamicSectionForClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1529971",
+      "name": "AS_GCM_UT_defineHeadingforDocument",
+      "type": "Expression Rule",
+      "description": "Define heading for document\nHeading1\nHeading2\nHeading3",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_addClausesTableToDocument",
+        "AS_GCM_UT_createDynamicSectionForClauses",
+        "AS_GCM_UT_createUCFClausesSectionforGenerateDoc"
+      ]
+    },
+    {
+      "uuid": "_a-0000e69a-ff03-8000-9bd0-011c48011c48_1576715",
+      "name": "AS_GCM_UT_determineHeadingType",
+      "type": "Expression Rule",
+      "description": "Heading Type",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_UT_convertHtmlFontAndColorToOoxml"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1374418",
+      "name": "AS_GCM_UT_docxLineBreak",
+      "type": "Expression Rule",
+      "description": "docx line break",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_UT_addClausesTableToDocument",
+        "AS_GCM_UT_convertHtmlFontAndColorToOoxml",
+        "AS_GCM_UT_insertTableRowForClauseTextTables"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6e4-7cee-8000-9bde-011c48011c48_1802836",
+      "name": "AS_GCM_UT_doesNotContain",
+      "type": "Expression Rule",
+      "description": "Returns tru if a value is not present in array",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_formatTheListOfHtmlTagsIntoDictionary"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6e4-7cee-8000-9bde-011c48011c48_1791044",
+      "name": "AS_GCM_UT_dynamicTableInClauseText",
+      "type": "Expression Rule",
+      "description": "Display dynamic table in clause text",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_GCM_TEXT_NULL_TABLE_TEXT",
+        "AS_GCM_UT_groupTableRowDataIntoArray",
+        "AS_GCM_UT_insertTablePropertiesForClauseTextTable",
+        "AS_GCM_UT_insertTableRowForClauseTextTables"
+      ],
+      "called_by": [
+        "AS_GCM_UT_convertHtmlFontAndColorToOoxml"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1557061",
+      "name": "AS_GCM_UT_encodeSpecialCharactersToXML",
+      "type": "Expression Rule",
+      "description": "Convert <,>,&,',\"\" to respective xml format\n< = &lt;\n> = &gt;\n& = &amp;\n\" = &quot;\n' = &apos;",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_SPECIAL_CHARACTERS_FOR_XML",
+        "AS_GCM_XML_ENCODED_SPECIAL_CHARACTERS",
+        "AS_GCM_substituteListFromTextUsingReduce"
+      ],
+      "called_by": [
+        "AS_GCM_UT_convertHtmlFontAndColorToOoxml",
+        "AS_GCM_UT_insertTableCell",
+        "AS_GCM_UT_insertTableRowForClauseTextTables"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6ec-ba89-8000-9be2-011c48011c48_1935109",
+      "name": "AS_GCM_UT_filterClauseSetClauseByFormat",
+      "type": "Expression Rule",
+      "description": "Filter Clause Set Clause By Format",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_createDynamicSectionForClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e69a-ff03-8000-9bd0-011c48011c48_1578076",
+      "name": "AS_GCM_UT_findBulletedLevel",
+      "type": "Expression Rule",
+      "description": null,
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_convertHtmlToOoxml",
+        "AS_GCM_UT_formatTheListOfHtmlTagsIntoDictionary"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1557817",
+      "name": "AS_GCM_UT_findColorCodes",
+      "type": "Expression Rule",
+      "description": null,
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_UT_convertHtmlToOoxml"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1557830",
+      "name": "AS_GCM_UT_findFontSize",
+      "type": "Expression Rule",
+      "description": null,
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_convertHtmlToOoxml"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3261182",
+      "name": "AS_GCM_UT_formatDataBasedOnReturnType",
+      "type": "Expression Rule",
+      "description": "Returns the data after formatting based on return type",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_GCM_updateDataByModifierMaps"
+      ],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6e4-7cee-8000-9bde-011c48011c48_1803590",
+      "name": "AS_GCM_UT_formatTableIntoOneRow",
+      "type": "Expression Rule",
+      "description": null,
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_GCM_TEXT_NULL_TABLE_TEXT"
+      ],
+      "called_by": [
+        "AS_GCM_UT_convertHtmlToOoxml"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1550257",
+      "name": "AS_GCM_UT_formatTheListOfHtmlTagsIntoDictionary",
+      "type": "Expression Rule",
+      "description": null,
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_GCM_UT_doesNotContain",
+        "AS_GCM_UT_findBulletedLevel"
+      ],
+      "called_by": [
+        "AS_GCM_UT_convertHtmlToOoxml"
+      ]
+    },
+    {
+      "uuid": "_a-0000e69a-ff03-8000-9bd0-011c48011c48_1584570",
+      "name": "AS_GCM_UT_getAlignmentTagForDoc",
+      "type": "Expression Rule",
+      "description": null,
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_convertHtmlToOoxml"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3113202",
+      "name": "AS_GCM_UT_getClauseSetClauseTextsWithQuerySelection",
+      "type": "Expression Rule",
+      "description": "Get Clause Set Clause Texts With Query Selection",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_GAM_UT_queryEntityWithSelection",
+        "AS_GCM_ENT_CLAUSE_SET_CLAUSE_TEXT"
+      ],
+      "called_by": [
+        "AS_GCM_UT_createUCFClausesSectionforGenerateDoc"
+      ]
+    },
+    {
+      "uuid": "_a-0000e69a-ff03-8000-9bd0-011c48011c48_1578826",
+      "name": "AS_GCM_UT_getFontSizeByHeadingType",
+      "type": "Expression Rule",
+      "description": null,
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_clauseTextOoxmlElements"
+      ]
+    },
+    {
+      "uuid": "5f18e821-865e-464d-b974-57c20096c58f",
+      "name": "AS_GCM_UT_getIdentifiersInBatches",
+      "type": "Expression Rule",
+      "description": "Returns the Identifiers in batches based on the batchingSize",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_UT_isBlank",
+        "AS_GCM_INT_QUERY_BATCH_SIZE_TINY"
+      ],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3284363",
+      "name": "AS_GCM_UT_getPrimaryKeyFieldByType",
+      "type": "Expression Rule",
+      "description": "Returns PrimaryKey Field based on type",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_nullifyEmptyNestedCdtFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6e4-7cee-8000-9bde-011c48011c48_1801309",
+      "name": "AS_GCM_UT_groupTableRowDataIntoArray",
+      "type": "Expression Rule",
+      "description": "Group Table Row Data Into Array",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_sortArray",
+        "AS_GCM_TEXT_NULL_TABLE_TEXT"
+      ],
+      "called_by": [
+        "AS_GCM_UT_dynamicTableInClauseText"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1363492",
+      "name": "AS_GCM_UT_insertTableCell",
+      "type": "Expression Rule",
+      "description": "Insert Table Cell in document",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_TXT_PRESERVE_WORDS_FOR_SPL_CHAR_ENCODING",
+        "AS_GCM_UT_encodeSpecialCharactersToXML"
+      ],
+      "called_by": [
+        "AS_GCM_UT_insertTableRow"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6e4-7cee-8000-9bde-011c48011c48_1792720",
+      "name": "AS_GCM_UT_insertTableCellforClauseTextTables",
+      "type": "Expression Rule",
+      "description": "Insert Table Cell for clause text tables in document",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_insertTableRowForClauseTextTables"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1366951",
+      "name": "AS_GCM_UT_insertTableHeader",
+      "type": "Expression Rule",
+      "description": null,
+      "parameters": [],
+      "calls": [
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_UT_insertTableHeaderCells"
+      ],
+      "called_by": [
+        "AS_GCM_UT_addClausesTableToDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1534967",
+      "name": "AS_GCM_UT_insertTableHeaderCells",
+      "type": "Expression Rule",
+      "description": "Insert Table Header Cell in document",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_insertTableHeader"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1363034",
+      "name": "AS_GCM_UT_insertTableProperties",
+      "type": "Expression Rule",
+      "description": "Insert Table properties",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_addClausesTableToDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6e4-7cee-8000-9bde-011c48011c48_1792260",
+      "name": "AS_GCM_UT_insertTablePropertiesForClauseTextTable",
+      "type": "Expression Rule",
+      "description": "Insert Table properties for Clause Text Table",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_dynamicTableInClauseText"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1363321",
+      "name": "AS_GCM_UT_insertTableRow",
+      "type": "Expression Rule",
+      "description": "Insert table row",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_DSP_clauseRecordTitle",
+        "AS_GCM_UT_insertTableCell"
+      ],
+      "called_by": [
+        "AS_GCM_UT_addClausesTableToDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6e4-7cee-8000-9bde-011c48011c48_1792303",
+      "name": "AS_GCM_UT_insertTableRowForClauseTextTables",
+      "type": "Expression Rule",
+      "description": "Insert table row for clause text tables",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_UT_docxLineBreak",
+        "AS_GCM_UT_encodeSpecialCharactersToXML",
+        "AS_GCM_UT_insertTableCellforClauseTextTables"
+      ],
+      "called_by": [
+        "AS_GCM_UT_dynamicTableInClauseText"
+      ]
+    },
+    {
+      "uuid": "f28850a6-d0cc-4841-a587-a36a568d70a3",
+      "name": "AS_GCM_UT_nullifyEmptyNestedCdtFields",
+      "type": "Expression Rule",
+      "description": "Nulls out the nested cdt fields which are blank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_returnCdtFields",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+        "AS_GCM_UT_getPrimaryKeyFieldByType"
+      ],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec50-376f-8000-9d94-011c48011c48_12937069",
+      "name": "AS_GCM_UT_queryRecordByIdentifier",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_rejectNullValuesFromArray"
+      ],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e8e8-3f98-8000-9ba5-011c48011c48_13321",
+      "name": "AS_GCM_UT_regexsearch",
+      "type": "Expression Rule",
+      "description": "contains regexsearch() which handles the type casting issue.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_castToDictionaryList"
+      ],
+      "called_by": [
+        "AS_GCM_extractBalancedTagThatHasGivenText"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6ec-ba89-8000-9be2-011c48011c48_1839874",
+      "name": "AS_GCM_UT_removeEmptyaragraphs",
+      "type": "Expression Rule",
+      "description": null,
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_createUCFClausesSectionforGenerateDoc"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1565594",
+      "name": "AS_GCM_UT_removeUnwantedHtmlTagsByRegex",
+      "type": "Expression Rule",
+      "description": "Remove Unwanted Html Tags By Regex",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_removeHiddenSpanTagsFromHtml"
+      ],
+      "called_by": [
+        "AS_GCM_UT_convertHtmlToOoxml"
+      ]
+    },
+    {
+      "uuid": "_a-0000e915-02bc-8000-9c1f-011c48011c48_3734026",
+      "name": "AS_GCM_extractBalancedTagThatHasGivenText",
+      "type": "Expression Rule",
+      "description": "Returns the balanced tag with proper opening and closing tags",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GCM_UT_regexsearch"
+      ],
+      "called_by": [
+        "AS_GCM_removeHiddenSpanTagsFromHtml"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea82-c8e1-8000-9cb9-011c48011c48_7877876",
+      "name": "AS_GCM_formatClauseTitleForDocument",
+      "type": "Expression Rule",
+      "description": "Rule to create formatted clause title during document generation\n",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_GCM_DSP_clauseRecordTitle",
+        "AS_GCM_QE_getClauseSetDetails"
+      ],
+      "called_by": [
+        "AS_GCM_UT_createUCFClausesSectionforGenerateDoc"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec0f-9de5-8000-9d75-011c48011c48_12361328",
+      "name": "AS_GCM_removeHiddenSpanTagsFromHtml",
+      "type": "Expression Rule",
+      "description": "Removes the hidden span tags from the given html",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_extractBalancedTagThatHasGivenText",
+        "AS_GCM_substituteListFromTextUsingReduce"
+      ],
+      "called_by": [
+        "AS_GCM_UT_removeUnwantedHtmlTagsByRegex"
+      ]
+    },
+    {
+      "uuid": "_a-0000e915-02bc-8000-9c1f-011c48011c48_3773120",
+      "name": "AS_GCM_substituteListFromTextUsingReduce",
+      "type": "Expression Rule",
+      "description": "This rule calls the fn!substitute in a fn!reduce to replace all the text with the given text. If no input is passed to ri!replaceWith the text will be replaced with empty string",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_UT_createUCFClausesSectionforGenerateDoc",
+        "AS_GCM_UT_encodeSpecialCharactersToXML",
+        "AS_GCM_removeHiddenSpanTagsFromHtml",
+        "AS_GCM_updateDataByModifierMaps_Reducer"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec90-d194-8000-9dac-011c48011c48_13571682",
+      "name": "AS_GCM_updateDataByModifierMaps",
+      "type": "Expression Rule",
+      "description": "Modifies the data by applying the values supplied in modifierMaps",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_updateDataByModifierMaps_Reducer"
+      ],
+      "called_by": [
+        "AS_GCM_UT_formatDataBasedOnReturnType"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec90-d194-8000-9dac-011c48011c48_13571757",
+      "name": "AS_GCM_updateDataByModifierMaps_Reducer",
+      "type": "Expression Rule",
+      "description": "Modifies the data by applying the value supplied in modifierMap used in reduce",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_substituteListFromTextUsingReduce"
+      ],
+      "called_by": [
+        "AS_GCM_updateDataByModifierMaps"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed5b-ded3-8000-9df2-011c48011c48_15127729",
+      "name": "AS_GCM_CPS_ClauseSetRelatedActionPlaceholder",
+      "type": "Interface",
+      "description": "Placeholder screen for Clause Set and Clause Set Clauses related action while the Clause Set is in Generation state",
+      "parameters": [
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "userAction",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "isSmallDialog",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        }
+      ],
+      "calls": [
+        "AS_CO_ENUM_USER_ACTION_CANCEL",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_DOC_CLAUSE_SET_GENERATION_STATE"
+      ],
+      "called_by": [
+        "AS GCM View Document for Clause Set"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1525388",
+      "name": "AS_GCM_CPS_clauseSetDetailsForClauseSet",
+      "type": "Interface",
+      "description": "This interface contains limited fields as readonly  for clauseSet in box layout(used for Related actions)",
+      "parameters": [
+        {
+          "name": "clauseSet",
+          "type": "urn:com:appian:types:AS:GCM:AS_GCM_ClauseSet",
+          "raw_type": "urn:com:appian:types:AS:GCM:AS_GCM_ClauseSet",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AS_CO_UT_displayUser",
+        "AS_CO_UT_isBlank",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GAM_displayPlaceholderForNullValues"
+      ],
+      "called_by": [
+        "AS_GCM_FM_viewDocumentForClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1525915",
+      "name": "AS_GCM_FM_viewDocumentForClauseSet",
+      "type": "Interface",
+      "description": "This contains the interface for view document RA",
+      "parameters": [
+        {
+          "name": "clauseSet",
+          "type": "urn:com:appian:types:AS:GCM:AS_GCM_ClauseSet",
+          "raw_type": "urn:com:appian:types:AS:GCM:AS_GCM_ClauseSet",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "document",
+          "type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+          "raw_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_CPS_clauseSetDetailsForClauseSet"
+      ],
+      "called_by": [
+        "AS GCM View Document for Clause Set"
+      ]
+    },
+    {
+      "uuid": "0002e660-572e-8000-19e5-7f0000014e7a",
+      "name": "AS GCM Generated Clause Set Documents",
+      "type": "Process Model",
+      "description": "Th process to generate clause set document",
+      "calls": [
+        "AS_CO_UT_cleanFolderName",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_DOC_CONTRACT_DOCUMENT_TEMPLATE",
+        "AS_GCM_FLD_GENERATED_CLAUSE_SET_DOCUMENTS_FOLDER",
+        "AS_GCM_MTR_SAVE_generateDocument",
+        "AS_GCM_TXT_DRAFT_FOR_VIEW_DOCUMENT",
+        "AS_GCM_UT_createDynamicSectionForClauses"
+      ],
+      "called_by": [
+        "AS GCM View Document for Clause Set"
+      ]
+    },
+    {
+      "uuid": "0002e689-5542-8000-1d40-7f0000014e7a",
+      "name": "AS GCM View Document for Clause Set",
+      "type": "Process Model",
+      "description": "PM for view document RA",
+      "calls": [
+        "AS GCM Generated Clause Set Documents",
+        "AS_GCM_CPS_ClauseSetRelatedActionPlaceholder",
+        "AS_GCM_FM_viewDocumentForClauseSet",
+        "AS_GCM_REF_ID_CLAUSE_SET_STATUS_FINALIZED",
+        "AS_GCM_REF_ID_CLAUSE_SET_STATUS_GENERATING"
+      ],
+      "called_by": []
+    }
+  ]
+}

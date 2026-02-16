@@ -1,0 +1,61 @@
+{
+  "uuid": "_a-0000e8cc-c513-8000-9c0f-011c48011c48_3357833",
+  "name": "AS_GCM_BL_getApplicableRulesFromClauseSetData",
+  "type": "Expression Rule",
+  "description": "This rules filters through the rule conditions to get all the condition clauses",
+  "sail_code": "a!localVariables(\n  local!ruleMap: rule!AS_GCM_BL_clauseDataRuleConfigMap(),\n  local!operatorMap: rule!AS_GCM_BL_operatorMap(),\n  local!conditions: rule!AS_GCM_QNM_QR_getRuleConditions(\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY,\n    executeWhen: and(\n      a!isNotNullOrEmpty(ri!clauseSet),\n      a!isNullOrEmpty(ri!satisfiedConditions)\n    ),\n    includeRelatedRecords: true,\n    pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(startIndex: 1, batchSize: - 1),\n    fields: recordType!AS GCM QNM T Rule Condition.rule,\n    ruleIsActive: true\n  ),\n  local!satisfiedConditions: a!defaultValue(\n    value: ri!satisfiedConditions,\n    default: rule!AS_GCM_BL_compareClauseSetDataAndConditions(\n      ruleMap: local!ruleMap,\n      operatorMap: local!operatorMap,\n      contractType: ri!contractType,\n      clauseSet: ri!clauseSet,\n      conditions: local!conditions,\n      questionnaire: ri!questionnaire\n    )\n  ),\n  tointeger(\n    rule!AS_CO_UT_distinct(\n      rule!AS_CO_UT_rejectNullValuesFromArray(\n        {\n          /* Conditions are applied whose rules are with the operator OR        */\n          index(\n            rule!AS_GCM_filterRecords(\n              records: local!satisfiedConditions,\n              field: recordType!AS GCM QNM T Rule Condition.rule.refOperatorId,\n              value: cons!AS_GCM_REF_ID_AND_OPERATOR,\n              filterType: \"REJECT\"\n            ),\n            recordType!AS GCM QNM T Rule Condition.ruleId,\n            null\n          ),\n          #\"SYSTEM_SYSRULES_forEach\"(\n            items: index(\n              local!satisfiedConditions,\n              wherecontains(\n                cons!AS_GCM_REF_ID_AND_OPERATOR,\n                tointeger(\n                  index(\n                    local!satisfiedConditions,\n                    recordType!AS GCM QNM T Rule Condition.rule.refOperatorId,\n                    {}\n                  )\n                )\n              )\n            ),\n            expression: if(\n              fv!item[recordType!AS GCM QNM T Rule Condition.rule.activeRuleConditionsCount] = count(\n                index(\n                  local!satisfiedConditions,\n                  wherecontains(\n                    tointeger(\n                      fv!item[recordType!AS GCM QNM T Rule Condition.ruleId]\n                    ),\n                    tointeger(\n                      index(\n                        local!satisfiedConditions,\n                        recordType!AS GCM QNM T Rule Condition.ruleId,\n                        {}\n                      )\n                    )\n                  )\n                )\n              ),\n              fv!item[recordType!AS GCM QNM T Rule Condition.ruleId],\n              null\n            )\n          )\n        }\n      )\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GCM_BL_clauseDataRuleConfigMap",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_BL_operatorMap",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QNM_QR_getRuleConditions",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_BL_compareClauseSetDataAndConditions",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_distinct",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_filterRecords",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_REF_ID_AND_OPERATOR",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "DEPRECATED_AS_GCM_ConstructClauseInclusionReason",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

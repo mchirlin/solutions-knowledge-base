@@ -1,0 +1,115 @@
+{
+  "uuid": "_a-0000ebe1-785a-8000-9d61-011c48011c48_11930300",
+  "name": "DEPRECATED_AS_GCM_ConstructClauseInclusionReason",
+  "type": "Expression Rule",
+  "description": "Rule used to construct the clause inclusion reasons for the clause set clauses",
+  "sail_code": "if(\n  rule!AS_CO_UT_isBlank(ri!clauseSetClauses),\n  null,\n  a!localVariables(\n    local!ruleMap: rule!AS_GCM_BL_clauseDataRuleConfigMap(),\n    local!operatorMap: rule!AS_GCM_BL_operatorMap(),\n    /*Filtering the clause Ids that were added via Rule*/\n    local!ruleClauseIds: rule!AS_CO_UT_indexPath(\n      cdt: rule!AS_CO_UT_filterCdtByField(\n        cdt: ri!clauseSetClauses,\n        field: \"refAddedVia.refDataId\",\n        value: cons!AS_GCM_REF_ID_CLAUSE_ADDED_VIA_RULE\n      ),\n      field: \"refClause.clauseId\",\n      indexDefault: null\n    ),\n    /*Retrieving the ruleIds that are tagged with above clause Ids*/\n    local!ruleConditionClauses: rule!AS_GCM_QNM_QR_getRuleConditionClauseDetails(\n      returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY,\n      pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n        startIndex: 1,\n        batchSize: - 1,\n        sort: #\"SYSTEM_SYSRULES_sortInfo\"(\n          field: recordType!AS GCM QNM T Rule Condition Clause.clauseMapId,\n          ascending: true\n        )\n      ),\n      executeWhen: rule!AS_CO_UT_isNotBlank(local!ruleClauseIds),\n      additionalFilters: {\n        #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: recordType!AS GCM QNM T Rule Condition Clause.refClauseId,\n          operator: \"in\",\n          value: local!ruleClauseIds\n        ),\n        #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: recordType!AS GCM QNM T Rule Condition Clause.refUsageId,\n          operator: \"=\",\n          value: cons!AS_GCM_REF_ID_USAGE_INCLUDED\n        )\n      },\n      ruleIsActive: true,\n      fields: {\n        recordType!AS GCM QNM T Rule Condition Clause.ruleId,\n        recordType!AS GCM QNM T Rule Condition Clause.refClauseId\n      }\n    ),\n    /*Retrieving the conditions of above retrieved rules*/\n    local!ruleConditions: rule!AS_GCM_QNM_QR_getRuleConditions(\n      returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY,\n      executeWhen: a!isNotNullOrEmpty(local!ruleConditionClauses),\n      ruleIds: rule!AS_CO_UT_distinct(\n        index(\n          local!ruleConditionClauses,\n          recordType!AS GCM QNM T Rule Condition Clause.ruleId,\n          null\n        )\n      ),\n      includeRelatedRecords: true,\n      ruleIsActive: true,\n      pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(startIndex: 1, batchSize: - 1),\n      fields: recordType!AS GCM QNM T Rule Condition.rule\n    ),\n    rule!AS_CO_UT_rejectNullValuesFromArray(\n      array: #\"SYSTEM_SYSRULES_forEach\"(\n        items: ri!clauseSetClauses,\n        expression: {\n          a!match(\n            value: rule!AS_CO_UT_indexPath(\n              cdt: fv!item,\n              field: \"refAddedVia.refDataId\",\n              indexDefault: null\n            ),\n            /*Clause Inclusion Reason - Template*/\n            equals: cons!AS_GCM_REF_ID_CLAUSE_ADDED_VIA_TEMPLATE,\n            then: {\n              recordType!AS GCM Clause Set Clause Inclusion Reason(\n                recordType!AS GCM Clause Set Clause Inclusion Reason.relationId: fv!item.relationId,\n                recordType!AS GCM Clause Set Clause Inclusion Reason.refTemplateId: ri!clauseSetTemplate.refTemplate.templateId\n              )\n            },\n            /*Clause Inclusion Reason - FAR Matrix*/\n            equals: cons!AS_GCM_REF_ID_CLAUSE_ADDED_VIA_FAR_MATRIX,\n            then: {\n              a!localVariables(\n                local!clause: fv!item,\n                rule!AS_CO_UT_rejectNullValuesFromArray(\n                  array: #\"SYSTEM_SYSRULES_forEach\"(\n                    items: ri!contractTypeMaps,\n                    expression: if(\n                      tointeger(\n                        index(\n                          rule!AS_CO_UT_cast(\n                            type: recordType!AS GCM R Clause,\n                            value: index(local!clause, \"refClause\", null)\n                          ),\n                          rule!AS_GCM_BL_returnSmartMatrixColumnForRefClauses(\n                            contractTypeMaps: fv!item,\n                            returnRelationshipId: true\n                          ),\n                          null\n                        )\n                      ) = cons!AS_GCM_REF_ID_USAGE_REQUIRED,\n                      recordType!AS GCM Clause Set Clause Inclusion Reason(\n                        recordType!AS GCM Clause Set Clause Inclusion Reason.relationId: local!clause.relationId,\n                        recordType!AS GCM Clause Set Clause Inclusion Reason.refContractTypeId: rule!AS_CO_UT_indexPath(\n                          cdt: fv!item,\n                          field: \"contractType.contractTypeId\",\n                          indexDefault: null\n                        )\n                      ),\n                      {}\n                    )\n                  )\n                )\n              )\n            },\n            /*Clause Inclusion Reason - Rule*/\n            equals: cons!AS_GCM_REF_ID_CLAUSE_ADDED_VIA_RULE,\n            then: {\n              a!localVariables(\n                local!relationId: fv!item.relationId,\n                local!currentClauseRuleIds: index(\n                  rule!AS_GCM_filterRecords(\n                    records: local!ruleConditionClauses,\n                    field: recordType!AS GCM QNM T Rule Condition Clause.refClauseId,\n                    value: fv!item.refClause.clauseId\n                  ),\n                  recordType!AS GCM QNM T Rule Condition Clause.ruleId,\n                  null\n                ),\n                local!currentClauseRuleConditions: rule!AS_GCM_filterRecords(\n                  records: local!ruleConditions,\n                  field: recordType!AS GCM QNM T Rule Condition.ruleId,\n                  value: local!currentClauseRuleIds\n                ),\n                /*Getting only the satisfied conditions by evaluating it against the clause set's data*/\n                local!satisfiedConditions: rule!AS_GCM_BL_compareClauseSetDataAndConditions(\n                  ruleMap: local!ruleMap,\n                  operatorMap: local!operatorMap,\n                  clauseSet: ri!clauseSet,\n                  contractType: rule!AS_CO_UT_indexPath(\n                    cdt: ri!contractTypeMaps,\n                    field: \"contractType.contractTypeId\",\n                    indexDefault: null\n                  ),\n                  questionnaire: ri!questionnaire,\n                  conditions: local!currentClauseRuleConditions\n                ),\n                /*Filtering the rules that are satisfied to include this clause based on its operator*/\n                local!satisfiedRuleIds: rule!AS_GCM_BL_getApplicableRulesFromClauseSetData(\n                  satisfiedConditions: local!satisfiedConditions\n                ),\n                #\"SYSTEM_SYSRULES_forEach\"(\n                  items: rule!AS_GCM_filterRecords(\n                    records: local!ruleConditions,\n                    fieldValuePairs: {\n                      a!map(\n                        field: recordType!AS GCM QNM T Rule Condition.mapId,\n                        value: index(\n                          local!satisfiedConditions,\n                          recordType!AS GCM QNM T Rule Condition.mapId,\n                          null\n                        )\n                      ),\n                      a!map(\n                        field: recordType!AS GCM QNM T Rule Condition.ruleId,\n                        value: local!satisfiedRuleIds\n                      )\n                    }\n                  )[recordType!AS GCM QNM T Rule Condition.ruleConditionVersionIdMax],\n                  expression: recordType!AS GCM Clause Set Clause Inclusion Reason(\n                    recordType!AS GCM Clause Set Clause Inclusion Reason.relationId: local!relationId,\n                    recordType!AS GCM Clause Set Clause Inclusion Reason.ruleConditionVersionId: fv!item\n                  )\n                )\n              )\n            },\n            default: null\n          )\n        }\n      )\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_BL_clauseDataRuleConfigMap",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_BL_operatorMap",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_indexPath",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QNM_QR_getRuleConditionClauseDetails",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QNM_QR_getRuleConditions",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_distinct",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_cast",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_BL_returnSmartMatrixColumnForRefClauses",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_filterRecords",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_BL_compareClauseSetDataAndConditions",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_BL_getApplicableRulesFromClauseSetData",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_REF_ID_CLAUSE_ADDED_VIA_RULE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_REF_ID_USAGE_INCLUDED",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_REF_ID_CLAUSE_ADDED_VIA_TEMPLATE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_REF_ID_CLAUSE_ADDED_VIA_FAR_MATRIX",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_REF_ID_USAGE_REQUIRED",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

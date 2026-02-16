@@ -1,0 +1,25 @@
+{
+  "uuid": "_a-0000ec34-8724-8000-9d8b-011c48011c48_12625915",
+  "name": "DEPRECATED_AS_GCM_DPL_GAM_UT_showMoreOrShowLessText",
+  "type": "Expression Rule",
+  "description": "Displays expandable / shortened text",
+  "sail_code": "if(\n  rule!AS_CO_UT_isBlank(ri!text),\n  if(ri!showHyphen = true, \"-\", \"\"),\n  or(\n    rule!AS_CO_UT_isBlank(ri!shortenToLen),\n    ri!shortenToLen = 0\n  ),\n  ri!text,\n  a!localVariables(\n    local!shortenIfLongerThanLen: rule!AS_CO_UT_replaceNull(\n      nullableValue: ri!shortenIfLongerThanLen,\n      replacementValue: ri!shortenToLen\n    ),\n    local!showLess: true,\n    {\n      if(\n        len(ri!text) <= local!shortenIfLongerThanLen,\n        ri!text,\n        {\n          #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n            text: if(\n              local!showLess = true,\n              trim(\n                rule!AS_CO_UT_left(text: ri!text, numChars: ri!shortenToLen)\n              ),\n              ri!text\n            ),\n            color: ri!textColor\n          ),\n          #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n            color: ri!linkColor,\n            text: concat(\n              \"...\",\n              if(\n                local!showLess = true,\n                a!defaultValue(\n                  value: ri!showMoreText,\n                  default: lower(\n                    \"Show More\"\n                  )\n                ),\n                a!defaultValue(\n                  value: ri!showLessText,\n                  default: lower(\n                    \"Show Less\"\n                  )\n                )\n              )\n            ),\n            link: #\"SYSTEM_SYSRULES_dynamicLink\"(\n              saveInto: a!save(\n                local!showLess,\n                if(local!showLess = true, false, true)\n              )\n            ),\n            linkStyle: \"INLINE\"\n          )\n        }\n      )\n    }\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_left",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

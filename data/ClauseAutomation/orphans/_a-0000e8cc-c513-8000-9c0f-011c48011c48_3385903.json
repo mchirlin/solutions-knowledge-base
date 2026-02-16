@@ -1,0 +1,76 @@
+{
+  "uuid": "_a-0000e8cc-c513-8000-9c0f-011c48011c48_3385903",
+  "name": "AS_GCM_BL_compareClauseSetDataAndConditions",
+  "type": "Expression Rule",
+  "description": "This rule compares clause set data and conditions",
+  "sail_code": "rule!AS_CO_UT_cast(\n  typeOf: ri!conditions,\n  value: rule!AS_CO_UT_rejectNullValuesFromArray(\n    array: if(\n      rule!AS_CO_UT_isNotBlank(input: ri!conditions),\n      a!flatten(\n        #\"SYSTEM_SYSRULES_forEach\"(\n          items: ri!ruleMap,\n          expression: a!localVariables(\n            local!field: if(\n              a!isNullOrEmpty(fv!item.fieldName),\n              if(\n                fv!item.clauseDataId = cons!AS_GCM_REF_ID_CONTRACT_TYPE_DATA,\n                ri!contractType,\n                null\n              ),\n              rule!AS_CO_UT_indexPath(\n                cdt: ri!clauseSet,\n                field: tostring(fv!item.fieldName),\n                indexDefault: {}\n              )\n            ),\n            local!clauseConditions: rule!AS_GCM_filterRecords(\n              records: ri!conditions,\n              field: recordType!AS GCM QNM T Rule Condition.refClauseDataId,\n              value: fv!item.clauseDataId\n            ),\n            local!appliedEvaluations: rule!AS_CO_UT_indexWhere(\n              value: fv!item.operatorIdList,\n              initialArray: ri!operatorMap.operator,\n              finalArray: ri!operatorMap\n            ),\n            if(\n              fv!item.clauseDataId = cons!AS_GCM_REF_ID_QUESTIONNAIRE_QUESTION_DATA,\n              rule!AS_GCM_BL_compareClauseSetQuestionnaireToQuestionRuleConditions(\n                questionnaire: ri!questionnaire,\n                conditions: rule!AS_GCM_filterRecords(\n                  records: local!clauseConditions,\n                  field: recordType!AS GCM QNM T Rule Condition.question.questionnaireTemplateId,\n                  value: ri!questionnaire.questionnaireTemplateId\n                )\n              ),\n              #\"SYSTEM_SYSRULES_forEach\"(\n                items: local!appliedEvaluations,\n                expression: a!localVariables(\n                  local!rule: fv!item.rule,\n                  local!clauseConditionsByOperator: rule!AS_GCM_filterRecords(\n                    records: local!clauseConditions,\n                    field: recordType!AS GCM QNM T Rule Condition.refOperatorId,\n                    value: fv!item.operator\n                  ),\n                  #\"SYSTEM_SYSRULES_forEach\"(\n                    items: local!clauseConditionsByOperator,\n                    expression: if(\n                      local!rule(\n                        value: local!field,\n                        conditionValue: #\"SYSTEM_SYSRULES_fromJson_v1\"(\n                          jsonText: fv!item[recordType!AS GCM QNM T Rule Condition.value]\n                        ),\n                        conditionCompValue: #\"SYSTEM_SYSRULES_fromJson_v1\"(\n                          jsonText: fv!item[recordType!AS GCM QNM T Rule Condition.compValue]\n                        )\n                      ) = true(),\n                      fv!item,\n                      null\n                    )\n                  )\n                )\n              )\n            )\n          )\n        )\n      ),\n      null\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_cast",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_indexPath",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_filterRecords",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_indexWhere",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_BL_compareClauseSetQuestionnaireToQuestionRuleConditions",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_REF_ID_CONTRACT_TYPE_DATA",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_REF_ID_QUESTIONNAIRE_QUESTION_DATA",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_BL_clauseDataRuleConfigMap",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_BL_operatorMap",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "DEPRECATED_AS_GCM_ConstructClauseInclusionReason",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_BL_getApplicableRulesFromClauseSetData",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

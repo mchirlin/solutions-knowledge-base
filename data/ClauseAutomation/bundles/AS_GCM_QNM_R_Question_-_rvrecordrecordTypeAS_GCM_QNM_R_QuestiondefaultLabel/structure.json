@@ -1,0 +1,3035 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "AS GCM QNM R Question - rv!record[recordType!AS GCM QNM R Question.defaultLabel]",
+    "parent_name": "AS GCM QNM R Question",
+    "total_objects": 120
+  },
+  "entry_point": {
+    "action_type": "RECORD_ACTION",
+    "record_type": "AS GCM QNM R Question",
+    "target_process": "AS GCM QNM Update Question",
+    "form_interface": "AS_GCM_QNM_FM_createOrUpdateReferenceQuestion",
+    "expressions": {
+      "TITLE": "rv!record[recordType!AS GCM QNM R Question.defaultLabel]",
+      "DESCRIPTION": null,
+      "VISIBILITY": null,
+      "CONTEXT": "{\n  question: rule!AS_GCM_QNM_QR_getQuestion_Reference(\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT,\n    questionReferenceId: rv!identifier,\n    includeRelatedRecords: true()\n  ),\n  /* AS_QNM_R_Question */\n  userAction: null/* Text */\n\n}"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GCM QNM Update Question",
+      "complexity_score": 13.0,
+      "total_nodes": 7,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Submit?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Submit?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node (Cancel)",
+            "Update Reference Question"
+          ]
+        },
+        {
+          "name": "Update Template Questions",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "XOR"
+          ]
+        },
+        {
+          "name": "Update Reference Question",
+          "type": "SUBPROCESS",
+          "next": [
+            "Update Template Questions"
+          ],
+          "subprocess": "AS GCM QNM Create Question"
+        },
+        {
+          "name": "Write Template Question Records",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "XOR",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node",
+            "Write Template Question Records"
+          ]
+        }
+      ]
+    },
+    "subprocesses": [
+      {
+        "name": "AS GCM QNM Create Question",
+        "complexity_score": 20.0,
+        "total_nodes": 10,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Submit?"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Submit?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "End Node (Cancel)",
+              "Capture metadata"
+            ]
+          },
+          {
+            "name": "Capture metadata",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Write Question"
+            ]
+          },
+          {
+            "name": "Capture Audit",
+            "type": "Write to Multiple DSE",
+            "next": [
+              "Is Response  removed?"
+            ]
+          },
+          {
+            "name": "Delete Response Requirement",
+            "type": "Delete Records",
+            "next": [
+              "End Node"
+            ]
+          },
+          {
+            "name": "Delete Response",
+            "type": "Delete Records",
+            "next": [
+              "Is Response Requirement removed?"
+            ]
+          },
+          {
+            "name": "Is Response Requirement removed?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Delete Response Requirement",
+              "End Node"
+            ]
+          },
+          {
+            "name": "Is Response  removed?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Is Response Requirement removed?",
+              "Delete Response"
+            ]
+          },
+          {
+            "name": "Write Question",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Capture Audit"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_181584-adt",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_ADD",
+      "type": "Constant",
+      "description": "ADD - used by the auditing module",
+      "value": "ADD",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_determineAuditActionCode"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_181602-adt",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_DEACTIVATE",
+      "type": "Constant",
+      "description": "DEACTIVATE - used by the auditing module",
+      "value": "DEACTIVATE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_determineAuditActionCode"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_181590-adt",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_DELETE",
+      "type": "Constant",
+      "description": "DELETE - used by the auditing module",
+      "value": "DELETE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_determineAuditActionCode"
+      ]
+    },
+    {
+      "uuid": "_a-0000e583-8ce5-8000-9bb7-011c48011c48_810929",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_INITIATED",
+      "type": "Constant",
+      "description": "INITIATED - used by the auditing module",
+      "value": "INITIATED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject"
+      ]
+    },
+    {
+      "uuid": "_a-0000e69a-ff03-8000-9bd0-011c48011c48_1592551",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_MANUAL_SYNC",
+      "type": "Constant",
+      "description": "Audit Action Code - \"MANUAL_SYNC\"\nAction Code to track that the clause is modified using manual sync",
+      "value": "MANUAL_SYNC",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject"
+      ]
+    },
+    {
+      "uuid": "_a-0000e4ea-0367-8000-9ba7-011c48011c48_308539",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_MANUAL_UPDATE",
+      "type": "Constant",
+      "description": "MANUAL UPDATE - used by the auditing module",
+      "value": "MANUAL_UPDATE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_181596-adt",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_MODIFY",
+      "type": "Constant",
+      "description": "MODIFY - used by the auditing module",
+      "value": "MODIFY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_ADT_UT_determineAuditActionCode"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_181608-adt",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_REACTIVATE",
+      "type": "Constant",
+      "description": "REACTIVATE - used by the auditing module",
+      "value": "REACTIVATE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_determineAuditActionCode"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_232728-adt",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_UNCHANGED",
+      "type": "Constant",
+      "description": "UNCHANGED - used by the auditing module",
+      "value": "UNCHANGED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_27447",
+      "name": "AS_CO_ENUM_PARAGRAPH_LENGTH_MEDIUM",
+      "type": "Constant",
+      "description": "1000 - MEDIUM length for paragraph fields, used for validations and trimming text",
+      "value": "1000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QNM_FM_createOrUpdateReferenceQuestion"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290163",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "description": "OBJECT_ARRAY - Returns an array type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "OBJECT_ARRAY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_QNM_QR_getQuestion_Reference"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290157",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "description": "SINGLE_OBJECT - Returns a single type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "SINGLE_OBJECT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_QNM_CPS_responseOptionsToAddNewQuestion",
+        "AS_GCM_QNM_QR_getQuestion_Reference"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73173",
+      "name": "AS_CO_ENUM_USER_ACTION_CANCEL",
+      "type": "Constant",
+      "description": "CANCEL.USER_ACTION - Value to use to drive process logic after a user performs a \"Cancel\" action",
+      "value": "CANCEL.USER_ACTION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM QNM Create Question",
+        "AS_GCM_QNM_FM_createOrUpdateReferenceQuestion"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73305",
+      "name": "AS_CO_ENUM_USER_ACTION_SUBMIT",
+      "type": "Constant",
+      "description": "SUBMIT.USER_ACTION - Value to use to drive process logic after a user performs a \"Submit\" action",
+      "value": "SUBMIT.USER_ACTION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM QNM Update Question",
+        "AS_GCM_QNM_FM_createOrUpdateReferenceQuestion"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_103441",
+      "name": "AS_CO_HEX_WARNING",
+      "type": "Constant",
+      "description": "Hex code for warning style object coloring",
+      "value": "#FFC13E",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_DSP_warningBanner"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_104931",
+      "name": "AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+      "type": "Constant",
+      "description": "AS CO Internationalization Files",
+      "value": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_104925",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationFolder",
+      "calls": [],
+      "called_by": [
+        "AS_CO_I18N_UT_getAndDisplayLabelSingle",
+        "AS_CO_I18N_UT_loadBundleFromFolder",
+        "AS_CO_UT_displayCommonObjectBundleLabel",
+        "AS_CO_VD_numberValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_103463",
+      "name": "AS_CO_ICON_WARNING",
+      "type": "Constant",
+      "description": "Icon used for warning style text",
+      "value": "exclamation-triangle",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_DSP_warningBanner"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_941756",
+      "name": "AS_GAM_ADT_TXT_AUDIT_TYPE_ACTION_ONLY",
+      "type": "Constant",
+      "description": "Value: ACTION_ONLY",
+      "value": "ACTION_ONLY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GAM_ADT_UT_buildAuditEntityData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_941763",
+      "name": "AS_GAM_ADT_TXT_AUDIT_TYPE_MANIPULATION",
+      "type": "Constant",
+      "description": "Value: MANIPULATION",
+      "value": "MANIPULATION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GAM_ADT_UT_buildAuditEntityData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1568157",
+      "name": "AS_GCM_QNM_ENT_A_R_QUESTION",
+      "type": "Constant",
+      "description": "Value - AS_GCM_QNM_A_R_Question",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QNM_ADT_UT_startAuditProcess_Parameters_Question_Reference"
+      ]
+    },
+    {
+      "uuid": "_a-0000e4b1-2fbc-8000-9bc6-011c48011c48_890002-gcm",
+      "name": "AS_GCM_QNM_ENUM_FIELD_RESPONSE_TYPE_USER_DEFINED_SELECTION",
+      "type": "Constant",
+      "description": null,
+      "value": "SELECTION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QNM_REF_questionTypes",
+        "AS_GCM_QNM_UT_userDefinedSelectionFieldList"
+      ]
+    },
+    {
+      "uuid": "_a-0000e4b1-2fbc-8000-9bc6-011c48011c48_929076-gcm",
+      "name": "AS_GCM_QNM_ENUM_FIELD_TYPE_DROPDOWN",
+      "type": "Constant",
+      "description": "DROPDOWN",
+      "value": "DROPDOWN",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QNM_REF_questionTypes"
+      ]
+    },
+    {
+      "uuid": "_a-0000e4b1-2fbc-8000-9bc6-011c48011c48_929070-gcm",
+      "name": "AS_GCM_QNM_ENUM_FIELD_TYPE_RADIO_BUTTON",
+      "type": "Constant",
+      "description": "RADIO_BUTTON",
+      "value": "RADIO_BUTTON",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QNM_REF_questionTypes"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_109121-gcm",
+      "name": "AS_GCM_QNM_ENUM_QUESTION_TYPE_CODE_DROPDOWN_TEXT",
+      "type": "Constant",
+      "description": "Constant for single text value dropdown",
+      "value": "DROPDOWN_TEXT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QNM_CPS_responseOptionsToAddNewQuestion",
+        "AS_GCM_QNM_REF_questionTypes"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_36963-gcm",
+      "name": "AS_GCM_QNM_ENUM_QUESTION_TYPE_CODE_SINGLE_RADIO_BUTTON_TEXT",
+      "type": "Constant",
+      "description": null,
+      "value": "RADIO_BUTTON_TEXT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM QNM Create Question",
+        "AS_GCM_QNM_REF_questionTypes",
+        "AS_GCM_QNM_UT_fieldTypes",
+        "AS_GCM_QNM_UT_questionMetadata",
+        "AS_GCM_QNM_UT_userDefinedSelectionFieldList"
+      ]
+    },
+    {
+      "uuid": "_a-0000e460-9d93-8000-9bc1-011c48011c48_597312-gcm",
+      "name": "AS_GCM_QNM_ENUM_RESPONSE_REQUIREMENT_TYPE_CODE_MAX_RESPONSES",
+      "type": "Constant",
+      "description": "Value: `MAX_RESPONSES`",
+      "value": "MAX_RESPONSES",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QNM_CPS_responseOptionsToAddNewQuestion"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-79a3-8000-7714-45ef9045ef90_8682-adt",
+      "name": "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+      "type": "Expression Rule",
+      "description": "Audit config for the AS_ADT_SAMPLE_Parent CDT",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit",
+        "AS_ADT_UT_calculateAudit_MultipleObjects",
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_ADT_UT_determineAuditActionCode",
+        "AS_GAM_ADT_UT_buildAuditEntityData",
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructManipulatedAuditData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_237233-adt",
+      "name": "AS_ADT_UT_buildSimpleFieldChanges",
+      "type": "Expression Rule",
+      "description": "Given a list of simple fields from an auditing configuration, an old object, and a new object, returns  list of simple field dictionaries which can be cast to the simple field auditing type of any complex auditing object.",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_UT_buildSimpleFieldChangesDictionary"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_162005-adt",
+      "name": "AS_ADT_UT_buildSimpleFieldChangesDictionary",
+      "type": "Expression Rule",
+      "description": "Given the fieldName, original object, and the new object, determines if a simple field change was made, returning {} if not, and returning a dictionary representation of the simple field audit if so.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_compare",
+        "AS_CO_UT_dynamicDictionary",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_toString"
+      ],
+      "called_by": [
+        "AS_ADT_UT_buildSimpleFieldChanges"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_161361-adt",
+      "name": "AS_ADT_UT_calculateAudit",
+      "type": "Expression Rule",
+      "description": "Primary rule to calculate audits between old and new objects (handles arrays or single objects)",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_ADT_UT_calculateAudit_MultipleObjects"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_buildFieldLevelAuditEntityData",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_165782-adt",
+      "name": "AS_ADT_UT_calculateAudit_MultipleObjects",
+      "type": "Expression Rule",
+      "description": "[DO NOT CALL DIRECTLY] Calculates audit CDTs for an array of original and new objects",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_CO_UT_distinct",
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit",
+        "AS_ADT_UT_calculateAudit_SingleObject"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_165180-adt",
+      "name": "AS_ADT_UT_calculateAudit_SingleObject",
+      "type": "Expression Rule",
+      "description": "[DO NOT CALL DIRECTLY] Calculates audit CDTs for a single of original and new object",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_INITIATED",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_MANUAL_SYNC",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_MANUAL_UPDATE",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_MODIFY",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_UNCHANGED",
+        "AS_ADT_UT_buildSimpleFieldChanges",
+        "AS_ADT_UT_calculateAudit_MultipleObjects",
+        "AS_ADT_UT_determineAuditActionCode",
+        "AS_CO_UT_compareStrong",
+        "AS_CO_UT_dynamicDictionary",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_not",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_updateCdtFields"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_MultipleObjects"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_161958-adt",
+      "name": "AS_ADT_UT_determineAuditActionCode",
+      "type": "Expression Rule",
+      "description": "Given a newObject, an oldObject, and the auditConfig, determines the auditActionCode",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_ADD",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_DEACTIVATE",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_DELETE",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_MODIFY",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_REACTIVATE",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-91f4-8000-9bc0-011c48011c48_584965-adt",
+      "name": "AS_ADT_UT_startAuditProcess_Parameters",
+      "type": "Expression Rule",
+      "description": "Populated the parameters for starting the audit process",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_getTypeNamespace",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_returnArrayTypeNumber",
+        "AS_CO_UT_returnTypeNumber"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_ADT_UT_startAuditProcess_Parameters_Question_Reference"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_81818",
+      "name": "AS_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "description": "Displays a label by the `bundleKey` from passed in bundle data, optionally accepts arguments",
+      "parameters": [],
+      "calls": [
+        "AS_CO_I18N_UT_parseBundleKey",
+        "AS_CO_I18N_UT_replaceArgument",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_CO_I18N_UT_getAndDisplayLabelSingle",
+        "AS_CO_VD_numberValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_84411",
+      "name": "AS_CO_I18N_UT_getAndDisplayLabelSingle",
+      "type": "Expression Rule",
+      "description": "Retrieves and then displays a single label from a bundle file -- This is meant to be used in places where you cannot utilize local variables, such as record and site page names",
+      "parameters": [],
+      "calls": [
+        "AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+        "AS_CO_I18N_UT_displayLabel",
+        "AS_CO_I18N_UT_loadBundleFromFolder",
+        "AS_CO_I18N_UT_parseBundleKey"
+      ],
+      "called_by": [
+        "AS_CO_UT_displayCommonObjectBundleLabel"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76004",
+      "name": "AS_CO_I18N_UT_getUserLocale",
+      "type": "Expression Rule",
+      "description": "Gets the Appian user locale as defined in the user preferences, returns the default if the user is null",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_I18N_UT_loadBundleFromFolder"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_81720",
+      "name": "AS_CO_I18N_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "description": "Loads a property bundle file by name from a folder, returns a dictionary of the key-value pairs",
+      "parameters": [],
+      "calls": [
+        "AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+        "AS_CO_I18N_UT_getUserLocale",
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_I18N_UT_getAndDisplayLabelSingle",
+        "AS_CO_VD_numberValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e438-fdf5-8000-9ba8-011c48011c48_19869",
+      "name": "AS_CO_I18N_UT_parseBundleKey",
+      "type": "Expression Rule",
+      "description": "Parses a bundle key and returns a dictionary of the `bundleName` & `labelKey`",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_I18N_UT_displayLabel",
+        "AS_CO_I18N_UT_getAndDisplayLabelSingle"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_91550",
+      "name": "AS_CO_I18N_UT_replaceArgument",
+      "type": "Expression Rule",
+      "description": "Replaces a single argument symbol with an argument value in a display label",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_I18N_UT_displayLabel"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39070",
+      "name": "AS_CO_UT_booleanDefaultFalse",
+      "type": "Expression Rule",
+      "description": "Default a null value to false, otherwise returns the boolean value",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_not"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39082",
+      "name": "AS_CO_UT_booleanDefaultTrue",
+      "type": "Expression Rule",
+      "description": "Default a null value to true, otherwise returns the boolean value",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_DSP_standardReadOnlyField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157603",
+      "name": "AS_CO_UT_cast",
+      "type": "Expression Rule",
+      "description": "Casts a variable to the type of either the input `type`, or the typeof of the input `typeof`, and properly handles for null inputs",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_returnTypeNumber"
+      ],
+      "called_by": [
+        "AS_ADT_UT_startAuditProcess_Parameters",
+        "AS_CO_UT_initializeBlankLocalVariable",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_returnArrayTypeNumber",
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructManipulatedAuditData",
+        "AS_GCM_QNM_ADT_UT_startAuditProcess_Parameters_Question_Reference",
+        "AS_GCM_UT_queryRecordByIdentifier"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_279147",
+      "name": "AS_CO_UT_castToDictionary",
+      "type": "Expression Rule",
+      "description": "Casts the input to dictionary, either a list or a non-list depending on the input",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_292117",
+      "name": "AS_CO_UT_castToDictionaryList",
+      "type": "Expression Rule",
+      "description": "Casts the input to a dictionary list",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73624",
+      "name": "AS_CO_UT_compare",
+      "type": "Expression Rule",
+      "description": "Compares two values and returns true if both the content of the values match (regardless of type).",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_buildSimpleFieldChangesDictionary"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_243040",
+      "name": "AS_CO_UT_compareStrong",
+      "type": "Expression Rule",
+      "description": "Compares two values and returns true if both the values and their types match.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_typeCompare"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_33160",
+      "name": "AS_CO_UT_displayCommonObjectBundleLabel",
+      "type": "Expression Rule",
+      "description": "Retrieves a single label from the Common Objects bundle file",
+      "parameters": [],
+      "calls": [
+        "AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+        "AS_CO_I18N_UT_getAndDisplayLabelSingle"
+      ],
+      "called_by": [
+        "AS_CO_UT_displayRequiredMessage",
+        "AS_GCM_DPL_CO_dropdownField"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb44-a528-8000-9d15-011c48011c48_9978504",
+      "name": "AS_CO_UT_displayRequiredMessage",
+      "type": "Expression Rule",
+      "description": "Returns default required message (used for all editable fields) if required message is not passed.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_displayCommonObjectBundleLabel"
+      ],
+      "called_by": [
+        "AS_CO_CP_integerField",
+        "AS_GCM_DPL_CO_INP_textField",
+        "AS_GCM_DPL_CO_dropdownField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73758",
+      "name": "AS_CO_UT_distinct",
+      "type": "Expression Rule",
+      "description": "Returns the distinct values from a list.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_MultipleObjects"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73856",
+      "name": "AS_CO_UT_dynamicDictionary",
+      "type": "Expression Rule",
+      "description": "Creates a dictionary based on the provided field-value pairs. An example implementation is provided as a test case. Returns a dictionary.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_returnNullDictionary",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs"
+      ],
+      "called_by": [
+        "AS_ADT_UT_buildSimpleFieldChangesDictionary",
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_GAM_ADT_UT_constructActionOnlyAuditData",
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75800",
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "description": "Filters a CDT by a matching a single value or list of values in a single field, if a list is passed, all matches are returned",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_returnCdtIndicesByField"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_MultipleObjects",
+        "AS_CO_UT_sortCdt",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GCM_QNM_UT_userDefinedSelectionFieldList"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73876",
+      "name": "AS_CO_UT_fixed",
+      "type": "Expression Rule",
+      "description": "Executes fn!fixed() in a null-safe manner.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_CP_integerField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_74260",
+      "name": "AS_CO_UT_formatFieldEntryPlaceHolder",
+      "type": "Expression Rule",
+      "description": "Creates a formatted placeholder label for dropdowns. ",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_CP_integerField",
+        "AS_GCM_DPL_CO_dropdownField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73568",
+      "name": "AS_CO_UT_getLabelPosition",
+      "type": "Expression Rule",
+      "description": "Returns the standard labelPosition based on the context of the component, allows for custom input",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_CO_CP_integerField",
+        "AS_CO_DSP_standardReadOnlyField",
+        "AS_GCM_DPL_CO_INP_textField",
+        "AS_GCM_DPL_CO_dropdownField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_174191",
+      "name": "AS_CO_UT_getTypeNamespace",
+      "type": "Expression Rule",
+      "description": "Returns the namespace from the type! input",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_startAuditProcess_Parameters"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76433",
+      "name": "AS_CO_UT_indexPath",
+      "type": "Expression Rule",
+      "description": "Pass in a field (i.e. member[1].name) and this will index(index(index( for each field",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_buildSimpleFieldChangesDictionary",
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_CO_UT_returnCdtIndicesByField",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3d1-f4dc-8000-9ba4-011c48011c48_143475",
+      "name": "AS_CO_UT_initializeBlankLocalVariable",
+      "type": "Expression Rule",
+      "description": "Use this to initialize a null or empty local variable of a specific type. Pass `type` to initialize as a specific type, or `typeOf` to initialize as the type of another variable.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast"
+      ],
+      "called_by": [
+        "AS_CO_UT_saveNull",
+        "AS_GCM_QNM_UT_questionMetadata"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_MultipleObjects",
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_ADT_UT_determineAuditActionCode",
+        "AS_CO_CPS_cancelSaveButtons",
+        "AS_CO_I18N_UT_displayLabel",
+        "AS_CO_I18N_UT_loadBundleFromFolder",
+        "AS_CO_UT_castToDictionary",
+        "AS_CO_UT_castToDictionaryList",
+        "AS_CO_UT_fixed",
+        "AS_CO_UT_formatFieldEntryPlaceHolder",
+        "AS_CO_UT_getLabelPosition",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectCdtByField",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_sortCdt",
+        "AS_CO_UT_updateCdtFields",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+        "AS_CO_UT_whereContains",
+        "AS_CO_VD_numberValidation",
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GAM_UT_ArrayLength",
+        "AS_GCM_QNM_ADT_UT_startAuditProcess_Parameters_Question_Reference",
+        "AS_GCM_dropNonWritableRelationshipsFromRecord_Reducer",
+        "AS_GCM_mergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around AS_CO_UT_isBlank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS GCM QNM Update Question",
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_ADT_UT_determineAuditActionCode",
+        "AS_CO_DSP_zINTERNAL_styledBanner",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_VD_numberValidation",
+        "AS_GAM_ADT_UT_constructActionOnlyAuditData",
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructManipulatedAuditData",
+        "AS_GCM_QNM_CPS_responseOptionsToAddNewQuestion",
+        "AS_GCM_QNM_FM_createOrUpdateReferenceQuestion",
+        "AS_GCM_QNM_QR_getQuestion_Reference",
+        "AS_GCM_dropNonWritableRelationshipsFromRecord_Reducer"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75636",
+      "name": "AS_CO_UT_not",
+      "type": "Expression Rule",
+      "description": "Null handles for not -- null returns true (null acts like false)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_booleanDefaultFalse"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6c8-d132-8000-9bbe-011c48011c48_469266",
+      "name": "AS_CO_UT_queryRecord",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_returnArrayTypeNumber",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_QR_getQuestion_Reference"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_271202",
+      "name": "AS_CO_UT_rejectCdtByField",
+      "type": "Expression Rule",
+      "description": "Removes CDT indices where a match of a single value or list of values in a single field is found, if a list is passed, all matches are rejected",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_returnCdtIndicesByField"
+      ],
+      "called_by": [
+        "AS_CO_UT_sortCdt",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367",
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_QR_getQuestion_Reference",
+        "AS_GCM_UT_queryRecordByIdentifier",
+        "AS_GCM_setRecordFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73980",
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "description": "Returns nullableValue only if it is not null. Else returns replacementValue.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_ADT_UT_startAuditProcess_Parameters",
+        "AS_CO_CPS_cancelSaveButtons",
+        "AS_CO_DSP_standardReadOnlyField",
+        "AS_CO_I18N_UT_displayLabel",
+        "AS_CO_UT_getLabelPosition",
+        "AS_CO_UT_sortCdt",
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GCM_DPL_CO_dropdownField",
+        "AS_GCM_setRecordFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39610",
+      "name": "AS_CO_UT_returnArrayTypeNumber",
+      "type": "Expression Rule",
+      "description": "Returns the array type number from the input type. If type number being passed is already that of a array, returns the same number.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast"
+      ],
+      "called_by": [
+        "AS_ADT_UT_startAuditProcess_Parameters",
+        "AS_CO_UT_queryRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_269546",
+      "name": "AS_CO_UT_returnCdtIndicesByField",
+      "type": "Expression Rule",
+      "description": "Returns the indices of a CDT by a matching a single value or list of values in a single field, if a list is passed, all matches are returned",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_whereContains"
+      ],
+      "called_by": [
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_rejectCdtByField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_101148",
+      "name": "AS_CO_UT_returnNullDictionary",
+      "type": "Expression Rule",
+      "description": "Returns a null dictionary",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_dynamicDictionary"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157503",
+      "name": "AS_CO_UT_returnTypeNumber",
+      "type": "Expression Rule",
+      "description": "Returns the typeNumber of either `type` or `typeOf`",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_startAuditProcess_Parameters",
+        "AS_CO_UT_cast"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3c8-6861-8000-9ba2-011c48011c48_124304",
+      "name": "AS_CO_UT_saveNull",
+      "type": "Expression Rule",
+      "description": "Saves null into the passed object, maintaining the type",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_initializeBlankLocalVariable"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_CPS_responseOptionsToAddNewQuestion"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75720",
+      "name": "AS_CO_UT_sortCdt",
+      "type": "Expression Rule",
+      "description": "Sorts a CDT, dictionary, or complex type.  Pass nullsFirst to explicitly sort nulls first or last.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_rejectCdtByField",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_CPS_responseOptionsToAddNewQuestion"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_112825",
+      "name": "AS_CO_UT_toString",
+      "type": "Expression Rule",
+      "description": "casts a value to a string with correct handling for integer and decimal formatting",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_buildSimpleFieldChangesDictionary"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_162769",
+      "name": "AS_CO_UT_typeCompare",
+      "type": "Expression Rule",
+      "description": "Returns true if the two input types match",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_compareStrong",
+        "AS_CO_UT_whereContains"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_260165",
+      "name": "AS_CO_UT_updateCdtFields",
+      "type": "Expression Rule",
+      "description": "Updates one or more fields of a CDT, with an optional input for indices",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_269170",
+      "name": "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+      "type": "Expression Rule",
+      "description": "Allows passing field-value pairs to handle for use cases where you have to set newValues as arrays",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_dynamicDictionary",
+        "AS_CO_UT_queryRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_272151",
+      "name": "AS_CO_UT_whereContains",
+      "type": "Expression Rule",
+      "description": "Enhanced wherecontains() which avoids type-casting issues and properly handles for document and group types",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_typeCompare"
+      ],
+      "called_by": [
+        "AS_CO_UT_returnCdtIndicesByField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73956",
+      "name": "AS_CO_VD_numberValidation",
+      "type": "Expression Rule",
+      "description": "Performs minimum and maximum size validation on an integer value. Returns a validation message if any provided size constraints are violated.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+        "AS_CO_I18N_UT_displayLabel",
+        "AS_CO_I18N_UT_loadBundleFromFolder",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_CO_CP_integerField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_958752",
+      "name": "AS_GAM_ADT_UT_buildAuditEntityData",
+      "type": "Expression Rule",
+      "description": "Rule to build audit data for GAM",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_GAM_ADT_TXT_AUDIT_TYPE_ACTION_ONLY",
+        "AS_GAM_ADT_TXT_AUDIT_TYPE_MANIPULATION",
+        "AS_GAM_ADT_UT_buildFieldLevelAuditEntityData",
+        "AS_GAM_ADT_UT_constructActionOnlyAuditData",
+        "AS_GAM_ADT_UT_constructManipulatedAuditData"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_ADT_UT_startAuditProcess_Parameters_Question_Reference"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_981349",
+      "name": "AS_GAM_ADT_UT_buildFieldLevelAuditEntityData",
+      "type": "Expression Rule",
+      "description": "Calculates the field level entity data to write for GAM",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_UT_calculateAudit"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_buildAuditEntityData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_936427",
+      "name": "AS_GAM_ADT_UT_constructActionOnlyAuditData",
+      "type": "Expression Rule",
+      "description": "Rule to construct action only audit data",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_dynamicDictionary",
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_buildAuditEntityData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_983591",
+      "name": "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+      "type": "Expression Rule",
+      "description": "Rule to construct dynamic dictionary for Manipulated audit",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_castToDictionaryList",
+        "AS_CO_UT_dynamicDictionary",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_constructManipulatedAuditData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_983535",
+      "name": "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+      "type": "Expression Rule",
+      "description": "Rule to construct dynamic audit dictionary for manipulation audit",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_UNCHANGED",
+        "AS_ADT_UT_calculateAudit",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_castToDictionary",
+        "AS_CO_UT_castToDictionaryList",
+        "AS_CO_UT_dynamicDictionary",
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_not",
+        "AS_CO_UT_rejectCdtByField",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_updateCdtFields"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_constructManipulatedAuditData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_936866",
+      "name": "AS_GAM_ADT_UT_constructManipulatedAuditData",
+      "type": "Expression Rule",
+      "description": "Rule to construct Manipulated audit data",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isNotBlank",
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_buildAuditEntityData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53662",
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "description": "Displays a label by the `bundleKey` from passed in bundle data, optionally accepts arguments",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_FM_createOrUpdateReferenceQuestion"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1021202",
+      "name": "AS_GAM_UT_ArrayLength",
+      "type": "Expression Rule",
+      "description": "Gives length of an array based on input of array",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_QR_getQuestion_Reference"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53654",
+      "name": "AS_GCM_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "description": "Loads a property bundle file by name from a folder, returns a dictionary of the key-value pairs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QNM_CPS_responseOptionsToAddNewQuestion",
+        "AS_GCM_QNM_FM_createOrUpdateReferenceQuestion",
+        "AS_GCM_QNM_REF_questionTypes"
+      ]
+    },
+    {
+      "uuid": "_a-0000e69a-ff03-8000-9bd0-011c48011c48_1641804",
+      "name": "AS_GCM_MTR_SAVE_addQuestionToQuestionBank",
+      "type": "Expression Rule",
+      "description": "Metrics for how many questions added to the Question bank",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QNM_FM_createOrUpdateReferenceQuestion"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1566807",
+      "name": "AS_GCM_QNM_ADT_BL_auditConfig_Question_Reference",
+      "type": "Expression Rule",
+      "description": "Audit config for the AS_GCM_QNM_R_Question CDT",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QNM_ADT_UT_startAuditProcess_Parameters_Question_Reference"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1568163",
+      "name": "AS_GCM_QNM_ADT_UT_startAuditProcess_Parameters_Question_Reference",
+      "type": "Expression Rule",
+      "description": "Creates an instance of AS_GCM_ADT_P_AuditProcessParameters for auditing changes to a QNM Question",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_UT_startAuditProcess_Parameters",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_GAM_ADT_UT_buildAuditEntityData",
+        "AS_GCM_QNM_ADT_BL_auditConfig_Question_Reference",
+        "AS_GCM_QNM_ENT_A_R_QUESTION"
+      ],
+      "called_by": [
+        "AS GCM QNM Create Question"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_39392-gcm",
+      "name": "AS_GCM_QNM_QR_getQuestion_Reference",
+      "type": "Expression Rule",
+      "description": "Query record for AS_GCM_QNM_R_Question",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GAM_UT_ArrayLength",
+        "AS_GCM_UT_queryRecordByIdentifier"
+      ],
+      "called_by": [
+        "AS GCM QNM Update Question",
+        "AS_GCM_QNM_CPS_responseOptionsToAddNewQuestion",
+        "AS_GCM_QNM_FM_createOrUpdateReferenceQuestion"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_36913-gcm",
+      "name": "AS_GCM_QNM_REF_questionTypes",
+      "type": "Expression Rule",
+      "description": "Running list of AS_GCM_QNM_R_QuestionType CDTs",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_QNM_ENUM_FIELD_RESPONSE_TYPE_USER_DEFINED_SELECTION",
+        "AS_GCM_QNM_ENUM_FIELD_TYPE_DROPDOWN",
+        "AS_GCM_QNM_ENUM_FIELD_TYPE_RADIO_BUTTON",
+        "AS_GCM_QNM_ENUM_QUESTION_TYPE_CODE_DROPDOWN_TEXT",
+        "AS_GCM_QNM_ENUM_QUESTION_TYPE_CODE_SINGLE_RADIO_BUTTON_TEXT"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_CPS_responseOptionsToAddNewQuestion",
+        "AS_GCM_QNM_UT_questionMetadata"
+      ]
+    },
+    {
+      "uuid": "_a-0000e460-9d93-8000-9bc1-011c48011c48_595621-gcm",
+      "name": "AS_GCM_QNM_UT_fieldTypes",
+      "type": "Expression Rule",
+      "description": "Returns the fieldList for the Question Type of the provided Question",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_QNM_ENUM_QUESTION_TYPE_CODE_SINGLE_RADIO_BUTTON_TEXT",
+        "AS_GCM_QNM_UT_questionMetadata"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_UT_userDefinedSelectionFieldList"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_31643-gcm",
+      "name": "AS_GCM_QNM_UT_questionMetadata",
+      "type": "Expression Rule",
+      "description": "Given a question, returns the appropriate metadata",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_initializeBlankLocalVariable",
+        "AS_GCM_QNM_ENUM_QUESTION_TYPE_CODE_SINGLE_RADIO_BUTTON_TEXT",
+        "AS_GCM_QNM_REF_questionTypes"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_UT_fieldTypes"
+      ]
+    },
+    {
+      "uuid": "_a-0000e4b1-2fbc-8000-9bc6-011c48011c48_928264-gcm",
+      "name": "AS_GCM_QNM_UT_userDefinedSelectionFieldList",
+      "type": "Expression Rule",
+      "description": "Returns the fields that are User selection fields for the Question Type of the provided Question",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_filterCdtByField",
+        "AS_GCM_QNM_ENUM_FIELD_RESPONSE_TYPE_USER_DEFINED_SELECTION",
+        "AS_GCM_QNM_ENUM_QUESTION_TYPE_CODE_SINGLE_RADIO_BUTTON_TEXT",
+        "AS_GCM_QNM_UT_fieldTypes"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_CPS_responseOptionsToAddNewQuestion"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb7c-0389-8000-9d2c-011c48011c48_10548300",
+      "name": "AS_GCM_QNM_setMetaDataForQuestionsRecord",
+      "type": "Expression Rule",
+      "description": "Rule to capture metadata for AS GCM QNM R Question",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_QNM_setMetaDataForResponseRecord",
+        "AS_GCM_QNM_setMetaDataForResponseRequirementRecord",
+        "AS_GCM_setRecordFields"
+      ],
+      "called_by": [
+        "AS GCM QNM Create Question"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb7c-0389-8000-9d2c-011c48011c48_10548261",
+      "name": "AS_GCM_QNM_setMetaDataForResponseRecord",
+      "type": "Expression Rule",
+      "description": "Rule to capture metadata for AS GCM QNM R Response",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_setRecordFields"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_setMetaDataForQuestionsRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb7c-0389-8000-9d2c-011c48011c48_10548276",
+      "name": "AS_GCM_QNM_setMetaDataForResponseRequirementRecord",
+      "type": "Expression Rule",
+      "description": "Rule to capture metadata for AS GCM QNM R Response Requirement",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_setRecordFields"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_setMetaDataForQuestionsRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec46-fcf4-8000-9d91-011c48011c48_12812729",
+      "name": "AS_GCM_QNM_setMetaDataForTemplateQuestionsRecord",
+      "type": "Expression Rule",
+      "description": "Rule to capture metadata for AS GCM QNM T Question",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_setRecordFields"
+      ],
+      "called_by": [
+        "AS GCM QNM Update Question"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb85-3dbf-8000-9d30-011c48011c48_10769927",
+      "name": "AS_GCM_QNM_writeRecordsPropertiesForRefQuestions",
+      "type": "Expression Rule",
+      "description": "Contains the write properties to drop and update the record data in the process while writing.",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_dropNonWritableRelationshipsFromRecord",
+        "AS_GCM_mergeWriteRecordIdsToProcessVariable"
+      ],
+      "called_by": [
+        "AS GCM QNM Create Question"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec46-fcf4-8000-9d91-011c48011c48_12813962",
+      "name": "AS_GCM_QNM_writeRecordsPropertiesForTemplateQuestions",
+      "type": "Expression Rule",
+      "description": "Contains the write properties to drop and update the record data in the process while writing.",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_dropNonWritableRelationshipsFromRecord",
+        "AS_GCM_mergeWriteRecordIdsToProcessVariable"
+      ],
+      "called_by": [
+        "AS GCM QNM Update Question"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec50-376f-8000-9d94-011c48011c48_12937069",
+      "name": "AS_GCM_UT_queryRecordByIdentifier",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_rejectNullValuesFromArray"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_QR_getQuestion_Reference"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9749583",
+      "name": "AS_GCM_dropNonWritableRelationshipsFromRecord",
+      "type": "Expression Rule",
+      "description": "Drops the specified non writable relationships. Retains the writable relationships if provided",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_dropNonWritableRelationshipsFromRecord_Reducer",
+        "AS_GCM_getAllPresentRelationshipsFromRecord"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_writeRecordsPropertiesForRefQuestions",
+        "AS_GCM_QNM_writeRecordsPropertiesForTemplateQuestions"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9756924",
+      "name": "AS_GCM_dropNonWritableRelationshipsFromRecord_Reducer",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_GCM_dropNonWritableRelationshipsFromRecord`",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_getAllPresentRelationshipsFromRecord"
+      ],
+      "called_by": [
+        "AS_GCM_dropNonWritableRelationshipsFromRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9761091",
+      "name": "AS_GCM_filterRecords",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_mergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9760625",
+      "name": "AS_GCM_getAllPresentRelationshipsFromRecord",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_GAM_dropNonWritableRelationshipsFromRecord`",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_getAllPresentRelationshipsFromRecord_Apply"
+      ],
+      "called_by": [
+        "AS_GCM_dropNonWritableRelationshipsFromRecord",
+        "AS_GCM_dropNonWritableRelationshipsFromRecord_Reducer",
+        "AS_GCM_getAllPresentRelationshipsFromRecord_Apply"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9760686",
+      "name": "AS_GCM_getAllPresentRelationshipsFromRecord_Apply",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_GCM_dropNonWritableRelationshipsFromRecord`",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_getAllPresentRelationshipsFromRecord"
+      ],
+      "called_by": [
+        "AS_GCM_getAllPresentRelationshipsFromRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9756839",
+      "name": "AS_GCM_mergeWriteRecordIdsToProcessVariable",
+      "type": "Expression Rule",
+      "description": "The main rule to merge the ID-output of a write records nodes to the input process variable (including all child FKs). IMPORTANT NOTES in comments in the rule.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_GCM_filterRecords",
+        "AS_GCM_setRecordFields"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_writeRecordsPropertiesForRefQuestions",
+        "AS_GCM_QNM_writeRecordsPropertiesForTemplateQuestions"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9760853",
+      "name": "AS_GCM_setRecordFields",
+      "type": "Expression Rule",
+      "description": "Runs a bulk update on a record object, setting new values for its fields",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_setMetaDataForQuestionsRecord",
+        "AS_GCM_QNM_setMetaDataForResponseRecord",
+        "AS_GCM_QNM_setMetaDataForResponseRequirementRecord",
+        "AS_GCM_QNM_setMetaDataForTemplateQuestionsRecord",
+        "AS_GCM_mergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3d1-f4dc-8000-9ba4-011c48011c48_134344",
+      "name": "AS_CO_CPS_cancelSaveButtons",
+      "type": "Interface",
+      "description": "Section with cancel and save buttons",
+      "parameters": [
+        {
+          "name": "confirmLabel",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "cancelLabel",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "confirmSaveInto",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "cancelSaveInto",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "includeDivider",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "confirmSubmit",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "cancelSubmit",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 6
+        },
+        {
+          "name": "confirmDisabled",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 7
+        },
+        {
+          "name": "cancelDisabled",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 8
+        },
+        {
+          "name": "confirmHeader",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 9
+        },
+        {
+          "name": "confirmMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 10
+        },
+        {
+          "name": "confirmStyle",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 11
+        },
+        {
+          "name": "cancelStyle",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 12
+        },
+        {
+          "name": "cancelHeader",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 13
+        },
+        {
+          "name": "cancelMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 14
+        },
+        {
+          "name": "confirmAccessibilityText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 15
+        },
+        {
+          "name": "cancelAccessibilityText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 16
+        },
+        {
+          "name": "cancelShowWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 17
+        },
+        {
+          "name": "confirmSize",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 18
+        },
+        {
+          "name": "cancelSize",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 19
+        },
+        {
+          "name": "confirmValidationGroup",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 20
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 21
+        }
+      ],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_FM_createOrUpdateReferenceQuestion"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_74362",
+      "name": "AS_CO_CP_integerField",
+      "type": "Interface",
+      "description": "Generic integer field to handle read-only logic dynamically. ",
+      "parameters": [
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "instructions",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "required",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "readOnly",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "disabled",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "value",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "validations",
+          "type": "http://www.appian.com/ae/types/2009:Text?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 6
+        },
+        {
+          "name": "saveInto",
+          "type": "http://www.appian.com/ae/types/2009:Save?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Save?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 7
+        },
+        {
+          "name": "validationGroup",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 8
+        },
+        {
+          "name": "requiredMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 9
+        },
+        {
+          "name": "align",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 10
+        },
+        {
+          "name": "labelPosition",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 11
+        },
+        {
+          "name": "refreshAfter",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 12
+        },
+        {
+          "name": "placeholder",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 13
+        },
+        {
+          "name": "helpTooltip",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 14
+        },
+        {
+          "name": "masked",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 15
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 16
+        },
+        {
+          "name": "noFormat",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 17
+        },
+        {
+          "name": "accessibilityText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 18
+        },
+        {
+          "name": "minSize",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 19
+        },
+        {
+          "name": "maxSize",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 20
+        }
+      ],
+      "calls": [
+        "AS_CO_DSP_standardReadOnlyField",
+        "AS_CO_UT_displayRequiredMessage",
+        "AS_CO_UT_fixed",
+        "AS_CO_UT_formatFieldEntryPlaceHolder",
+        "AS_CO_UT_getLabelPosition",
+        "AS_CO_VD_numberValidation"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_CPS_responseOptionsToAddNewQuestion"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_50686",
+      "name": "AS_CO_DSP_infoBanner",
+      "type": "Interface",
+      "description": "Rule to display an informative banner",
+      "parameters": [
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "secondaryLabel",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "acknowledgementSaveInto",
+          "type": "http://www.appian.com/ae/types/2009:Save?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Save?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "accessibilityText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        }
+      ],
+      "calls": [
+        "AS_CO_DSP_zINTERNAL_styledBanner"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_CPS_responseOptionsToAddNewQuestion"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_74131",
+      "name": "AS_CO_DSP_standardReadOnlyField",
+      "type": "Interface",
+      "description": "Standard readOnly field, utilizes a!textField(), use a!richTextDisplayField() for further formatting",
+      "parameters": [
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "instructions",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "value",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "labelPosition",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "helpTooltip",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "accessibilityText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 6
+        },
+        {
+          "name": "align",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 7
+        },
+        {
+          "name": "showHyphenIfValueNull",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 8
+        }
+      ],
+      "calls": [
+        "AS_CO_UT_booleanDefaultTrue",
+        "AS_CO_UT_getLabelPosition",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_CO_CP_integerField",
+        "AS_GCM_DPL_CO_INP_textField",
+        "AS_GCM_DPL_CO_dropdownField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_247447",
+      "name": "AS_CO_DSP_warningBanner",
+      "type": "Interface",
+      "description": "Rule to display a warning message",
+      "parameters": [
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "secondaryLabel",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "acknowledgementSaveInto",
+          "type": "http://www.appian.com/ae/types/2009:Save?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Save?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "accessibilityText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        }
+      ],
+      "calls": [
+        "AS_CO_DSP_zINTERNAL_styledBanner",
+        "AS_CO_HEX_WARNING",
+        "AS_CO_ICON_WARNING"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_FM_createOrUpdateReferenceQuestion"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_247409",
+      "name": "AS_CO_DSP_zINTERNAL_styledBanner",
+      "type": "Interface",
+      "description": "Card to display a variety of styled messages.  Based off of the predefined Appian alert banner designs found in the patterns tab of the interface design mode palette.  Should be wrapped in other rules for front-end display (e.g. AS_CO_DSP_warningBanner) to set consistent style patterns throughout the application.",
+      "parameters": [
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "secondaryLabel",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "acknowledgementSaveInto",
+          "type": "http://www.appian.com/ae/types/2009:Save?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Save?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "style",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "icon",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "iconColor",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 6
+        },
+        {
+          "name": "accessibilityText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 7
+        }
+      ],
+      "calls": [
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_CO_DSP_infoBanner",
+        "AS_CO_DSP_warningBanner"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb28-f476-8000-9d09-011c48011c48_9642008",
+      "name": "AS_GCM_DPL_CO_INP_textField",
+      "type": "Interface",
+      "description": "Standard wrapper for a!textField()",
+      "parameters": [
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "instructions",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "required",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "readOnly",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "disabled",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "value",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "validations",
+          "type": "http://www.appian.com/ae/types/2009:Text?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 6
+        },
+        {
+          "name": "saveInto",
+          "type": "http://www.appian.com/ae/types/2009:Save?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Save?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 7
+        },
+        {
+          "name": "validationGroup",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 8
+        },
+        {
+          "name": "requiredMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 9
+        },
+        {
+          "name": "align",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 10
+        },
+        {
+          "name": "labelPosition",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 11
+        },
+        {
+          "name": "placeholder",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 12
+        },
+        {
+          "name": "helpTooltip",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 13
+        },
+        {
+          "name": "masked",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 14
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 15
+        },
+        {
+          "name": "accessibilityText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 16
+        },
+        {
+          "name": "characterLimit",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 17
+        },
+        {
+          "name": "refreshAfter",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 18
+        },
+        {
+          "name": "showCharacterCount",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": "Default: false",
+          "display_order": 19
+        },
+        {
+          "name": "inputPurpose",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 20
+        }
+      ],
+      "calls": [
+        "AS_CO_DSP_standardReadOnlyField",
+        "AS_CO_UT_displayRequiredMessage",
+        "AS_CO_UT_getLabelPosition"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_FM_createOrUpdateReferenceQuestion"
+      ]
+    },
+    {
+      "uuid": "_a-0000e8cc-c513-8000-9c0f-011c48011c48_3405575",
+      "name": "AS_GCM_DPL_CO_dropdownField",
+      "type": "Interface",
+      "description": "Generic single select dropdown field that handles read-only logic dynamically. \n\nFor instances where a custom value should be displayed when the component is read-only, pass it into the \"readOnlyValue\" input.",
+      "parameters": [
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "labelPosition",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "instructions",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "required",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "readOnly",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "disabled",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "choiceLabels",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 6
+        },
+        {
+          "name": "choiceValues",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 7
+        },
+        {
+          "name": "placeholder",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 8
+        },
+        {
+          "name": "value",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 9
+        },
+        {
+          "name": "validations",
+          "type": "http://www.appian.com/ae/types/2009:Text?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 10
+        },
+        {
+          "name": "saveInto",
+          "type": "http://www.appian.com/ae/types/2009:Save?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Save?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 11
+        },
+        {
+          "name": "validationGroup",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 12
+        },
+        {
+          "name": "requiredMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 13
+        },
+        {
+          "name": "helpTooltip",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 14
+        },
+        {
+          "name": "noPlaceholder",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 15
+        },
+        {
+          "name": "readOnlyValue",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 16
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 17
+        },
+        {
+          "name": "accessibilityText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 18
+        },
+        {
+          "name": "searchDisplay",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 19
+        },
+        {
+          "name": "data",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 20
+        },
+        {
+          "name": "sort",
+          "type": "http://www.appian.com/ae/types/2009:SortInfo?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:SortInfo?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 21
+        },
+        {
+          "name": "marginAbove",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 22
+        }
+      ],
+      "calls": [
+        "AS_CO_DSP_standardReadOnlyField",
+        "AS_CO_UT_displayCommonObjectBundleLabel",
+        "AS_CO_UT_displayRequiredMessage",
+        "AS_CO_UT_formatFieldEntryPlaceHolder",
+        "AS_CO_UT_getLabelPosition",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_CPS_responseOptionsToAddNewQuestion"
+      ]
+    },
+    {
+      "uuid": "_a-0000e4b1-2fbc-8000-9bc6-011c48011c48_887364-gcm",
+      "name": "AS_GCM_QNM_CPS_responseOptionsToAddNewQuestion",
+      "type": "Interface",
+      "description": "Response options to add new question",
+      "parameters": [
+        {
+          "name": "question",
+          "type": "urn:com:appian:recordtype:datatype:f0bfb0f8-c45d-425c-8450-802bf04a87cf",
+          "raw_type": "urn:com:appian:recordtype:datatype:f0bfb0f8-c45d-425c-8450-802bf04a87cf",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AS_CO_CP_integerField",
+        "AS_CO_DSP_infoBanner",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_saveNull",
+        "AS_CO_UT_sortCdt",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_DPL_CO_dropdownField",
+        "AS_GCM_QNM_ENUM_QUESTION_TYPE_CODE_DROPDOWN_TEXT",
+        "AS_GCM_QNM_ENUM_RESPONSE_REQUIREMENT_TYPE_CODE_MAX_RESPONSES",
+        "AS_GCM_QNM_QR_getQuestion_Reference",
+        "AS_GCM_QNM_REF_questionTypes",
+        "AS_GCM_QNM_UT_userDefinedSelectionFieldList"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_FM_createOrUpdateReferenceQuestion"
+      ]
+    },
+    {
+      "uuid": "5e768860-c8fc-4d89-add9-cc19090a6534-gcm",
+      "name": "AS_GCM_QNM_FM_createOrUpdateReferenceQuestion",
+      "type": "Interface",
+      "description": "Form to add new question",
+      "parameters": [
+        {
+          "name": "question",
+          "type": "urn:com:appian:recordtype:datatype:f0bfb0f8-c45d-425c-8450-802bf04a87cf",
+          "raw_type": "urn:com:appian:recordtype:datatype:f0bfb0f8-c45d-425c-8450-802bf04a87cf",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "userAction",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AS_CO_CPS_cancelSaveButtons",
+        "AS_CO_DSP_warningBanner",
+        "AS_CO_ENUM_PARAGRAPH_LENGTH_MEDIUM",
+        "AS_CO_ENUM_USER_ACTION_CANCEL",
+        "AS_CO_ENUM_USER_ACTION_SUBMIT",
+        "AS_CO_UT_isNotBlank",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_DPL_CO_INP_textField",
+        "AS_GCM_MTR_SAVE_addQuestionToQuestionBank",
+        "AS_GCM_QNM_CPS_responseOptionsToAddNewQuestion",
+        "AS_GCM_QNM_QR_getQuestion_Reference"
+      ],
+      "called_by": [
+        "AS GCM QNM Create Question",
+        "AS GCM QNM Update Question"
+      ]
+    },
+    {
+      "uuid": "0002e4de-184c-8000-12e9-7f0000014e7a-gcm",
+      "name": "AS GCM QNM Create Question",
+      "type": "Process Model",
+      "description": "PM to add the reference question",
+      "calls": [
+        "AS_CO_ENUM_USER_ACTION_CANCEL",
+        "AS_GCM_QNM_ADT_UT_startAuditProcess_Parameters_Question_Reference",
+        "AS_GCM_QNM_ENUM_QUESTION_TYPE_CODE_SINGLE_RADIO_BUTTON_TEXT",
+        "AS_GCM_QNM_FM_createOrUpdateReferenceQuestion",
+        "AS_GCM_QNM_setMetaDataForQuestionsRecord",
+        "AS_GCM_QNM_writeRecordsPropertiesForRefQuestions"
+      ],
+      "called_by": [
+        "AS GCM QNM Update Question"
+      ]
+    },
+    {
+      "uuid": "0000e4f4-5576-8000-1656-7f0000014e7a-gcm",
+      "name": "AS GCM QNM Update Question",
+      "type": "Process Model",
+      "description": "PM to update the reference question",
+      "calls": [
+        "AS GCM QNM Create Question",
+        "AS_CO_ENUM_USER_ACTION_SUBMIT",
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_QNM_FM_createOrUpdateReferenceQuestion",
+        "AS_GCM_QNM_QR_getQuestion_Reference",
+        "AS_GCM_QNM_setMetaDataForTemplateQuestionsRecord",
+        "AS_GCM_QNM_writeRecordsPropertiesForTemplateQuestions"
+      ],
+      "called_by": []
+    }
+  ]
+}

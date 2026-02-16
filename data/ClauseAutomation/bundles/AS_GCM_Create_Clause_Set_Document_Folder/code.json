@@ -1,0 +1,92 @@
+{
+  "_metadata": {
+    "bundle_id": "AS_GCM_Create_Clause_Set_Document_Folder"
+  },
+  "objects": {
+    "_a-0000e643-f7f1-8000-9bca-011c48011c48_1404573": {
+      "name": "AS_GCM_DSP_clauseSetRecordTitle",
+      "type": "Expression Rule",
+      "sail_code": "joinarray(\n  { ri!setNumber, ri!categoryNumber },\n  a!defaultValue(value: ri!separator, default: \"-\")\n)"
+    },
+    "_a-0000eb8e-789f-8000-9d34-011c48011c48_11021586": {
+      "name": "AS_GCM_writeRecordsPropertiesForClauseSetRecord",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  ri!isInput,\n  rule!AS_GCM_dropNonWritableRelationshipsFromRecord(\n    records: ri!clauseSet,\n    nonWritableRelationships: {\n      recordType!AS GCM Clause Set.refCategory,\n      recordType!AS GCM Clause Set.refContractMethod,\n      recordType!AS GCM Clause Set.refStatus,\n      recordType!AS GCM Clause Set.refType\n    }\n  ),\n  rule!AS_GCM_mergeWriteRecordIdsToProcessVariable(\n    processData: ri!clauseSet,\n    recordsUpdated: ri!recordsUpdated,\n    fksToParent: {\n      recordType!AS GCM Clause Set.contractTypes.setId,\n      recordType!AS GCM Clause Set.clauseSetTemplate.setId\n    }\n  )\n)"
+    },
+    "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9760686": {
+      "name": "AS_GCM_getAllPresentRelationshipsFromRecord_Apply",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  runtimetypeof(ri!relationship) = 'type!{http://www.appian.com/ae/types/2009}RecordRelationship',\n  {\n    ri!relationship,\n    rule!AS_GCM_getAllPresentRelationshipsFromRecord(records: ri!records[ri!relationship])\n  },\n  {}\n)"
+    },
+    "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1214402": {
+      "name": "AS_GCM_UT_clauseSetFolderName",
+      "type": "Expression Rule",
+      "sail_code": "substitute(\n  rule!AS_GCM_DSP_clauseSetRecordTitle(\n    setNumber: ri!clauseSet[recordType!AS GCM Clause Set.setNumber],\n    categoryNumber: ri!clauseSet[recordType!AS GCM Clause Set.categoryNumber]\n  ),\n  \"-\",\n  \" \"\n)"
+    },
+    "_a-0000e643-f7f1-8000-9bca-011c48011c48_1320481": {
+      "name": "AS_GCM_clauseSetDocumentFolderSecurity",
+      "type": "Expression Rule",
+      "sail_code": "togroup(\n  cons!AS_GCM_GRP_ALL_BUSINESS_USERS\n)"
+    },
+    "_a-0000e643-f7f1-8000-9bca-011c48011c48_1320473": {
+      "name": "AS_GCM_BL_checkIfFolderSecurityNeedsUpdate",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  /*Getting the current security configuration of the folder*/\n  local!currentSecurity: returncontentrolemap(tofolder(ri!folderId), true),\n  if(\n    /*Returns true if the folder security is improper or needs update, else returns false*/\n    or(\n      rule!AS_CO_UT_not(\n        contains(\n          togroup(local!currentSecurity.editorGroups),\n          togroup(rule!AS_GCM_clauseSetDocumentFolderSecurity())\n        )\n      ),\n      rule!AS_CO_UT_not(\n        contains(\n          togroup(local!currentSecurity.adminGroups),\n          togroup(cons!AS_GAM_GRP_APPIAN_ADMINISTRATORS)\n        )\n      )\n    ),\n    true,\n    false\n  )\n)"
+    },
+    "0006e631-0584-8000-14ec-7f0000014e7a": {
+      "name": "AS GCM Create Clause Set Document Folder",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n=pv!clauseSet[recordType!AS GCM Clause Set.folderId]\n\n// Input: ?\n=rule!AS_GCM_clauseSetDocumentFolderSecurity()\n\n// Input: ?\n=cons!AS_GAM_GRP_APPIAN_ADMINISTRATORS\n\n// Input: ?\nrule!AS_GCM_writeRecordsPropertiesForClauseSetRecord(\n  clauseSet: rule!AS_GCM_setRecordFields(\n    record: pv!clauseSet,\n    alwaysOverwrite: {\n      a!map(\n        field: recordType!AS GCM Clause Set.folderId,\n        value: tointeger(pv!mainFolder)\n      ),\n      a!map(\n        field: recordType!AS GCM Clause Set.office365FolderId,\n        value: pv!office365FolderId\n      )\n    }\n  ),\n  isInput: true\n)\n\n// Input: ?\n=recordType!AS GCM Clause Set\n\n// Output: ?\nrule!AS_GCM_writeRecordsPropertiesForClauseSetRecord(\n  clauseSet: rule!AS_GCM_setRecordFields(\n    record: pv!clauseSet,\n    alwaysOverwrite: {\n      a!map(\n        field: recordType!AS GCM Clause Set.folderId,\n        value: tointeger(pv!mainFolder)\n      ),\n      a!map(\n        field: recordType!AS GCM Clause Set.office365FolderId,\n        value: pv!office365FolderId\n      )\n    }\n  ),\n  recordsUpdated: ac!RecordsUpdated,\n  isInput: false\n)\n\n// Input: ?\n=rule!AS_GCM_UT_clauseSetFolderName(clauseSet:pv!clauseSet)\n\n// Input: ?\n=pv!clauseSet[recordType!AS GCM Clause Set.setId]\n\n// Input: ?\n=cons!AS_GCM_FLD_CLAUSE_SET_FOLDERS\n\n// Input: ?\npv!clauseSet[recordType!AS GCM Clause Set.folderId]\n\n// Input: ?\n=cons!AS_GCM_SHAREPOINT_FOLDER_ID\n\n// Input: ?\n=rule!AS_GCM_UT_clauseSetFolderName(clauseSet:pv!clauseSet)\n\n// Input: ?\n=pv!clauseSet[recordType!AS GCM Clause Set.office365FolderId]\n\n// Input: ?\ntrue\n\n// Output: ?\nac!ProcessInfo.pv.mainFolder\n\n// Output: ?\nac!ProcessInfo.pv.office365FolderId"
+    },
+    "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39070": {
+      "name": "AS_CO_UT_booleanDefaultFalse",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  if(\n    isnull(ri!boolean),\n    false,\n    ri!boolean\n  )\n)"
+    },
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75636": {
+      "name": "AS_CO_UT_not",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Boolean',\n  not(rule!AS_CO_UT_booleanDefaultFalse(ri!input))\n)\n\n/*True returns False*/\n/*False returns True*/\n/*Null returns True*/"
+    },
+    "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9756924": {
+      "name": "AS_GCM_dropNonWritableRelationshipsFromRecord_Reducer",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  rule!AS_CO_UT_isBlank(ri!record),\n  ri!record,\n  if(\n    or(\n      rule!AS_CO_UT_isNotBlank(ri!record[ri!relationship]),\n      contains(\n        touniformstring(\n          rule!AS_GCM_getAllPresentRelationshipsFromRecord(records: ri!record)\n        ),\n        tostring(ri!relationship)\n      )\n    ),\n    remove(ri!record, ri!relationship),\n    ri!record\n  )\n)"
+    },
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782": {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Boolean',\n  not(rule!AS_CO_UT_isBlank(ri!input))\n)"
+    },
+    "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9760853": {
+      "name": "AS_GCM_setRecordFields",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  a!isNullOrEmpty(ri!record),\n  ri!record,\n  a!localVariables(\n    local!allUpdates: rule!AS_CO_UT_rejectNullValuesFromArray(\n      a!flatten(\n        {\n          ri!alwaysOverwrite,\n          ri!childRelationships,\n          #\"SYSTEM_SYSRULES_forEach\"(\n            items: ri!neverOverwrite,\n            expression: #\"urn:appian:function:v1:a:update\"(\n              fv!item,\n              \"value\",\n              /*Specifically using this instead of a!defaultValue() to account for the `{null}` value*/\n              rule!AS_CO_UT_replaceNull(\n                nullableValue: ri!record[fv!item.field],\n                replacementValue: fv!item.value\n              )\n            )\n          )\n        }\n      )\n    ),\n    local!onlyChangedUpdates: a!flatten(\n      #\"SYSTEM_SYSRULES_forEach\"(\n        items: local!allUpdates,\n        expression: if(\n          or(\n            tostring(ri!record[fv!item.field]) = tostring(fv!item.value),\n            toboolean(fv!item.applyWhen) = false\n          ),\n          {},\n          fv!item\n        )\n      )\n    ),\n    if(\n      a!isNullOrEmpty(local!onlyChangedUpdates),\n      ri!record,\n      #\"urn:appian:function:v1:a:update\"(\n        data: ri!record,\n        index: local!onlyChangedUpdates.field,\n        value: local!onlyChangedUpdates.value\n      )\n    )\n  )\n)"
+    },
+    "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9749583": {
+      "name": "AS_GCM_dropNonWritableRelationshipsFromRecord",
+      "type": "Expression Rule",
+      "sail_code": "/*The main rule to \"cleanse\" the input of a WriteRecords SS node to remove non-writable relationships.\n\nSTANDARD USAGE:\n- Use this in tandem with rule AS_GCM_mergeWriteRecordIdsToProcessVariable (see that description)\n- In the input of a WriteRecords SS (NOT in a previous script task), do:\n  A - Expressionable input to \"Records\" intput\n  B - rule!AS_GCM_dropNonWritableRelationshipsFromRecord(\n    records: pv![the pv to write],\n    relationships: {list of record relationships that are not allowed to be written}\n  )\n\nIMPORTANT GENERAL NOTES: \n- The reason to run this in the input of the WriteRecords SS instead of a previous script task\nis that, when used with AS_GCM_mergeWriteRecordIdsToProcessVariable, you can maintain the relationships\nthat you had to drop before writing.\n  -> For example, if you are writing \"Case\" but it has a child-relationship \"Address\" that cannot be written,\n    - this will drop \"Address\" before attempting to write\n    - if the output is configured properly it will reattach \"Address\" in the output\n    - the overall result is that you basically ran the node as if \"Address\" was ignored, \n      so that you can use it later in the process flow\n*/\n#\"SYSTEM_SYSRULES_forEach\"(\n  items: a!flatten(ri!records),\n  expression: reduce(\n    rule!AS_GCM_dropNonWritableRelationshipsFromRecord_Reducer(record: _, relationship: _),\n    fv!item,\n    a!defaultValue(\n      value: ri!nonWritableRelationships,\n      default: difference(\n        rule!AS_GCM_getAllPresentRelationshipsFromRecord(records: fv!item),\n        ri!writableRelationships\n      )\n    )\n  )\n)"
+    },
+    "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9761091": {
+      "name": "AS_GCM_filterRecords",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!fieldValuePairs: a!defaultValue(\n    ri!fieldValuePairs,\n    #\"SYSTEM_SYSRULES_forEach\"(\n      items: a!flatten(ri!field),\n      expression: a!map(\n        field: fv!item,\n        value: if(\n          fv!itemCount = 1,\n          ri!value,\n          index(a!flatten(ri!value), fv!index, null)\n        )\n      )\n    )\n  ),\n  local!matchIndices: if(\n    a!isNullOrEmpty(a!flatten(ri!records)),\n    tointeger({}),\n    reduce(\n      rule!AS_GCM_filterRecords_Reducer(\n        previousIndices: _,\n        records: a!flatten(ri!records),\n        fieldValuePair: _\n      ),\n      enumerate(count(a!flatten(ri!records))) + 1,\n      local!fieldValuePairs\n    )\n  ),\n  local!rejectIndices: difference(\n    if(\n      a!isNullOrEmpty(ri!records),\n      tointeger({}),\n      enumerate(count(a!flatten(ri!records))) + 1\n    ),\n    local!matchIndices\n  ),\n  local!matches: cast(\n    runtimetypeof(ri!records),\n    index(ri!records, local!matchIndices, {})\n  ),\n  local!rejects: cast(\n    runtimetypeof(ri!records),\n    index(ri!records, local!rejectIndices, {})\n  ),\n  local!output: a!match(\n    value: a!defaultValue(ri!filterType, \"FILTER\"),\n    equals: \"FILTER\",\n    then: local!matches,\n    equals: \"REJECT\",\n    then: local!rejects,\n    equals: \"FIRST_MATCH\",\n    then: index(local!matches, 1, null),\n    equals: \"FIRST_REJECT\",\n    then: index(local!rejects, 1, null),\n    equals: \"MATCH_COUNT\",\n    then: count(local!matchIndices),\n    equals: \"REJECT_COUNT\",\n    then: count(local!rejectIndices),\n    equals: \"MATCH_INDICES\",\n    then: local!matchIndices,\n    equals: \"REJECT_INDICES\",\n    then: local!rejectIndices,\n    equals: \"FULL_RESULT\",\n    then: a!map(\n      matches: local!matches,\n      rejects: local!rejects,\n      firstMatch: index(local!matches, 1, null),\n      firstReject: index(local!rejects, 1, null),\n      matchCount: count(local!matchIndices),\n      rejectCount: count(local!rejectIndices),\n      matchIndices: local!matchIndices,\n      rejectIndices: local!rejectIndices\n    ),\n    default: fn!error(\n      \"Invalid filterType, must be one of: FILTER, REJECT, FIRST_MATCH, FIRST_REJECT, MATCH_COUNT, REJECT_COUNT, MATCH_INDICES, REJECT_INDICES, FULL_RESULT\"\n    )\n  ),\n  local!output\n)"
+    },
+    "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9760625": {
+      "name": "AS_GCM_getAllPresentRelationshipsFromRecord",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}RecordRelationship?list',\n  a!flatten(\n    if(\n      runtimetypeof(ri!records) = runtimetypeof(a!flatten(ri!records)),\n      apply(\n        rule!AS_GCM_getAllPresentRelationshipsFromRecord(records: _),\n        a!flatten(ri!records)\n      ),\n      apply(\n        rule!AS_GCM_getAllPresentRelationshipsFromRecord_Apply(relationship: _, records: ri!records),\n        a!keys(ri!records)\n      )\n    )\n  )\n)"
+    },
+    "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9756839": {
+      "name": "AS_GCM_mergeWriteRecordIdsToProcessVariable",
+      "type": "Expression Rule",
+      "sail_code": "/*\nThe main rule to merge the ID-output of a WriteRecords SS node back to the input process variable.\n\nSTANDARD USAGE:\n- Use this in tandem with rule AS_GCM_dropNonWritableRelationshipsFromRecord (see that description)\n- In the output of a WriteRecords SS, do:\n  A - New Custom Output\n  B - rule!AS_GCM_mergeWriteRecordIdsToProcessVariable(\n        processData: pv![the pv your wrote],\n        recordsUpdated: ac!RecordsUpdated,\n        fksToParent: {list of record fields that are FKs to the primary PK you wrote}\n      )\n  C - Save this back to the pv you wrote\n\nMAPPING FKS:\n- Using this rule in the current state, child-FKs can only be set \nwhere they map back to the primary record type, using input \"fksToParent\".\n  -> For example, if you are writing \"Case\", \n    - you could set \"Case.Comment.caseId\"\n    - you could set \"Case.Comment.Replies.caseId\"\n    - but not \"Case.Comment.Replies.commentId\" (since the FK \"commentId\" is not the PK of \"Case\")\n- To set other foreign keys, you would have to run manual update rules using the result of this.\nNote:\n- \"fksToParent\" is optimized for 1:M relationships.\n  - Setting an fkToParent for a 1:1 will create an instance of that child record if it is null.\n\nIMPORTANT GENERAL NOTES: \n- The result of THIS rule will have data that IS considered changed, \nso a designer should be cautious about re-writing this later in process \nas it could cause race condition and performance side affects.\n\n- Also, the result of this WILL NOT have custom-fields calculated, \nsince they can be changed as a result of the write, but this rule is not re-querying.\nIf you need these, then re-query.\n\n- This should generally only be used for downstream flows that don't write it directly again, \nsuch as document processing, emails, etc.\n*/\nif(\n  or(\n    runtimetypeof(ri!recordsUpdated) = runtimetypeof(a!flatten(ri!recordsUpdated)),\n    runtimetypeof(ri!recordsUpdated) = 'type!{http://www.appian.com/ae/types/2009}Variant?list'\n  ),\n  if(\n    count(a!flatten(ri!recordsUpdated)) = 0,\n    ri!processData,\n    #\"SYSTEM_SYSRULES_forEach\"(\n      items: enumerate(count(a!flatten(ri!recordsUpdated))),\n      expression: rule!AS_GCM_mergeWriteRecordIdsToProcessVariable(\n        processData: a!flatten(ri!processData)[fv!index],\n        recordsUpdated: cast(\n          runtimetypeof(a!flatten(ri!processData)),\n          ri!recordsUpdated\n        )[fv!index],\n        fksToParent: ri!fksToParent\n      )\n    )\n  ),\n  a!localVariables(\n    local!keys: #\"SYSTEM_SYSRULES_forEach\"(\n      items: a!keys(ri!recordsUpdated),\n      expression: a!map(\n        key: fv!item,\n        isPrimaryKey: runtimetypeof(fv!item) = 'type!{http://www.appian.com/ae/types/2009}RecordField'\n      )\n    ),\n    local!keysOrganized: rule!AS_GCM_filterRecords(\n      records: local!keys,\n      field: \"isPrimaryKey\",\n      value: true,\n      filterType: \"FULL_RESULT\"\n    ),\n    local!primaryKeyField: local!keysOrganized.firstMatch.key,\n    local!updates: rule!AS_GCM_setRecordFields(\n      record: ri!processData,\n      neverOverwrite: {\n        a!map(\n          field: local!primaryKeyField,\n          value: ri!recordsUpdated[local!primaryKeyField]\n        ),\n        #\"SYSTEM_SYSRULES_forEach\"(\n          items: ri!fksToParent,\n          expression: a!map(\n            field: fv!item,\n            value: ri!recordsUpdated[local!primaryKeyField],\n            /*Children get complicated, and an update should only run if a child is actually attached*/\n            applyWhen: a!match(\n              value: runtimetypeof(ri!processData[fv!item]),\n              equals: runtimetypeof(a!flatten(ri!processData[fv!item])),\n              then: count(ri!processData[fv!item]) > 0,\n              equals: tointeger(\n                'type!{http://www.appian.com/ae/types/2009}Variant?list'\n              ),\n              then: or(\n                #\"SYSTEM_SYSRULES_forEach\"(\n                  items: ri!processData[fv!item],\n                  expression: a!isNotNullOrEmpty(fv!item)\n                )\n              ),\n              default: a!isNotNullOrEmpty(ri!processData[fv!item])\n            )\n          )\n        )\n      },\n      childRelationships: #\"SYSTEM_SYSRULES_forEach\"(\n        items: local!keysOrganized.rejects,\n        expression: a!map(\n          field: fv!item.key,\n          value: if(\n            rule!AS_CO_UT_isBlank(ri!processData[fv!item.key]),\n            ri!recordsUpdated[fv!item.key],\n            rule!AS_GCM_mergeWriteRecordIdsToProcessVariable(\n              processData: ri!processData[fv!item.key],\n              recordsUpdated: ri!recordsUpdated[fv!item.key],\n              fksToParent: {}\n            )\n          )\n        )\n      )\n    ),\n    local!updates\n  )\n)"
+    },
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536": {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  length(a!flatten(ri!value)) = 0\n)"
+    }
+  }
+}

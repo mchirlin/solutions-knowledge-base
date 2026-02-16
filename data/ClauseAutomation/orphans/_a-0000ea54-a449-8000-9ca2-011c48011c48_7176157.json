@@ -1,0 +1,40 @@
+{
+  "uuid": "_a-0000ea54-a449-8000-9ca2-011c48011c48_7176157",
+  "name": "AS_GAM_DPL_CO_CP_dropdownField",
+  "type": "Interface",
+  "description": "The generic single select dropdown field that handles read-only logic dynamically for AM Application.\n\nFor instances where a custom value should be displayed when the component is read-only, pass it into the \"readOnlyValue\" input.",
+  "sail_code": "a!localVariables(\n  local!displayValue: displayvalue(\n    ri!value,\n    ri!choiceValues,\n    ri!choiceLabels,\n    null\n  ),\n  if(\n    ri!readOnly,\n    rule!AS_CO_DSP_standardReadOnlyField(\n      label: ri!label,\n      instructions: ri!instructions,\n      value: if(\n        isnull(ri!readOnlyValue),\n        local!displayValue,\n        ri!readOnlyValue\n      ),\n      labelPosition: ri!labelPosition,\n      helpTooltip: ri!helpTooltip,\n      showWhen: ri!showWhen,\n      accessibilityText: ri!accessibilityText\n    ),\n    #\"SYSTEM_SYSRULES_dropdownField_v1\"(\n      label: ri!label,\n      labelPosition: rule!AS_CO_UT_getLabelPosition(\n        label: ri!label,\n        labelPosition: ri!labelPosition,\n        readOnly: ri!readOnly\n      ),\n      instructions: ri!instructions,\n      helpTooltip: ri!helpTooltip,\n      placeholder: if(\n        ri!noPlaceholderLabel,\n        null,\n        rule!AS_CO_UT_formatFieldEntryPlaceHolder(\n          placeholder: rule!AS_CO_UT_replaceNull(\n            nullableValue: ri!placeholderLabel,\n            replacementValue: rule!AS_CO_UT_displayCommonObjectBundleLabel(\n              bundleKey: \"AS.CO.CommonObjects.lbl_co_2\"\n            )\n          ),\n          wrapInMarkers: false()\n        )\n      ),\n      choiceLabels: ri!choiceLabels,\n      choiceValues: ri!choiceValues,\n      value: if(\n        isnull(local!displayValue),\n        null,\n        ri!value\n      ),\n      saveInto: ri!saveInto,\n      showWhen: if(isnull(ri!showWhen), true, ri!showWhen),\n      required: if(ri!readOnly, false, ri!required),\n      requiredMessage: rule!AS_CO_UT_displayRequiredMessage(\n        label: ri!label,\n        requiredMessage: ri!requiredMessage\n      ),\n      disabled: ri!disabled,\n      validations: ri!validations,\n      validationGroup: ri!validationGroup,\n      accessibilityText: ri!accessibilityText\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_DSP_standardReadOnlyField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_getLabelPosition",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_formatFieldEntryPlaceHolder",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_displayCommonObjectBundleLabel",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_displayRequiredMessage",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

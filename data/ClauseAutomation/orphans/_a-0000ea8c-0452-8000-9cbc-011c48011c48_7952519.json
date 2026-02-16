@@ -1,0 +1,35 @@
+{
+  "uuid": "_a-0000ea8c-0452-8000-9cbc-011c48011c48_7952519",
+  "name": "AS_GCM_CPS_ruleConditionClauseSetType",
+  "type": "Interface",
+  "description": "Component for rule condition clause set type",
+  "sail_code": "a!localVariables(\n  local!value: if(\n    a!isNullOrEmpty(\n      ri!ruleCondition[recordType!AS GCM QNM T Rule Condition.value]\n    ),\n    null,\n    #\"SYSTEM_SYSRULES_fromJson_v1\"(\n      ri!ruleCondition[recordType!AS GCM QNM T Rule Condition.value]\n    )\n  ),\n  rule!AS_GCM_DPL_CO_dropdownField(\n    label: if(ri!readOnly,\"\",\"Value\"),\n    labelPosition: if(ri!readOnly,\"COLLAPSED\",\"ABOVE\",),\n    required: true,\n    placeholder: \"Choose Clause Set Type\",\n    choiceLabels: rule!AS_GAM_translateMultipleBundleKeys(\n      bundle: ri!bundle,\n      bundleKeys: ri!refData.refKey\n    ),\n    choiceValues: ri!refData.refDataId,\n    readOnly: ri!readOnly,\n    value: local!value,\n    saveInto: {\n      local!value,\n      a!save(\n        ri!ruleCondition[recordType!AS GCM QNM T Rule Condition.value],\n        local!value\n      ),\n      ri!additionalSaves\n    }\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GCM_DPL_CO_dropdownField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_translateMultipleBundleKeys",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QR_getRefData",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_REF_TYPE_CLAUSE_SET_TYPE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

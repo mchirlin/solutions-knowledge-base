@@ -1,0 +1,2589 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "AS GCM R Clause - \"\"",
+    "parent_name": "AS GCM R Clause",
+    "total_objects": 153
+  },
+  "entry_point": {
+    "action_type": "RECORD_ACTION",
+    "record_type": "AS GCM R Clause",
+    "target_process": "AS GCM Clause Acqusition.gov Manual Sync",
+    "form_interface": null,
+    "expressions": {
+      "TITLE": "\"\"",
+      "DESCRIPTION": null,
+      "VISIBILITY": "and(\n  #\"urn:appian:function:v1:a:isusermemberofgroup?okey=a!isUserMemberOfGroup\"(\n    loggedInUser(),\n    cons!AS_GCM_GRP_ALL_BUSINESS_USERS\n  ),\n  a!match(\n    value: rv!record[recordType!AS GCM R Clause.refSourceId],\n    whenTrue: rv!record[recordType!AS GCM R Clause.deviation],\n    then: false,\n    equals: cons!AS_GCM_REF_ID_SOURCE_FAR,\n    then: rule!AS_GCM_FAR_GithubSyncEnabled_wrapper() = true(),\n    equals: cons!AS_GCM_REF_ID_SOURCE_DFARS,\n    then: rule!AS_GCM_DFARS_GithubSyncEnabled_wrapper() = true(),\n    default: false\n  )\n)",
+      "CONTEXT": "{\n  refClause: rule!AS_GCM_QR_getRefClause(\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT,\n    clauseIds: rv!identifier\n  ),\n  refClauseText: rule!AS_GCM_QE_getRefClauseTexts(\n    clauseId: rv!identifier,\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT\n  )/* AS_GCM_R_Clause_Texts */\n\n}"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GCM Clause Acqusition.gov Manual Sync",
+      "complexity_score": 40.0,
+      "total_nodes": 19,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Source = FAR?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Delete Acquisition Helper Data",
+          "type": "Delete Records",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Nullify original PVs",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Delete Acquisition Helper/Documents?"
+          ]
+        },
+        {
+          "name": "Write ClauseText",
+          "type": "Write to Data Store Entity",
+          "next": [
+            "Capture Audit"
+          ]
+        },
+        {
+          "name": "Capture Audit",
+          "type": "Write to Multiple DSE",
+          "next": [
+            "Confirmation page"
+          ]
+        },
+        {
+          "name": "Source = FAR?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Get FARmatrix File (Yes)",
+            "Sync DFARS Clause"
+          ]
+        },
+        {
+          "name": "Sync DFARS Clause",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Error?"
+          ]
+        },
+        {
+          "name": "Delete Documents",
+          "type": "Delete Document",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Delete Acquisition Helper/Documents?",
+          "type": "OR_GATEWAY",
+          "next": [
+            "Delete Acquisition Helper Data",
+            "End Node",
+            "Delete Documents"
+          ]
+        },
+        {
+          "name": "Write Clause",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write ClauseText"
+          ]
+        },
+        {
+          "name": "Save Metrics - Successfull",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Confirmation page"
+          ]
+        },
+        {
+          "name": "Save Metrics - Failed",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Confirmation page"
+          ]
+        },
+        {
+          "name": "Update via Smart Matrix",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Error?"
+          ]
+        },
+        {
+          "name": "Error?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Save Metrics - Failed (Yes)",
+            "Set Meta Data (No error/data updated)",
+            "Save Metrics - Successfull (no error/no data updated)"
+          ]
+        },
+        {
+          "name": "Confirmation page",
+          "type": "USER_TASK",
+          "next": [
+            "Nullify original PVs"
+          ],
+          "interface": "AS_GCM_FM_syncClauseToAcquisitionGovConfirmationScreen"
+        },
+        {
+          "name": "Get FARmatrix File",
+          "type": "Call Integration",
+          "next": [
+            "Get FAR.ditamap File"
+          ]
+        },
+        {
+          "name": "Get FAR.ditamap File",
+          "type": "Call Integration",
+          "next": [
+            "Update via Smart Matrix"
+          ]
+        },
+        {
+          "name": "Set Meta Data",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write Clause"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1166401",
+      "name": "AS GCM Github",
+      "type": "Connected System",
+      "description": "Connected system for GSA Github ",
+      "system_type": null,
+      "base_url": "https://api.github.com/repos/",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_INT_getAcquisitionDocumentHtml",
+        "AS_GCM_INT_getAcquisitionGitTree"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_181584-adt",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_ADD",
+      "type": "Constant",
+      "description": "ADD - used by the auditing module",
+      "value": "ADD",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_determineAuditActionCode"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_181602-adt",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_DEACTIVATE",
+      "type": "Constant",
+      "description": "DEACTIVATE - used by the auditing module",
+      "value": "DEACTIVATE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_determineAuditActionCode"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_181590-adt",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_DELETE",
+      "type": "Constant",
+      "description": "DELETE - used by the auditing module",
+      "value": "DELETE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_determineAuditActionCode"
+      ]
+    },
+    {
+      "uuid": "_a-0000e583-8ce5-8000-9bb7-011c48011c48_810929",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_INITIATED",
+      "type": "Constant",
+      "description": "INITIATED - used by the auditing module",
+      "value": "INITIATED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject"
+      ]
+    },
+    {
+      "uuid": "_a-0000e69a-ff03-8000-9bd0-011c48011c48_1592551",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_MANUAL_SYNC",
+      "type": "Constant",
+      "description": "Audit Action Code - \"MANUAL_SYNC\"\nAction Code to track that the clause is modified using manual sync",
+      "value": "MANUAL_SYNC",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM Clause Acqusition.gov Manual Sync",
+        "AS_ADT_UT_calculateAudit_SingleObject"
+      ]
+    },
+    {
+      "uuid": "_a-0000e4ea-0367-8000-9ba7-011c48011c48_308539",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_MANUAL_UPDATE",
+      "type": "Constant",
+      "description": "MANUAL UPDATE - used by the auditing module",
+      "value": "MANUAL_UPDATE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_181596-adt",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_MODIFY",
+      "type": "Constant",
+      "description": "MODIFY - used by the auditing module",
+      "value": "MODIFY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_ADT_UT_determineAuditActionCode"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_181608-adt",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_REACTIVATE",
+      "type": "Constant",
+      "description": "REACTIVATE - used by the auditing module",
+      "value": "REACTIVATE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_determineAuditActionCode"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_232728-adt",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_UNCHANGED",
+      "type": "Constant",
+      "description": "UNCHANGED - used by the auditing module",
+      "value": "UNCHANGED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290163",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "description": "OBJECT_ARRAY - Returns an array type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "OBJECT_ARRAY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_QE_getRefClauseTexts",
+        "AS_GCM_QR_getRefClause",
+        "AS_GCM_QR_getReferenceSectionData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290157",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "description": "SINGLE_OBJECT - Returns a single type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "SINGLE_OBJECT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290175",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+      "type": "Constant",
+      "description": "TOTAL_COUNT - Returns an Integer when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "TOTAL_COUNT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_GCM_QR_getRefClause"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73173",
+      "name": "AS_CO_ENUM_USER_ACTION_CANCEL",
+      "type": "Constant",
+      "description": "CANCEL.USER_ACTION - Value to use to drive process logic after a user performs a \"Cancel\" action",
+      "value": "CANCEL.USER_ACTION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FM_syncClauseToAcquisitionGovConfirmationScreen"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5d4-2024-8000-9baf-011c48011c48_336091",
+      "name": "AS_FRM_BOOL_RULE_CUSTOMIZATION_1_0_ENABLED",
+      "type": "Constant",
+      "description": "Returns true if customizable rules using the 1.0 SDK is enabled",
+      "value": "true",
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "AS_FRM_determineRuntimeRule"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_941756",
+      "name": "AS_GAM_ADT_TXT_AUDIT_TYPE_ACTION_ONLY",
+      "type": "Constant",
+      "description": "Value: ACTION_ONLY",
+      "value": "ACTION_ONLY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GAM_ADT_UT_buildAuditEntityData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_941763",
+      "name": "AS_GAM_ADT_TXT_AUDIT_TYPE_MANIPULATION",
+      "type": "Constant",
+      "description": "Value: MANIPULATION",
+      "value": "MANIPULATION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GAM_ADT_UT_buildAuditEntityData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6ec-ba89-8000-9be2-011c48011c48_1918759",
+      "name": "AS_GCM_CLAUSE_TITLE_ALTERNATE",
+      "type": "Constant",
+      "description": "Clause Title: Alternate ",
+      "value": "Alternate",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FAR_getFarMatrixData",
+        "AS_GCM_UT_fetchAlternateValueFromClauseTitle"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6ec-ba89-8000-9be2-011c48011c48_1937803",
+      "name": "AS_GCM_CLAUSE_TITLE_ALTERNATE_WITH_ROMAN_NUMBERS",
+      "type": "Constant",
+      "description": "Clause Title: Alternate I, II, III, IV & V",
+      "value": [
+        "Alternate I",
+        "Alternate II",
+        "Alternate III",
+        "Alternate IV",
+        "Alternate V"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FAR_updateAlternateClausesEffectiveDateFromSync",
+        "AS_GCM_FAR_updateEffectiveDateFromSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6ec-ba89-8000-9be2-011c48011c48_1939400",
+      "name": "AS_GCM_CLAUSE_TITLE_ROMAN_NUMBERS_FOR_ALTERNATE",
+      "type": "Constant",
+      "description": "Clause Title:  I, II, III , IV & V",
+      "value": [
+        "I",
+        "II",
+        "III",
+        "IV",
+        "V"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FAR_updateAlternateClausesEffectiveDateFromSync",
+        "AS_GCM_FAR_updateEffectiveDateFromSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1174819",
+      "name": "AS_GCM_ENT_R_A_R_CLAUSE",
+      "type": "Constant",
+      "description": "Value: AS_GCM_R_A_R_Clause",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_captureAuditForRefClauseAndClauseText",
+        "AS_GCM_UT_refClauseStartAuditProcess_Parameters"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1529547",
+      "name": "AS_GCM_ENT_R_CLAUSE_TEXTS",
+      "type": "Constant",
+      "description": "Value: AS_GCM_R_Clause_Texts",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS GCM Clause Acqusition.gov Manual Sync",
+        "AS_GCM_QE_getRefClauseTexts"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_51507",
+      "name": "AS_GCM_GRP_ALL_BUSINESS_USERS",
+      "type": "Constant",
+      "description": "Value: AS GCM All Business users",
+      "value": "AS GCM All Business Users",
+      "value_type": "http://www.appian.com/ae/types/2009:Group",
+      "calls": [],
+      "called_by": []
+    },
+    {
+      "uuid": "_a-0000ed9c-6a3c-8000-9e00-011c48011c48_15616071",
+      "name": "AS_GCM_REF_ID_CONTRACT_FORMAT_UCF",
+      "type": "Constant",
+      "description": "Contains Ref data Id for UCF contract format\nValue: 114",
+      "value": "114",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_mapFarMatrixValuesToAssociatedClauseFieldValues",
+        "AS_GCM_FAR_updateClauseDetailsFromManualSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e69a-ff03-8000-9bd0-011c48011c48_1621530",
+      "name": "AS_GCM_REF_ID_FORMAT_FULL_TEXT",
+      "type": "Constant",
+      "description": "Value: 6\nNote: It was formerly AS_GCM_REF_ID_FORMAT_UCF. Its renamed because of ref_label change in AS_GCM_R_DATA table.",
+      "value": "6",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_mapFarMatrixValuesToAssociatedClauseFieldValues"
+      ]
+    },
+    {
+      "uuid": "_a-0000e69a-ff03-8000-9bd0-011c48011c48_1621523",
+      "name": "AS_GCM_REF_ID_FORMAT_IBR",
+      "type": "Constant",
+      "description": "Value: 7",
+      "value": "7",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_mapFarMatrixValuesToAssociatedClauseFieldValues"
+      ]
+    },
+    {
+      "uuid": "_a-0000ebbc-9d1b-8000-9d4f-011c48011c48_11588649",
+      "name": "AS_GCM_REF_ID_SOURCE_DFARS",
+      "type": "Constant",
+      "description": "Value: 112",
+      "value": "112",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_doesClauseHtmlDocExist",
+        "AS_GCM_BL_doesClausePrescriptionHtmlDocExist",
+        "AS_GCM_DFARS_updateClauseDetailsFromManualSync",
+        "AS_GCM_FM_syncClauseToAcquisitionGovConfirmationScreen",
+        "AS_GCM_GetShaValuesByFileNames"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1308525",
+      "name": "AS_GCM_REF_ID_SOURCE_FAR",
+      "type": "Constant",
+      "description": "Value: 1",
+      "value": "1",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM Clause Acqusition.gov Manual Sync",
+        "AS_GCM_BL_PerformSyncTimeClauseTextManipulations",
+        "AS_GCM_BL_doesClauseHtmlDocExist",
+        "AS_GCM_BL_doesClausePrescriptionHtmlDocExist",
+        "AS_GCM_BL_retrieveTextFromHtmlDocument",
+        "AS_GCM_FAR_getFarMatrixData",
+        "AS_GCM_FAR_updateClauseDetailsFromManualSync",
+        "AS_GCM_GetShaValuesByFileNames",
+        "AS_GCM_INT_getAcquisitionDocumentHtml",
+        "AS_GCM_INT_getAcquisitionGitTree",
+        "AS_GCM_getFarMatrixAppianDocumentsFileName"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1262107",
+      "name": "AS_GCM_REF_ID_TYPE_CLAUSE",
+      "type": "Constant",
+      "description": "Value: 4",
+      "value": "4",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_mapFarMatrixValuesToAssociatedClauseFieldValues",
+        "AS_GCM_DFARS_getRefTypeFromSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1262114",
+      "name": "AS_GCM_REF_ID_TYPE_PROVISION",
+      "type": "Constant",
+      "description": "Value: 5",
+      "value": "5",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_mapFarMatrixValuesToAssociatedClauseFieldValues",
+        "AS_GCM_DFARS_getRefTypeFromSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1491814",
+      "name": "AS_GCM_REF_ID_USAGE_APPLICABLE",
+      "type": "Constant",
+      "description": "Ref ID: Applicable - 9",
+      "value": "9",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_mapFarMatrixValuesToAssociatedClauseFieldValues"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1491822",
+      "name": "AS_GCM_REF_ID_USAGE_OPTIONAL",
+      "type": "Constant",
+      "description": "Ref ID: Optional - 10",
+      "value": "10",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_mapFarMatrixValuesToAssociatedClauseFieldValues"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1409860",
+      "name": "AS_GCM_REF_ID_USAGE_REQUIRED",
+      "type": "Constant",
+      "description": "Ref ID: Required - 8",
+      "value": "8",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_mapFarMatrixValuesToAssociatedClauseFieldValues"
+      ]
+    },
+    {
+      "uuid": "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1166940",
+      "name": "AS_GCM_SPECIAL_CHARACTERS",
+      "type": "Constant",
+      "description": "Special characters list for validations",
+      "value": [
+        ",",
+        ".",
+        "/",
+        ";",
+        "'",
+        ":",
+        "\"",
+        "<",
+        ">",
+        "?",
+        "[",
+        "]",
+        "{",
+        "}",
+        "|",
+        "\\",
+        "!",
+        "@",
+        "#",
+        "$",
+        "%",
+        "^",
+        "&",
+        "*",
+        "(",
+        ")",
+        "-",
+        "=",
+        "_",
+        "+",
+        "`",
+        "~"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FAR_updateAlternateClausesEffectiveDateFromSync",
+        "AS_GCM_FAR_updateEffectiveDateFromSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e915-02bc-8000-9c1f-011c48011c48_4012496",
+      "name": "AS_GCM_TXT_ACQUISITION_REQUIRED_CLAUSES_COLUMN_HEADERS_FOR_SYNC",
+      "type": "Constant",
+      "description": "Required headers from the GitHub repo file for the sync to be successful",
+      "value": [
+        "PROVISION OR CLAUSE",
+        "PRESCRIBED IN",
+        "P OR C",
+        "IBR",
+        "UCF",
+        "FP SUP",
+        "CR SUP",
+        "FP R&D",
+        "CR R&D",
+        "FP SVC",
+        "CR SVC",
+        "FP CON",
+        "CR CON",
+        "T&M LH",
+        "LMV",
+        "COM SVC",
+        "DDR",
+        "A&E",
+        "FAC",
+        "IND DEL",
+        "TRN",
+        "SAP",
+        "UTL SVC",
+        "CP/CS"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FAR_getFarMatrixData"
+      ]
+    },
+    {
+      "uuid": "_a-0000eae8-4d66-8000-9ce8-011c48011c48_9013443",
+      "name": "AS_GCM_TXT_FILL_IN_TYPE_CHECKBOX",
+      "type": "Constant",
+      "description": "Value: Checkbox",
+      "value": "Checkbox",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_PerformSyncTimeClauseTextManipulations"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-79a3-8000-7714-45ef9045ef90_8682-adt",
+      "name": "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+      "type": "Expression Rule",
+      "description": "Audit config for the AS_ADT_SAMPLE_Parent CDT",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit",
+        "AS_ADT_UT_calculateAudit_MultipleObjects",
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_ADT_UT_determineAuditActionCode",
+        "AS_GAM_ADT_UT_buildAuditEntityData",
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructManipulatedAuditData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_237233-adt",
+      "name": "AS_ADT_UT_buildSimpleFieldChanges",
+      "type": "Expression Rule",
+      "description": "Given a list of simple fields from an auditing configuration, an old object, and a new object, returns  list of simple field dictionaries which can be cast to the simple field auditing type of any complex auditing object.",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_UT_buildSimpleFieldChangesDictionary"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_162005-adt",
+      "name": "AS_ADT_UT_buildSimpleFieldChangesDictionary",
+      "type": "Expression Rule",
+      "description": "Given the fieldName, original object, and the new object, determines if a simple field change was made, returning {} if not, and returning a dictionary representation of the simple field audit if so.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_compare",
+        "AS_CO_UT_dynamicDictionary",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_toString"
+      ],
+      "called_by": [
+        "AS_ADT_UT_buildSimpleFieldChanges"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_161361-adt",
+      "name": "AS_ADT_UT_calculateAudit",
+      "type": "Expression Rule",
+      "description": "Primary rule to calculate audits between old and new objects (handles arrays or single objects)",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_ADT_UT_calculateAudit_MultipleObjects"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_buildFieldLevelAuditEntityData",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_165782-adt",
+      "name": "AS_ADT_UT_calculateAudit_MultipleObjects",
+      "type": "Expression Rule",
+      "description": "[DO NOT CALL DIRECTLY] Calculates audit CDTs for an array of original and new objects",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_CO_UT_distinct",
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit",
+        "AS_ADT_UT_calculateAudit_SingleObject"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_165180-adt",
+      "name": "AS_ADT_UT_calculateAudit_SingleObject",
+      "type": "Expression Rule",
+      "description": "[DO NOT CALL DIRECTLY] Calculates audit CDTs for a single of original and new object",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_INITIATED",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_MANUAL_SYNC",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_MANUAL_UPDATE",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_MODIFY",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_UNCHANGED",
+        "AS_ADT_UT_buildSimpleFieldChanges",
+        "AS_ADT_UT_calculateAudit_MultipleObjects",
+        "AS_ADT_UT_determineAuditActionCode",
+        "AS_CO_UT_compareStrong",
+        "AS_CO_UT_dynamicDictionary",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_not",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_updateCdtFields"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_MultipleObjects"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_161958-adt",
+      "name": "AS_ADT_UT_determineAuditActionCode",
+      "type": "Expression Rule",
+      "description": "Given a newObject, an oldObject, and the auditConfig, determines the auditActionCode",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_ADD",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_DEACTIVATE",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_DELETE",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_MODIFY",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_REACTIVATE",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-91f4-8000-9bc0-011c48011c48_584965-adt",
+      "name": "AS_ADT_UT_startAuditProcess_Parameters",
+      "type": "Expression Rule",
+      "description": "Populated the parameters for starting the audit process",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_getTypeNamespace",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_returnArrayTypeNumber",
+        "AS_CO_UT_returnTypeNumber"
+      ],
+      "called_by": [
+        "AS_GCM_UT_refClauseStartAuditProcess_Parameters"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_291284",
+      "name": "AS_CO_CONS_PRIMITIVE_TYPE_ARRAY",
+      "type": "Expression Rule",
+      "description": "Array of type numbers of primitive types (1 text, 2 int, 3 dec, 4 boolean, 5 date, 6 datetime, 7 time, 8 user, 9 group, 10 user or group, 11 document, 12 folder)",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_zINTERNAL_returnCdtFields_primitiveTypeCheckHandler"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39070",
+      "name": "AS_CO_UT_booleanDefaultFalse",
+      "type": "Expression Rule",
+      "description": "Default a null value to false, otherwise returns the boolean value",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_displayValueMultiple",
+        "AS_CO_UT_not",
+        "AS_GCM_QR_getRefClause"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157603",
+      "name": "AS_CO_UT_cast",
+      "type": "Expression Rule",
+      "description": "Casts a variable to the type of either the input `type`, or the typeof of the input `typeof`, and properly handles for null inputs",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_returnTypeNumber"
+      ],
+      "called_by": [
+        "AS_ADT_UT_startAuditProcess_Parameters",
+        "AS_CO_UT_initializeBlankLocalVariable",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_returnArrayTypeNumber",
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructManipulatedAuditData",
+        "AS_GCM_BL_constructHelperForRefClauseAndClauseTexts",
+        "AS_GCM_setMetaDataForRefClauseTextCdt"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_279147",
+      "name": "AS_CO_UT_castToDictionary",
+      "type": "Expression Rule",
+      "description": "Casts the input to dictionary, either a list or a non-list depending on the input",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_292117",
+      "name": "AS_CO_UT_castToDictionaryList",
+      "type": "Expression Rule",
+      "description": "Casts the input to a dictionary list",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GCM_UT_regexsearch"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73624",
+      "name": "AS_CO_UT_compare",
+      "type": "Expression Rule",
+      "description": "Compares two values and returns true if both the content of the values match (regardless of type).",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_buildSimpleFieldChangesDictionary",
+        "AS_GCM_DFARS_updateClauseDetailsFromManualSync",
+        "AS_GCM_FAR_updateClauseDetailsFromManualSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_243040",
+      "name": "AS_CO_UT_compareStrong",
+      "type": "Expression Rule",
+      "description": "Compares two values and returns true if both the values and their types match.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_typeCompare"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_187421",
+      "name": "AS_CO_UT_displayValue",
+      "type": "Expression Rule",
+      "description": "Executes displayValue, but allows setting the default to either the first or last value of the replacement list, or a custom value",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_displayValueMultiple",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_BL_doesClauseHtmlDocExist",
+        "AS_GCM_BL_doesClausePrescriptionHtmlDocExist",
+        "AS_GCM_BL_mapFarMatrixHeadersToClauseFields",
+        "AS_GCM_BL_mapFarMatrixValuesToAssociatedClauseFieldValues",
+        "AS_GCM_getDitaTree",
+        "AS_GCM_getFarMatrixColumnHeadersByKeys"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_41232",
+      "name": "AS_CO_UT_displayValueMultiple",
+      "type": "Expression Rule",
+      "description": "For each item in the values list, executes displayValue.  Allows setting the default to either the first or last value of the replacement list, or a custom value.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_booleanDefaultFalse",
+        "AS_CO_UT_displayValue",
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_GCM_GetShaValuesByFileNames",
+        "AS_GCM_getFarMatrixColumnHeadersByKeys"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73758",
+      "name": "AS_CO_UT_distinct",
+      "type": "Expression Rule",
+      "description": "Returns the distinct values from a list.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_MultipleObjects",
+        "AS_GCM_DFARS_getAlternateValuesFromSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73856",
+      "name": "AS_CO_UT_dynamicDictionary",
+      "type": "Expression Rule",
+      "description": "Creates a dictionary based on the provided field-value pairs. An example implementation is provided as a test case. Returns a dictionary.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_returnNullDictionary",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs"
+      ],
+      "called_by": [
+        "AS_ADT_UT_buildSimpleFieldChangesDictionary",
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_GAM_ADT_UT_constructActionOnlyAuditData",
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75800",
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "description": "Filters a CDT by a matching a single value or list of values in a single field, if a list is passed, all matches are returned",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_returnCdtIndicesByField"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_MultipleObjects",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GCM_BL_constructHelperForRefClauseAndClauseTexts",
+        "AS_GCM_FAR_getFarMatrixData",
+        "AS_GCM_getFileDataViaZipDocumentOrGitHub"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_174191",
+      "name": "AS_CO_UT_getTypeNamespace",
+      "type": "Expression Rule",
+      "description": "Returns the namespace from the type! input",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_startAuditProcess_Parameters"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76433",
+      "name": "AS_CO_UT_indexPath",
+      "type": "Expression Rule",
+      "description": "Pass in a field (i.e. member[1].name) and this will index(index(index( for each field",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_buildSimpleFieldChangesDictionary",
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_CO_UT_returnCdtIndicesByField",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GCM_UT_nullifyEmptyNestedCdtFields",
+        "AS_GCM_getDitaTree"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3d1-f4dc-8000-9ba4-011c48011c48_143475",
+      "name": "AS_CO_UT_initializeBlankLocalVariable",
+      "type": "Expression Rule",
+      "description": "Use this to initialize a null or empty local variable of a specific type. Pass `type` to initialize as a specific type, or `typeOf` to initialize as the type of another variable.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast"
+      ],
+      "called_by": [
+        "AS_GCM_BL_constructHelperForRefClauseAndClauseTexts"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_MultipleObjects",
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_ADT_UT_determineAuditActionCode",
+        "AS_CO_UT_castToDictionary",
+        "AS_CO_UT_castToDictionaryList",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectCdtByField",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_updateCdtFields",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+        "AS_CO_UT_whereContains",
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GAM_UT_ArrayLength",
+        "AS_GCM_BL_PerformSyncTimeClauseTextManipulations",
+        "AS_GCM_BL_doesClauseHtmlDocExist",
+        "AS_GCM_BL_doesClausePrescriptionHtmlDocExist",
+        "AS_GCM_BL_getHeaderFromFarMatrixData",
+        "AS_GCM_BL_retrieveTextFromHtmlDocument",
+        "AS_GCM_DFARS_updateClauseDetailsFromManualSync",
+        "AS_GCM_DFARS_updateEffectiveDateFromSync",
+        "AS_GCM_FAR_updateAlternateClausesEffectiveDateFromSync",
+        "AS_GCM_FAR_updateClauseDetailsFromManualSync",
+        "AS_GCM_FAR_updateEffectiveDateFromSync",
+        "AS_GCM_UT_captureAuditForRefClauseAndClauseText",
+        "AS_GCM_UT_nullifyEmptyNestedCdtFields",
+        "AS_GCM_dropNonWritableRelationshipsFromRecord_Reducer",
+        "AS_GCM_mergeWriteRecordIdsToProcessVariable",
+        "AS_GCM_substituteListFromTextUsingReduce"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around AS_CO_UT_isBlank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS GCM Clause Acqusition.gov Manual Sync",
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_ADT_UT_determineAuditActionCode",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_displayValueMultiple",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GAM_ADT_UT_constructActionOnlyAuditData",
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructManipulatedAuditData",
+        "AS_GCM_DFARS_updateClauseDetailsFromManualSync",
+        "AS_GCM_DFARS_updateEffectiveDateFromSync",
+        "AS_GCM_FAR_getFarMatrixData",
+        "AS_GCM_FAR_updateClauseDetailsFromManualSync",
+        "AS_GCM_FAR_updateEffectiveDateFromSync",
+        "AS_GCM_QE_getRefClauseTexts",
+        "AS_GCM_QR_getRefClause",
+        "AS_GCM_QR_getReferenceSectionData",
+        "AS_GCM_dropNonWritableRelationshipsFromRecord_Reducer"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75636",
+      "name": "AS_CO_UT_not",
+      "type": "Expression Rule",
+      "description": "Null handles for not -- null returns true (null acts like false)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_booleanDefaultFalse"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157870",
+      "name": "AS_CO_UT_queryEntity",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_displayValue",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_returnArrayTypeNumber",
+        "AS_CO_UT_returnCdtFields"
+      ],
+      "called_by": [
+        "AS_GCM_QE_getRefClauseTexts"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6c8-d132-8000-9bbe-011c48011c48_469266",
+      "name": "AS_CO_UT_queryRecord",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_displayValue",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_returnArrayTypeNumber",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs"
+      ],
+      "called_by": [
+        "AS_GCM_QR_getRefClause",
+        "AS_GCM_QR_getReferenceSectionData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_271202",
+      "name": "AS_CO_UT_rejectCdtByField",
+      "type": "Expression Rule",
+      "description": "Removes CDT indices where a match of a single value or list of values in a single field is found, if a list is passed, all matches are rejected",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_returnCdtIndicesByField"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367",
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_BL_getRowsFromFarMatrixData",
+        "AS_GCM_FAR_updateClauseDetailsFromManualSync",
+        "AS_GCM_FM_syncClauseToAcquisitionGovConfirmationScreen",
+        "AS_GCM_QR_getRefClause",
+        "AS_GCM_UT_fetchAlternateValueFromClauseTitle",
+        "AS_GCM_setRecordFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73980",
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "description": "Returns nullableValue only if it is not null. Else returns replacementValue.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_ADT_UT_startAuditProcess_Parameters",
+        "AS_CO_UT_queryEntity",
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GCM_FAR_updateClauseDetailsFromManualSync",
+        "AS_GCM_QR_getReferenceSectionData",
+        "AS_GCM_setRecordFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39610",
+      "name": "AS_CO_UT_returnArrayTypeNumber",
+      "type": "Expression Rule",
+      "description": "Returns the array type number from the input type. If type number being passed is already that of a array, returns the same number.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast"
+      ],
+      "called_by": [
+        "AS_ADT_UT_startAuditProcess_Parameters",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75660",
+      "name": "AS_CO_UT_returnCdtFields",
+      "type": "Expression Rule",
+      "description": "Returns an array of a CDTs fields. Note that this only works on Appian CDTs, not Dictionary or List of Variant",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_returnSingleTypeObject",
+        "AS_CO_UT_zINTERNAL_returnCdtFields_handler",
+        "AS_CO_UT_zINTERNAL_returnCdtFields_primitiveTypeCheckHandler"
+      ],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_GCM_UT_nullifyEmptyNestedCdtFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_269546",
+      "name": "AS_CO_UT_returnCdtIndicesByField",
+      "type": "Expression Rule",
+      "description": "Returns the indices of a CDT by a matching a single value or list of values in a single field, if a list is passed, all matches are returned",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_whereContains"
+      ],
+      "called_by": [
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_rejectCdtByField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_101148",
+      "name": "AS_CO_UT_returnNullDictionary",
+      "type": "Expression Rule",
+      "description": "Returns a null dictionary",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_dynamicDictionary"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75842",
+      "name": "AS_CO_UT_returnSingleTypeObject",
+      "type": "Expression Rule",
+      "description": "Takes in either an array type or a primitive type and returns the singular type object, works for CDTs or primitive types",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_returnCdtFields",
+        "AS_CO_UT_zINTERNAL_returnCdtFields_handler"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157503",
+      "name": "AS_CO_UT_returnTypeNumber",
+      "type": "Expression Rule",
+      "description": "Returns the typeNumber of either `type` or `typeOf`",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_startAuditProcess_Parameters",
+        "AS_CO_UT_cast"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_112825",
+      "name": "AS_CO_UT_toString",
+      "type": "Expression Rule",
+      "description": "casts a value to a string with correct handling for integer and decimal formatting",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_buildSimpleFieldChangesDictionary"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_162769",
+      "name": "AS_CO_UT_typeCompare",
+      "type": "Expression Rule",
+      "description": "Returns true if the two input types match",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_compareStrong",
+        "AS_CO_UT_whereContains",
+        "AS_CO_UT_zINTERNAL_returnCdtFields_primitiveTypeCheckHandler",
+        "AS_GCM_DFARS_GithubSyncEnabled_wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_260165",
+      "name": "AS_CO_UT_updateCdtFields",
+      "type": "Expression Rule",
+      "description": "Updates one or more fields of a CDT, with an optional input for indices",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GCM_FAR_getFarMatrixData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_269170",
+      "name": "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+      "type": "Expression Rule",
+      "description": "Allows passing field-value pairs to handle for use cases where you have to set newValues as arrays",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_dynamicDictionary",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_DFARS_updateClauseDetailsFromManualSync",
+        "AS_GCM_FAR_updateClauseDetailsFromManualSync",
+        "AS_GCM_UT_nullifyEmptyNestedCdtFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_272151",
+      "name": "AS_CO_UT_whereContains",
+      "type": "Expression Rule",
+      "description": "Enhanced wherecontains() which avoids type-casting issues and properly handles for document and group types",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_typeCompare"
+      ],
+      "called_by": [
+        "AS_CO_UT_returnCdtIndicesByField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_291236",
+      "name": "AS_CO_UT_zINTERNAL_returnCdtFields_handler",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_CO_UT_returnCdtFields`",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_returnSingleTypeObject"
+      ],
+      "called_by": [
+        "AS_CO_UT_returnCdtFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e36c-7599-8000-9ba2-011c48011c48_64438",
+      "name": "AS_CO_UT_zINTERNAL_returnCdtFields_primitiveTypeCheckHandler",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_CO_UT_returnCdtFields`",
+      "parameters": [],
+      "calls": [
+        "AS_CO_CONS_PRIMITIVE_TYPE_ARRAY",
+        "AS_CO_UT_typeCompare"
+      ],
+      "called_by": [
+        "AS_CO_UT_returnCdtFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5d4-2024-8000-9baf-011c48011c48_320878",
+      "name": "AS_FRM_determineRuntimeRule",
+      "type": "Expression Rule",
+      "description": "Returns the runtime rule for a default rule, uses plugin function `determineRuntimeRule()`",
+      "parameters": [],
+      "calls": [
+        "AS_FRM_BOOL_RULE_CUSTOMIZATION_1_0_ENABLED"
+      ],
+      "called_by": [
+        "AS_GCM_DFARS_GithubSyncEnabled_wrapper",
+        "AS_GCM_FAR_GithubSyncEnabled_wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_958752",
+      "name": "AS_GAM_ADT_UT_buildAuditEntityData",
+      "type": "Expression Rule",
+      "description": "Rule to build audit data for GAM",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_GAM_ADT_TXT_AUDIT_TYPE_ACTION_ONLY",
+        "AS_GAM_ADT_TXT_AUDIT_TYPE_MANIPULATION",
+        "AS_GAM_ADT_UT_buildFieldLevelAuditEntityData",
+        "AS_GAM_ADT_UT_constructActionOnlyAuditData",
+        "AS_GAM_ADT_UT_constructManipulatedAuditData"
+      ],
+      "called_by": [
+        "AS_GCM_UT_captureAuditForRefClauseAndClauseText"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_981349",
+      "name": "AS_GAM_ADT_UT_buildFieldLevelAuditEntityData",
+      "type": "Expression Rule",
+      "description": "Calculates the field level entity data to write for GAM",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_UT_calculateAudit"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_buildAuditEntityData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_936427",
+      "name": "AS_GAM_ADT_UT_constructActionOnlyAuditData",
+      "type": "Expression Rule",
+      "description": "Rule to construct action only audit data",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_dynamicDictionary",
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_buildAuditEntityData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_983591",
+      "name": "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+      "type": "Expression Rule",
+      "description": "Rule to construct dynamic dictionary for Manipulated audit",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_castToDictionaryList",
+        "AS_CO_UT_dynamicDictionary",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_constructManipulatedAuditData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_983535",
+      "name": "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+      "type": "Expression Rule",
+      "description": "Rule to construct dynamic audit dictionary for manipulation audit",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_UNCHANGED",
+        "AS_ADT_UT_calculateAudit",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_castToDictionary",
+        "AS_CO_UT_castToDictionaryList",
+        "AS_CO_UT_dynamicDictionary",
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_not",
+        "AS_CO_UT_rejectCdtByField",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_updateCdtFields"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_constructManipulatedAuditData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_936866",
+      "name": "AS_GAM_ADT_UT_constructManipulatedAuditData",
+      "type": "Expression Rule",
+      "description": "Rule to construct Manipulated audit data",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isNotBlank",
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_buildAuditEntityData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53662",
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "description": "Displays a label by the `bundleKey` from passed in bundle data, optionally accepts arguments",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_FM_syncClauseToAcquisitionGovConfirmationScreen"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1021202",
+      "name": "AS_GAM_UT_ArrayLength",
+      "type": "Expression Rule",
+      "description": "Gives length of an array based on input of array",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_QR_getRefClause",
+        "AS_GCM_getFileDataViaZipDocumentOrGitHub"
+      ]
+    },
+    {
+      "uuid": "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1174749",
+      "name": "AS_GCM_ADT_BL_auditConfig_RefClause",
+      "type": "Expression Rule",
+      "description": "Audit configuration for `AS_GCM_R_Clause`",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_refClauseStartAuditProcess_Parameters"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec46-fcf4-8000-9d91-011c48011c48_12798577",
+      "name": "AS_GCM_BL_PerformSyncTimeClauseTextManipulations",
+      "type": "Expression Rule",
+      "description": "This Rule performs required clause text manipulations during the sync process.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_GCM_INT_getAcquisitionDocumentHtml",
+        "AS_GCM_REF_ID_SOURCE_FAR",
+        "AS_GCM_TXT_FILL_IN_TYPE_CHECKBOX",
+        "AS_GCM_UT_regexsearch",
+        "AS_GCM_substituteListFromTextUsingReduce"
+      ],
+      "called_by": [
+        "AS_GCM_BL_retrieveTextFromHtmlDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1529562",
+      "name": "AS_GCM_BL_constructHelperForRefClauseAndClauseTexts",
+      "type": "Expression Rule",
+      "description": "The rule constructs the helper CDT AS_GCM_R_Clause_Helper by combining AS_GCM_R_Clause and AS_GCM_R_Clause_Texts",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_initializeBlankLocalVariable",
+        "AS_GCM_UT_nullifyEmptyNestedCdtFields"
+      ],
+      "called_by": [
+        "AS_GCM_UT_refClauseStartAuditProcess_Parameters"
+      ]
+    },
+    {
+      "uuid": "0d98088f-a550-42e4-a8a2-4f319f03275b",
+      "name": "AS_GCM_BL_doesClauseHtmlDocExist",
+      "type": "Expression Rule",
+      "description": "Given a list of AS_GCM_R_Clauses, returns which clauses have an available HTML document from the Acquisition.gov Github repo",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_displayValue",
+        "AS_CO_UT_isBlank",
+        "AS_GCM_INT_getAcquisitionGitTree",
+        "AS_GCM_REF_ID_SOURCE_DFARS",
+        "AS_GCM_REF_ID_SOURCE_FAR"
+      ],
+      "called_by": [
+        "AS_GCM_DFARS_updateClauseDetailsFromManualSync",
+        "AS_GCM_FAR_updateClauseDetailsFromManualSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1265803",
+      "name": "AS_GCM_BL_doesClausePrescriptionHtmlDocExist",
+      "type": "Expression Rule",
+      "description": "Given a list of AS_GCM_R_Clauses, returns which clauses have an available prescription HTML document from the Acquisition.gov Github repo",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_displayValue",
+        "AS_CO_UT_isBlank",
+        "AS_GCM_INT_getAcquisitionGitTree",
+        "AS_GCM_REF_ID_SOURCE_DFARS",
+        "AS_GCM_REF_ID_SOURCE_FAR"
+      ],
+      "called_by": [
+        "AS_GCM_DFARS_updateClauseDetailsFromManualSync",
+        "AS_GCM_FAR_updateClauseDetailsFromManualSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1257448",
+      "name": "AS_GCM_BL_getHeaderFromFarMatrixData",
+      "type": "Expression Rule",
+      "description": "Given a response body of a FAR Matrix Data, returns the header",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_GCM_TST_farMatrixBody"
+      ],
+      "called_by": [
+        "AS_GCM_BL_getRowsFromFarMatrixData",
+        "AS_GCM_FAR_getFarMatrixData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1256526",
+      "name": "AS_GCM_BL_getRowsFromFarMatrixData",
+      "type": "Expression Rule",
+      "description": "Given a response body of a FAR Matrix Data, returns the row",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GCM_BL_getHeaderFromFarMatrixData",
+        "AS_GCM_TST_farMatrixBody",
+        "AS_GCM_getFarMatrixColumnHeadersByKeys"
+      ],
+      "called_by": [
+        "AS_GCM_FAR_getFarMatrixData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1262015",
+      "name": "AS_GCM_BL_mapFarMatrixHeadersToClauseFields",
+      "type": "Expression Rule",
+      "description": "Maps the header columns of the FAR matrix to the clause fields",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_displayValue",
+        "AS_GCM_CONS_farMatrixColumnsMap"
+      ],
+      "called_by": [
+        "AS_GCM_FAR_updateClauseDetailsFromManualSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1262081",
+      "name": "AS_GCM_BL_mapFarMatrixValuesToAssociatedClauseFieldValues",
+      "type": "Expression Rule",
+      "description": "Maps the values of the FAR matrix to the associated clause field values",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_displayValue",
+        "AS_GCM_QR_getReferenceSectionData",
+        "AS_GCM_REF_ID_CONTRACT_FORMAT_UCF",
+        "AS_GCM_REF_ID_FORMAT_FULL_TEXT",
+        "AS_GCM_REF_ID_FORMAT_IBR",
+        "AS_GCM_REF_ID_TYPE_CLAUSE",
+        "AS_GCM_REF_ID_TYPE_PROVISION",
+        "AS_GCM_REF_ID_USAGE_APPLICABLE",
+        "AS_GCM_REF_ID_USAGE_OPTIONAL",
+        "AS_GCM_REF_ID_USAGE_REQUIRED",
+        "AS_GCM_getFarMatrixColumnHeadersByKeys"
+      ],
+      "called_by": [
+        "AS_GCM_FAR_updateClauseDetailsFromManualSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1252702",
+      "name": "AS_GCM_BL_retrieveTextFromHtmlDocument",
+      "type": "Expression Rule",
+      "description": "Rule parses the html document from acquisition.gov and returns the clause text (In Rich text field supported format)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_GCM_BL_PerformSyncTimeClauseTextManipulations",
+        "AS_GCM_INT_getAcquisitionDocumentHtml",
+        "AS_GCM_REF_ID_SOURCE_FAR"
+      ],
+      "called_by": [
+        "AS_GCM_DFARS_updateClauseDetailsFromManualSync",
+        "AS_GCM_FAR_updateClauseDetailsFromManualSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9ae-8772-8000-9c5b-011c48011c48_5128408",
+      "name": "AS_GCM_CONS_farMatrixColumnsMap",
+      "type": "Expression Rule",
+      "description": "Contains the far matrix columns map",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_mapFarMatrixHeadersToClauseFields",
+        "AS_GCM_getFarMatrixColumnHeadersByKeys"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53654",
+      "name": "AS_GCM_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "description": "Loads a property bundle file by name from a folder, returns a dictionary of the key-value pairs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FM_syncClauseToAcquisitionGovConfirmationScreen",
+        "AS_GCM_getFileContentFromZip"
+      ]
+    },
+    {
+      "uuid": "_a-0000ebaa-27e9-8000-9d43-011c48011c48_11482844",
+      "name": "AS_GCM_DFARS_GithubSyncEnabled_wrapper",
+      "type": "Expression Rule",
+      "description": "This rule returns whether the DFARS github sync enabled or not from either our default or the custom one",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_typeCompare",
+        "AS_FRM_determineRuntimeRule"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "_a-0000ebb3-61c3-8000-9d49-011c48011c48_11570302",
+      "name": "AS_GCM_DFARS_getAlternateValuesFromSync",
+      "type": "Expression Rule",
+      "description": "Returns the alternate values for the base DFARS clauses",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_distinct"
+      ],
+      "called_by": [
+        "AS_GCM_DFARS_updateClauseDetailsFromManualSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000ebb3-61c3-8000-9d49-011c48011c48_11556632",
+      "name": "AS_GCM_DFARS_getPrescriptionNumberFromSync",
+      "type": "Expression Rule",
+      "description": "To update Prescription number from sync for DFARS",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_DFARS_updateClauseDetailsFromManualSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000ebbc-9d1b-8000-9d4f-011c48011c48_11603130",
+      "name": "AS_GCM_DFARS_getRefTypeFromSync",
+      "type": "Expression Rule",
+      "description": "Returns the ref type of DFARS clauses",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_REF_ID_TYPE_CLAUSE",
+        "AS_GCM_REF_ID_TYPE_PROVISION"
+      ],
+      "called_by": [
+        "AS GCM Clause Acqusition.gov Manual Sync",
+        "AS_GCM_DFARS_updateClauseDetailsFromManualSync",
+        "AS_GCM_FAR_getFarMatrixData",
+        "AS_GCM_GetShaValuesByFileNames",
+        "AS_GCM_getFarMatrixAppianDocumentsFileName",
+        "AS_GCM_getFileDataViaZipDocumentOrGitHub"
+      ]
+    },
+    {
+      "uuid": "_a-0000ebb3-61c3-8000-9d49-011c48011c48_11561989",
+      "name": "AS_GCM_DFARS_updateClauseDetailsFromManualSync",
+      "type": "Expression Rule",
+      "description": "Update Clause details, Clause text and Prescription text for DFARS clause by manual sync",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_compare",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+        "AS_GCM_BL_doesClauseHtmlDocExist",
+        "AS_GCM_BL_doesClausePrescriptionHtmlDocExist",
+        "AS_GCM_BL_retrieveTextFromHtmlDocument",
+        "AS_GCM_DFARS_getAlternateValuesFromSync",
+        "AS_GCM_DFARS_getPrescriptionNumberFromSync",
+        "AS_GCM_DFARS_getRefTypeFromSync",
+        "AS_GCM_DFARS_updateEditableFromSync",
+        "AS_GCM_DFARS_updateEffectiveDateFromSync",
+        "AS_GCM_INT_getAcquisitionDocumentHtml",
+        "AS_GCM_REF_ID_SOURCE_DFARS",
+        "AS_GCM_UT_formatMergedCells",
+        "AS_GCM_setRecordFields",
+        "AS_GCM_updateFillInFromSync"
+      ],
+      "called_by": [
+        "AS GCM Clause Acqusition.gov Manual Sync"
+      ]
+    },
+    {
+      "uuid": "_a-0000ebb3-61c3-8000-9d49-011c48011c48_11556594",
+      "name": "AS_GCM_DFARS_updateEditableFromSync",
+      "type": "Expression Rule",
+      "description": "To update Editable details from sync for DFARS",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_DFARS_updateClauseDetailsFromManualSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000ebc5-d78d-8000-9d55-011c48011c48_11690326",
+      "name": "AS_GCM_DFARS_updateEffectiveDateFromSync",
+      "type": "Expression Rule",
+      "description": "Fetch Effective date of DFARS clause from sync",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_UT_regexsearch"
+      ],
+      "called_by": [
+        "AS_GCM_DFARS_updateClauseDetailsFromManualSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e86e-0144-8000-9c00-011c48011c48_2768445",
+      "name": "AS_GCM_FAR_GithubSyncEnabled_wrapper",
+      "type": "Expression Rule",
+      "description": "This rule returns whether the github sync enabled from either our default or the custom one",
+      "parameters": [],
+      "calls": [
+        "AS_FRM_determineRuntimeRule"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1254972",
+      "name": "AS_GCM_FAR_getFarMatrixData",
+      "type": "Expression Rule",
+      "description": "Returns the entire FAR Matrix data",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_updateCdtFields",
+        "AS_GCM_BL_getHeaderFromFarMatrixData",
+        "AS_GCM_BL_getRowsFromFarMatrixData",
+        "AS_GCM_CLAUSE_TITLE_ALTERNATE",
+        "AS_GCM_DFARS_getRefTypeFromSync",
+        "AS_GCM_REF_ID_SOURCE_FAR",
+        "AS_GCM_TXT_ACQUISITION_REQUIRED_CLAUSES_COLUMN_HEADERS_FOR_SYNC",
+        "AS_GCM_UT_extractEditableFromFarDitaMap",
+        "AS_GCM_UT_fetchAlternateValueFromClauseTitle",
+        "AS_GCM_UT_filterEditableValueByClauseTitle",
+        "AS_GCM_getFarMatrixColumnHeadersByKeys",
+        "AS_GCM_getFileDataViaZipDocumentOrGitHub"
+      ],
+      "called_by": [
+        "AS_GCM_FAR_updateClauseDetailsFromManualSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6ec-ba89-8000-9be2-011c48011c48_1937767",
+      "name": "AS_GCM_FAR_updateAlternateClausesEffectiveDateFromSync",
+      "type": "Expression Rule",
+      "description": "Fetch alternate clauses - effective date from sync",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_GCM_CLAUSE_TITLE_ALTERNATE_WITH_ROMAN_NUMBERS",
+        "AS_GCM_CLAUSE_TITLE_ROMAN_NUMBERS_FOR_ALTERNATE",
+        "AS_GCM_SPECIAL_CHARACTERS",
+        "AS_GCM_UT_regexsearch"
+      ],
+      "called_by": [
+        "AS_GCM_FAR_updateEffectiveDateFromSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1365156",
+      "name": "AS_GCM_FAR_updateClauseDetailsFromManualSync",
+      "type": "Expression Rule",
+      "description": "Update Clause details from the FAR Matrix, Clause text and Prescription text for manual sync",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_compare",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+        "AS_GCM_BL_doesClauseHtmlDocExist",
+        "AS_GCM_BL_doesClausePrescriptionHtmlDocExist",
+        "AS_GCM_BL_mapFarMatrixHeadersToClauseFields",
+        "AS_GCM_BL_mapFarMatrixValuesToAssociatedClauseFieldValues",
+        "AS_GCM_BL_retrieveTextFromHtmlDocument",
+        "AS_GCM_FAR_getFarMatrixData",
+        "AS_GCM_FAR_updateEffectiveDateFromSync",
+        "AS_GCM_INT_getAcquisitionDocumentHtml",
+        "AS_GCM_QR_getReferenceSectionData",
+        "AS_GCM_REF_ID_CONTRACT_FORMAT_UCF",
+        "AS_GCM_REF_ID_SOURCE_FAR",
+        "AS_GCM_UT_formatMergedCells",
+        "AS_GCM_getFarMatrixColumnHeadersByKeys",
+        "AS_GCM_setRecordFields",
+        "AS_GCM_updateFillInFromSync"
+      ],
+      "called_by": [
+        "AS GCM Clause Acqusition.gov Manual Sync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6ec-ba89-8000-9be2-011c48011c48_1913180",
+      "name": "AS_GCM_FAR_updateEffectiveDateFromSync",
+      "type": "Expression Rule",
+      "description": "Fetch Effective date from sync",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_CLAUSE_TITLE_ALTERNATE_WITH_ROMAN_NUMBERS",
+        "AS_GCM_CLAUSE_TITLE_ROMAN_NUMBERS_FOR_ALTERNATE",
+        "AS_GCM_FAR_updateAlternateClausesEffectiveDateFromSync",
+        "AS_GCM_SPECIAL_CHARACTERS",
+        "AS_GCM_UT_regexsearch"
+      ],
+      "called_by": [
+        "AS_GCM_FAR_updateClauseDetailsFromManualSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea1d-3732-8000-9c89-011c48011c48_6519372",
+      "name": "AS_GCM_GetShaValuesByFileNames",
+      "type": "Expression Rule",
+      "description": "Returns the sha values for the given file names",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_displayValueMultiple",
+        "AS_GCM_DFARS_getRefTypeFromSync",
+        "AS_GCM_REF_ID_SOURCE_DFARS",
+        "AS_GCM_REF_ID_SOURCE_FAR",
+        "AS_GCM_getDitaTree"
+      ],
+      "called_by": [
+        "AS GCM Clause Acqusition.gov Manual Sync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1310916",
+      "name": "AS_GCM_MTR_BLANK_acquisitionSyncSuccessful",
+      "type": "Expression Rule",
+      "description": "acquisition.gov sync successful Metrics",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GCM Clause Acqusition.gov Manual Sync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1310922",
+      "name": "AS_GCM_MTR_BLANK_acquisitionSyncUnsuccessful",
+      "type": "Expression Rule",
+      "description": "acquisition.gov sync unsuccessful Metrics",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GCM Clause Acqusition.gov Manual Sync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1529510",
+      "name": "AS_GCM_QE_getRefClauseTexts",
+      "type": "Expression Rule",
+      "description": "Returns ref clause text details (AS_GCM_R_Clause_Texts) based on the given filter set",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryEntity",
+        "AS_GCM_ENT_R_CLAUSE_TEXTS"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1163937",
+      "name": "AS_GCM_QR_getRefClause",
+      "type": "Expression Rule",
+      "description": "Returns ref clause details based on the given filter set",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+        "AS_CO_UT_booleanDefaultFalse",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GAM_UT_ArrayLength"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1164364",
+      "name": "AS_GCM_QR_getReferenceSectionData",
+      "type": "Expression Rule",
+      "description": "Query Reference Section Data",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_BL_mapFarMatrixValuesToAssociatedClauseFieldValues",
+        "AS_GCM_FAR_updateClauseDetailsFromManualSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9e2-fe39-8000-9c72-011c48011c48_5806634",
+      "name": "AS_GCM_TST_farMatrixBody",
+      "type": "Expression Rule",
+      "description": "Static FAR matrix body with first 10 clause data for testcases instead of calling integrations",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_getHeaderFromFarMatrixData",
+        "AS_GCM_BL_getRowsFromFarMatrixData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1530006",
+      "name": "AS_GCM_UT_captureAuditForRefClauseAndClauseText",
+      "type": "Expression Rule",
+      "description": "The rule constructs the audit data and returns the entity data combination to write to audit DSE.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_GAM_ADT_UT_buildAuditEntityData",
+        "AS_GCM_ENT_R_A_R_CLAUSE",
+        "AS_GCM_UT_refClauseStartAuditProcess_Parameters"
+      ],
+      "called_by": [
+        "AS GCM Clause Acqusition.gov Manual Sync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6ec-ba89-8000-9be2-011c48011c48_1926383",
+      "name": "AS_GCM_UT_extractEditableFromFarDitaMap",
+      "type": "Expression Rule",
+      "description": "Extract XTRC tag from integration to check if clause is editable",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FAR_getFarMatrixData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e828-e408-8000-9bf9-011c48011c48_2597185",
+      "name": "AS_GCM_UT_fetchAlternateValueFromClauseTitle",
+      "type": "Expression Rule",
+      "description": "This rule is used to extract the alternate value of clause from clause title",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GCM_CLAUSE_TITLE_ALTERNATE",
+        "AS_GCM_UT_validateNumericalValues"
+      ],
+      "called_by": [
+        "AS_GCM_FAR_getFarMatrixData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6ec-ba89-8000-9be2-011c48011c48_1926399",
+      "name": "AS_GCM_UT_filterEditableValueByClauseTitle",
+      "type": "Expression Rule",
+      "description": "Search the XTRC value for each clause",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FAR_getFarMatrixData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6ec-ba89-8000-9be2-011c48011c48_1921831",
+      "name": "AS_GCM_UT_formatMergedCells",
+      "type": "Expression Rule",
+      "description": "Appends an empty cell beside a merged cell",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_DFARS_updateClauseDetailsFromManualSync",
+        "AS_GCM_FAR_updateClauseDetailsFromManualSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3284363",
+      "name": "AS_GCM_UT_getPrimaryKeyFieldByType",
+      "type": "Expression Rule",
+      "description": "Returns PrimaryKey Field based on type",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_nullifyEmptyNestedCdtFields"
+      ]
+    },
+    {
+      "uuid": "f28850a6-d0cc-4841-a587-a36a568d70a3",
+      "name": "AS_GCM_UT_nullifyEmptyNestedCdtFields",
+      "type": "Expression Rule",
+      "description": "Nulls out the nested cdt fields which are blank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_returnCdtFields",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+        "AS_GCM_UT_getPrimaryKeyFieldByType"
+      ],
+      "called_by": [
+        "AS_GCM_BL_constructHelperForRefClauseAndClauseTexts"
+      ]
+    },
+    {
+      "uuid": "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1174811",
+      "name": "AS_GCM_UT_refClauseStartAuditProcess_Parameters",
+      "type": "Expression Rule",
+      "description": "Populates the parameters for start audit of `AS_GCM_R_Clause`",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_UT_startAuditProcess_Parameters",
+        "AS_GCM_ADT_BL_auditConfig_RefClause",
+        "AS_GCM_BL_constructHelperForRefClauseAndClauseTexts",
+        "AS_GCM_ENT_R_A_R_CLAUSE"
+      ],
+      "called_by": [
+        "AS_GCM_UT_captureAuditForRefClauseAndClauseText"
+      ]
+    },
+    {
+      "uuid": "_a-0000e8e8-3f98-8000-9ba5-011c48011c48_13321",
+      "name": "AS_GCM_UT_regexsearch",
+      "type": "Expression Rule",
+      "description": "contains regexsearch() which handles the type casting issue.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_castToDictionaryList"
+      ],
+      "called_by": [
+        "AS_GCM_BL_PerformSyncTimeClauseTextManipulations",
+        "AS_GCM_DFARS_updateEffectiveDateFromSync",
+        "AS_GCM_FAR_updateAlternateClausesEffectiveDateFromSync",
+        "AS_GCM_FAR_updateEffectiveDateFromSync",
+        "AS_GCM_UT_validateNumericalValues"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6ec-ba89-8000-9be2-011c48011c48_1915486",
+      "name": "AS_GCM_UT_validateNumericalValues",
+      "type": "Expression Rule",
+      "description": "Validate Numerical Values",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_UT_regexsearch"
+      ],
+      "called_by": [
+        "AS_GCM_UT_fetchAlternateValueFromClauseTitle"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9749583",
+      "name": "AS_GCM_dropNonWritableRelationshipsFromRecord",
+      "type": "Expression Rule",
+      "description": "Drops the specified non writable relationships. Retains the writable relationships if provided",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_dropNonWritableRelationshipsFromRecord_Reducer",
+        "AS_GCM_getAllPresentRelationshipsFromRecord"
+      ],
+      "called_by": [
+        "AS_GCM_writeRecordsPropertiesForClauseRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9756924",
+      "name": "AS_GCM_dropNonWritableRelationshipsFromRecord_Reducer",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_GCM_dropNonWritableRelationshipsFromRecord`",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_getAllPresentRelationshipsFromRecord"
+      ],
+      "called_by": [
+        "AS_GCM_dropNonWritableRelationshipsFromRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9761091",
+      "name": "AS_GCM_filterRecords",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_mergeWriteRecordIdsToProcessVariable"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9760625",
+      "name": "AS_GCM_getAllPresentRelationshipsFromRecord",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_GAM_dropNonWritableRelationshipsFromRecord`",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_getAllPresentRelationshipsFromRecord_Apply"
+      ],
+      "called_by": [
+        "AS_GCM_dropNonWritableRelationshipsFromRecord",
+        "AS_GCM_dropNonWritableRelationshipsFromRecord_Reducer",
+        "AS_GCM_getAllPresentRelationshipsFromRecord_Apply"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9760686",
+      "name": "AS_GCM_getAllPresentRelationshipsFromRecord_Apply",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_GCM_dropNonWritableRelationshipsFromRecord`",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_getAllPresentRelationshipsFromRecord"
+      ],
+      "called_by": [
+        "AS_GCM_getAllPresentRelationshipsFromRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000e86e-0144-8000-9c00-011c48011c48_2780350",
+      "name": "AS_GCM_getDitaTree",
+      "type": "Expression Rule",
+      "description": "Returns the DitaTree from the Acquisition..gov integration",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_displayValue",
+        "AS_CO_UT_indexPath",
+        "AS_GCM_INT_getAcquisitionGitTree"
+      ],
+      "called_by": [
+        "AS_GCM_GetShaValuesByFileNames"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea1d-3732-8000-9c89-011c48011c48_6533321",
+      "name": "AS_GCM_getFarMatrixAppianDocumentsFileName",
+      "type": "Expression Rule",
+      "description": "Returns the file name with extension for both manual and weekly syncs",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_DFARS_getRefTypeFromSync",
+        "AS_GCM_REF_ID_SOURCE_FAR"
+      ],
+      "called_by": [
+        "AS GCM Clause Acqusition.gov Manual Sync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9ae-8772-8000-9c5b-011c48011c48_5126419",
+      "name": "AS_GCM_getFarMatrixColumnHeadersByKeys",
+      "type": "Expression Rule",
+      "description": "Returns the Far Matrix Column headers for the given keys",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_displayValue",
+        "AS_CO_UT_displayValueMultiple",
+        "AS_GCM_CONS_farMatrixColumnsMap"
+      ],
+      "called_by": [
+        "AS_GCM_BL_getRowsFromFarMatrixData",
+        "AS_GCM_BL_mapFarMatrixValuesToAssociatedClauseFieldValues",
+        "AS_GCM_FAR_getFarMatrixData",
+        "AS_GCM_FAR_updateClauseDetailsFromManualSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000e877-159f-8000-9c05-011c48011c48_2812852",
+      "name": "AS_GCM_getFileContentFromZip",
+      "type": "Expression Rule",
+      "description": "Returns the file content from the given FAR/DFARS zip",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_CO_UT_loadBundleFromFolder"
+      ],
+      "called_by": [
+        "AS_GCM_getFileDataViaZipDocumentOrGitHub"
+      ]
+    },
+    {
+      "uuid": "_a-0000e86e-0144-8000-9c00-011c48011c48_2776504",
+      "name": "AS_GCM_getFileDataViaZipDocumentOrGitHub",
+      "type": "Expression Rule",
+      "description": "Returns the file data of the given file or clause from zip document or github",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_filterCdtByField",
+        "AS_GAM_UT_ArrayLength",
+        "AS_GCM_DFARS_getRefTypeFromSync",
+        "AS_GCM_INT_getAcquisitionDocumentHtml",
+        "AS_GCM_getFileContentFromZip"
+      ],
+      "called_by": [
+        "AS_GCM_FAR_getFarMatrixData"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9756839",
+      "name": "AS_GCM_mergeWriteRecordIdsToProcessVariable",
+      "type": "Expression Rule",
+      "description": "The main rule to merge the ID-output of a write records nodes to the input process variable (including all child FKs). IMPORTANT NOTES in comments in the rule.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_GCM_filterRecords",
+        "AS_GCM_setRecordFields"
+      ],
+      "called_by": [
+        "AS_GCM_writeRecordsPropertiesForClauseRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1371172",
+      "name": "AS_GCM_setMetaDataForAcquisitionHelperRecord",
+      "type": "Expression Rule",
+      "description": "Rule to set meta data for Acquisition Update Helper Record",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_setRecordFields"
+      ],
+      "called_by": [
+        "AS_GCM_setMetaDataForClauseRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1174902",
+      "name": "AS_GCM_setMetaDataForClauseRecord",
+      "type": "Expression Rule",
+      "description": "Rule to capture metadata for AS GCM R Clause",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_setMetaDataForAcquisitionHelperRecord",
+        "AS_GCM_setMetaDataForClauseSectionMappingRecord",
+        "AS_GCM_setRecordFields"
+      ],
+      "called_by": [
+        "AS GCM Clause Acqusition.gov Manual Sync"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed9c-6a3c-8000-9e00-011c48011c48_15616161",
+      "name": "AS_GCM_setMetaDataForClauseSectionMappingRecord",
+      "type": "Expression Rule",
+      "description": "Rule to set meta data for Clause Section Mapping Record",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_setRecordFields"
+      ],
+      "called_by": [
+        "AS_GCM_setMetaDataForClauseRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec06-6336-8000-9d71-011c48011c48_12252527",
+      "name": "AS_GCM_setMetaDataForRefClauseTextCdt",
+      "type": "Expression Rule",
+      "description": "Rule to capture metadata for AS_GCM_R_Clause_Texts",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast",
+        "AS_GCM_setRecordFields"
+      ],
+      "called_by": [
+        "AS GCM Clause Acqusition.gov Manual Sync"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9760853",
+      "name": "AS_GCM_setRecordFields",
+      "type": "Expression Rule",
+      "description": "Runs a bulk update on a record object, setting new values for its fields",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_DFARS_updateClauseDetailsFromManualSync",
+        "AS_GCM_FAR_updateClauseDetailsFromManualSync",
+        "AS_GCM_mergeWriteRecordIdsToProcessVariable",
+        "AS_GCM_setMetaDataForAcquisitionHelperRecord",
+        "AS_GCM_setMetaDataForClauseRecord",
+        "AS_GCM_setMetaDataForClauseSectionMappingRecord",
+        "AS_GCM_setMetaDataForRefClauseTextCdt"
+      ]
+    },
+    {
+      "uuid": "_a-0000e915-02bc-8000-9c1f-011c48011c48_3773120",
+      "name": "AS_GCM_substituteListFromTextUsingReduce",
+      "type": "Expression Rule",
+      "description": "This rule calls the fn!substitute in a fn!reduce to replace all the text with the given text. If no input is passed to ri!replaceWith the text will be replaced with empty string",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_BL_PerformSyncTimeClauseTextManipulations"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6ec-ba89-8000-9be2-011c48011c48_1926020",
+      "name": "AS_GCM_updateFillInFromSync",
+      "type": "Expression Rule",
+      "description": "To update Fill In details from sync",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_DFARS_updateClauseDetailsFromManualSync",
+        "AS_GCM_FAR_updateClauseDetailsFromManualSync"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9760774",
+      "name": "AS_GCM_writeRecordsPropertiesForClauseRecord",
+      "type": "Expression Rule",
+      "description": "Contains the write properties to drop and update the record data in the process while writing.",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_dropNonWritableRelationshipsFromRecord",
+        "AS_GCM_mergeWriteRecordIdsToProcessVariable"
+      ],
+      "called_by": [
+        "AS GCM Clause Acqusition.gov Manual Sync"
+      ]
+    },
+    {
+      "uuid": "398ce765-1d18-493f-94b5-1e4be77f9b9b",
+      "name": "AS_GCM_INT_getAcquisitionDocumentHtml",
+      "type": "Integration",
+      "description": "Integration to get the FAR or DFARS doc details from GSA Github",
+      "connected_system": "AS GCM Github",
+      "http_method": "GET",
+      "calls": [
+        "AS GCM Github",
+        "AS_GCM_REF_ID_SOURCE_FAR"
+      ],
+      "called_by": [
+        "AS_GCM_BL_PerformSyncTimeClauseTextManipulations",
+        "AS_GCM_BL_retrieveTextFromHtmlDocument",
+        "AS_GCM_DFARS_updateClauseDetailsFromManualSync",
+        "AS_GCM_FAR_updateClauseDetailsFromManualSync",
+        "AS_GCM_getFileDataViaZipDocumentOrGitHub"
+      ]
+    },
+    {
+      "uuid": "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1198018",
+      "name": "AS_GCM_INT_getAcquisitionGitTree",
+      "type": "Integration",
+      "description": "Integration to get the folder details of the master branch from GSA Github",
+      "connected_system": "AS GCM Github",
+      "http_method": "GET",
+      "calls": [
+        "AS GCM Github",
+        "AS_GCM_REF_ID_SOURCE_FAR"
+      ],
+      "called_by": [
+        "AS_GCM_BL_doesClauseHtmlDocExist",
+        "AS_GCM_BL_doesClausePrescriptionHtmlDocExist",
+        "AS_GCM_getDitaTree"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1305591",
+      "name": "AS_GCM_FM_syncClauseToAcquisitionGovConfirmationScreen",
+      "type": "Interface",
+      "description": "Manual Sync For Clause Data from acquisition.gov",
+      "parameters": [
+        {
+          "name": "refClause",
+          "type": "urn:com:appian:recordtype:datatype:83b74fc4-71d0-456a-8b20-12ea04b76cd1",
+          "raw_type": "urn:com:appian:recordtype:datatype:83b74fc4-71d0-456a-8b20-12ea04b76cd1",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        }
+      ],
+      "calls": [
+        "AS_CO_ENUM_USER_ACTION_CANCEL",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_REF_ID_SOURCE_DFARS"
+      ],
+      "called_by": [
+        "AS GCM Clause Acqusition.gov Manual Sync"
+      ]
+    },
+    {
+      "uuid": "000be650-73e8-8000-18fb-7f0000014e7a",
+      "name": "AS GCM Clause Acqusition.gov Manual Sync",
+      "type": "Process Model",
+      "description": "Process to Sync Clause Details using Acquisition.gov Sync",
+      "calls": [
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_MANUAL_SYNC",
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_DFARS_getRefTypeFromSync",
+        "AS_GCM_DFARS_updateClauseDetailsFromManualSync",
+        "AS_GCM_ENT_R_CLAUSE_TEXTS",
+        "AS_GCM_FAR_updateClauseDetailsFromManualSync",
+        "AS_GCM_FM_syncClauseToAcquisitionGovConfirmationScreen",
+        "AS_GCM_GetShaValuesByFileNames",
+        "AS_GCM_MTR_BLANK_acquisitionSyncSuccessful",
+        "AS_GCM_MTR_BLANK_acquisitionSyncUnsuccessful",
+        "AS_GCM_REF_ID_SOURCE_FAR",
+        "AS_GCM_UT_captureAuditForRefClauseAndClauseText",
+        "AS_GCM_getFarMatrixAppianDocumentsFileName",
+        "AS_GCM_setMetaDataForClauseRecord",
+        "AS_GCM_setMetaDataForRefClauseTextCdt",
+        "AS_GCM_writeRecordsPropertiesForClauseRecord"
+      ],
+      "called_by": []
+    }
+  ]
+}

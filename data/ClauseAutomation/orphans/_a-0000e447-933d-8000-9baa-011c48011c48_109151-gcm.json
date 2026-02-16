@@ -1,0 +1,25 @@
+{
+  "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_109151-gcm",
+  "name": "AS_GCM_QNM_UI_displayReadOnlyResponse_DROPDOWN_TEXT",
+  "type": "Expression Rule",
+  "description": "Displays the response for a single text dropdown question",
+  "sail_code": "a!localVariables(\n  local!responseLabels: rule!AS_GCM_QNM_UT_filterToResponsesForQuestionByFieldKey(\n    question: ri!question,\n    fieldKey: null\n  ).label,\n  if(\n    rule!AS_CO_UT_isBlank(\n      local!responseLabels\n    ),\n    {},\n    #\"SYSTEM_SYSRULES_forEach\"(\n      items: local!responseLabels,\n      expression: {\n        rule!AS_GCM_QNM_UI_displayInternationalizedReadOnlySimpleTextResponse(\n          /* In case the selected label is internationalized */\n          text: fv!item,\n          bundle: ri!i18nData\n        ),\n        if(\n          fv!isLast,\n          {},\n          #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n            text: char(\n              10\n            )\n          )\n        )\n      }\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GCM_QNM_UT_filterToResponsesForQuestionByFieldKey",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QNM_UI_displayInternationalizedReadOnlySimpleTextResponse",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

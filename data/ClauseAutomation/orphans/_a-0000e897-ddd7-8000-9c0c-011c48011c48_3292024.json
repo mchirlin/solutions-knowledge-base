@@ -1,0 +1,25 @@
+{
+  "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3292024",
+  "name": "AS_GCM_CPS_ruleConditionNAICSCode",
+  "type": "Interface",
+  "description": "Component for rule condition NAICS Code",
+  "sail_code": "a!localVariables(\n  local!value: if(\n    a!isNullOrEmpty(\n      ri!ruleCondition[recordType!AS GCM QNM T Rule Condition.value]\n    ),\n    null,\n    #\"SYSTEM_SYSRULES_fromJson_v1\"(\n      ri!ruleCondition[recordType!AS GCM QNM T Rule Condition.value]\n    )\n  ),\n  rule!AS_CO_INP_textField(\n    required: true,\n    maxLength: cons!AS_GCM_ENUM_TEXT_LENGTH_FOR_NAICS_CODE,\n    placeholder: \"Enter NAICS Code\",\n    value: local!value,\n    saveInto: {\n      local!value,\n      a!save(\n        ri!ruleCondition[recordType!AS GCM QNM T Rule Condition.value],\n        #\"SYSTEM_SYSRULES_toJson_v1\"({ tostring(save!value) })\n      ),\n      ri!additionalSaves\n    },\n    label: if(ri!readOnly,\"\",\"Value\"),\n    labelPosition: if(ri!readOnly,\"COLLAPSED\",\"ABOVE\"),\n    readOnly: ri!readOnly\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_INP_textField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_ENUM_TEXT_LENGTH_FOR_NAICS_CODE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

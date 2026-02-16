@@ -1,0 +1,46 @@
+{
+  "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_74314",
+  "name": "AS_CO_CP_floatingPointField",
+  "type": "Interface",
+  "description": "Generic floating point field to handle read-only logic dynamically. ",
+  "sail_code": "if(\n  ri!readOnly,\n  rule!AS_CO_DSP_standardReadOnlyField(\n    label: ri!label,\n    instructions: ri!instructions,\n    value: if(\n      ri!noFormat,\n      rule!AS_CO_UT_fixed(\n        number: ri!value,\n        decimals: if(\n          isnull(ri!numberOfDecimals),\n          10,\n          ri!numberOfDecimals\n        ),\n        no_commas: true\n      ),\n      rule!AS_CO_UT_fixed(\n        number: ri!value,\n        decimals: if(\n          isnull(ri!numberOfDecimals),\n          2,\n          ri!numberOfDecimals\n        ),\n        no_commas: false\n      )\n    ) & if(isnull(ri!value), \"\", ri!textToAppend),\n    labelPosition: ri!labelPosition,\n    helpTooltip: ri!helpTooltip,\n    showWhen: ri!showWhen,\n    accessibilityText: ri!accessibilityText\n  ),\n  #\"SYSTEM_SYSRULES_floatingPointField\"(\n    label: ri!label & ri!textToAppend,\n    labelPosition: rule!AS_CO_UT_getLabelPosition(\n      label: ri!label,\n      labelPosition: ri!labelPosition,\n      readOnly: ri!readOnly\n    ),\n    instructions: ri!instructions,\n    helpTooltip: ri!helpTooltip,\n    placeholder: rule!AS_CO_UT_formatFieldEntryPlaceHolder(placeholder: ri!placeholder),\n    value: ri!value,\n    saveInto: ri!saveInto,\n    refreshAfter: ri!refreshAfter,\n    showWhen: if(isnull(ri!showWhen), true, ri!showWhen),\n    required: if(ri!readOnly, false, ri!required),\n    requiredMessage: rule!AS_CO_UT_displayRequiredMessage(\n      label: ri!label,\n      requiredMessage: ri!requiredMessage\n    ),\n    readOnly: ri!readOnly,\n    disabled: ri!disabled,\n    validations: if(\n      ri!readOnly,\n      {},\n      {\n        ri!validations,\n        rule!AS_CO_VD_validateFloatingPointField(value: ri!value)\n      }\n    ),\n    validationGroup: ri!validationGroup,\n    align: ri!align,\n    accessibilityText: ri!accessibilityText\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_DSP_standardReadOnlyField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_fixed",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_getLabelPosition",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_formatFieldEntryPlaceHolder",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_displayRequiredMessage",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_VD_validateFloatingPointField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GCM_CPS_ruleConditionDollarAmount",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

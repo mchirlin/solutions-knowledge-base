@@ -1,0 +1,45 @@
+{
+  "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_36871-gcm",
+  "name": "AS_GCM_QNM_CPS_displayQuestion_SINGLE_RADIO_BUTTON_TEXT",
+  "type": "Interface",
+  "description": "Interface used to display simple radio button questions",
+  "sail_code": "a!localVariables(\n  local!responseOptions: rule!AS_CO_UT_filterCdtByField(\n    cdt: ri!question.responseOptions,\n    field: \"fieldKey\",\n    value: null\n  ),\n  rule!AS_CO_CP_radioButtonField(\n    label: ri!question.label,\n    choiceLabels: local!responseOptions.label,\n    choiceValues: local!responseOptions.value,\n    saveInto: if(\n      ri!disableSaves,\n      {},\n      append(\n        a!save(\n          ri!question,\n          rule!AS_GCM_QNM_UT_updateQuestionFieldResponsesForSelectionBasedField(\n            question: ri!question,\n            fieldKey: null,\n            selectedValues: save!value\n          )\n        ),\n        rule!AS_CO_UT_replaceNull(\n          nullableValue: ri!additionalSaveInto,\n          replacementValue: {}\n        )\n      )\n    ),\n    value: rule!AS_GCM_QNM_UT_filterToResponsesForQuestionByFieldKey(question: ri!question).value,\n    labelPosition: \"ABOVE\",\n    validations: rule!AS_GCM_QNM_VD_evaluateResponseRequirementsForField(\n      question: ri!question,\n      questionMetadata: ri!questionMetadata,\n      fieldKey: null,\n      returnValidationMessage: true\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_CP_radioButtonField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QNM_UT_updateQuestionFieldResponsesForSelectionBasedField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QNM_UT_filterToResponsesForQuestionByFieldKey",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QNM_VD_evaluateResponseRequirementsForField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QNM_TST_questionnaire",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

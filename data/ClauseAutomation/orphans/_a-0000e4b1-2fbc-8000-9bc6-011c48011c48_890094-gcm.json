@@ -1,0 +1,46 @@
+{
+  "uuid": "_a-0000e4b1-2fbc-8000-9bc6-011c48011c48_890094-gcm",
+  "name": "AS_GCM_QNM_UT_selectionFieldList",
+  "type": "Expression Rule",
+  "description": "Returns the system defined AND user defined selection based fields for the provided question type",
+  "sail_code": "cast(\n  'type!{urn:com:appian:types:AS:GCM:QNM}AS_GCM_QNM_FieldMetadata?list',\n  a!localVariables(\n    local!fieldTypes: a!refreshVariable(\n      value: rule!AS_GCM_QNM_UT_fieldTypes(\n        questionTypeCode: ri!questionTypeCode\n      ),\n      refreshAlways: true\n    ),\n    rule!AS_CO_UT_filterCdtByField(\n      cdt: local!fieldTypes,\n      field: \"fieldResponseType\",\n      value: {\n        cons!AS_GCM_QNM_ENUM_FIELD_RESPONSE_TYPE_USER_DEFINED_SELECTION,\n        cons!AS_GCM_QNM_ENUM_FIELD_RESPONSE_TYPE_SYSTEM_DEFINED_SELECTION\n      }\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GCM_QNM_UT_fieldTypes",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QNM_ENUM_FIELD_RESPONSE_TYPE_USER_DEFINED_SELECTION",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_QNM_ENUM_FIELD_RESPONSE_TYPE_SYSTEM_DEFINED_SELECTION",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_QNM_ENUM_QUESTION_TYPE_CODE_SINGLE_RADIO_BUTTON_TEXT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GCM_QNM_VLD_addNewQuestion",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QNM_UT_containsSelectionBasedField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

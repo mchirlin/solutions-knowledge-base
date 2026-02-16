@@ -1,0 +1,32 @@
+{
+  "_metadata": {
+    "bundle_id": "AS_GCM_Send_Sync_File_Format_Error_Email"
+  },
+  "objects": {
+    "_a-0000e915-02bc-8000-9c1f-011c48011c48_4011828": {
+      "name": "AS_GCM_emailContentForClauseSyncFileFormatFailures",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!bundle: rule!AS_GCM_CO_UT_loadBundleFromFolder(langISOCode: null()),\n  local!farMatrixIntegrationResponse: rule!AS_CO_UT_filterCdtByField(\n    cdt: ri!integrationResponseMaps,\n    field: \"fileName\",\n    value: rule!AS_GCM_DFARS_getRefTypeFromSync(source: ri!sourceId).requiredFiles[1]\n  )[1],\n  a!match(\n    value: ri!sourceId,\n    equals: cons!AS_GCM_REF_ID_SOURCE_FAR,\n    then: {\n      subject: \"FAR Clauses Sync With Acquisition.gov Error\",\n      body: \"<!DOCTYPE html>\n<html>\n<body>\n<p> \" & if(\n        toboolean(\n          local!farMatrixIntegrationResponse.success\n        ),\n        \"The FAR Acquisition.gov sync process has failed due to format changes in the clause content. Please try running the sync again.\",\n        \"The Acquisition.gov sync process has failed due to an integration failure.\" & \"</p></br><b>\" & substitute(\n          split(\n            local!farMatrixIntegrationResponse.error,\n            \"message=\"\n          )[2],\n          \"]\",\n          \"\"\n        ) & \"</b><p>\" & \"Please try running the sync again after some time.\"\n      ) & \" </p>\n\n<p> \" & \"If the problem persists, please contact your partner or Appian Customer Support.\" & \" </p>\n\n</body>\n</html>\"\n    },\n    equals: cons!AS_GCM_REF_ID_SOURCE_DFARS,\n    then: {\n      subject: \"DFARS Clauses Sync With Acquisition.gov Error\",\n      body: \"<!DOCTYPE html>\n<html>\n<body>\n<p> \" & if(\n        toboolean(\n          local!farMatrixIntegrationResponse.success\n        ),\n        \"The DFARS Acquisition.gov sync process has failed due to format changes in the clause content. Please try running the sync again.\",\n        \"The Acquisition.gov sync process has failed due to an integration failure.\" & \"</p></br><b>\" & substitute(\n          split(\n            local!farMatrixIntegrationResponse.error,\n            \"message=\"\n          )[2],\n          \"]\",\n          \"\"\n        ) & \"</b><p>\" & \"Please try running the sync again after some time.\"\n      ) & \" </p>\n\n<p> \" & \"If the problem persists, please contact your partner or Appian Customer Support.\" & \" </p>\n\n</body>\n</html>\"\n    },\n    default: { subject: \"\", body: \"\" }\n  )\n)"
+    },
+    "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53654": {
+      "name": "AS_GCM_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "sail_code": "with(\n  local!lang: \"en_US\",\n/* below is deprecated for now, uncomment to support multi-language display */\n  /*if(*/\n    /*isnull(ri!langISOCode),*/\n    /*userlocale(loggedInUser()),*/\n    /*ri!langISOCode*/\n  /*),*/\n  local!bundleName: rule!AS_GCM_determineValueBySolutionFlavor(\n    options: cons!AS_GCM_TXT_VALID_SOLUTION_FLAVORS\n  ),\n  /*local!bundleName*/\n  local!output: loadbundlepropertiesfile(\n    cons!AS_GCM_FLD_PROPERTIES_FILES,\n    local!lang,\n    local!bundleName\n  )[local!bundleName],\n  local!output\n)"
+    },
+    "0004e930-7379-8000-4c43-7f0000014e7a": {
+      "name": "AS GCM Send Sync File Format Error Email",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n=getProcessEmail(pp!id)\n\n// Input: ?\n=cons!AS_GAM_GRP_APPIAN_ADMINISTRATORS\n\n// Input: ?\n= rule!AS_GCM_emailContentForClauseSyncFileFormatFailures( integrationResponseMaps: pv!integrationResponseMaps, sourceId: pv!sourceId).subject\n\n// Input: ?\n= rule!AS_GCM_emailContentForClauseSyncFileFormatFailures( integrationResponseMaps: pv!integrationResponseMaps, sourceId: pv!sourceId).body"
+    },
+    "_a-0000ebbc-9d1b-8000-9d4f-011c48011c48_11603130": {
+      "name": "AS_GCM_DFARS_getRefTypeFromSync",
+      "type": "Expression Rule",
+      "sail_code": "a!match(\n  value: ri!clauseText,\n  whenTrue: or(\n    search(\"Endofclause\", fv!value) <> 0,\n    search(\"clause:\", fv!value) <> 0,\n    search(\"following clauses\",fv!value) <> 0,\n  ),\n  then: cons!AS_GCM_REF_ID_TYPE_CLAUSE,\n  whenTrue: or(\n    search(\"Endofprovision\", fv!value) <> 0,\n    search(\"provision:\", fv!value) <> 0,\n    search(\"provision at\",fv!value) <> 0\n  ),\n  then: cons!AS_GCM_REF_ID_TYPE_PROVISION,\n  default: null\n)"
+    },
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75800": {
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "sail_code": "/*Take the input of a cdt, field, and value and returns the matching cdt data\n\nex. cdt of users, filter by field isActive and value of true to find your active users\n*/\ncast(\n  typeof(ri!cdt),\n  index(\n    a!flatten(ri!cdt),\n    rule!AS_CO_UT_returnCdtIndicesByField(\n      cdt: ri!cdt,\n      field: ri!field,\n      value: ri!value\n    ),\n    {}\n  )\n)"
+    }
+  }
+}

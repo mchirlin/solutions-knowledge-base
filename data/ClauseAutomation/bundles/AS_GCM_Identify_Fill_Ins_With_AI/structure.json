@@ -1,0 +1,1729 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GCM Identify Fill Ins With AI",
+    "parent_name": null,
+    "total_objects": 85
+  },
+  "entry_point": {
+    "complexity_score": 20.0,
+    "total_nodes": 10,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GCM Identify Fill Ins With AI",
+      "complexity_score": 20.0,
+      "total_nodes": 10,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Split"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Set Exception true",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Split",
+          "type": "AND_GATEWAY",
+          "next": [
+            "AI Identified Fill Ins",
+            "Call AI Skill"
+          ]
+        },
+        {
+          "name": "End Event",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "AND",
+          "type": "AND_GATEWAY",
+          "next": [
+            "AI Identified Fill Ins",
+            "Call AI Skill"
+          ]
+        },
+        {
+          "name": "Set Retry Count",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "AND"
+          ]
+        },
+        {
+          "name": "Button Action?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "AI Identified Fill Ins (Refresh)",
+            "End Node (Add Fill-ins / Cancel)",
+            "Set Retry Count (Retry)"
+          ]
+        },
+        {
+          "name": "AI Identified Fill Ins",
+          "type": "USER_TASK",
+          "next": [
+            "Button Action?"
+          ],
+          "interface": "AS_GCM_FM_identifyFillInsWithAI_Wrapper"
+        },
+        {
+          "name": "Call AI Skill",
+          "type": "Start Process",
+          "next": [
+            "End Event"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290131",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+      "type": "Constant",
+      "description": "DATA_SUBSET - Returns a type of DataSubset when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "DATA_SUBSET",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_QR_getFillInRecDetails",
+        "AS_GCM_getFillinMapsAndClauseTextUsingHighlightOrCiteTags"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290163",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "description": "OBJECT_ARRAY - Returns an array type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "OBJECT_ARRAY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_QR_getFillInRecDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73173",
+      "name": "AS_CO_ENUM_USER_ACTION_CANCEL",
+      "type": "Constant",
+      "description": "CANCEL.USER_ACTION - Value to use to drive process logic after a user performs a \"Cancel\" action",
+      "value": "CANCEL.USER_ACTION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM Identify Fill Ins With AI",
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5d4-2024-8000-9baf-011c48011c48_336194",
+      "name": "AS_FRM_BOOL_APPREF_ENTRYPOINT_FRAMEWORK_ENABLED",
+      "type": "Constant",
+      "description": "Returns true if the APPREF/ENTRYPOINT framework is enabled",
+      "value": "true",
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "AS_FRM_getRuleReferenceOrNoOp"
+      ]
+    },
+    {
+      "uuid": "_a-0000e69a-ff03-8000-9bd0-011c48011c48_1580837",
+      "name": "AS_GAM_INT_RTE_MAX_CHARACTERS",
+      "type": "Constant",
+      "description": "150000",
+      "value": "150000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_DPL_GAM_COMP_richTextFieldWithTablePlugin"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeb7-839e-8000-9e4c-011c48011c48_17326496",
+      "name": "AS_GCM_CO_ENUM_USER_ACTION_ADD_FILL_INS",
+      "type": "Constant",
+      "description": "ADD_FILL_INS.USER_ACTION - Value to use to drive process logic after a user performs a \"Add Fill-Ins\" action",
+      "value": "ADD_FILL_INS.USER_ACTION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM Identify Fill Ins With AI",
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000eec3-bb0f-8000-9e50-011c48011c48_17441683",
+      "name": "AS_GCM_DOC_IDENTIFY_FILL_IN_WITH_AI_EMPTY_STATE",
+      "type": "Constant",
+      "description": "Constant reference to the AS.GCM.IdentifyFillInWithAIEmptyState document",
+      "value": "_a-0000eec3-bb0f-8000-9e50-011c48011c48_17441676",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_COL_IdentifyFillInsWithAI_EmptyState"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeba-81af-8000-9e4e-011c48011c48_17419135",
+      "name": "AS_GCM_DOC_IDENTIFY_FILL_IN_WITH_AI_ERROR_STATE",
+      "type": "Constant",
+      "description": "Constant reference to the AS.GCM.IdentifyFillInWithAIErrorState document",
+      "value": "_a-0000eeba-81af-8000-9e4e-011c48011c48_17419129",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_COL_IdentifyFillInsWithAI_ErrorState"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeba-81af-8000-9e4e-011c48011c48_17395586",
+      "name": "AS_GCM_DOC_IDENTIFY_FILL_IN_WITH_AI_INPROGRESS",
+      "type": "Constant",
+      "description": "holds AS.GCM.IdentifyFillInWithAIInprogressState document",
+      "value": "_a-0000eeba-81af-8000-9e4e-011c48011c48_17395521",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_COL_identifyFillInsWithAI_inProgress"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeba-81af-8000-9e4e-011c48011c48_17419168",
+      "name": "AS_GCM_ENUM_USER_ACTION_RETRY",
+      "type": "Constant",
+      "description": "RETRY.USER_ACTION - Used in Retry button actions",
+      "value": "RETRY.USER_ACTION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM Identify Fill Ins With AI",
+        "AS_GCM_COL_IdentifyFillInsWithAI_ErrorState"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb72-c933-8000-9d28-011c48011c48_10486661",
+      "name": "AS_GCM_HEX_CODE_APPIAN_BACKGROUND",
+      "type": "Constant",
+      "description": "Appian Background: #FAFAFC",
+      "value": "#FAFAFC",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper",
+        "AS_GCM_getColorBasedOnColorName"
+      ]
+    },
+    {
+      "uuid": "_a-0000e915-02bc-8000-9c1f-011c48011c48_3806455",
+      "name": "AS_GCM_HEX_CODE_DEFAULT_FILL_IN_HIGHLIGHT_IN_ADD_OR_EDIT_CLAUSE",
+      "type": "Constant",
+      "description": "Hex code: #FFFF00",
+      "value": "#FFFF00",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_getFillinMapsAndClauseTextUsingHighlightOrCiteTags"
+      ]
+    },
+    {
+      "uuid": "_a-0000e79a-fc04-8000-9bf4-011c48011c48_2233123",
+      "name": "AS_GCM_HEX_CODE_FILL_IN_HIGHLIGHT",
+      "type": "Constant",
+      "description": "Hex code: #E6CCFF",
+      "value": "#E6CCFF",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_getFillinMapsAndClauseTextUsingHighlightOrCiteTags"
+      ]
+    },
+    {
+      "uuid": "_a-0000e915-02bc-8000-9c1f-011c48011c48_3806474",
+      "name": "AS_GCM_HEX_CODE_HIGHLIGHT_TO_EXCLUDE_FROM_FILLINS",
+      "type": "Constant",
+      "description": "Hex Code: #FFFFFF",
+      "value": "#FFFFFF",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_getFillinMapsAndClauseTextUsingHighlightOrCiteTags"
+      ]
+    },
+    {
+      "uuid": "_a-0000edae-dece-8000-9e05-011c48011c48_15729148",
+      "name": "AS_GCM_TEXT_HYPHEN",
+      "type": "Constant",
+      "description": "Value: \"-\"",
+      "value": "-",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_ConstructTableFillInMaps"
+      ]
+    },
+    {
+      "uuid": "_a-0000e944-d782-8000-9bbd-011c48011c48_48151",
+      "name": "AS_GCM_TOGGLE_AUTOMATION_TESTING_ENABLED",
+      "type": "Constant",
+      "description": "Always leave this constant as false, only set to true for automated testing",
+      "value": "false",
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_DPL_GAM_COMP_richTextFieldWithTablePlugin"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeba-81af-8000-9e4e-011c48011c48_17362696",
+      "name": "AS_GCM_TXT_CHECKBOX_CHAR_LIST",
+      "type": "Constant",
+      "description": "Returns list of char texts for checkbox",
+      "value": [
+        "&#9633;",
+        "&#9744;",
+        "&#9635;",
+        "&#9634;",
+        "&#9723;",
+        "&#11036;"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CPS_identifyFillInsWithAI_fillIns",
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeba-81af-8000-9e4e-011c48011c48_17369378",
+      "name": "AS_GCM_TXT_CHECKBOX_SYMBOL_LIST",
+      "type": "Constant",
+      "description": "Returns list of symbols for checkbox",
+      "value": [
+        "□",
+        "☐",
+        "◻",
+        "▢",
+        "◻",
+        "⬜",
+        "[]"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec1c-6a65-8000-9d7e-011c48011c48_12460386",
+      "name": "AS_GCM_TXT_CUSTOM_FILL_IN_TYPE_RICH_TEXT_TABLE",
+      "type": "Constant",
+      "description": "Value: Rich Text Table",
+      "value": "Rich Text Table",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CONS_fillInTypeMaps",
+        "AS_GCM_CPS_identifyFillInsWithAI_fillIns"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec06-6336-8000-9d71-011c48011c48_12250018",
+      "name": "AS_GCM_TXT_CUSTOM_FILL_IN_TYPE_TABLE",
+      "type": "Constant",
+      "description": "Value: Table",
+      "value": "Table",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CONS_fillInTypeMaps",
+        "AS_GCM_CPS_identifyFillInsWithAI_fillIns",
+        "AS_GCM_ConstructTableFillInMaps",
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper",
+        "AS_GCM_UpdateClauseTextBasedOnAIIdentifiedFillIns",
+        "AS_GCM_extractUuidAndFillinTypeFromClassParameter"
+      ]
+    },
+    {
+      "uuid": "_a-0000eae8-4d66-8000-9ce8-011c48011c48_9013443",
+      "name": "AS_GCM_TXT_FILL_IN_TYPE_CHECKBOX",
+      "type": "Constant",
+      "description": "Value: Checkbox",
+      "value": "Checkbox",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CONS_fillInTypeMaps",
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000eae8-4d66-8000-9ce8-011c48011c48_9012436",
+      "name": "AS_GCM_TXT_FILL_IN_TYPE_MULTI_LINE",
+      "type": "Constant",
+      "description": "Value: MultiLine",
+      "value": "MultiLine",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CONS_fillInTypeMaps",
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000eae8-4d66-8000-9ce8-011c48011c48_9010430",
+      "name": "AS_GCM_TXT_FILL_IN_TYPE_SINGLE_LINE",
+      "type": "Constant",
+      "description": "Value: SingleLine",
+      "value": "SingleLine",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CONS_fillInTypeMaps",
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeba-81af-8000-9e4e-011c48011c48_17410914",
+      "name": "AS_GCM_TXT_MULTI_LINE_FILL_INS_KEYWORD_LIST",
+      "type": "Constant",
+      "description": "Contains list of Multiline fill-in keywords list",
+      "value": [
+        "Describe",
+        "Explain",
+        "List",
+        "Details",
+        "State the reasons ",
+        "Indicate",
+        "Identify",
+        "Outline"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000e915-02bc-8000-9c1f-011c48011c48_3775165",
+      "name": "AS_GCM_TXT_REGEX_FOR_HIDDEN_SPAN_TAG_HAVING_CLASS_PARAMETER",
+      "type": "Constant",
+      "description": "Regex for hidden span tag in the highlight tag of a fillin",
+      "value": "<span hidden=\"\">class=\"(.*?)\"</span>",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_removeHightlightTags"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39070",
+      "name": "AS_CO_UT_booleanDefaultFalse",
+      "type": "Expression Rule",
+      "description": "Default a null value to false, otherwise returns the boolean value",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_not",
+        "AS_GCM_DPL_GAM_COMP_richTextFieldWithTablePlugin"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157603",
+      "name": "AS_CO_UT_cast",
+      "type": "Expression Rule",
+      "description": "Casts a variable to the type of either the input `type`, or the typeof of the input `typeof`, and properly handles for null inputs",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_getFillinMapsAndClauseTextUsingHighlightOrCiteTags",
+        "AS_GCM_mergeMultipleMapsIntoSingleMap"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_292117",
+      "name": "AS_CO_UT_castToDictionaryList",
+      "type": "Expression Rule",
+      "description": "Casts the input to a dictionary list",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_UT_regexsearch"
+      ]
+    },
+    {
+      "uuid": "_a-0000e586-af6f-8000-9bd2-011c48011c48_1348231",
+      "name": "AS_CO_UT_castToMapArray",
+      "type": "Expression Rule",
+      "description": "casts to an array of type map",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb44-a528-8000-9d15-011c48011c48_9978504",
+      "name": "AS_CO_UT_displayRequiredMessage",
+      "type": "Expression Rule",
+      "description": "Returns default required message (used for all editable fields) if required message is not passed.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_DPL_GAM_COMP_richTextFieldWithTablePlugin"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76433",
+      "name": "AS_CO_UT_indexPath",
+      "type": "Expression Rule",
+      "description": "Pass in a field (i.e. member[1].name) and this will index(index(index( for each field",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GAM_returnCdtOrRecordIndicesByField",
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_castToDictionaryList",
+        "AS_CO_UT_castToMapArray",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_whereContains",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GCM_DPL_GAM_COMP_richTextFieldWithTablePlugin",
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper",
+        "AS_GCM_UT_findColorCodes",
+        "AS_GCM_UT_removeHightlightTags",
+        "AS_GCM_extractUuidAndFillinTypeFromClassParameter",
+        "AS_GCM_substituteListFromTextUsingReduce"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around AS_CO_UT_isBlank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_CPS_identifyFillInsWithAI_fillIns",
+        "AS_GCM_DPL_GAM_COMP_richTextFieldWithTablePlugin",
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper",
+        "AS_GCM_GRD_TableFillInPreview",
+        "AS_GCM_QR_getFillInRecDetails",
+        "AS_GCM_doesHtmlContainVisibleCharacters",
+        "AS_GCM_getFillinMapsAndClauseTextUsingHighlightOrCiteTags"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9e2-fe39-8000-9c72-011c48011c48_5802508",
+      "name": "AS_CO_UT_isRecordTypeData",
+      "type": "Expression Rule",
+      "description": "Returns true if the passed data is of type record type",
+      "parameters": [],
+      "calls": [
+        "AS_CO_Example_RECORD"
+      ],
+      "called_by": [
+        "AS_GAM_returnCdtOrRecordIndicesByField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75636",
+      "name": "AS_CO_UT_not",
+      "type": "Expression Rule",
+      "description": "Null handles for not -- null returns true (null acts like false)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_booleanDefaultFalse"
+      ],
+      "called_by": [
+        "AS_GCM_QR_getFillInRecDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6c8-d132-8000-9bbe-011c48011c48_469266",
+      "name": "AS_CO_UT_queryRecord",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_GCM_QR_getFillInRecDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367",
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_ConstructTableFillInMaps",
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper",
+        "AS_GCM_UpdateClauseTextBasedOnAIIdentifiedFillIns",
+        "AS_GCM_extractBalancedTagThatHasGivenText",
+        "AS_GCM_getFillinMapsAndClauseTextUsingHighlightOrCiteTags"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73980",
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "description": "Returns nullableValue only if it is not null. Else returns replacementValue.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GCM_DPL_GAM_COMP_richTextFieldWithTablePlugin"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_162769",
+      "name": "AS_CO_UT_typeCompare",
+      "type": "Expression Rule",
+      "description": "Returns true if the two input types match",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_whereContains"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_272151",
+      "name": "AS_CO_UT_whereContains",
+      "type": "Expression Rule",
+      "description": "Enhanced wherecontains() which avoids type-casting issues and properly handles for document and group types",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_typeCompare"
+      ],
+      "called_by": [
+        "AS_GAM_returnCdtOrRecordIndicesByField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e571-774f-8000-b919-01ef9001ef90_29043",
+      "name": "AS_FRM_doesRuleExist",
+      "type": "Expression Rule",
+      "description": "Returns true if the passed in rule exists in the system, uses plugin function `doesruleexist()`",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_FRM_getRuleReferenceOrNoOp"
+      ]
+    },
+    {
+      "uuid": "_a-0000e571-774f-8000-b919-01ef9001ef90_28790",
+      "name": "AS_FRM_getRuleReferenceOrNoOp",
+      "type": "Expression Rule",
+      "description": "Returns either a rule reference to the input rule, or a no-operation if the rule does not exist, uses plugin function `rulereferencebyname()`",
+      "parameters": [],
+      "calls": [
+        "AS_FRM_BOOL_APPREF_ENTRYPOINT_FRAMEWORK_ENABLED",
+        "AS_FRM_doesRuleExist"
+      ],
+      "called_by": [
+        "AS_GCM_APPREF_GCM_AI_STARTPROCESS_identifyFillinsUsingNativeAI"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53662",
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "description": "Displays a label by the `bundleKey` from passed in bundle data, optionally accepts arguments",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_CPS_identifyFillInsWithAI_fillIns"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9e2-fe39-8000-9c72-011c48011c48_5802259",
+      "name": "AS_GAM_filterCdtOrRecordDataByField",
+      "type": "Expression Rule",
+      "description": "Filters CDT or record data by a matching a single value or list of values in a single field, if a list is passed, all matches are returned",
+      "parameters": [],
+      "calls": [
+        "AS_GAM_returnCdtOrRecordIndicesByField"
+      ],
+      "called_by": [
+        "AS_GCM_getFillinMapsAndClauseTextUsingHighlightOrCiteTags"
+      ]
+    },
+    {
+      "uuid": "_a-0000eae2-5167-8000-9ce4-011c48011c48_8879314",
+      "name": "AS_GAM_returnCdtOrRecordIndicesByField",
+      "type": "Expression Rule",
+      "description": "Returns the Index CDT or record data by matching a single value or list of values in a single field",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isRecordTypeData",
+        "AS_CO_UT_whereContains"
+      ],
+      "called_by": [
+        "AS_GAM_filterCdtOrRecordDataByField"
+      ]
+    },
+    {
+      "uuid": "_a-0000eec3-bb0f-8000-9e50-011c48011c48_17436420",
+      "name": "AS_GCM_APPREF_GCM_AI_STARTPROCESS_identifyFillinsUsingNativeAI",
+      "type": "Expression Rule",
+      "description": "Contains application reference to 'AS_GCM_AI_ENTRYPOINT_STARTPROCESS_identifyFillinsUsingNativeAI'",
+      "parameters": [],
+      "calls": [
+        "AS_FRM_getRuleReferenceOrNoOp"
+      ],
+      "called_by": [
+        "AS GCM Identify Fill Ins With AI"
+      ]
+    },
+    {
+      "uuid": "_a-0000e90e-0586-8000-9c1e-011c48011c48_3698524",
+      "name": "AS_GCM_BL_generateUuidForFillIns",
+      "type": "Expression Rule",
+      "description": "this rule returns the UUID for Fill-ins",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_ConstructTableFillInMaps",
+        "AS_GCM_UT_generateCiteTagForFillins"
+      ]
+    },
+    {
+      "uuid": "_a-0000e90e-0586-8000-9c1e-011c48011c48_3704306",
+      "name": "AS_GCM_CONS_fillInTypeMaps",
+      "type": "Expression Rule",
+      "description": "This rule contains maps of fill in types",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_TXT_CUSTOM_FILL_IN_TYPE_RICH_TEXT_TABLE",
+        "AS_GCM_TXT_CUSTOM_FILL_IN_TYPE_TABLE",
+        "AS_GCM_TXT_FILL_IN_TYPE_CHECKBOX",
+        "AS_GCM_TXT_FILL_IN_TYPE_MULTI_LINE",
+        "AS_GCM_TXT_FILL_IN_TYPE_SINGLE_LINE"
+      ],
+      "called_by": [
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53654",
+      "name": "AS_GCM_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "description": "Loads a property bundle file by name from a folder, returns a dictionary of the key-value pairs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_COL_IdentifyFillInsWithAI_EmptyState",
+        "AS_GCM_COL_IdentifyFillInsWithAI_ErrorState",
+        "AS_GCM_COL_identifyFillInsWithAI_inProgress",
+        "AS_GCM_CPS_identifyFillInsWithAI_clauseText",
+        "AS_GCM_CPS_identifyFillInsWithAI_fillIns",
+        "AS_GCM_CRD_InfoBannerMessage",
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper",
+        "AS_GCM_GRD_TableFillInPreview"
+      ]
+    },
+    {
+      "uuid": "f3beafc8-87b7-4029-92d8-0a0f1316617e",
+      "name": "AS_GCM_ConstructTableFillInMaps",
+      "type": "Expression Rule",
+      "description": "Identifies and constructs table fill-in maps from clause text",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GCM_BL_generateUuidForFillIns",
+        "AS_GCM_TEXT_HYPHEN",
+        "AS_GCM_TXT_CUSTOM_FILL_IN_TYPE_TABLE",
+        "AS_GCM_UT_removeCiteAndHighlightTagWithinTables",
+        "AS_GCM_removeHiddenSpanTagsFromHtml"
+      ],
+      "called_by": [
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000eec3-bb0f-8000-9e50-011c48011c48_17445437",
+      "name": "AS_GCM_MTR_SAVE_IdentifyFillInsUsingAI_Add_FillInsIdentified",
+      "type": "Expression Rule",
+      "description": "Metrics rule for tracking number of times Identify Fill-ins using AI action has been successfully used to add the identified fill-ins in clause text.",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_blankSave"
+      ],
+      "called_by": [
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000eec3-bb0f-8000-9e50-011c48011c48_17445357",
+      "name": "AS_GCM_MTR_SAVE_IdentifyFillInsUsingAI_Cancel_EmptyState",
+      "type": "Expression Rule",
+      "description": "Metrics rule for tracking number of times Identify Fill-ins using AI action has been cancelled in Empty  state.",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_blankSave"
+      ],
+      "called_by": [
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000eec3-bb0f-8000-9e50-011c48011c48_17445364",
+      "name": "AS_GCM_MTR_SAVE_IdentifyFillInsUsingAI_Cancel_ErrorState",
+      "type": "Expression Rule",
+      "description": "Metrics rule for tracking number of times Identify Fill-ins using AI action has been cancelled in Error  state.",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_blankSave"
+      ],
+      "called_by": [
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000eec3-bb0f-8000-9e50-011c48011c48_17445399",
+      "name": "AS_GCM_MTR_SAVE_IdentifyFillInsUsingAI_Cancel_FillInsIdentified",
+      "type": "Expression Rule",
+      "description": "Metrics rule for tracking number of times Identify Fill-ins using AI action has been cancelled with identified Fill-ins.",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_blankSave"
+      ],
+      "called_by": [
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000eec3-bb0f-8000-9e50-011c48011c48_17445392",
+      "name": "AS_GCM_MTR_SAVE_IdentifyFillInsUsingAI_Cancel_Inprogress",
+      "type": "Expression Rule",
+      "description": "Metrics rule for tracking number of times Identify Fill-ins using AI action has been cancelled in Inprogress  state.",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_blankSave"
+      ],
+      "called_by": [
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000e915-02bc-8000-9c1f-011c48011c48_4025082",
+      "name": "AS_GCM_QR_getFillInRecDetails",
+      "type": "Expression Rule",
+      "description": "Query Record to get Fill in recommendation details",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_not",
+        "AS_CO_UT_queryRecord"
+      ],
+      "called_by": [
+        "AS_GCM_getFillinMapsAndClauseTextUsingHighlightOrCiteTags"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1557817",
+      "name": "AS_GCM_UT_findColorCodes",
+      "type": "Expression Rule",
+      "description": null,
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_getFillinMapsAndClauseTextUsingHighlightOrCiteTags"
+      ]
+    },
+    {
+      "uuid": "_a-0000e915-02bc-8000-9c1f-011c48011c48_3772981",
+      "name": "AS_GCM_UT_generateCiteTagForFillins",
+      "type": "Expression Rule",
+      "description": "To create the cite tag for the fill-ins with class identifier and UUID",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_BL_generateUuidForFillIns"
+      ],
+      "called_by": [
+        "AS_GCM_generateOrRetainClassParameterInHighlightOrCiteTag",
+        "AS_GCM_getFillinMapsAndClauseTextUsingHighlightOrCiteTags"
+      ]
+    },
+    {
+      "uuid": "_a-0000e8e8-3f98-8000-9ba5-011c48011c48_13321",
+      "name": "AS_GCM_UT_regexsearch",
+      "type": "Expression Rule",
+      "description": "contains regexsearch() which handles the type casting issue.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_castToDictionaryList"
+      ],
+      "called_by": [
+        "AS_GCM_extractBalancedTagThatHasGivenText"
+      ]
+    },
+    {
+      "uuid": "_a-0000e915-02bc-8000-9c1f-011c48011c48_3773151",
+      "name": "AS_GCM_UT_removeCiteAndHighlightTagWithinTables",
+      "type": "Expression Rule",
+      "description": "To remove the highlight and cite tag within the tables from the clause text",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_UT_removeHightlightTags"
+      ],
+      "called_by": [
+        "AS_GCM_ConstructTableFillInMaps",
+        "AS_GCM_getFillinMapsAndClauseTextUsingHighlightOrCiteTags"
+      ]
+    },
+    {
+      "uuid": "_a-0000e915-02bc-8000-9c1f-011c48011c48_3772662",
+      "name": "AS_GCM_UT_removeHightlightTags",
+      "type": "Expression Rule",
+      "description": "returns the text without a highlight tag from the balanced highlight tag",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_GCM_TXT_REGEX_FOR_HIDDEN_SPAN_TAG_HAVING_CLASS_PARAMETER",
+        "AS_GCM_extractBalancedTagThatHasGivenText",
+        "AS_GCM_substituteListFromTextUsingReduce"
+      ],
+      "called_by": [
+        "AS_GCM_UT_removeCiteAndHighlightTagWithinTables",
+        "AS_GCM_getFillinMapsAndClauseTextUsingHighlightOrCiteTags"
+      ]
+    },
+    {
+      "uuid": "210e7e0d-4e7d-4883-a4a6-6878800492c7",
+      "name": "AS_GCM_UpdateClauseTextBasedOnAIIdentifiedFillIns",
+      "type": "Expression Rule",
+      "description": "Returns the updated clause text based AI Identified fill-ins",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GCM_TXT_CUSTOM_FILL_IN_TYPE_TABLE",
+        "AS_GCM_filterRecords",
+        "AS_GCM_substituteListFromTextUsingReduce"
+      ],
+      "called_by": [
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea95-3eb3-8000-9cc0-011c48011c48_8052294",
+      "name": "AS_GCM_blankSave",
+      "type": "Expression Rule",
+      "description": "Blank Save For Metrics",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_MTR_SAVE_IdentifyFillInsUsingAI_Add_FillInsIdentified",
+        "AS_GCM_MTR_SAVE_IdentifyFillInsUsingAI_Cancel_EmptyState",
+        "AS_GCM_MTR_SAVE_IdentifyFillInsUsingAI_Cancel_ErrorState",
+        "AS_GCM_MTR_SAVE_IdentifyFillInsUsingAI_Cancel_FillInsIdentified",
+        "AS_GCM_MTR_SAVE_IdentifyFillInsUsingAI_Cancel_Inprogress"
+      ]
+    },
+    {
+      "uuid": "_a-0000ebf3-ee42-8000-9d69-011c48011c48_12124906",
+      "name": "AS_GCM_doesHtmlContainVisibleCharacters",
+      "type": "Expression Rule",
+      "description": "Return the Boolean to determine does the html text contains any visible characters in it",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_extractBalancedTagThatHasGivenText",
+        "AS_GCM_substituteListFromTextUsingReduce"
+      ],
+      "called_by": [
+        "AS_GCM_DPL_GAM_COMP_richTextFieldWithTablePlugin"
+      ]
+    },
+    {
+      "uuid": "_a-0000e915-02bc-8000-9c1f-011c48011c48_3734026",
+      "name": "AS_GCM_extractBalancedTagThatHasGivenText",
+      "type": "Expression Rule",
+      "description": "Returns the balanced tag with proper opening and closing tags",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GCM_UT_regexsearch"
+      ],
+      "called_by": [
+        "AS_GCM_UT_removeHightlightTags",
+        "AS_GCM_doesHtmlContainVisibleCharacters",
+        "AS_GCM_getFillinMapsAndClauseTextUsingHighlightOrCiteTags",
+        "AS_GCM_removeHiddenSpanTagsFromHtml"
+      ]
+    },
+    {
+      "uuid": "_a-0000e915-02bc-8000-9c1f-011c48011c48_3773464",
+      "name": "AS_GCM_extractUuidAndFillinTypeFromClassParameter",
+      "type": "Expression Rule",
+      "description": "Extracts fillin uuid and fillin type from the class parameter of a cite tag",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_GCM_TXT_CUSTOM_FILL_IN_TYPE_TABLE",
+        "AS_GCM_removeHiddenSpanTagsFromHtml"
+      ],
+      "called_by": [
+        "AS_GCM_generateOrRetainClassParameterInHighlightOrCiteTag",
+        "AS_GCM_getFillinMapsAndClauseTextUsingHighlightOrCiteTags"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9761091",
+      "name": "AS_GCM_filterRecords",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper",
+        "AS_GCM_UpdateClauseTextBasedOnAIIdentifiedFillIns"
+      ]
+    },
+    {
+      "uuid": "_a-0000e915-02bc-8000-9c1f-011c48011c48_3777459",
+      "name": "AS_GCM_generateOrRetainClassParameterInHighlightOrCiteTag",
+      "type": "Expression Rule",
+      "description": "Gerenates a new uuid if the tag doesn't contain one. Else retains it",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_UT_generateCiteTagForFillins",
+        "AS_GCM_extractUuidAndFillinTypeFromClassParameter"
+      ],
+      "called_by": [
+        "AS_GCM_getFillinMapsAndClauseTextUsingHighlightOrCiteTags"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec50-376f-8000-9d94-011c48011c48_12909959",
+      "name": "AS_GCM_getColorBasedOnColorName",
+      "type": "Expression Rule",
+      "description": "The rule returns the hex code when a color name is passed",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_HEX_CODE_APPIAN_BACKGROUND"
+      ],
+      "called_by": [
+        "AS_GCM_COL_IdentifyFillInsWithAI_EmptyState",
+        "AS_GCM_COL_IdentifyFillInsWithAI_ErrorState",
+        "AS_GCM_COL_identifyFillInsWithAI_inProgress",
+        "AS_GCM_CPS_identifyFillInsWithAI_clauseText",
+        "AS_GCM_CPS_identifyFillInsWithAI_fillIns",
+        "AS_GCM_CRD_InfoBannerMessage"
+      ]
+    },
+    {
+      "uuid": "_a-0000e915-02bc-8000-9c1f-011c48011c48_3773372",
+      "name": "AS_GCM_getFillinMapsAndClauseTextUsingHighlightOrCiteTags",
+      "type": "Expression Rule",
+      "description": "Returns the fillinsMap by extracting from highlight tags or from cite tags if true is passed to ri!isConvertCiteToHighlight",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GAM_filterCdtOrRecordDataByField",
+        "AS_GCM_HEX_CODE_DEFAULT_FILL_IN_HIGHLIGHT_IN_ADD_OR_EDIT_CLAUSE",
+        "AS_GCM_HEX_CODE_FILL_IN_HIGHLIGHT",
+        "AS_GCM_HEX_CODE_HIGHLIGHT_TO_EXCLUDE_FROM_FILLINS",
+        "AS_GCM_QR_getFillInRecDetails",
+        "AS_GCM_UT_findColorCodes",
+        "AS_GCM_UT_generateCiteTagForFillins",
+        "AS_GCM_UT_removeCiteAndHighlightTagWithinTables",
+        "AS_GCM_UT_removeHightlightTags",
+        "AS_GCM_extractBalancedTagThatHasGivenText",
+        "AS_GCM_extractUuidAndFillinTypeFromClassParameter",
+        "AS_GCM_generateOrRetainClassParameterInHighlightOrCiteTag",
+        "AS_GCM_mergeMultipleMapsIntoSingleMap",
+        "AS_GCM_substituteListFromTextUsingReduce"
+      ],
+      "called_by": [
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000e915-02bc-8000-9c1f-011c48011c48_3773963",
+      "name": "AS_GCM_mergeMultipleMapsIntoSingleMap",
+      "type": "Expression Rule",
+      "description": "It merges the multiple maps into a single map",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast"
+      ],
+      "called_by": [
+        "AS_GCM_getFillinMapsAndClauseTextUsingHighlightOrCiteTags"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec0f-9de5-8000-9d75-011c48011c48_12361328",
+      "name": "AS_GCM_removeHiddenSpanTagsFromHtml",
+      "type": "Expression Rule",
+      "description": "Removes the hidden span tags from the given html",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_extractBalancedTagThatHasGivenText",
+        "AS_GCM_substituteListFromTextUsingReduce"
+      ],
+      "called_by": [
+        "AS_GCM_ConstructTableFillInMaps",
+        "AS_GCM_extractUuidAndFillinTypeFromClassParameter"
+      ]
+    },
+    {
+      "uuid": "_a-0000e915-02bc-8000-9c1f-011c48011c48_3773120",
+      "name": "AS_GCM_substituteListFromTextUsingReduce",
+      "type": "Expression Rule",
+      "description": "This rule calls the fn!substitute in a fn!reduce to replace all the text with the given text. If no input is passed to ri!replaceWith the text will be replaced with empty string",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper",
+        "AS_GCM_UT_removeHightlightTags",
+        "AS_GCM_UpdateClauseTextBasedOnAIIdentifiedFillIns",
+        "AS_GCM_doesHtmlContainVisibleCharacters",
+        "AS_GCM_getFillinMapsAndClauseTextUsingHighlightOrCiteTags",
+        "AS_GCM_removeHiddenSpanTagsFromHtml"
+      ]
+    },
+    {
+      "uuid": "_a-0000eec3-bb0f-8000-9e50-011c48011c48_17441690",
+      "name": "AS_GCM_COL_IdentifyFillInsWithAI_EmptyState",
+      "type": "Interface",
+      "description": "Displays the Empty state UI for Identify Fill-ins with AI ",
+      "parameters": [
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        }
+      ],
+      "calls": [
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_DOC_IDENTIFY_FILL_IN_WITH_AI_EMPTY_STATE",
+        "AS_GCM_getColorBasedOnColorName"
+      ],
+      "called_by": [
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeba-81af-8000-9e4e-011c48011c48_17419152",
+      "name": "AS_GCM_COL_IdentifyFillInsWithAI_ErrorState",
+      "type": "Interface",
+      "description": "Displays the Error state UI for Identify Fill-ins with AI ",
+      "parameters": [
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "errorMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "userAction",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "retryShowWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        }
+      ],
+      "calls": [
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_DOC_IDENTIFY_FILL_IN_WITH_AI_ERROR_STATE",
+        "AS_GCM_ENUM_USER_ACTION_RETRY",
+        "AS_GCM_getColorBasedOnColorName"
+      ],
+      "called_by": [
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeba-81af-8000-9e4e-011c48011c48_17395592",
+      "name": "AS_GCM_COL_identifyFillInsWithAI_inProgress",
+      "type": "Interface",
+      "description": "columns layout to display the Inprogress state UI for Identify Fill-ins with AI ",
+      "parameters": [
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        }
+      ],
+      "calls": [
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_DOC_IDENTIFY_FILL_IN_WITH_AI_INPROGRESS",
+        "AS_GCM_getColorBasedOnColorName"
+      ],
+      "called_by": [
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeba-81af-8000-9e4e-011c48011c48_17410955",
+      "name": "AS_GCM_CPS_IdentifyFillInsWithAI_Preview",
+      "type": "Interface",
+      "description": "contains columns layout for fill-ins and clause text in AI identified fill-ins page",
+      "parameters": [
+        {
+          "name": "clauseText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "sortedFillInMaps",
+          "type": "http://www.appian.com/ae/types/2009:Map?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "fillInTypeMap",
+          "type": "http://www.appian.com/ae/types/2009:Map?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        }
+      ],
+      "calls": [
+        "AS_GCM_CPS_identifyFillInsWithAI_clauseText",
+        "AS_GCM_CPS_identifyFillInsWithAI_fillIns",
+        "AS_GCM_CRD_InfoBannerMessage"
+      ],
+      "called_by": [
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000eea8-0b3f-8000-9e48-011c48011c48_17241192",
+      "name": "AS_GCM_CPS_identifyFillInsWithAI_clauseText",
+      "type": "Interface",
+      "description": "Displays the clause text processed by AI",
+      "parameters": [
+        {
+          "name": "clauseText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_DPL_GAM_COMP_richTextFieldWithTablePlugin",
+        "AS_GCM_getColorBasedOnColorName"
+      ],
+      "called_by": [
+        "AS_GCM_CPS_IdentifyFillInsWithAI_Preview"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeb1-460e-8000-9e4a-011c48011c48_17308112",
+      "name": "AS_GCM_CPS_identifyFillInsWithAI_fillIns",
+      "type": "Interface",
+      "description": "Displays the fill-ins identified by the AI skill.",
+      "parameters": [
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "sortedFillInMaps",
+          "type": "http://www.appian.com/ae/types/2009:Map?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "fillInTypeMap",
+          "type": "http://www.appian.com/ae/types/2009:Map?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        }
+      ],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_GRD_TableFillInPreview",
+        "AS_GCM_TXT_CHECKBOX_CHAR_LIST",
+        "AS_GCM_TXT_CUSTOM_FILL_IN_TYPE_RICH_TEXT_TABLE",
+        "AS_GCM_TXT_CUSTOM_FILL_IN_TYPE_TABLE",
+        "AS_GCM_getColorBasedOnColorName"
+      ],
+      "called_by": [
+        "AS_GCM_CPS_IdentifyFillInsWithAI_Preview"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee54-fb4d-8000-9e2f-011c48011c48_16651387",
+      "name": "AS_GCM_CRD_InfoBannerMessage",
+      "type": "Interface",
+      "description": "Info Banner message UI",
+      "parameters": [
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "text",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        }
+      ],
+      "calls": [
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_getColorBasedOnColorName"
+      ],
+      "called_by": [
+        "AS_GCM_CPS_IdentifyFillInsWithAI_Preview"
+      ]
+    },
+    {
+      "uuid": "_a-0000e915-02bc-8000-9c1f-011c48011c48_3870857",
+      "name": "AS_GCM_DPL_GAM_COMP_richTextFieldWithTablePlugin",
+      "type": "Interface",
+      "description": "Contains the richTextFieldWithTable component plugin",
+      "parameters": [
+        {
+          "name": "text",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "readOnly",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "labelPosition",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "required",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "height",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "instructions",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 6
+        },
+        {
+          "name": "validations",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 7
+        },
+        {
+          "name": "requiredMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 8
+        },
+        {
+          "name": "maxSize",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 9
+        },
+        {
+          "name": "triggerSave",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 10
+        },
+        {
+          "name": "saveInto",
+          "type": "http://www.appian.com/ae/types/2009:Save?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Save?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 11
+        }
+      ],
+      "calls": [
+        "AS_CO_UT_booleanDefaultFalse",
+        "AS_CO_UT_displayRequiredMessage",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_replaceNull",
+        "AS_GAM_INT_RTE_MAX_CHARACTERS",
+        "AS_GCM_TOGGLE_AUTOMATION_TESTING_ENABLED",
+        "AS_GCM_doesHtmlContainVisibleCharacters"
+      ],
+      "called_by": [
+        "AS_GCM_CPS_identifyFillInsWithAI_clauseText"
+      ]
+    },
+    {
+      "uuid": "_a-0000eea8-0b3f-8000-9e48-011c48011c48_17241214",
+      "name": "AS_GCM_FM_identifyFillInsWithAI_Wrapper",
+      "type": "Interface",
+      "description": "wrapper interface for AI Identified Fill-Ins ",
+      "parameters": [
+        {
+          "name": "clauseText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "buttonAction",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "clause",
+          "type": "urn:com:appian:recordtype:datatype:83b74fc4-71d0-456a-8b20-12ea04b76cd1",
+          "raw_type": "urn:com:appian:recordtype:datatype:83b74fc4-71d0-456a-8b20-12ea04b76cd1",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "isSuccess",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "errorMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "hideErrorStateRetry",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "aiIdentifiedFillInsUuids",
+          "type": "http://www.appian.com/ae/types/2009:Text?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 6
+        }
+      ],
+      "calls": [
+        "AS_CO_ENUM_USER_ACTION_CANCEL",
+        "AS_CO_UT_castToMapArray",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GCM_COL_IdentifyFillInsWithAI_EmptyState",
+        "AS_GCM_COL_IdentifyFillInsWithAI_ErrorState",
+        "AS_GCM_COL_identifyFillInsWithAI_inProgress",
+        "AS_GCM_CONS_fillInTypeMaps",
+        "AS_GCM_CO_ENUM_USER_ACTION_ADD_FILL_INS",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_CPS_IdentifyFillInsWithAI_Preview",
+        "AS_GCM_ConstructTableFillInMaps",
+        "AS_GCM_HEX_CODE_APPIAN_BACKGROUND",
+        "AS_GCM_MTR_SAVE_IdentifyFillInsUsingAI_Add_FillInsIdentified",
+        "AS_GCM_MTR_SAVE_IdentifyFillInsUsingAI_Cancel_EmptyState",
+        "AS_GCM_MTR_SAVE_IdentifyFillInsUsingAI_Cancel_ErrorState",
+        "AS_GCM_MTR_SAVE_IdentifyFillInsUsingAI_Cancel_FillInsIdentified",
+        "AS_GCM_MTR_SAVE_IdentifyFillInsUsingAI_Cancel_Inprogress",
+        "AS_GCM_TXT_CHECKBOX_CHAR_LIST",
+        "AS_GCM_TXT_CHECKBOX_SYMBOL_LIST",
+        "AS_GCM_TXT_CUSTOM_FILL_IN_TYPE_TABLE",
+        "AS_GCM_TXT_FILL_IN_TYPE_CHECKBOX",
+        "AS_GCM_TXT_FILL_IN_TYPE_MULTI_LINE",
+        "AS_GCM_TXT_FILL_IN_TYPE_SINGLE_LINE",
+        "AS_GCM_TXT_MULTI_LINE_FILL_INS_KEYWORD_LIST",
+        "AS_GCM_UpdateClauseTextBasedOnAIIdentifiedFillIns",
+        "AS_GCM_filterRecords",
+        "AS_GCM_getFillinMapsAndClauseTextUsingHighlightOrCiteTags",
+        "AS_GCM_substituteListFromTextUsingReduce"
+      ],
+      "called_by": [
+        "AS GCM Identify Fill Ins With AI"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeba-81af-8000-9e4e-011c48011c48_17394481",
+      "name": "AS_GCM_GRD_TableFillInPreview",
+      "type": "Interface",
+      "description": "Grid layout to display table fill-in preview",
+      "parameters": [
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "tableFillInMap",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_CO_UT_loadBundleFromFolder"
+      ],
+      "called_by": [
+        "AS_GCM_CPS_identifyFillInsWithAI_fillIns"
+      ]
+    },
+    {
+      "uuid": "0002eead-e35c-8000-e17e-7f0000014e7a",
+      "name": "AS GCM Identify Fill Ins With AI",
+      "type": "Process Model",
+      "description": "PM to handle the fill-ins identified by AI",
+      "calls": [
+        "AS_CO_ENUM_USER_ACTION_CANCEL",
+        "AS_GCM_APPREF_GCM_AI_STARTPROCESS_identifyFillinsUsingNativeAI",
+        "AS_GCM_CO_ENUM_USER_ACTION_ADD_FILL_INS",
+        "AS_GCM_ENUM_USER_ACTION_RETRY",
+        "AS_GCM_FM_identifyFillInsWithAI_Wrapper"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "382dda7d-5334-4c9b-a96f-b02ae5c6848a",
+      "name": "AS_CO_Example_RECORD",
+      "type": "Record Type",
+      "description": "Example record type",
+      "actions": [],
+      "views": [
+        "Record Header",
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_isRecordTypeData"
+      ]
+    }
+  ]
+}

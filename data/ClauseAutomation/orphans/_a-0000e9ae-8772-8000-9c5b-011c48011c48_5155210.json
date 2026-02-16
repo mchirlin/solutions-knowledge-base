@@ -1,0 +1,71 @@
+{
+  "uuid": "_a-0000e9ae-8772-8000-9c5b-011c48011c48_5155210",
+  "name": "AS_GCM_QE_getClauseSetClauseDetailsWithBatching_V1",
+  "type": "Expression Rule",
+  "description": "Query Entity to get clause set clause details with batching from GCW",
+  "sail_code": "a!localVariables(\n  local!relationIds: a!defaultValue(\n    value: ri!relationIds,\n    default: index(\n      rule!AS_GAM_UT_queryEntityWithSelection(\n        entity: cons!AS_GCM_ENT_CLAUSE_SET_CLAUSE,\n        pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(startIndex: 1, batchSize: - 1),\n        filters: {\n          #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: \"setId\",\n            operator: \"=\",\n            value: ri!setId\n          ),\n          #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: \"isActive\",\n            operator: \"=\",\n            value: true(),\n            applyWhen: ri!showInActive <> true()\n          ),\n          ri!additionalFilters\n        },\n        selectionColumns: { \"relationId\" },\n        logicalExpression: ri!logicalExpression,\n        triggerRefresh: ri!triggerRefresh,\n        executeWhen: and(\n          ri!executeWhen,\n          or(\n            any(\n              rule!AS_CO_UT_isNotBlank(_),\n              {\n                ri!additionalFilters,\n                ri!logicalExpression,\n                ri!aggregation\n              }\n            ),\n            a!isNotNullOrEmpty(ri!setId),\n            rule!AS_CO_UT_isNotBlank(ri!relationIds)\n          )\n        )\n      ).data,\n      \"relationId\",\n      {}\n    )\n  ),\n  local!batches: rule!AS_GCM_UT_getIdentifiersInBatches(\n    identifiers: local!relationIds,\n    batchingSize: a!defaultValue(\n      ri!batchingSize,\n      cons!AS_GCM_INT_QUERY_BATCH_SIZE_TINY\n    ),\n    returnType: ri!returnType,\n    pagingInfo: ri!pagingInfo\n  ),\n  local!data: if(\n    rule!AS_CO_UT_isBlank(local!relationIds),\n    {},\n    a!flatten(\n      #\"SYSTEM_SYSRULES_forEach\"(\n        items: local!batches,\n        expression: if(\n          and(\n            rule!AS_CO_UT_isNotBlank(input: ri!selectionColumns),\n            rule!AS_CO_UT_isBlank(value: ri!aggregation)\n          ),\n          rule!AS_GCM_UT_nullifyEmptyNestedCdtFields(\n            cdt: rule!AS_CO_UT_cast(\n              type: 'type!{urn:com:appian:types:AS:GCM}AS_GCM_ClauseSet_Clause?list',\n              value: rule!AS_GAM_UT_queryEntityWithSelection(\n                entity: cons!AS_GCM_ENT_CLAUSE_SET_CLAUSE,\n                entityType: 'type!{urn:com:appian:types:AS:GCM}AS_GCM_ClauseSet_Clause',\n                returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY,\n                pagingInfo: a!defaultValue(\n                  value: ri!pagingInfo,\n                  default: #\"SYSTEM_SYSRULES_pagingInfo\"(\n                    startIndex: 1,\n                    batchSize: count(fv!item.identifiers),\n                    sort: #\"SYSTEM_SYSRULES_sortInfo\"(field: \"relationId\", ascending: true())\n                  )\n                ),\n                filters: {\n                  #\"SYSTEM_SYSRULES_queryFilter\"(\n                    field: \"relationId\",\n                    operator: \"in\",\n                    value: tointeger(fv!item.identifiers)\n                  ),\n                  #\"SYSTEM_SYSRULES_queryFilter\"(\n                    field: \"isActive\",\n                    operator: \"=\",\n                    value: true(),\n                    applyWhen: ri!showInActive <> true()\n                  ),\n                  ri!additionalFilters\n                },\n                selectionColumns: ri!selectionColumns,\n                logicalExpression: ri!logicalExpression,\n                triggerRefresh: ri!triggerRefresh,\n                executeWhen: and(\n                  ri!executeWhen,\n                  rule!AS_CO_UT_isNotBlank(input: fv!item.identifiers)\n                )\n              ).data\n            )\n          ),\n          rule!AS_GCM_QE_getClauseSetClauseDetails(\n            relationId: fv!item.identifiers,\n            returnType: a!defaultValue(\n              value: ri!returnType,\n              default: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY\n            ),\n            executeWhen: rule!AS_CO_UT_isNotBlank(input: fv!item.identifiers),\n            aggregation: ri!aggregation,\n            logicalExpression: ri!logicalExpression,\n            additionalFilters: ri!additionalFilters,\n            pagingInfo: ri!pagingInfo,\n            triggerRefresh: ri!triggerRefresh,\n            sort: ri!sort,\n            showInActive: ri!showInActive\n          )\n        )\n      )\n    )\n  ),\n  rule!AS_GCM_UT_formatDataBasedOnReturnType(\n    data: local!data,\n    pagingInfo: ri!pagingInfo,\n    returnType: ri!returnType\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GAM_UT_queryEntityWithSelection",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_UT_getIdentifiersInBatches",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_UT_nullifyEmptyNestedCdtFields",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_cast",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QE_getClauseSetClauseDetails",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_UT_formatDataBasedOnReturnType",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_ENT_CLAUSE_SET_CLAUSE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_INT_QUERY_BATCH_SIZE_TINY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GCM_ENTRYPOINT_GETDATA_getClauseSetClause",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "uuid": "_a-0000e9ef-12bc-8000-9c7a-011c48011c48_6025440",
+  "name": "AS_GCM_ENTRYPOINT_STARTPROCESS_updateSpecificClauseSetFields",
+  "type": "Expression Rule",
+  "description": "Entry-point in the GCM Application to return a map of the Update Specific Clause Set Fields process model and the appropriate processParameters",
+  "sail_code": "a!localVariables(\n  local!clauseSet: rule!AS_GCM_removeBlankFieldsFromRecordData(\n    recordData: recordType!AS GCM Clause Set(\n      recordType!AS GCM Clause Set.setId: ri!setId,\n      recordType!AS GCM Clause Set.setNumber: ri!setNumber,\n      recordType!AS GCM Clause Set.categoryNumber: ri!categoryNumber,\n      recordType!AS GCM Clause Set.modifiedBy: loggedInUser(),\n      recordType!AS GCM Clause Set.modifiedDatetime: now()\n    )\n  ),\n  local!originalClauseSet: cast(\n    recordType!AS GCM Clause Set,\n    rule!AS_GAM_UT_queryEntityWithSelection(\n      entity: cons!AS_GCM_ENT_CLAUSE_SET,\n      pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(1, 1),\n      filters: #\"SYSTEM_SYSRULES_queryFilter\"(\n        field: \"setId\",\n        operator: \"=\",\n        value: ri!setId\n      ),\n      selectionColumns: touniformstring(a!keys(local!clauseSet)),\n      executeWhen: a!isNotNullOrEmpty(ri!setId)\n    ).data\n  ),\n  a!map(\n    processModel: cons!AS_GCM_PM_UPDATE_SPECIFIC_CLAUSE_SET_FIELDS,\n    processParameters: {\n      originalClauseSet: local!originalClauseSet,\n      clauseSet: if(\n        a!isNullOrEmpty(ri!setId),\n        null,\n        local!clauseSet\n      )\n    }\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GCM_removeBlankFieldsFromRecordData",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_UT_queryEntityWithSelection",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_ENT_CLAUSE_SET",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_PM_UPDATE_SPECIFIC_CLAUSE_SET_FIELDS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

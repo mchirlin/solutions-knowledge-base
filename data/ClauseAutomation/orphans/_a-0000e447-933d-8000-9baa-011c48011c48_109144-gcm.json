@@ -1,0 +1,55 @@
+{
+  "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_109144-gcm",
+  "name": "AS_GCM_QNM_CPS_displayQuestion_DROPDOWN_TEXT",
+  "type": "Interface",
+  "description": "Interface for displaying a Single Text Dropdown question",
+  "sail_code": "a!localVariables(\n  local!valueToBeDisplayedInCaption: {\n    /*DOCUPLOADTYPE removed*/\n    /* Max responses requirement */\n    a!localVariables(\n      local!maxResponses: rule!AS_CO_UT_filterCdtByField(\n        cdt: ri!question.responseRequirements,\n        field: \"requirementTypeCode\",\n        value: cons!AS_GCM_QNM_ENUM_RESPONSE_REQUIREMENT_TYPE_CODE_MAX_RESPONSES\n      ).requirementValue,\n      if(\n        rule!AS_CO_UT_isBlank(local!maxResponses),\n        null,\n        rule!AS_GAM_CO_I18N_UT_displayLabel(\n          bundle: ri!bundle,\n          bundleKey: \"hlp_MaxResponseOptionToSelect\",\n          arguments: local!maxResponses\n        )\n      )\n    ),\n    /* Min responses requirement */\n    a!localVariables(\n      local!minResponses: rule!AS_CO_UT_filterCdtByField(\n        cdt: ri!question.responseRequirements,\n        field: \"requirementTypeCode\",\n        value: cons!AS_GCM_QNM_ENUM_RESPONSE_REQUIREMENT_TYPE_CODE_MIN_RESPONSES\n      ).requirementValue,\n      if(\n        rule!AS_CO_UT_isBlank(local!minResponses),\n        null,\n        rule!AS_GAM_CO_I18N_UT_displayLabel(\n          bundle: ri!bundle,\n          bundleKey: \"hlp_MinResponseOptionToSelect\",\n          arguments: local!minResponses\n        )\n      )\n    )\n  },\n  rule!AS_GCM_QNM_CPS_dropdownField(\n    validations: rule!AS_GCM_QNM_VD_evaluateResponseRequirementsForField(\n      question: ri!question,\n      questionMetadata: ri!questionMetadata,\n      fieldKey: null,\n      returnValidationMessage: true\n    ),\n    question: ri!question,\n    fieldKey: null,\n    label: ri!question.label,\n    disableSaves: ri!disableSaves,\n    labelPosition: \"ABOVE\",\n    helpTooltip: rule!AS_CO_UT_rejectNullValuesFromArray(local!valueToBeDisplayedInCaption)\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QNM_CPS_dropdownField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QNM_VD_evaluateResponseRequirementsForField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QNM_ENUM_RESPONSE_REQUIREMENT_TYPE_CODE_MAX_RESPONSES",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_QNM_ENUM_RESPONSE_REQUIREMENT_TYPE_CODE_MIN_RESPONSES",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_QNM_TST_questionnaire",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

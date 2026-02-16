@@ -1,0 +1,15 @@
+{
+  "uuid": "_a-0000ec46-fcf4-8000-9d91-011c48011c48_12842040",
+  "name": "AS_GCM_UT_SetForeignKey",
+  "type": "Expression Rule",
+  "description": "Helper rule to set the foreign key on child records for a record after a DB write",
+  "sail_code": "a!flatten(\n  #\"SYSTEM_SYSRULES_forEach\"(\n    items: a!flatten(ri!records),\n    expression: a!localVariables(\n      local!children: a!flatten(\n        rule!AS_CO_UT_rejectNullValuesFromArray(array: fv!item[ri!relationship])\n      ),\n      if(\n        a!isNotNullOrEmpty(local!children),\n        #\"urn:appian:function:v1:a:update\"(\n          local!children,\n          ri!childFkField,\n          fv!item[ri!parentPkField]\n        ),\n        {}\n      )\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

@@ -1,0 +1,431 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GAM Add User to User Table",
+    "parent_name": null,
+    "total_objects": 27
+  },
+  "entry_point": {
+    "complexity_score": 8.0,
+    "total_nodes": 5,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GAM Add User to User Table",
+      "complexity_score": 8.0,
+      "total_nodes": 5,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "User Check"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Write to Provided User Table",
+          "type": "Write to Data Store Entity",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "User Check",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write to User Table?"
+          ]
+        },
+        {
+          "name": "Write to User Table?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Write to Provided User Table",
+            "End Node"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290163",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "description": "OBJECT_ARRAY - Returns an array type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "OBJECT_ARRAY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_GAM_UT_FormatUserForCreation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5d4-2024-8000-9baf-011c48011c48_336194",
+      "name": "AS_FRM_BOOL_APPREF_ENTRYPOINT_FRAMEWORK_ENABLED",
+      "type": "Constant",
+      "description": "Returns true if the APPREF/ENTRYPOINT framework is enabled",
+      "value": "true",
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "AS_FRM_getRuleReferenceOrNoOp"
+      ]
+    },
+    {
+      "uuid": "_a-0000e583-8ce5-8000-9bb7-011c48011c48_734490",
+      "name": "AS_CO_UT_castToMapList",
+      "type": "Expression Rule",
+      "description": "Casts the input to a map list",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GAM_UT_FormatUserForCreation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75330",
+      "name": "AS_CO_UT_cdtDistinctOnField",
+      "type": "Expression Rule",
+      "description": "Returns only distinct CDT indices on a single field, returning the first index where there are multiples of the same value.\n\ni.e. {{a: 1, b: 2}, {a: 1, b: 4}, {a: 5, b: 4}}, distinct on field \"a\" would return {{a: 1, b: 2}, {a: 5, b: 4}}",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cdtDistinctOnFieldSingle",
+        "AS_CO_UT_distinct",
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GAM_UT_FormatUserForCreation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75287",
+      "name": "AS_CO_UT_cdtDistinctOnFieldSingle",
+      "type": "Expression Rule",
+      "description": "Called by AS_CO_UT_cdtDistinctOnField -- do not call this rule",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_returnCdtIndicesByMultipleFields"
+      ],
+      "called_by": [
+        "AS_CO_UT_cdtDistinctOnField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_81749",
+      "name": "AS_CO_UT_checkIfUserExists",
+      "type": "Expression Rule",
+      "description": "Returns true if the user exists",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_GAM_UT_FormatUserForCreation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73758",
+      "name": "AS_CO_UT_distinct",
+      "type": "Expression Rule",
+      "description": "Returns the distinct values from a list.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_cdtDistinctOnField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_268381",
+      "name": "AS_CO_UT_enumForCount",
+      "type": "Expression Rule",
+      "description": "Return an enumerator for the count of the input objects",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_returnCdtIndicesByMultipleFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75800",
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "description": "Filters a CDT by a matching a single value or list of values in a single field, if a list is passed, all matches are returned",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_returnCdtIndicesByField"
+      ],
+      "called_by": [
+        "AS_GAM_UT_FormatUserForCreation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76433",
+      "name": "AS_CO_UT_indexPath",
+      "type": "Expression Rule",
+      "description": "Pass in a field (i.e. member[1].name) and this will index(index(index( for each field",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_cdtDistinctOnFieldSingle",
+        "AS_CO_UT_returnCdtIndicesByField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GAM Add User to User Table",
+        "AS_CO_UT_castToMapList",
+        "AS_CO_UT_cdtDistinctOnField",
+        "AS_CO_UT_enumForCount",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_updateCdtFields",
+        "AS_CO_UT_whereContains",
+        "AS_GAM_UT_FormatUserForCreation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around AS_CO_UT_isBlank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_checkIfUserExists",
+        "AS_CO_UT_queryEntity",
+        "AS_GAM_UT_FormatUserForCreation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157870",
+      "name": "AS_CO_UT_queryEntity",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GAM_QE_getUser"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73980",
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "description": "Returns nullableValue only if it is not null. Else returns replacementValue.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_GAM_UT_FormatUserForCreation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_269546",
+      "name": "AS_CO_UT_returnCdtIndicesByField",
+      "type": "Expression Rule",
+      "description": "Returns the indices of a CDT by a matching a single value or list of values in a single field, if a list is passed, all matches are returned",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_whereContains"
+      ],
+      "called_by": [
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_zINTERNAL_returnCdtIndicesByMultipleFields_handler"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75672",
+      "name": "AS_CO_UT_returnCdtIndicesByMultipleFields",
+      "type": "Expression Rule",
+      "description": "Returns the indices of a CDT by multiple fields and values for those fields (acts as an AND filter)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_enumForCount",
+        "AS_CO_UT_zINTERNAL_returnCdtIndicesByMultipleFields_handler"
+      ],
+      "called_by": [
+        "AS_CO_UT_cdtDistinctOnFieldSingle"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_162769",
+      "name": "AS_CO_UT_typeCompare",
+      "type": "Expression Rule",
+      "description": "Returns true if the two input types match",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_whereContains"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_260165",
+      "name": "AS_CO_UT_updateCdtFields",
+      "type": "Expression Rule",
+      "description": "Updates one or more fields of a CDT, with an optional input for indices",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GAM_UT_FormatUserForCreation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_272151",
+      "name": "AS_CO_UT_whereContains",
+      "type": "Expression Rule",
+      "description": "Enhanced wherecontains() which avoids type-casting issues and properly handles for document and group types",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_typeCompare"
+      ],
+      "called_by": [
+        "AS_CO_UT_returnCdtIndicesByField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_270503",
+      "name": "AS_CO_UT_zINTERNAL_returnCdtIndicesByMultipleFields_handler",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_CO_UT_returnCdtIndicesByMultipleFields`",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_returnCdtIndicesByField"
+      ],
+      "called_by": [
+        "AS_CO_UT_returnCdtIndicesByMultipleFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e571-774f-8000-b919-01ef9001ef90_29043",
+      "name": "AS_FRM_doesRuleExist",
+      "type": "Expression Rule",
+      "description": "Returns true if the passed in rule exists in the system, uses plugin function `doesruleexist()`",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_FRM_getRuleReferenceOrNoOp"
+      ]
+    },
+    {
+      "uuid": "_a-0000e571-774f-8000-b919-01ef9001ef90_28790",
+      "name": "AS_FRM_getRuleReferenceOrNoOp",
+      "type": "Expression Rule",
+      "description": "Returns either a rule reference to the input rule, or a no-operation if the rule does not exist, uses plugin function `rulereferencebyname()`",
+      "parameters": [],
+      "calls": [
+        "AS_FRM_BOOL_APPREF_ENTRYPOINT_FRAMEWORK_ENABLED",
+        "AS_FRM_doesRuleExist"
+      ],
+      "called_by": [
+        "AS_GAM_APPREF_GSS_GETDATA_userEntity",
+        "AS_GAM_APPREF_GSS_GETDATA_userType"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1034545",
+      "name": "AS_GAM_APPREF_GSS_GETDATA_userEntity",
+      "type": "Expression Rule",
+      "description": "Application reference to `AS_GSS_ENTRYPOINT_GETDATA_getUserEntity `",
+      "parameters": [],
+      "calls": [
+        "AS_FRM_getRuleReferenceOrNoOp"
+      ],
+      "called_by": [
+        "AS_GAM_UT_FormatUserForCreation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1034558",
+      "name": "AS_GAM_APPREF_GSS_GETDATA_userType",
+      "type": "Expression Rule",
+      "description": "Application reference to `AS_GSS_ENTRYPOINT_GETDATA_getUserType `",
+      "parameters": [],
+      "calls": [
+        "AS_FRM_getRuleReferenceOrNoOp"
+      ],
+      "called_by": [
+        "AS_GAM_UT_FormatUserForCreation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1034442",
+      "name": "AS_GAM_QE_getUser",
+      "type": "Expression Rule",
+      "description": "Returns user CDT based on the entity, entityType, and given filter set.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_queryEntity"
+      ],
+      "called_by": [
+        "AS_GAM_UT_FormatUserForCreation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1021026",
+      "name": "AS_GAM_UT_FormatUserForCreation",
+      "type": "Expression Rule",
+      "description": "Formats incoming data to see if creation, update or no action is needed for the user record",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_castToMapList",
+        "AS_CO_UT_cdtDistinctOnField",
+        "AS_CO_UT_checkIfUserExists",
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_updateCdtFields",
+        "AS_GAM_APPREF_GSS_GETDATA_userEntity",
+        "AS_GAM_APPREF_GSS_GETDATA_userType",
+        "AS_GAM_QE_getUser"
+      ],
+      "called_by": [
+        "AS GAM Add User to User Table"
+      ]
+    },
+    {
+      "uuid": "0002e5fa-2a35-8000-0fe9-7f0000014e7a",
+      "name": "AS GAM Add User to User Table",
+      "type": "Process Model",
+      "description": "Process to add user to provided table",
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_GAM_UT_FormatUserForCreation"
+      ],
+      "called_by": []
+    }
+  ]
+}

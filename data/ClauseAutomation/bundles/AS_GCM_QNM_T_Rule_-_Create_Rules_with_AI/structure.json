@@ -1,0 +1,1651 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "AS GCM QNM T Rule - Create Rules with AI",
+    "parent_name": "AS GCM QNM T Rule",
+    "total_objects": 62
+  },
+  "entry_point": {
+    "action_type": "RECORD_LIST_ACTION",
+    "record_type": "AS GCM QNM T Rule",
+    "target_process": "AS GCM QNM Create Rules with AI",
+    "form_interface": null,
+    "expressions": {
+      "TITLE": "\"Create Rules with AI\"",
+      "DESCRIPTION": null,
+      "VISIBILITY": null
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GCM QNM Create Rules with AI",
+      "complexity_score": 38.0,
+      "total_nodes": 17,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Prompt"
+          ]
+        },
+        {
+          "name": "Split",
+          "type": "AND_GATEWAY",
+          "next": [
+            "Inprogress / Empty / Error",
+            "Rule Builder AI"
+          ]
+        },
+        {
+          "name": "Split",
+          "type": "AND_GATEWAY",
+          "next": [
+            "Inprogress / Empty / Error",
+            "Rule Builder AI"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "End Event",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Action",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Split (Generate)",
+            "End Node (Cancel)"
+          ]
+        },
+        {
+          "name": "Rule Builder AI",
+          "type": "Start Process",
+          "next": [
+            "End Event"
+          ]
+        },
+        {
+          "name": "Increment Retry Count",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Split"
+          ]
+        },
+        {
+          "name": "Prompt",
+          "type": "USER_TASK",
+          "next": [
+            "Action"
+          ],
+          "interface": "AS_GCM_CPS_CreateRulesWithAI"
+        },
+        {
+          "name": "Reset AI Result",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Prompt"
+          ]
+        },
+        {
+          "name": "Inprogress / Empty / Error",
+          "type": "USER_TASK",
+          "next": [
+            "Action?"
+          ],
+          "interface": "AS_GCM_FM_CreateRulesWithAI_StateWrapper"
+        },
+        {
+          "name": "Cast Rule Records",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Create Rules"
+          ]
+        },
+        {
+          "name": "Action?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node (Cancel)",
+            "Cast Rule Records",
+            "Reset AI Result (Back to Prompt)"
+          ]
+        },
+        {
+          "name": "Generated Rules",
+          "type": "USER_TASK",
+          "next": [
+            "Action?"
+          ],
+          "interface": "AS_GCM_FM_CreateRulesWithAI_Preview"
+        },
+        {
+          "name": "Create Rules",
+          "type": "Start Process",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Action?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Inprogress / Empty / Error (Refresh)",
+            "Increment Retry Count (Error)",
+            "End Node (Cancel)",
+            "Generated Rules (AI Generated Rules)",
+            "Reset AI Result (Back to Prompt)"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290163",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "description": "OBJECT_ARRAY - Returns an array type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "OBJECT_ARRAY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CastAiGeneratedRulesToRecordType",
+        "AS_GCM_FM_CreateRulesWithAI_Preview",
+        "AS_GCM_QR_getRefClause"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73173",
+      "name": "AS_CO_ENUM_USER_ACTION_CANCEL",
+      "type": "Constant",
+      "description": "CANCEL.USER_ACTION - Value to use to drive process logic after a user performs a \"Cancel\" action",
+      "value": "CANCEL.USER_ACTION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM QNM Create Rules with AI",
+        "AS_GCM_FM_CreateRulesWithAI_Preview",
+        "AS_GCM_FM_CreateRulesWithAI_Prompt",
+        "AS_GCM_FM_CreateRulesWithAI_StateWrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73305",
+      "name": "AS_CO_ENUM_USER_ACTION_SUBMIT",
+      "type": "Constant",
+      "description": "SUBMIT.USER_ACTION - Value to use to drive process logic after a user performs a \"Submit\" action",
+      "value": "SUBMIT.USER_ACTION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FM_CreateRulesWithAI_Preview"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_104931",
+      "name": "AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+      "type": "Constant",
+      "description": "AS CO Internationalization Files",
+      "value": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_104925",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationFolder",
+      "calls": [],
+      "called_by": [
+        "AS_CO_I18N_UT_getAndDisplayLabelSingle",
+        "AS_CO_I18N_UT_loadBundleFromFolder",
+        "AS_CO_UT_displayCommonObjectBundleLabel"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5d4-2024-8000-9baf-011c48011c48_336194",
+      "name": "AS_FRM_BOOL_APPREF_ENTRYPOINT_FRAMEWORK_ENABLED",
+      "type": "Constant",
+      "description": "Returns true if the APPREF/ENTRYPOINT framework is enabled",
+      "value": "true",
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "AS_FRM_getRuleReferenceOrNoOp"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef3b-bde5-8000-9e6e-011c48011c48_18308785",
+      "name": "AS_GCM_DOC_CREATE_RULES_WITH_AI_EMPTY",
+      "type": "Constant",
+      "description": "Constant reference to the AS_GCM_DOC_CREATE_RULES_WITH_AI_EMPTY document",
+      "value": "_a-0000ef3b-bde5-8000-9e6e-011c48011c48_18308779",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FM_CreateRulesWithAI_Empty"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef3b-bde5-8000-9e6e-011c48011c48_18277877",
+      "name": "AS_GCM_DOC_CREATE_RULES_WITH_AI_INPROGRESS",
+      "type": "Constant",
+      "description": "Constant reference to the AS_GCM AS.GCM.CreateRulesWithAIInprogressState document",
+      "value": "_a-0000ef3b-bde5-8000-9e6e-011c48011c48_18277871",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_COL_CreateRulesWithAI_InProgress"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef32-86c3-8000-9e6c-011c48011c48_18227421",
+      "name": "AS_GCM_DOC_DESCRIBE_YOUR_RULE_IMAGE",
+      "type": "Constant",
+      "description": "Constant reference to the AS.GCM.DescribeYourRuleImage document",
+      "value": "_a-0000ef32-86c3-8000-9e6c-011c48011c48_18227399",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FM_CreateRulesWithAI_Instruction"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef32-86c3-8000-9e6c-011c48011c48_18227428",
+      "name": "AS_GCM_DOC_REVIEW_AND_SELECT_RULE_IMAGE",
+      "type": "Constant",
+      "description": "Constant reference to the AS.GCM.ReviewAndSelectRuleImage document",
+      "value": "_a-0000ef32-86c3-8000-9e6c-011c48011c48_18227397",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FM_CreateRulesWithAI_Instruction"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef32-86c3-8000-9e6c-011c48011c48_18244267",
+      "name": "AS_GCM_DOC_SAVE_RULES_AND_REFINE_IMAGE",
+      "type": "Constant",
+      "description": "Constant reference to the AS.GCM.SaveRulesAndRefineImage document",
+      "value": "_a-0000ef32-86c3-8000-9e6c-011c48011c48_18227385",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FM_CreateRulesWithAI_Instruction"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef3b-bde5-8000-9e6e-011c48011c48_18308743",
+      "name": "AS_GCM_ENUM_USER_ACTION_BACK_TO_PROMPT",
+      "type": "Constant",
+      "description": "BACK_TO_PROMPT.USER_ACTION - Value to use to drive process logic after a user performs a \"Mark as Complete\" action",
+      "value": "BACK_TO_PROMPT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM QNM Create Rules with AI",
+        "AS_GCM_FM_CreateRulesWithAI_Empty",
+        "AS_GCM_FM_CreateRulesWithAI_Preview"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeba-81af-8000-9e4e-011c48011c48_17419168",
+      "name": "AS_GCM_ENUM_USER_ACTION_RETRY",
+      "type": "Constant",
+      "description": "RETRY.USER_ACTION - Used in Retry button actions",
+      "value": "RETRY.USER_ACTION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM QNM Create Rules with AI"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef32-86c3-8000-9e6c-011c48011c48_18253775",
+      "name": "AS_GCM_INT_CHAR_LIMIT_CREATE_RULE_WITH_AI_PROMPT",
+      "type": "Constant",
+      "description": "Limit: 50,000",
+      "value": "50000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FM_CreateRulesWithAI_Prompt"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea8c-0452-8000-9cbc-011c48011c48_7952400",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_DATA_CLAUSE_SET_TYPE",
+      "type": "Constant",
+      "description": "Constant for RefId : 104\n",
+      "value": "104",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CastAiGeneratedRuleConditionsToRecordType"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3290209",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_END_DATE",
+      "type": "Constant",
+      "description": "Label: Contract end date\nRef Id: 99",
+      "value": "99",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CastAiGeneratedRuleConditionsToRecordType"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3290203",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_START_DATE",
+      "type": "Constant",
+      "description": "Label: Contract start date\nRef Id: 98",
+      "value": "98",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CastAiGeneratedRuleConditionsToRecordType"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3290141",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_DATA_ESTIMATED_DOLLAR_AMOUNT",
+      "type": "Constant",
+      "description": "Label: Estimated dollar amount\nRef Id: 92",
+      "value": "92",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CastAiGeneratedRuleConditionsToRecordType"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1374072",
+      "name": "AS_GCM_REF_ID_USAGE_EXCLUDED",
+      "type": "Constant",
+      "description": "Ref data id - 57",
+      "value": "57",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CPS_CreateRulesWithAI_PreviewExpand",
+        "AS_GCM_CastAiGeneratedRulesToRecordType"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1499526",
+      "name": "AS_GCM_REF_ID_USAGE_INCLUDED",
+      "type": "Constant",
+      "description": "Ref ID: Required - 66",
+      "value": "66",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CPS_CreateRulesWithAI_PreviewClauses",
+        "AS_GCM_CPS_CreateRulesWithAI_PreviewExpand",
+        "AS_GCM_CastAiGeneratedRulesToRecordType"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_81818",
+      "name": "AS_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "description": "Displays a label by the `bundleKey` from passed in bundle data, optionally accepts arguments",
+      "parameters": [],
+      "calls": [
+        "AS_CO_I18N_UT_parseBundleKey",
+        "AS_CO_I18N_UT_replaceArgument",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_CO_I18N_UT_getAndDisplayLabelSingle"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_84411",
+      "name": "AS_CO_I18N_UT_getAndDisplayLabelSingle",
+      "type": "Expression Rule",
+      "description": "Retrieves and then displays a single label from a bundle file -- This is meant to be used in places where you cannot utilize local variables, such as record and site page names",
+      "parameters": [],
+      "calls": [
+        "AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+        "AS_CO_I18N_UT_displayLabel",
+        "AS_CO_I18N_UT_loadBundleFromFolder",
+        "AS_CO_I18N_UT_parseBundleKey"
+      ],
+      "called_by": [
+        "AS_CO_UT_displayCommonObjectBundleLabel"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76004",
+      "name": "AS_CO_I18N_UT_getUserLocale",
+      "type": "Expression Rule",
+      "description": "Gets the Appian user locale as defined in the user preferences, returns the default if the user is null",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_I18N_UT_loadBundleFromFolder"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_81720",
+      "name": "AS_CO_I18N_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "description": "Loads a property bundle file by name from a folder, returns a dictionary of the key-value pairs",
+      "parameters": [],
+      "calls": [
+        "AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+        "AS_CO_I18N_UT_getUserLocale",
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_I18N_UT_getAndDisplayLabelSingle"
+      ]
+    },
+    {
+      "uuid": "_a-0000e438-fdf5-8000-9ba8-011c48011c48_19869",
+      "name": "AS_CO_I18N_UT_parseBundleKey",
+      "type": "Expression Rule",
+      "description": "Parses a bundle key and returns a dictionary of the `bundleName` & `labelKey`",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_I18N_UT_displayLabel",
+        "AS_CO_I18N_UT_getAndDisplayLabelSingle"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_91550",
+      "name": "AS_CO_I18N_UT_replaceArgument",
+      "type": "Expression Rule",
+      "description": "Replaces a single argument symbol with an argument value in a display label",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_I18N_UT_displayLabel"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39082",
+      "name": "AS_CO_UT_booleanDefaultTrue",
+      "type": "Expression Rule",
+      "description": "Default a null value to true, otherwise returns the boolean value",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_DSP_standardReadOnlyField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_33160",
+      "name": "AS_CO_UT_displayCommonObjectBundleLabel",
+      "type": "Expression Rule",
+      "description": "Retrieves a single label from the Common Objects bundle file",
+      "parameters": [],
+      "calls": [
+        "AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+        "AS_CO_I18N_UT_getAndDisplayLabelSingle"
+      ],
+      "called_by": [
+        "AS_CO_UT_displayRequiredMessage",
+        "AS_CO_VD_textValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb44-a528-8000-9d15-011c48011c48_9978504",
+      "name": "AS_CO_UT_displayRequiredMessage",
+      "type": "Expression Rule",
+      "description": "Returns default required message (used for all editable fields) if required message is not passed.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_displayCommonObjectBundleLabel"
+      ],
+      "called_by": [
+        "AS_CO_INP_paragraphField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73568",
+      "name": "AS_CO_UT_getLabelPosition",
+      "type": "Expression Rule",
+      "description": "Returns the standard labelPosition based on the context of the component, allows for custom input",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_CO_DSP_standardReadOnlyField",
+        "AS_CO_INP_paragraphField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76433",
+      "name": "AS_CO_UT_indexPath",
+      "type": "Expression Rule",
+      "description": "Pass in a field (i.e. member[1].name) and this will index(index(index( for each field",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GCM QNM Create Rules with AI",
+        "AS_GCM_CastAiGeneratedRulesToRecordType",
+        "AS_GCM_FM_CreateRulesWithAI_Preview",
+        "AS_GCM_FM_CreateRulesWithAI_StateWrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GCM QNM Create Rules with AI",
+        "AS_CO_I18N_UT_displayLabel",
+        "AS_CO_I18N_UT_loadBundleFromFolder",
+        "AS_CO_UT_getLabelPosition",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_replaceNull",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GAM_UT_ArrayLength",
+        "AS_GCM_CPS_CreateRulesWithAI_PreviewClauses",
+        "AS_GCM_CastAiGeneratedRuleConditionGroupsToRecordType_Recursion",
+        "AS_GCM_CastAiGeneratedRuleConditionsToRecordType",
+        "AS_GCM_CastAiGeneratedRulesToRecordType",
+        "AS_GCM_FM_CreateRulesWithAI_Preview",
+        "AS_GCM_FM_CreateRulesWithAI_Prompt",
+        "AS_GCM_FM_CreateRulesWithAI_StateWrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around AS_CO_UT_isBlank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS GCM QNM Create Rules with AI",
+        "AS_CO_VD_textValidation",
+        "AS_GCM_CPS_CreateRulesWithAI_PreviewClauses",
+        "AS_GCM_CPS_FormatAiGeneratedRuleConditions",
+        "AS_GCM_CRD_CreateRulesWithAI_PreviewConditions_Recursion",
+        "AS_GCM_FM_CreateRulesWithAI_Preview",
+        "AS_GCM_FM_CreateRulesWithAI_StateWrapper",
+        "AS_GCM_QR_getRefClause"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367",
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_CastAiGeneratedRuleConditionGroupsToRecordType_Recursion",
+        "AS_GCM_CastAiGeneratedRuleConditionsToRecordType",
+        "AS_GCM_CastAiGeneratedRulesToRecordType",
+        "AS_GCM_FM_CreateRulesWithAI_Preview",
+        "AS_GCM_QR_getRefClause",
+        "AS_GCM_setRecordFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73980",
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "description": "Returns nullableValue only if it is not null. Else returns replacementValue.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_DSP_standardReadOnlyField",
+        "AS_CO_I18N_UT_displayLabel",
+        "AS_CO_UT_getLabelPosition",
+        "AS_CO_VD_textValidation",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GCM_setRecordFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_74104",
+      "name": "AS_CO_VD_textValidation",
+      "type": "Expression Rule",
+      "description": "Performs minimum and maximum length validation on a text value. Returns a validation message if any provided length constraints are violated. Allows for custom validation messages.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_displayCommonObjectBundleLabel",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_CO_INP_paragraphField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e571-774f-8000-b919-01ef9001ef90_29043",
+      "name": "AS_FRM_doesRuleExist",
+      "type": "Expression Rule",
+      "description": "Returns true if the passed in rule exists in the system, uses plugin function `doesruleexist()`",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_FRM_getRuleReferenceOrNoOp"
+      ]
+    },
+    {
+      "uuid": "_a-0000e571-774f-8000-b919-01ef9001ef90_28790",
+      "name": "AS_FRM_getRuleReferenceOrNoOp",
+      "type": "Expression Rule",
+      "description": "Returns either a rule reference to the input rule, or a no-operation if the rule does not exist, uses plugin function `rulereferencebyname()`",
+      "parameters": [],
+      "calls": [
+        "AS_FRM_BOOL_APPREF_ENTRYPOINT_FRAMEWORK_ENABLED",
+        "AS_FRM_doesRuleExist"
+      ],
+      "called_by": [
+        "AS_GCM_APPREF_GCM_AI_STARTPROCESS_generateRulesUsingNativeAI"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53662",
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "description": "Displays a label by the `bundleKey` from passed in bundle data, optionally accepts arguments",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_FM_CreateRulesWithAI_Preview"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1021202",
+      "name": "AS_GAM_UT_ArrayLength",
+      "type": "Expression Rule",
+      "description": "Gives length of an array based on input of array",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_CPS_CreateRulesWithAI_PreviewClauses",
+        "AS_GCM_FM_CreateRulesWithAI_Preview",
+        "AS_GCM_QR_getRefClause"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef3b-bde5-8000-9e6e-011c48011c48_18285794",
+      "name": "AS_GCM_APPREF_GCM_AI_STARTPROCESS_generateRulesUsingNativeAI",
+      "type": "Expression Rule",
+      "description": "Contains application reference to \n'AS_GCM_AI_ENTRYPOINT_STARTPROCESS_generateRulesUsingNativeAI'\n",
+      "parameters": [],
+      "calls": [
+        "AS_FRM_getRuleReferenceOrNoOp"
+      ],
+      "called_by": [
+        "AS GCM QNM Create Rules with AI"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53654",
+      "name": "AS_GCM_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "description": "Loads a property bundle file by name from a folder, returns a dictionary of the key-value pairs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CPS_CreateRulesWithAI",
+        "AS_GCM_CPS_CreateRulesWithAI_PreviewExpand",
+        "AS_GCM_CPS_FormatAiGeneratedRuleConditions",
+        "AS_GCM_CRD_CreateRulesWithAI_PreviewConditions_Recursion",
+        "AS_GCM_FM_CreateRulesWithAI_Instruction",
+        "AS_GCM_FM_CreateRulesWithAI_Preview",
+        "AS_GCM_FM_CreateRulesWithAI_Prompt",
+        "AS_GCM_FM_CreateRulesWithAI_StateWrapper"
+      ]
+    },
+    {
+      "uuid": "2884b641-8173-430f-8b71-a82b0d90b9df",
+      "name": "AS_GCM_CastAiGeneratedRuleConditionGroupsToRecordType_Recursion",
+      "type": "Expression Rule",
+      "description": "Converts the AI generated rule condition groups to AS GCM QNM T Rule Condition Groups record type",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GCM_CastAiGeneratedRuleConditionsToRecordType"
+      ],
+      "called_by": [
+        "AS_GCM_CastAiGeneratedRulesToRecordType"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef3b-bde5-8000-9e6e-011c48011c48_18299985",
+      "name": "AS_GCM_CastAiGeneratedRuleConditionsToRecordType",
+      "type": "Expression Rule",
+      "description": "Converts the AI generated rule condition groups to AS GCM QNM T Rule Condition record type",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GCM_REF_ID_CLAUSE_SET_DATA_CLAUSE_SET_TYPE",
+        "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_END_DATE",
+        "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_START_DATE",
+        "AS_GCM_REF_ID_CLAUSE_SET_DATA_ESTIMATED_DOLLAR_AMOUNT"
+      ],
+      "called_by": [
+        "AS_GCM_CastAiGeneratedRuleConditionGroupsToRecordType_Recursion",
+        "AS_GCM_CastAiGeneratedRulesToRecordType"
+      ]
+    },
+    {
+      "uuid": "fbbb62e3-aa6e-41bf-bfaf-9b7d8073651b",
+      "name": "AS_GCM_CastAiGeneratedRulesToRecordType",
+      "type": "Expression Rule",
+      "description": "Converts the AI generated rules to AS GCM QNM T Rule record type",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GCM_CastAiGeneratedRuleConditionGroupsToRecordType_Recursion",
+        "AS_GCM_CastAiGeneratedRuleConditionsToRecordType",
+        "AS_GCM_QR_getRefClause",
+        "AS_GCM_REF_ID_USAGE_EXCLUDED",
+        "AS_GCM_REF_ID_USAGE_INCLUDED",
+        "AS_GCM_filterRecords"
+      ],
+      "called_by": [
+        "AS GCM QNM Create Rules with AI"
+      ]
+    },
+    {
+      "uuid": "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1163937",
+      "name": "AS_GCM_QR_getRefClause",
+      "type": "Expression Rule",
+      "description": "Returns ref clause details based on the given filter set",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GAM_UT_ArrayLength"
+      ],
+      "called_by": [
+        "AS_GCM_CastAiGeneratedRulesToRecordType",
+        "AS_GCM_FM_CreateRulesWithAI_Preview"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9761091",
+      "name": "AS_GCM_filterRecords",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CastAiGeneratedRulesToRecordType",
+        "AS_GCM_FM_CreateRulesWithAI_Preview"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec50-376f-8000-9d94-011c48011c48_12909959",
+      "name": "AS_GCM_getColorBasedOnColorName",
+      "type": "Expression Rule",
+      "description": "The rule returns the hex code when a color name is passed",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_COL_CreateRulesWithAI_InProgress",
+        "AS_GCM_CPS_CreateRulesWithAI_PreviewClauses",
+        "AS_GCM_CPS_FormatAiGeneratedRuleConditions",
+        "AS_GCM_CRD_CreateRulesWithAI_PreviewConditions_Recursion",
+        "AS_GCM_FM_CreateRulesWithAI_Empty",
+        "AS_GCM_FM_CreateRulesWithAI_Instruction",
+        "AS_GCM_FM_CreateRulesWithAI_Preview"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9760853",
+      "name": "AS_GCM_setRecordFields",
+      "type": "Expression Rule",
+      "description": "Runs a bulk update on a record object, setting new values for its fields",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_FM_CreateRulesWithAI_Preview"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_74131",
+      "name": "AS_CO_DSP_standardReadOnlyField",
+      "type": "Interface",
+      "description": "Standard readOnly field, utilizes a!textField(), use a!richTextDisplayField() for further formatting",
+      "parameters": [
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "instructions",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "value",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "labelPosition",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "helpTooltip",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "accessibilityText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 6
+        },
+        {
+          "name": "align",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 7
+        },
+        {
+          "name": "showHyphenIfValueNull",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 8
+        }
+      ],
+      "calls": [
+        "AS_CO_UT_booleanDefaultTrue",
+        "AS_CO_UT_getLabelPosition",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_CO_INP_paragraphField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_74400",
+      "name": "AS_CO_INP_paragraphField",
+      "type": "Interface",
+      "description": "Standard wrapper for a!paragraphField()",
+      "parameters": [
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "instructions",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "required",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "readOnly",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "disabled",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "value",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "validations",
+          "type": "http://www.appian.com/ae/types/2009:Text?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 6
+        },
+        {
+          "name": "saveInto",
+          "type": "http://www.appian.com/ae/types/2009:Save?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Save?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 7
+        },
+        {
+          "name": "labelPosition",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 8
+        },
+        {
+          "name": "validationGroup",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 9
+        },
+        {
+          "name": "requiredMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 10
+        },
+        {
+          "name": "height",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 11
+        },
+        {
+          "name": "placeholder",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 12
+        },
+        {
+          "name": "helpTooltip",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 13
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 14
+        },
+        {
+          "name": "accessibilityText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 15
+        },
+        {
+          "name": "maxLength",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 16
+        },
+        {
+          "name": "showHyphenIfValueNull",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 17
+        },
+        {
+          "name": "characterLimit",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 18
+        },
+        {
+          "name": "showCharacterCount",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 19
+        }
+      ],
+      "calls": [
+        "AS_CO_DSP_standardReadOnlyField",
+        "AS_CO_UT_displayRequiredMessage",
+        "AS_CO_UT_getLabelPosition",
+        "AS_CO_VD_textValidation"
+      ],
+      "called_by": [
+        "AS_GCM_FM_CreateRulesWithAI_Prompt"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef3b-bde5-8000-9e6e-011c48011c48_18277843",
+      "name": "AS_GCM_COL_CreateRulesWithAI_InProgress",
+      "type": "Interface",
+      "description": "In progress state interface of Create Rules with AI",
+      "parameters": [
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        }
+      ],
+      "calls": [
+        "AS_GCM_DOC_CREATE_RULES_WITH_AI_INPROGRESS",
+        "AS_GCM_getColorBasedOnColorName"
+      ],
+      "called_by": [
+        "AS_GCM_FM_CreateRulesWithAI_StateWrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef32-86c3-8000-9e6c-011c48011c48_18244989",
+      "name": "AS_GCM_CPS_CreateRulesWithAI",
+      "type": "Interface",
+      "description": "Contains UI for Rule builder prompt and its instruction UX ",
+      "parameters": [
+        {
+          "name": "prompt",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "buttonAction",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_FM_CreateRulesWithAI_Instruction",
+        "AS_GCM_FM_CreateRulesWithAI_Prompt"
+      ],
+      "called_by": [
+        "AS GCM QNM Create Rules with AI"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef44-f79b-8000-9e70-011c48011c48_18336899",
+      "name": "AS_GCM_CPS_CreateRulesWithAI_PreviewClauses",
+      "type": "Interface",
+      "description": "UI to preview Include/Exclude clauses returned from Rule Builder AI",
+      "parameters": [
+        {
+          "name": "clauses",
+          "type": "http://www.appian.com/ae/types/2009:Text?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "usageRefId",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "validClauses",
+          "type": "urn:com:appian:recordtype:datatype:83b74fc4-71d0-456a-8b20-12ea04b76cd1?list",
+          "raw_type": "urn:com:appian:recordtype:datatype:83b74fc4-71d0-456a-8b20-12ea04b76cd1?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        }
+      ],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_GAM_UT_ArrayLength",
+        "AS_GCM_REF_ID_USAGE_INCLUDED",
+        "AS_GCM_getColorBasedOnColorName"
+      ],
+      "called_by": [
+        "AS_GCM_CPS_CreateRulesWithAI_PreviewExpand"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef44-f79b-8000-9e70-011c48011c48_18336410",
+      "name": "AS_GCM_CPS_CreateRulesWithAI_PreviewExpand",
+      "type": "Interface",
+      "description": "Expand Preview UI for Create Rules With AI",
+      "parameters": [
+        {
+          "name": "ruleMap",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "validClauses",
+          "type": "urn:com:appian:recordtype:datatype:83b74fc4-71d0-456a-8b20-12ea04b76cd1?list",
+          "raw_type": "urn:com:appian:recordtype:datatype:83b74fc4-71d0-456a-8b20-12ea04b76cd1?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        }
+      ],
+      "calls": [
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_CPS_CreateRulesWithAI_PreviewClauses",
+        "AS_GCM_CRD_CreateRulesWithAI_PreviewConditions_Recursion",
+        "AS_GCM_REF_ID_USAGE_EXCLUDED",
+        "AS_GCM_REF_ID_USAGE_INCLUDED"
+      ],
+      "called_by": [
+        "AS_GCM_FM_CreateRulesWithAI_Preview"
+      ]
+    },
+    {
+      "uuid": "ad3e3248-147a-4657-9381-d4722855a152",
+      "name": "AS_GCM_CPS_FormatAiGeneratedRuleConditions",
+      "type": "Interface",
+      "description": "Format Ai Generated Rule conditions for preview",
+      "parameters": [
+        {
+          "name": "condition",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_getColorBasedOnColorName"
+      ],
+      "called_by": [
+        "AS_GCM_CRD_CreateRulesWithAI_PreviewConditions_Recursion"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef44-f79b-8000-9e70-011c48011c48_18336451",
+      "name": "AS_GCM_CRD_CreateRulesWithAI_PreviewConditions_Recursion",
+      "type": "Interface",
+      "description": "UI to preview the conditions generated by Rule Builder AI",
+      "parameters": [
+        {
+          "name": "ruleConditions",
+          "type": "http://www.appian.com/ae/types/2009:Map?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "ruleConditionGroups",
+          "type": "http://www.appian.com/ae/types/2009:Map?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "parentConditionGroupName",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "operator",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "depthLevel",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        }
+      ],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_CPS_FormatAiGeneratedRuleConditions",
+        "AS_GCM_getColorBasedOnColorName"
+      ],
+      "called_by": [
+        "AS_GCM_CPS_CreateRulesWithAI_PreviewExpand"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef3b-bde5-8000-9e6e-011c48011c48_18308602",
+      "name": "AS_GCM_FM_CreateRulesWithAI_Empty",
+      "type": "Interface",
+      "description": "Empty state interface of Create Rules with AI",
+      "parameters": [
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "buttonAction",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AS_GCM_DOC_CREATE_RULES_WITH_AI_EMPTY",
+        "AS_GCM_ENUM_USER_ACTION_BACK_TO_PROMPT",
+        "AS_GCM_getColorBasedOnColorName"
+      ],
+      "called_by": [
+        "AS_GCM_FM_CreateRulesWithAI_StateWrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef32-86c3-8000-9e6c-011c48011c48_18227306",
+      "name": "AS_GCM_FM_CreateRulesWithAI_Instruction",
+      "type": "Interface",
+      "description": "Contains instruction UI for How AI Rule Builder works",
+      "parameters": [
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "isShowInstruction",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_DOC_DESCRIBE_YOUR_RULE_IMAGE",
+        "AS_GCM_DOC_REVIEW_AND_SELECT_RULE_IMAGE",
+        "AS_GCM_DOC_SAVE_RULES_AND_REFINE_IMAGE",
+        "AS_GCM_getColorBasedOnColorName"
+      ],
+      "called_by": [
+        "AS_GCM_CPS_CreateRulesWithAI"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef3b-bde5-8000-9e6e-011c48011c48_18307559",
+      "name": "AS_GCM_FM_CreateRulesWithAI_Preview",
+      "type": "Interface",
+      "description": "UI to preview AI generated rules",
+      "parameters": [
+        {
+          "name": "rulesMap",
+          "type": "http://www.appian.com/ae/types/2009:Map?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "buttonAction",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_USER_ACTION_CANCEL",
+        "AS_CO_ENUM_USER_ACTION_SUBMIT",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GAM_UT_ArrayLength",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_CPS_CreateRulesWithAI_PreviewExpand",
+        "AS_GCM_ENUM_USER_ACTION_BACK_TO_PROMPT",
+        "AS_GCM_QR_getRefClause",
+        "AS_GCM_filterRecords",
+        "AS_GCM_getColorBasedOnColorName",
+        "AS_GCM_setRecordFields"
+      ],
+      "called_by": [
+        "AS GCM QNM Create Rules with AI"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef32-86c3-8000-9e6c-011c48011c48_18227270",
+      "name": "AS_GCM_FM_CreateRulesWithAI_Prompt",
+      "type": "Interface",
+      "description": "Contains the Prompt UI for Create Rules With AI",
+      "parameters": [
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "isShowInstruction",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "prompt",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "buttonAction",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        }
+      ],
+      "calls": [
+        "AS_CO_ENUM_USER_ACTION_CANCEL",
+        "AS_CO_INP_paragraphField",
+        "AS_CO_UT_isBlank",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_INT_CHAR_LIMIT_CREATE_RULE_WITH_AI_PROMPT"
+      ],
+      "called_by": [
+        "AS_GCM_CPS_CreateRulesWithAI"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef3b-bde5-8000-9e6e-011c48011c48_18309389",
+      "name": "AS_GCM_FM_CreateRulesWithAI_StateWrapper",
+      "type": "Interface",
+      "description": "Wrapper interface for In progress, Empty and Error states",
+      "parameters": [
+        {
+          "name": "buttonAction",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "isSuccess",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "response",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "errorMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "hideErrorStateRetry",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        }
+      ],
+      "calls": [
+        "AS_CO_ENUM_USER_ACTION_CANCEL",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_COL_CreateRulesWithAI_InProgress",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_FM_CreateRulesWithAI_Empty"
+      ],
+      "called_by": [
+        "AS GCM QNM Create Rules with AI"
+      ]
+    },
+    {
+      "uuid": "0002ef36-b8af-8000-ea0f-7f0000014e7a",
+      "name": "AS GCM QNM Create Rules with AI",
+      "type": "Process Model",
+      "description": "Create Rules using AI",
+      "calls": [
+        "AS_CO_ENUM_USER_ACTION_CANCEL",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_APPREF_GCM_AI_STARTPROCESS_generateRulesUsingNativeAI",
+        "AS_GCM_CPS_CreateRulesWithAI",
+        "AS_GCM_CastAiGeneratedRulesToRecordType",
+        "AS_GCM_ENUM_USER_ACTION_BACK_TO_PROMPT",
+        "AS_GCM_ENUM_USER_ACTION_RETRY",
+        "AS_GCM_FM_CreateRulesWithAI_Preview",
+        "AS_GCM_FM_CreateRulesWithAI_StateWrapper"
+      ],
+      "called_by": []
+    }
+  ]
+}

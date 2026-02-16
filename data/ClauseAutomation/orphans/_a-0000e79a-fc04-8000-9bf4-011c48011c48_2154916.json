@@ -1,0 +1,25 @@
+{
+  "uuid": "_a-0000e79a-fc04-8000-9bf4-011c48011c48_2154916",
+  "name": "AS_GCM_updateFillinValuesForPreview",
+  "type": "Expression Rule",
+  "description": "Updates the given fillin using uuid to replace the value",
+  "sail_code": "if(\n  find(\n    index(ri!fillinMap, \"citeIdentifier\", \"\"),\n    ri!clauseText\n  ) = 0,\n  ri!clauseText,\n  with(\n    local!cite: if(\n      find(ri!fillinMap.cite, ri!clauseText) = 0,\n      regexfirstmatch(\n        ri!fillinMap.citeIdentifier & \"(.*?)</cite>\",\n        ri!clauseText\n      ),\n      ri!fillinMap.cite\n    ),\n    local!value:  if(\n      or(\n        a!isNullOrEmpty(ri!fillInValue),\n        a!isNullOrEmpty(trim(stripwith(ri!fillInValue, \"__□\")))\n      ),\n      a!match(\n        value: index(\n          rule!AS_GCM_findFillinValue(fillInText: ri!fillinMap.cite),\n          \"value\",\n          null()\n        ),\n        whenTrue: a!isNullOrEmpty(\n          index(\n            ri!fillinMap,\n            \"originalFillinValue\",\n            null\n          )\n        ),\n        then: ri!fillinMap.cite,\n        whenTrue: a!isNullOrEmpty(trim(striphtml(ri!fillinMap.cite))),\n        then: substitute(\n          ri!fillinMap.cite,\n          \"</cite>\",\n          concat(\n            ri!fillinMap.originalFillinValue,\n            \"</cite>\"\n          )\n        ),\n        default: substitute(\n          ri!fillinMap.cite,\n          fv!value,\n          ri!fillinMap.originalFillinValue\n        )\n      ),\n      ri!fillinMap.citeIdentifier &  ri!fillinValue & \"</cite>\"\n    ),\n    substitute(\n      ri!clauseText,\n      local!cite,\n      if(\n        ri!currentCiteIdentifier = ri!fillinMap.citeIdentifier,\n        concat(\n          \"<span style=\"\"background-color: \",\n          cons!AS_GCM_HEX_CODE_FILL_IN_HIGHLIGHT,\n          \";\"\">\",\n          \"<font color=\",\n          cons!AS_GCM_HEX_CODE_FILL_IN_HIGHLIGHT_TEXT,\n          \" style=\"\"\"\">\",\n          reduce(\n            fn!substitute,\n            local!value,\n            merge(\n              { \"<ol>\", \"<ul>\", \"</ol>\", \"</ul>\" },\n              {\n                concat(\"<ol style=\"\"background-color: \" , cons!AS_GCM_HEX_CODE_FILL_IN_HIGHLIGHT , \";\"\">\"),\n                concat(\"<ul style=\"\"background-color: \" , cons!AS_GCM_HEX_CODE_FILL_IN_HIGHLIGHT , \";\"\">\"),\n                concat(\"</ol><span style=\"\"background-color: \" , cons!AS_GCM_HEX_CODE_FILL_IN_HIGHLIGHT , \";\"\">\"),\n                concat(\"</ul><span style=\"\"background-color: \" , cons!AS_GCM_HEX_CODE_FILL_IN_HIGHLIGHT ,\";\"\">\")\n              }\n            )\n          ),\n          \"</font></span>\"\n        ),\n        local!value\n      )\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GCM_findFillinValue",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_HEX_CODE_FILL_IN_HIGHLIGHT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_HEX_CODE_FILL_IN_HIGHLIGHT_TEXT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

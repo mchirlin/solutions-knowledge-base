@@ -1,0 +1,26 @@
+{
+  "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_61568-gcm",
+  "name": "AS_GCM_QNM_UT_buildCurrentFieldResponsesForSelectionBasedQuestion",
+  "type": "Expression Rule",
+  "description": "Helper rule for updating responses for selection based questions where both label and value are important (dropdown, radio button, etc)",
+  "sail_code": "rule!AS_GCM_QNM_UT_buildResponseForQuestion(\n  fieldKey: ri!fieldKey,\n  labelValuePairs: #\"SYSTEM_SYSRULES_forEach\"(\n    items: rule!AS_CO_UT_filterCdtByField(\n      cdt: rule!AS_CO_UT_filterCdtByField(\n        cdt: ri!responseOptions,\n        field: \"fieldKey\",\n        value: ri!fieldKey\n      ),\n      field: \"value\",\n      value: ri!selectedValues\n    ),\n    expression: {\n      label: fv!item.label,\n      value: fv!item.value\n    }\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GCM_QNM_UT_buildResponseForQuestion",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GCM_QNM_UT_updateQuestionFieldResponsesForSelectionBasedField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

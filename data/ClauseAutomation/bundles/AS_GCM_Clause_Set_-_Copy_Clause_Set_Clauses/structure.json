@@ -1,0 +1,4560 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "AS GCM Clause Set - Copy Clause Set Clauses",
+    "parent_name": "AS GCM Clause Set",
+    "total_objects": 177
+  },
+  "entry_point": {
+    "action_type": "RECORD_ACTION",
+    "record_type": "AS GCM Clause Set",
+    "target_process": "AS GCM Copy Clause Set Clauses",
+    "form_interface": "AS_GCM_FM_copyClauseSetClauses",
+    "expressions": {
+      "TITLE": "\"Copy Clause Set Clauses\"",
+      "DESCRIPTION": null,
+      "VISIBILITY": "and(\n  rule!AS_GCM_DPL_CO_UT_isUserMemberOfGroups(\n    groups: cons!AS_GCM_GRP_CONTRACTING_PERSONNEL,\n    user: loggedInUser()\n  ),\n  rule!AS_GCM_CopyClauseSetClausesActionEnabled_wrapper() = true\n)",
+      "CONTEXT": "{\n  clauseSetToCopy: rule!AS_GCM_QE_getClauseSetDetails(\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT,\n    setId: rv!identifier\n  ),\n  /* AS_GCM_ClauseSet */\n  newContractTypeMaps: rule!AS_GCM_QE_getClauseSetContractTypeDetails(\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY,\n    setId: rv!identifier\n  ),\n  skipUIT: false(),\n  /* List of AS_GCM_ClauseSet_ContractType_Map */\n  copyFillins: null,\n  /* Boolean */\n  newClauseSet: null,\n  /* AS_GCM_ClauseSet */\n  userAction: null/* Text */\n\n}"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GCM Copy Clause Set Clauses",
+      "complexity_score": 24.0,
+      "total_nodes": 12,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Is Valid Clause set?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Write the copied SetNumber Audit",
+          "type": "Write to Data Store Entity",
+          "next": [
+            "Send Email"
+          ]
+        },
+        {
+          "name": "Split",
+          "type": "AND_GATEWAY",
+          "next": [
+            "Skip UIT?",
+            "Write Clause set details"
+          ]
+        },
+        {
+          "name": "Wait Until two flows reach",
+          "type": "Complex Gateway",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Skip UIT?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Confirmation  Screen (No)",
+            "Wait Until two flows reach"
+          ]
+        },
+        {
+          "name": "Copy Clause Set & Related CDTs",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write Clause Set"
+          ]
+        },
+        {
+          "name": "Write Clause Set",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Split"
+          ]
+        },
+        {
+          "name": "Send Email",
+          "type": "Start Process",
+          "next": [
+            "Wait Until two flows reach"
+          ]
+        },
+        {
+          "name": "Confirmation  Screen",
+          "type": "USER_TASK",
+          "next": [
+            "Wait Until two flows reach"
+          ],
+          "interface": "AS_GCM_FM_confirmationScreenForClauseSet"
+        },
+        {
+          "name": "Is Valid Clause set?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node",
+            "Copy Clause Set & Related CDTs"
+          ]
+        },
+        {
+          "name": "Write Clause set details",
+          "type": "Start Process",
+          "next": [
+            "Write the copied SetNumber Audit"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_27447",
+      "name": "AS_CO_ENUM_PARAGRAPH_LENGTH_MEDIUM",
+      "type": "Constant",
+      "description": "1000 - MEDIUM length for paragraph fields, used for validations and trimming text",
+      "value": "1000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_dynamicFieldPropertiesForClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290131",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+      "type": "Constant",
+      "description": "DATA_SUBSET - Returns a type of DataSubset when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "DATA_SUBSET",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_QE_getClauseSetContractTypeDetails",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_UT_clausesetSaveForAmendmentOrModification",
+        "AS_GCM_UT_formatDataBasedOnReturnType",
+        "AS_GCM_UT_getIdentifiersInBatches"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290163",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "description": "OBJECT_ARRAY - Returns an array type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "OBJECT_ARRAY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM Copy Clause Set Clauses",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_BL_populateClauseSetClauseDetailsInClauseSet",
+        "AS_GCM_FM_copyClauseSetClauses",
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching",
+        "AS_GCM_QE_getClauseSetContractTypeDetails",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_QR_getRefClause",
+        "AS_GCM_QR_getRefClauseSectionMapping",
+        "AS_GCM_QR_getRefData",
+        "AS_GCM_UT_formatDataBasedOnReturnType"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290157",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "description": "SINGLE_OBJECT - Returns a single type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "SINGLE_OBJECT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_CPS_basicInfoInProvideClauseSetDetails",
+        "AS_GCM_CPS_contractDetailsInProvideClauseSetDetails",
+        "AS_GCM_CRD_collapsibleSection",
+        "AS_GCM_FM_copyClauseSetClauses",
+        "AS_GCM_QE_getClauseSetContractTypeDetails",
+        "AS_GCM_UT_formatDataBasedOnReturnType"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290175",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+      "type": "Constant",
+      "description": "TOTAL_COUNT - Returns an Integer when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "TOTAL_COUNT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_GCM_QR_getRefClause",
+        "AS_GCM_VD_duplicateValidationForSetNumbAndCategNumbCombo"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73500",
+      "name": "AS_CO_ENUM_TEXT_LENGTH_LONG",
+      "type": "Constant",
+      "description": "255 - LONG length for text fields, used for validations and trimming text",
+      "value": "255",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_dynamicFieldPropertiesForClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73173",
+      "name": "AS_CO_ENUM_USER_ACTION_CANCEL",
+      "type": "Constant",
+      "description": "CANCEL.USER_ACTION - Value to use to drive process logic after a user performs a \"Cancel\" action",
+      "value": "CANCEL.USER_ACTION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CPS_ClauseSetRelatedActionPlaceholder",
+        "AS_GCM_FM_copyClauseSetClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73305",
+      "name": "AS_CO_ENUM_USER_ACTION_SUBMIT",
+      "type": "Constant",
+      "description": "SUBMIT.USER_ACTION - Value to use to drive process logic after a user performs a \"Submit\" action",
+      "value": "SUBMIT.USER_ACTION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM Copy Clause Set Clauses",
+        "AS_GCM_FM_copyClauseSetClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_104931",
+      "name": "AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+      "type": "Constant",
+      "description": "AS CO Internationalization Files",
+      "value": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_104925",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationFolder",
+      "calls": [],
+      "called_by": [
+        "AS_CO_I18N_UT_getAndDisplayLabelSingle",
+        "AS_CO_I18N_UT_loadBundleFromFolder",
+        "AS_CO_UT_displayCommonObjectBundleLabel",
+        "AS_CO_VD_numberValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e35d-b03e-8000-9ba2-011c48011c48_40657",
+      "name": "AS_CO_TXT_DEFAULT_CURRENCY_CODE",
+      "type": "Constant",
+      "description": "Value: USD - The default currency code",
+      "value": "USD",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_DPL_CO_UT_formatCurrencyValue"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5d4-2024-8000-9baf-011c48011c48_336091",
+      "name": "AS_FRM_BOOL_RULE_CUSTOMIZATION_1_0_ENABLED",
+      "type": "Constant",
+      "description": "Returns true if customizable rules using the 1.0 SDK is enabled",
+      "value": "true",
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "AS_FRM_determineRuntimeRule"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_964476",
+      "name": "AS_GAM_ENUM_TEXT_LENGTH_MEDIUM_SHORT",
+      "type": "Constant",
+      "description": "25 - SHORT length for text fields, used for validations and trimming text",
+      "value": "25",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_dynamicFieldPropertiesForClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-9390-8000-9baa-011c48011c48_45483",
+      "name": "AS_GAM_GRP_CONTRACTING_OFFICER",
+      "type": "Constant",
+      "description": "Value: Contracting Officer group",
+      "value": "Contracting Officer",
+      "value_type": "http://www.appian.com/ae/types/2009:Group",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CPS_basicInfoInProvideClauseSetDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e4ea-0367-8000-9ba7-011c48011c48_261473",
+      "name": "AS_GAM_GRP_CONTRACTING_OFFICER_REPRESENTATIVE",
+      "type": "Constant",
+      "description": "Value: Contracting Officer's Representative group",
+      "value": "Contracting Officer's Representative",
+      "value_type": "http://www.appian.com/ae/types/2009:Group",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CPS_basicInfoInProvideClauseSetDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-9390-8000-9baa-011c48011c48_67385",
+      "name": "AS_GAM_GRP_CONTRACT_SPECIALIST",
+      "type": "Constant",
+      "description": "Value: Contract Specialist group",
+      "value": "Contract Specialist",
+      "value_type": "http://www.appian.com/ae/types/2009:Group",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CPS_basicInfoInProvideClauseSetDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea79-8f1b-8000-9cb5-011c48011c48_7744446",
+      "name": "AS_GCM_ADT_ENUM_AUDIT_ACTION_CODE_COPY",
+      "type": "Constant",
+      "description": "Value: \"COPY\"",
+      "value": "COPY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM Copy Clause Set Clauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e79a-fc04-8000-9bf4-011c48011c48_2306374",
+      "name": "AS_GCM_BOL_PSC_NAICS_TOGGLE",
+      "type": "Constant",
+      "description": "Toggle to show the 'PSC & NAICS Codes' step in the Creation flow",
+      "value": null,
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_clauseSetContractDetailsDynamicComponentsMap"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb72-c933-8000-9d28-011c48011c48_10487326",
+      "name": "AS_GCM_CO_INT_QUERY_RECORD_MAX_BATCH_SIZE",
+      "type": "Constant",
+      "description": "Batch size: 5000",
+      "value": "5000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CPS_contractTypesInProvideClauseSetDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed52-a319-8000-9df0-011c48011c48_15031966",
+      "name": "AS_GCM_DOC_CLAUSES_CONFIRMATION_STATE_IMAGE",
+      "type": "Constant",
+      "description": "Contains the clause set create/update confirmation state image",
+      "value": "_a-0000ed52-a319-8000-9df0-011c48011c48_15031953",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FM_confirmationScreenForClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed52-a319-8000-9df0-011c48011c48_15047778",
+      "name": "AS_GCM_DOC_CLAUSE_SET_GENERATION_STATE",
+      "type": "Constant",
+      "description": "Constant reference to the AS.GCM.ClauseSetGenerationStateImage document",
+      "value": "_a-0000ed52-a319-8000-9df0-011c48011c48_15047772",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CPS_ClauseSetRelatedActionPlaceholder"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea79-8f1b-8000-9cb5-011c48011c48_7772308",
+      "name": "AS_GCM_ENT_A_R_CLAUSE_SET_FIELD",
+      "type": "Constant",
+      "description": "Data store entity constant for AS_GCM_A_R_ClauseSet_Field",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS GCM Copy Clause Set Clauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e825-ca6c-8000-9bf8-011c48011c48_2526383",
+      "name": "AS_GCM_ENT_CLAUSESET_CONTRACT_TYPE",
+      "type": "Constant",
+      "description": "Entity constant for clauseSet contract type ",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetContractTypeDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e63a-a5cb-8000-9bc6-011c48011c48_1229082",
+      "name": "AS_GCM_ENT_CLAUSE_SET",
+      "type": "Constant",
+      "description": "Data Store Entity constant for AS_GCM_Clause_Set",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1196828",
+      "name": "AS_GCM_ENT_CLAUSE_SET_CLAUSE",
+      "type": "Constant",
+      "description": "Data Store Entity constant for AS_GCM_ClauseSet_Clause",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetClauseDetails",
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb97-b2e8-8000-9d39-011c48011c48_11175532",
+      "name": "AS_GCM_ENUM_CLAUSE_SET_SECTION_IDENTIFIER_BASIC_INFORMATION",
+      "type": "Constant",
+      "description": "Value: CLAUSE_SET_SECTION.BASIC_INFORMATION",
+      "value": "CLAUSE_SET_SECTION.BASIC_INFORMATION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CPS_basicInfoInProvideClauseSetDetails",
+        "AS_GCM_CRD_collapsibleSection",
+        "AS_GCM_dynamicFieldPropertiesForClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb97-b2e8-8000-9d39-011c48011c48_11175557",
+      "name": "AS_GCM_ENUM_CLAUSE_SET_SECTION_IDENTIFIER_CONTRACT_DETAILS",
+      "type": "Constant",
+      "description": "Value: CLAUSE_SET_SECTION.CONTRACT_DETAILS",
+      "value": "CLAUSE_SET_SECTION.CONTRACT_DETAILS",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CPS_contractDetailsInProvideClauseSetDetails",
+        "AS_GCM_FM_copyClauseSetClauses",
+        "AS_GCM_dynamicFieldPropertiesForClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1357754",
+      "name": "AS_GCM_ENUM_TEXT_CLAUSE_SETS_SITE_PAGE",
+      "type": "Constant",
+      "description": "Value: clause-sets",
+      "value": "clause-sets",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FM_confirmationScreenForClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e79a-fc04-8000-9bf4-011c48011c48_2201485",
+      "name": "AS_GCM_ENUM_TEXT_LENGTH_FOR_NAICS_CODE",
+      "type": "Constant",
+      "description": "NAICS Code text length: 7",
+      "value": "7",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_dynamicFieldPropertiesForClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e79a-fc04-8000-9bf4-011c48011c48_2201472",
+      "name": "AS_GCM_ENUM_TEXT_LENGTH_FOR_PCS_CODE",
+      "type": "Constant",
+      "description": "PCS code text length: 4",
+      "value": "4",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_dynamicFieldPropertiesForClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1357668",
+      "name": "AS_GCM_ENUM_TEXT_WEB_ADDRESS_IDENTIFIER",
+      "type": "Constant",
+      "description": "Value : clause-automation",
+      "value": "clause-automation",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FM_confirmationScreenForClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e79a-fc04-8000-9bf4-011c48011c48_2213386",
+      "name": "AS_GCM_ESTIMATED_AMOUNT_LIMIT",
+      "type": "Constant",
+      "description": "Estimated Amount limit: 1000000000000",
+      "value": "1.0E12",
+      "value_type": "http://www.w3.org/2001/XMLSchema:double",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_dynamicFieldPropertiesForClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_51521",
+      "name": "AS_GCM_GRP_CONTRACTING_PERSONNEL",
+      "type": "Constant",
+      "description": "Value: AS GCM Contracting Personnel",
+      "value": "AS GCM Contracting Personnel",
+      "value_type": "http://www.appian.com/ae/types/2009:Group",
+      "calls": [],
+      "called_by": []
+    },
+    {
+      "uuid": "_a-0000eb7c-0389-8000-9d2c-011c48011c48_10597970",
+      "name": "AS_GCM_HEX_CODE_GRAY_3",
+      "type": "Constant",
+      "description": "Value: #6C6C75",
+      "value": "#6C6C75",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CRD_collapsibleSection"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3128242",
+      "name": "AS_GCM_INT_QUERY_BATCH_SIZE_LARGE",
+      "type": "Constant",
+      "description": "Batch size: 500",
+      "value": "500",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM Copy Clause Set Clauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3111916",
+      "name": "AS_GCM_INT_QUERY_BATCH_SIZE_TINY",
+      "type": "Constant",
+      "description": "Batch size: 10",
+      "value": "10",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching",
+        "AS_GCM_UT_getIdentifiersInBatches"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1418919",
+      "name": "AS_GCM_REF_ID_AWARD_CATEG_NEW",
+      "type": "Constant",
+      "description": "Value: 41",
+      "value": "41",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FM_copyClauseSetClauses",
+        "AS_GCM_VD_isValidClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1404475",
+      "name": "AS_GCM_REF_ID_CATEGORY_AMENDMENT",
+      "type": "Constant",
+      "description": "Value: 14",
+      "value": "14",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CPS_basicInfoInProvideClauseSetDetails",
+        "AS_GCM_UT_clausesetSaveForAmendmentOrModification",
+        "AS_GCM_VD_isValidClauseSet",
+        "AS_GCM_dynamicFieldPropertiesForClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1404467",
+      "name": "AS_GCM_REF_ID_CATEGORY_MODIFICATION",
+      "type": "Constant",
+      "description": "Value: 42",
+      "value": "42",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CPS_basicInfoInProvideClauseSetDetails",
+        "AS_GCM_UT_clausesetSaveForAmendmentOrModification",
+        "AS_GCM_VD_isValidClauseSet",
+        "AS_GCM_dynamicFieldPropertiesForClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9a5-4d17-8000-9c58-011c48011c48_5106691",
+      "name": "AS_GCM_REF_ID_CATEGORY_NEW_SOLICITATION",
+      "type": "Constant",
+      "description": "Value: 13",
+      "value": "13",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FM_copyClauseSetClauses",
+        "AS_GCM_VD_isValidClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea79-8f1b-8000-9cb5-011c48011c48_7746788",
+      "name": "AS_GCM_REF_ID_CLAUSE_ADDED_VIA_COPIED",
+      "type": "Constant",
+      "description": "Value: 103",
+      "value": "103",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM Copy Clause Set Clauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1308531",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_CLAUSE_STATUS_COMPLETE",
+      "type": "Constant",
+      "description": "Contains Ref data Id for status Complete\nValue: 47",
+      "value": "47",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_returnClauseSetClauseStatusId"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1308544",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_CLAUSE_STATUS_INCOMPLETE",
+      "type": "Constant",
+      "description": "Contains Ref data Id for status Incomplete\nValue: 46",
+      "value": "46",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_returnClauseSetClauseStatusId"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1276927",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_STATUS_FINALIZED",
+      "type": "Constant",
+      "description": "Contains Ref data Id for status Finalized\nValue: 40",
+      "value": "40",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_clausesetSaveForAmendmentOrModification"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed52-a319-8000-9df0-011c48011c48_15021447",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_STATUS_GENERATING",
+      "type": "Constant",
+      "description": "Contains Ref data Id for status Generating\nValue: 113",
+      "value": "113",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM Copy Clause Set Clauses",
+        "AS_GCM_FM_copyClauseSetClauses",
+        "AS_GCM_UT_updateClauseSetDetailsOnSubmission"
+      ]
+    },
+    {
+      "uuid": "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1214447",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_TYPE_AWARD",
+      "type": "Constant",
+      "description": "Value: 12",
+      "value": "12",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM Copy Clause Set Clauses",
+        "AS_GCM_CPS_basicInfoInProvideClauseSetDetails",
+        "AS_GCM_FM_copyClauseSetClauses",
+        "AS_GCM_VD_isValidClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9ae-8772-8000-9c5b-011c48011c48_5165139",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_TYPE_SOLICITATION",
+      "type": "Constant",
+      "description": "Value: 11",
+      "value": "11",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_VD_isValidClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed9c-6a3c-8000-9e00-011c48011c48_15616071",
+      "name": "AS_GCM_REF_ID_CONTRACT_FORMAT_UCF",
+      "type": "Constant",
+      "description": "Contains Ref data Id for UCF contract format\nValue: 114",
+      "value": "114",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_populateClauseSetClauseDetailsInClauseSet",
+        "AS_GCM_DefaultClauseSetContextFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e69a-ff03-8000-9bd0-011c48011c48_1621530",
+      "name": "AS_GCM_REF_ID_FORMAT_FULL_TEXT",
+      "type": "Constant",
+      "description": "Value: 6\nNote: It was formerly AS_GCM_REF_ID_FORMAT_UCF. Its renamed because of ref_label change in AS_GCM_R_DATA table.",
+      "value": "6",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_returnClauseSetClauseStatusId"
+      ]
+    },
+    {
+      "uuid": "_a-0000e69a-ff03-8000-9bd0-011c48011c48_1621523",
+      "name": "AS_GCM_REF_ID_FORMAT_IBR",
+      "type": "Constant",
+      "description": "Value: 7",
+      "value": "7",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_returnClauseSetClauseStatusId"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1262107",
+      "name": "AS_GCM_REF_ID_TYPE_CLAUSE",
+      "type": "Constant",
+      "description": "Value: 4",
+      "value": "4",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM Copy Clause Set Clauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1374072",
+      "name": "AS_GCM_REF_ID_USAGE_EXCLUDED",
+      "type": "Constant",
+      "description": "Ref data id - 57",
+      "value": "57",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_populateClauseSetClauseDetailsInClauseSet",
+        "AS_GCM_QE_getClauseSetDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1214536",
+      "name": "AS_GCM_REF_TYPE_AWARD_TYPE",
+      "type": "Constant",
+      "description": "Ref Data Type: Award Type",
+      "value": "Award Type",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CPS_basicInfoInProvideClauseSetDetails",
+        "AS_GCM_FM_copyClauseSetClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1206566",
+      "name": "AS_GCM_REF_TYPE_CLAUSE_SET_TYPE",
+      "type": "Constant",
+      "description": "Ref Data Type: Clause set Type",
+      "value": "Clause Set Type",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CPS_basicInfoInProvideClauseSetDetails",
+        "AS_GCM_FM_copyClauseSetClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed9c-6a3c-8000-9e00-011c48011c48_15616095",
+      "name": "AS_GCM_REF_TYPE_CONTRACT_FORMAT",
+      "type": "Constant",
+      "description": "Ref type Value : \"Contract Format\"",
+      "value": "Contract Format",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CPS_basicInfoInProvideClauseSetDetails",
+        "AS_GCM_FM_copyClauseSetClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1207133",
+      "name": "AS_GCM_REF_TYPE_CONTRACT_METHOD",
+      "type": "Constant",
+      "description": "Ref Data Type: Contract Method",
+      "value": "Contract Method",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_FM_copyClauseSetClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1206582",
+      "name": "AS_GCM_REF_TYPE_SOLICITATION_TYPE",
+      "type": "Constant",
+      "description": "Ref Data Type: Clause set Category",
+      "value": "Solicitation Type",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CPS_basicInfoInProvideClauseSetDetails",
+        "AS_GCM_FM_copyClauseSetClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e944-d782-8000-9bbd-011c48011c48_48151",
+      "name": "AS_GCM_TOGGLE_AUTOMATION_TESTING_ENABLED",
+      "type": "Constant",
+      "description": "Always leave this constant as false, only set to true for automated testing",
+      "value": "false",
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CPS_contractTypesInProvideClauseSetDetails",
+        "AS_GCM_FM_confirmationScreenForClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e994-0db4-8000-9c52-011c48011c48_4931020",
+      "name": "AS_GCM_TXT_CLAUSE_SET_USER_FIELDS",
+      "type": "Constant",
+      "description": "Contains the user fields of AS_GCM_ClauseSet",
+      "value": [
+        "contractingOfficer",
+        "contractSpecialist",
+        "contractingOffcrRep"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_DefaultClauseSetContextFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_291284",
+      "name": "AS_CO_CONS_PRIMITIVE_TYPE_ARRAY",
+      "type": "Expression Rule",
+      "description": "Array of type numbers of primitive types (1 text, 2 int, 3 dec, 4 boolean, 5 date, 6 datetime, 7 time, 8 user, 9 group, 10 user or group, 11 document, 12 folder)",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_zINTERNAL_returnCdtFields_primitiveTypeCheckHandler"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_81818",
+      "name": "AS_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "description": "Displays a label by the `bundleKey` from passed in bundle data, optionally accepts arguments",
+      "parameters": [],
+      "calls": [
+        "AS_CO_I18N_UT_parseBundleKey",
+        "AS_CO_I18N_UT_replaceArgument",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_CO_I18N_UT_getAndDisplayLabelSingle",
+        "AS_CO_VD_numberValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_84411",
+      "name": "AS_CO_I18N_UT_getAndDisplayLabelSingle",
+      "type": "Expression Rule",
+      "description": "Retrieves and then displays a single label from a bundle file -- This is meant to be used in places where you cannot utilize local variables, such as record and site page names",
+      "parameters": [],
+      "calls": [
+        "AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+        "AS_CO_I18N_UT_displayLabel",
+        "AS_CO_I18N_UT_loadBundleFromFolder",
+        "AS_CO_I18N_UT_parseBundleKey"
+      ],
+      "called_by": [
+        "AS_CO_UT_displayCommonObjectBundleLabel"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76004",
+      "name": "AS_CO_I18N_UT_getUserLocale",
+      "type": "Expression Rule",
+      "description": "Gets the Appian user locale as defined in the user preferences, returns the default if the user is null",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_I18N_UT_loadBundleFromFolder"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_81720",
+      "name": "AS_CO_I18N_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "description": "Loads a property bundle file by name from a folder, returns a dictionary of the key-value pairs",
+      "parameters": [],
+      "calls": [
+        "AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+        "AS_CO_I18N_UT_getUserLocale",
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_I18N_UT_getAndDisplayLabelSingle",
+        "AS_CO_VD_numberValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e438-fdf5-8000-9ba8-011c48011c48_19869",
+      "name": "AS_CO_I18N_UT_parseBundleKey",
+      "type": "Expression Rule",
+      "description": "Parses a bundle key and returns a dictionary of the `bundleName` & `labelKey`",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_I18N_UT_displayLabel",
+        "AS_CO_I18N_UT_getAndDisplayLabelSingle"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_91550",
+      "name": "AS_CO_I18N_UT_replaceArgument",
+      "type": "Expression Rule",
+      "description": "Replaces a single argument symbol with an argument value in a display label",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_I18N_UT_displayLabel"
+      ]
+    },
+    {
+      "uuid": "_a-0000e471-623a-8000-9bc3-011c48011c48_702648",
+      "name": "AS_CO_I18N_UT_replaceArgument_RichText",
+      "type": "Expression Rule",
+      "description": "Replaces a single argument symbol with an argument value in a display label according to an optional richText configuration",
+      "parameters": [],
+      "calls": [
+        "AS_CO_I18N_UT_replaceArgument_RichText_InsertArgumentCdt"
+      ],
+      "called_by": [
+        "AS_GCM_CO_I18N_UT_displayLabel_RichText"
+      ]
+    },
+    {
+      "uuid": "_a-0000e471-623a-8000-9bc3-011c48011c48_702695",
+      "name": "AS_CO_I18N_UT_replaceArgument_RichText_InsertArgumentCdt",
+      "type": "Expression Rule",
+      "description": "Inserts the given argument as a richTextItem where applicable for the provided text type",
+      "parameters": [],
+      "calls": [
+        "AS_CO_TYPE_VariantList",
+        "AS_CO_UT_typeCompare"
+      ],
+      "called_by": [
+        "AS_CO_I18N_UT_replaceArgument_RichText"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_283420",
+      "name": "AS_CO_TYPE_VariantList",
+      "type": "Expression Rule",
+      "description": "Returns `type!{}Variant?list` used for casting purposes",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_I18N_UT_replaceArgument_RichText_InsertArgumentCdt"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed08-d796-8000-9dda-011c48011c48_14567642",
+      "name": "AS_CO_UT_ContainsValueByField",
+      "type": "Expression Rule",
+      "description": "it's only used by `AS_CO_UT_Filter`.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_Filter_Reducer"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed08-d796-8000-9dda-011c48011c48_14552299",
+      "name": "AS_CO_UT_Filter",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_Example_RECORD",
+        "AS_CO_UT_Filter_Reducer"
+      ],
+      "called_by": [
+        "AS_GCM_BL_populateClauseSetClauseDetailsInClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed08-d796-8000-9dda-011c48011c48_14552306",
+      "name": "AS_CO_UT_Filter_Reducer",
+      "type": "Expression Rule",
+      "description": "Do not call this rule directly, it's only used by `AS_CO_UT_Filter`.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_ContainsValueByField"
+      ],
+      "called_by": [
+        "AS_CO_UT_Filter"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39070",
+      "name": "AS_CO_UT_booleanDefaultFalse",
+      "type": "Expression Rule",
+      "description": "Default a null value to false, otherwise returns the boolean value",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_captureMetadata",
+        "AS_CO_UT_displayValueMultiple",
+        "AS_GCM_CPS_basicInfoInProvideClauseSetDetails",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_QR_getRefClause",
+        "AS_GCM_QR_getRefData",
+        "AS_GCM_dynamicFieldPropertiesForClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39082",
+      "name": "AS_CO_UT_booleanDefaultTrue",
+      "type": "Expression Rule",
+      "description": "Default a null value to true, otherwise returns the boolean value",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_DSP_standardReadOnlyField",
+        "AS_CO_UT_captureMetadata",
+        "AS_GAM_UT_recordDashboardLink",
+        "AS_GCM_QR_getRefClauseSectionMapping",
+        "AS_GCM_QR_getRefData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_28158",
+      "name": "AS_CO_UT_captureMetadata",
+      "type": "Expression Rule",
+      "description": "Automatically sets the \"auditing\" fields on a CDT, including createdDatetime/createdBy/modifiedDatetime/modifiedBy/isActive/isDeleted",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_booleanDefaultFalse",
+        "AS_CO_UT_booleanDefaultTrue",
+        "AS_CO_UT_displayValueMultiple",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_returnCdtFields",
+        "AS_CO_UT_updateCdtFields"
+      ],
+      "called_by": [
+        "AS_GCM_BL_populateClauseSetClauseDetailsInClauseSet",
+        "AS_GCM_FM_copyClauseSetClauses",
+        "AS_GCM_UT_updateClauseSetDetailsOnSubmission"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157603",
+      "name": "AS_CO_UT_cast",
+      "type": "Expression Rule",
+      "description": "Casts a variable to the type of either the input `type`, or the typeof of the input `typeof`, and properly handles for null inputs",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_filterCdtByMultipleFieldValuePairs",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_ADT_UT_constructCopyClauseSetAuditData",
+        "AS_GCM_BL_populateClauseSetClauseDetailsInClauseSet",
+        "AS_GCM_CPS_basicInfoInProvideClauseSetDetails",
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching",
+        "AS_GCM_UT_clausesetSaveForAmendmentOrModification",
+        "AS_GCM_UT_formatDataBasedOnReturnType",
+        "AS_GCM_UT_queryRecordByIdentifier",
+        "AS_GCM_updateClauseSetDetailsfromClauseSetContext"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_81749",
+      "name": "AS_CO_UT_checkIfUserExists",
+      "type": "Expression Rule",
+      "description": "Returns true if the user exists",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_displayUser",
+        "AS_CO_UT_userSafeLink"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73624",
+      "name": "AS_CO_UT_compare",
+      "type": "Expression Rule",
+      "description": "Compares two values and returns true if both the content of the values match (regardless of type).",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_populateClauseSetClauseDetailsInClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_33160",
+      "name": "AS_CO_UT_displayCommonObjectBundleLabel",
+      "type": "Expression Rule",
+      "description": "Retrieves a single label from the Common Objects bundle file",
+      "parameters": [],
+      "calls": [
+        "AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+        "AS_CO_I18N_UT_getAndDisplayLabelSingle"
+      ],
+      "called_by": [
+        "AS_CO_UT_displayRequiredMessage",
+        "AS_CO_VD_textValidation",
+        "AS_GCM_DPL_CO_dropdownField"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb44-a528-8000-9d15-011c48011c48_9978504",
+      "name": "AS_CO_UT_displayRequiredMessage",
+      "type": "Expression Rule",
+      "description": "Returns default required message (used for all editable fields) if required message is not passed.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_displayCommonObjectBundleLabel"
+      ],
+      "called_by": [
+        "AS_CO_CP_pickerFieldUsers",
+        "AS_CO_CP_radioButtonField",
+        "AS_CO_INP_textField",
+        "AS_GCM_DPL_CO_INP_currencyField",
+        "AS_GCM_DPL_CO_INP_paragraphField",
+        "AS_GCM_DPL_CO_INP_textField",
+        "AS_GCM_DPL_CO_dropdownField",
+        "AS_GCM_dynamicFieldPropertiesForClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73660",
+      "name": "AS_CO_UT_displayUser",
+      "type": "Expression Rule",
+      "description": "Returns a display name for a user in the format of \"firstName lastName\". Null-safe.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_checkIfUserExists"
+      ],
+      "called_by": [
+        "AS_CO_UT_userSafeLink"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_187421",
+      "name": "AS_CO_UT_displayValue",
+      "type": "Expression Rule",
+      "description": "Executes displayValue, but allows setting the default to either the first or last value of the replacement list, or a custom value",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_displayValueMultiple",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_41232",
+      "name": "AS_CO_UT_displayValueMultiple",
+      "type": "Expression Rule",
+      "description": "For each item in the values list, executes displayValue.  Allows setting the default to either the first or last value of the replacement list, or a custom value.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_booleanDefaultFalse",
+        "AS_CO_UT_displayValue",
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_captureMetadata"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75800",
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "description": "Filters a CDT by a matching a single value or list of values in a single field, if a list is passed, all matches are returned",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_returnCdtIndicesByField"
+      ],
+      "called_by": [
+        "AS GCM Copy Clause Set Clauses",
+        "AS_CO_UT_zINTERNAL_filterCdtByFieldValuePairs_helper",
+        "AS_GCM_FM_copyClauseSetClauses",
+        "AS_GCM_updateClauseSetDetailsfromClauseSetContext"
+      ]
+    },
+    {
+      "uuid": "_a-0000e7fa-f829-8000-9c17-011c48011c48_3456229",
+      "name": "AS_CO_UT_filterCdtByMultipleFieldValuePairs",
+      "type": "Expression Rule",
+      "description": "More robust than filterCdtByMultipleFields rule. Works correctly with boolean types.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_zINTERNAL_filterCdtByFieldValuePairs_helper"
+      ],
+      "called_by": [
+        "AS_GCM_CRD_collapsibleSection",
+        "AS_GCM_FM_copyClauseSetClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_74260",
+      "name": "AS_CO_UT_formatFieldEntryPlaceHolder",
+      "type": "Expression Rule",
+      "description": "Creates a formatted placeholder label for dropdowns. ",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_CP_pickerFieldUsers",
+        "AS_GCM_DPL_CO_dropdownField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73568",
+      "name": "AS_CO_UT_getLabelPosition",
+      "type": "Expression Rule",
+      "description": "Returns the standard labelPosition based on the context of the component, allows for custom input",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_CO_CP_pickerFieldUsers",
+        "AS_CO_CP_radioButtonField",
+        "AS_CO_DSP_standardReadOnlyField",
+        "AS_CO_INP_textField",
+        "AS_GCM_DPL_CO_INP_paragraphField",
+        "AS_GCM_DPL_CO_INP_textField",
+        "AS_GCM_DPL_CO_dropdownField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_100254",
+      "name": "AS_CO_UT_getSiteUrl",
+      "type": "Expression Rule",
+      "description": "Returns the URL of the site, terminating in /suite/",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_urlForRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76433",
+      "name": "AS_CO_UT_indexPath",
+      "type": "Expression Rule",
+      "description": "Pass in a field (i.e. member[1].name) and this will index(index(index( for each field",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_returnCdtIndicesByField",
+        "AS_GAM_returnCdtOrRecordIndicesByField",
+        "AS_GCM_BL_populateClauseSetClauseDetailsInClauseSet",
+        "AS_GCM_CPS_contractTypesInProvideClauseSetDetails",
+        "AS_GCM_UT_nullifyEmptyNestedCdtFields",
+        "AS_GCM_dynamicFieldPropertiesForClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GCM Copy Clause Set Clauses",
+        "AS_CO_CP_pickerFieldUsers",
+        "AS_CO_I18N_UT_displayLabel",
+        "AS_CO_I18N_UT_loadBundleFromFolder",
+        "AS_CO_UT_formatFieldEntryPlaceHolder",
+        "AS_CO_UT_getLabelPosition",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectCdtByField",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_updateCdtFields",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+        "AS_CO_UT_whereContains",
+        "AS_CO_VD_numberValidation",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GAM_UT_ArrayLength",
+        "AS_GAM_UT_queryEntityWithSelection",
+        "AS_GCM_BL_populateClauseSetClauseDetailsInClauseSet",
+        "AS_GCM_CPS_basicInfoInProvideClauseSetDetails",
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_UT_clausesetSaveForAmendmentOrModification",
+        "AS_GCM_UT_formatDataBasedOnReturnType",
+        "AS_GCM_UT_getIdentifiersInBatches",
+        "AS_GCM_UT_nullifyEmptyNestedCdtFields",
+        "AS_GCM_dynamicFieldPropertiesForClauseSet",
+        "AS_GCM_substituteListFromTextUsingReduce"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around AS_CO_UT_isBlank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS GCM Copy Clause Set Clauses",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_checkIfUserExists",
+        "AS_CO_UT_displayValueMultiple",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_safeLink",
+        "AS_CO_VD_numberValidation",
+        "AS_CO_VD_textValidation",
+        "AS_GAM_createMap",
+        "AS_GCM_BL_populateClauseSetClauseDetailsInClauseSet",
+        "AS_GCM_CPS_basicInfoInProvideClauseSetDetails",
+        "AS_GCM_CRD_collapsibleSection",
+        "AS_GCM_FM_confirmationScreenForClauseSet",
+        "AS_GCM_QE_getClauseSetClauseDetails",
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching",
+        "AS_GCM_QE_getClauseSetContractTypeDetails",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_QR_getRefClause",
+        "AS_GCM_QR_getRefClauseSectionMapping",
+        "AS_GCM_UT_clausesetSaveForAmendmentOrModification",
+        "AS_GCM_UT_constructClauseSetBasedOnCategoryAndSetNumber",
+        "AS_GCM_VD_duplicateValidationForSetNumbAndCategNumbCombo",
+        "AS_GCM_cloneCdt",
+        "AS_GCM_dynamicFieldPropertiesForClauseSet",
+        "AS_GCM_updateDataByModifierMaps",
+        "AS_GCM_updateDataByModifierMaps_Reducer"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9e2-fe39-8000-9c72-011c48011c48_5802508",
+      "name": "AS_CO_UT_isRecordTypeData",
+      "type": "Expression Rule",
+      "description": "Returns true if the passed data is of type record type",
+      "parameters": [],
+      "calls": [
+        "AS_CO_Example_RECORD"
+      ],
+      "called_by": [
+        "AS_GAM_returnCdtOrRecordIndicesByField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157870",
+      "name": "AS_CO_UT_queryEntity",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_displayValue",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_returnCdtFields"
+      ],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetClauseDetails",
+        "AS_GCM_QE_getClauseSetContractTypeDetails",
+        "AS_GCM_QE_getClauseSetDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6c8-d132-8000-9bbe-011c48011c48_469266",
+      "name": "AS_CO_UT_queryRecord",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_displayValue",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs"
+      ],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_QR_getRefClause",
+        "AS_GCM_QR_getRefClauseSectionMapping",
+        "AS_GCM_QR_getRefData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_271202",
+      "name": "AS_CO_UT_rejectCdtByField",
+      "type": "Expression Rule",
+      "description": "Removes CDT indices where a match of a single value or list of values in a single field is found, if a list is passed, all matches are rejected",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_returnCdtIndicesByField"
+      ],
+      "called_by": [
+        "AS_GCM_FM_copyClauseSetClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367",
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_BL_populateClauseSetClauseDetailsInClauseSet",
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching",
+        "AS_GCM_QR_getRefClause",
+        "AS_GCM_UT_queryRecordByIdentifier",
+        "AS_GCM_setRecordFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73980",
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "description": "Returns nullableValue only if it is not null. Else returns replacementValue.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_DSP_standardReadOnlyField",
+        "AS_CO_I18N_UT_displayLabel",
+        "AS_CO_UT_captureMetadata",
+        "AS_CO_UT_getLabelPosition",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_safeLink",
+        "AS_CO_UT_userSafeLink",
+        "AS_CO_VD_textValidation",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GAM_UT_queryEntityWithSelection",
+        "AS_GAM_UT_recordDashboardLink",
+        "AS_GCM_DPL_CO_dropdownField",
+        "AS_GCM_QR_getRefClauseSectionMapping",
+        "AS_GCM_setRecordFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75660",
+      "name": "AS_CO_UT_returnCdtFields",
+      "type": "Expression Rule",
+      "description": "Returns an array of a CDTs fields. Note that this only works on Appian CDTs, not Dictionary or List of Variant",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_returnSingleTypeObject",
+        "AS_CO_UT_zINTERNAL_returnCdtFields_handler",
+        "AS_CO_UT_zINTERNAL_returnCdtFields_primitiveTypeCheckHandler"
+      ],
+      "called_by": [
+        "AS_CO_UT_captureMetadata",
+        "AS_CO_UT_queryEntity",
+        "AS_GCM_UT_nullifyEmptyNestedCdtFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_269546",
+      "name": "AS_CO_UT_returnCdtIndicesByField",
+      "type": "Expression Rule",
+      "description": "Returns the indices of a CDT by a matching a single value or list of values in a single field, if a list is passed, all matches are returned",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_whereContains"
+      ],
+      "called_by": [
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_rejectCdtByField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75842",
+      "name": "AS_CO_UT_returnSingleTypeObject",
+      "type": "Expression Rule",
+      "description": "Takes in either an array type or a primitive type and returns the singular type object, works for CDTs or primitive types",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_returnCdtFields",
+        "AS_CO_UT_zINTERNAL_returnCdtFields_handler"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_95089",
+      "name": "AS_CO_UT_safeLink",
+      "type": "Expression Rule",
+      "description": "Generic safe link component that gracefully handles a null URI",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_CO_UT_userSafeLink",
+        "AS_GAM_UT_recordDashboardLink"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_162769",
+      "name": "AS_CO_UT_typeCompare",
+      "type": "Expression Rule",
+      "description": "Returns true if the two input types match",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_I18N_UT_replaceArgument_RichText_InsertArgumentCdt",
+        "AS_CO_UT_whereContains",
+        "AS_CO_UT_zINTERNAL_returnCdtFields_primitiveTypeCheckHandler",
+        "AS_GCM_IBRValidationDisabled_wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_260165",
+      "name": "AS_CO_UT_updateCdtFields",
+      "type": "Expression Rule",
+      "description": "Updates one or more fields of a CDT, with an optional input for indices",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_captureMetadata",
+        "AS_GCM_BL_populateClauseSetClauseDetailsInClauseSet",
+        "AS_GCM_FM_copyClauseSetClauses",
+        "AS_GCM_UT_constructClauseSetBasedOnCategoryAndSetNumber",
+        "AS_GCM_cloneCdt"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_269170",
+      "name": "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+      "type": "Expression Rule",
+      "description": "Allows passing field-value pairs to handle for use cases where you have to set newValues as arrays",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_BL_populateClauseSetClauseDetailsInClauseSet",
+        "AS_GCM_DefaultClauseSetContextFields",
+        "AS_GCM_FM_copyClauseSetClauses",
+        "AS_GCM_UT_constructClauseSetBasedOnCategoryAndSetNumber",
+        "AS_GCM_UT_nullifyEmptyNestedCdtFields",
+        "AS_GCM_UT_updateClauseSetDetailsOnSubmission",
+        "AS_GCM_cloneCdt",
+        "AS_GCM_dynamicFieldPropertiesForClauseSet",
+        "AS_GCM_updateClauseSetDetailsfromClauseSetContext"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_91843",
+      "name": "AS_CO_UT_urlForRecord",
+      "type": "Expression Rule",
+      "description": "Returns the url for a record for use in a safe link",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_getSiteUrl"
+      ],
+      "called_by": [
+        "AS_CO_UT_userSafeLink",
+        "AS_GAM_UT_urlForRecordDashboard"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_99972",
+      "name": "AS_CO_UT_userSafeLink",
+      "type": "Expression Rule",
+      "description": "Generic safe link to a user record",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_checkIfUserExists",
+        "AS_CO_UT_displayUser",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_safeLink",
+        "AS_CO_UT_urlForRecord"
+      ],
+      "called_by": [
+        "AS_CO_CP_pickerFieldUsers"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_272151",
+      "name": "AS_CO_UT_whereContains",
+      "type": "Expression Rule",
+      "description": "Enhanced wherecontains() which avoids type-casting issues and properly handles for document and group types",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_typeCompare"
+      ],
+      "called_by": [
+        "AS_CO_UT_returnCdtIndicesByField",
+        "AS_GAM_returnCdtOrRecordIndicesByField",
+        "AS_GCM_FM_copyClauseSetClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e811-1167-8000-9c18-011c48011c48_3490805",
+      "name": "AS_CO_UT_zINTERNAL_filterCdtByFieldValuePairs_helper",
+      "type": "Expression Rule",
+      "description": null,
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_filterCdtByField"
+      ],
+      "called_by": [
+        "AS_CO_UT_filterCdtByMultipleFieldValuePairs"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_291236",
+      "name": "AS_CO_UT_zINTERNAL_returnCdtFields_handler",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_CO_UT_returnCdtFields`",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_returnSingleTypeObject"
+      ],
+      "called_by": [
+        "AS_CO_UT_returnCdtFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e36c-7599-8000-9ba2-011c48011c48_64438",
+      "name": "AS_CO_UT_zINTERNAL_returnCdtFields_primitiveTypeCheckHandler",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_CO_UT_returnCdtFields`",
+      "parameters": [],
+      "calls": [
+        "AS_CO_CONS_PRIMITIVE_TYPE_ARRAY",
+        "AS_CO_UT_typeCompare"
+      ],
+      "called_by": [
+        "AS_CO_UT_returnCdtFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73956",
+      "name": "AS_CO_VD_numberValidation",
+      "type": "Expression Rule",
+      "description": "Performs minimum and maximum size validation on an integer value. Returns a validation message if any provided size constraints are violated.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_I18N_FLD_INTERNATIONALIZATION_FILES",
+        "AS_CO_I18N_UT_displayLabel",
+        "AS_CO_I18N_UT_loadBundleFromFolder",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_GCM_DPL_CO_INP_currencyField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_74104",
+      "name": "AS_CO_VD_textValidation",
+      "type": "Expression Rule",
+      "description": "Performs minimum and maximum length validation on a text value. Returns a validation message if any provided length constraints are violated. Allows for custom validation messages.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_displayCommonObjectBundleLabel",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_CO_INP_textField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5d4-2024-8000-9baf-011c48011c48_320878",
+      "name": "AS_FRM_determineRuntimeRule",
+      "type": "Expression Rule",
+      "description": "Returns the runtime rule for a default rule, uses plugin function `determineRuntimeRule()`",
+      "parameters": [],
+      "calls": [
+        "AS_FRM_BOOL_RULE_CUSTOMIZATION_1_0_ENABLED"
+      ],
+      "called_by": [
+        "AS_GCM_CopyClauseSetClausesActionEnabled_wrapper",
+        "AS_GCM_IBRValidationDisabled_wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53662",
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "description": "Displays a label by the `bundleKey` from passed in bundle data, optionally accepts arguments",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GAM_translateMultipleBundleKeys",
+        "AS_GCM_CRD_collapsibleSection",
+        "AS_GCM_FM_confirmationScreenForClauseSet",
+        "AS_GCM_FM_copyClauseSetClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1021202",
+      "name": "AS_GAM_UT_ArrayLength",
+      "type": "Expression Rule",
+      "description": "Gives length of an array based on input of array",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_QR_getRefClause",
+        "AS_GCM_clauseSetContractDetailsDynamicComponentsMap",
+        "AS_GCM_dynamicFieldPropertiesForClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1523563",
+      "name": "AS_GAM_UT_queryEntityWithSelection",
+      "type": "Expression Rule",
+      "description": "Generic query entity with query selection (So that huge load can be avoided while querying)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1096335",
+      "name": "AS_GAM_UT_recordDashboardLink",
+      "type": "Expression Rule",
+      "description": "Generic link to a record dashboard.  Depending upon if the link should open in a new tab, either a safeLink or a recordLink is used.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_booleanDefaultTrue",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_safeLink",
+        "AS_GAM_UT_urlForRecordDashboard"
+      ],
+      "called_by": [
+        "AS_GCM_FM_confirmationScreenForClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1096175",
+      "name": "AS_GAM_UT_urlForRecordDashboard",
+      "type": "Expression Rule",
+      "description": "Returns the url for a particular record dashboard for user in a safe link",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_urlForRecord"
+      ],
+      "called_by": [
+        "AS_GAM_UT_recordDashboardLink"
+      ]
+    },
+    {
+      "uuid": "_a-0000e994-0db4-8000-9c52-011c48011c48_4923038",
+      "name": "AS_GAM_createMap",
+      "type": "Expression Rule",
+      "description": "Creates a map with the given keys and values",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_GCM_dynamicFieldPropertiesForClauseSet",
+        "AS_GCM_updateClauseSetDetailsfromClauseSetContext"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9e2-fe39-8000-9c72-011c48011c48_5802259",
+      "name": "AS_GAM_filterCdtOrRecordDataByField",
+      "type": "Expression Rule",
+      "description": "Filters CDT or record data by a matching a single value or list of values in a single field, if a list is passed, all matches are returned",
+      "parameters": [],
+      "calls": [
+        "AS_GAM_returnCdtOrRecordIndicesByField"
+      ],
+      "called_by": [
+        "AS_GCM_BL_populateClauseSetClauseDetailsInClauseSet",
+        "AS_GCM_dynamicFieldPropertiesForClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000eae2-5167-8000-9ce4-011c48011c48_8879314",
+      "name": "AS_GAM_returnCdtOrRecordIndicesByField",
+      "type": "Expression Rule",
+      "description": "Returns the Index CDT or record data by matching a single value or list of values in a single field",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isRecordTypeData",
+        "AS_CO_UT_whereContains"
+      ],
+      "called_by": [
+        "AS_GAM_filterCdtOrRecordDataByField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e99c-12b8-8000-9c55-011c48011c48_4960869",
+      "name": "AS_GAM_translateMultipleBundleKeys",
+      "type": "Expression Rule",
+      "description": "Rule to translate multiple bundle keys ",
+      "parameters": [],
+      "calls": [
+        "AS_GAM_CO_I18N_UT_displayLabel"
+      ],
+      "called_by": [
+        "AS_GCM_CPS_basicInfoInProvideClauseSetDetails",
+        "AS_GCM_CPS_contractDetailsInProvideClauseSetDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea79-8f1b-8000-9cb5-011c48011c48_7744589",
+      "name": "AS_GCM_ADT_UT_constructCopyClauseSetAuditData",
+      "type": "Expression Rule",
+      "description": "Rule to construct simple field changes for copy clause set audit data",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast"
+      ],
+      "called_by": [
+        "AS GCM Copy Clause Set Clauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1540614",
+      "name": "AS_GCM_BL_populateClauseSetClauseDetailsInClauseSet",
+      "type": "Expression Rule",
+      "description": "This rule is used to populate the details of clause set clause  by batching from R_Clause and R_Clause_Texts",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_Filter",
+        "AS_CO_UT_captureMetadata",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_compare",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_updateCdtFields",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+        "AS_GAM_filterCdtOrRecordDataByField",
+        "AS_GCM_BL_returnClauseSetClauseStatusId",
+        "AS_GCM_QE_getClauseSetClauseDetails",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_QR_getRefClause",
+        "AS_GCM_QR_getRefClauseSectionMapping",
+        "AS_GCM_REF_ID_CONTRACT_FORMAT_UCF",
+        "AS_GCM_REF_ID_USAGE_EXCLUDED",
+        "AS_GCM_UT_nullifyEmptyNestedCdtFields",
+        "AS_GCM_filterRecords"
+      ],
+      "called_by": [
+        "AS GCM Copy Clause Set Clauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb85-3dbf-8000-9d30-011c48011c48_10991191",
+      "name": "AS_GCM_BL_returnClauseSetClauseStatusId",
+      "type": "Expression Rule",
+      "description": "Will return status id for clause set clause ",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_IBRValidationDisabled_wrapper",
+        "AS_GCM_REF_ID_CLAUSE_SET_CLAUSE_STATUS_COMPLETE",
+        "AS_GCM_REF_ID_CLAUSE_SET_CLAUSE_STATUS_INCOMPLETE",
+        "AS_GCM_REF_ID_FORMAT_FULL_TEXT",
+        "AS_GCM_REF_ID_FORMAT_IBR"
+      ],
+      "called_by": [
+        "AS_GCM_BL_populateClauseSetClauseDetailsInClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea70-53bb-8000-9cb1-011c48011c48_7712007",
+      "name": "AS_GCM_CONS_cdtFieldsToResetForCloning",
+      "type": "Expression Rule",
+      "description": "Contains list of maps with the fields to reset for cloning.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_cloneCdt"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed52-a319-8000-9df0-011c48011c48_15032857",
+      "name": "AS_GCM_CO_I18N_UT_displayLabel_RichText",
+      "type": "Expression Rule",
+      "description": "Displays a label by the `bundleKey` from passed in bundle data plus arguments with rich text configurations",
+      "parameters": [],
+      "calls": [
+        "AS_CO_I18N_UT_replaceArgument_RichText"
+      ],
+      "called_by": [
+        "AS_GCM_FM_confirmationScreenForClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53654",
+      "name": "AS_GCM_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "description": "Loads a property bundle file by name from a folder, returns a dictionary of the key-value pairs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CPS_ClauseSetRelatedActionPlaceholder",
+        "AS_GCM_CPS_basicInfoInProvideClauseSetDetails",
+        "AS_GCM_CPS_contractDetailsInProvideClauseSetDetails",
+        "AS_GCM_CPS_contractTypesInProvideClauseSetDetails",
+        "AS_GCM_CRD_collapsibleSection",
+        "AS_GCM_FM_confirmationScreenForClauseSet",
+        "AS_GCM_FM_copyClauseSetClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb60-53ed-8000-9d20-011c48011c48_10239905",
+      "name": "AS_GCM_CopyClauseSetClausesActionEnabled_wrapper",
+      "type": "Expression Rule",
+      "description": "A wrapper rule for the copy clause set clauses action solutions hub toggle",
+      "parameters": [],
+      "calls": [
+        "AS_FRM_determineRuntimeRule"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "_a-0000e8cc-c513-8000-9c0f-011c48011c48_3412015",
+      "name": "AS_GCM_DPL_CO_UT_formatCurrencyValue",
+      "type": "Expression Rule",
+      "description": "takes in a currency code and a dollar value and returns a formatted value",
+      "parameters": [],
+      "calls": [
+        "AS_CO_TXT_DEFAULT_CURRENCY_CODE"
+      ],
+      "called_by": [
+        "AS_GCM_DPL_CO_INP_currencyField"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9747464",
+      "name": "AS_GCM_DPL_CO_UT_isUserMemberOfGroups",
+      "type": "Expression Rule",
+      "description": "Returns true if the user is a member of any of the groups (or condition), uses `loggedInUser()` if `user` input is null",
+      "parameters": [],
+      "calls": [],
+      "called_by": []
+    },
+    {
+      "uuid": "_a-0000ea79-8f1b-8000-9cb5-011c48011c48_7780873",
+      "name": "AS_GCM_DefaultClauseSetContextFields",
+      "type": "Expression Rule",
+      "description": "Assigns default value for the fields present in Clause Set Context",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+        "AS_GCM_REF_ID_CONTRACT_FORMAT_UCF",
+        "AS_GCM_TXT_CLAUSE_SET_USER_FIELDS"
+      ],
+      "called_by": [
+        "AS_GCM_updateClauseSetDetailsfromClauseSetContext"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb97-b2e8-8000-9d39-011c48011c48_11164523",
+      "name": "AS_GCM_IBRValidationDisabled_wrapper",
+      "type": "Expression Rule",
+      "description": "A wrapper rule for the Ignore IBR Validation Errors solutions hub toggle",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_typeCompare",
+        "AS_FRM_determineRuntimeRule"
+      ],
+      "called_by": [
+        "AS_GCM_BL_returnClauseSetClauseStatusId"
+      ]
+    },
+    {
+      "uuid": "_a-0000e881-70d9-8000-9c06-011c48011c48_2914822",
+      "name": "AS_GCM_MTR_SAVE_addContractType",
+      "type": "Expression Rule",
+      "description": "Metric to track number of times contract types are added",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CPS_contractTypesInProvideClauseSetDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e881-70d9-8000-9c06-011c48011c48_2914844",
+      "name": "AS_GCM_MTR_SAVE_removeContractType",
+      "type": "Expression Rule",
+      "description": "Metric to track number of times contract types are removed",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CPS_contractTypesInProvideClauseSetDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1270237",
+      "name": "AS_GCM_QE_getClauseSetClauseDetails",
+      "type": "Expression Rule",
+      "description": "Query Entity to get clause set clause details",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryEntity",
+        "AS_GCM_ENT_CLAUSE_SET_CLAUSE"
+      ],
+      "called_by": [
+        "AS_GCM_BL_populateClauseSetClauseDetailsInClauseSet",
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3147338",
+      "name": "AS_GCM_QE_getClauseSetClauseDetailsWithBatching",
+      "type": "Expression Rule",
+      "description": "Query Entity to get clause set clause details with batching",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GAM_UT_queryEntityWithSelection",
+        "AS_GCM_ENT_CLAUSE_SET_CLAUSE",
+        "AS_GCM_INT_QUERY_BATCH_SIZE_TINY",
+        "AS_GCM_QE_getClauseSetClauseDetails",
+        "AS_GCM_UT_formatDataBasedOnReturnType",
+        "AS_GCM_UT_getIdentifiersInBatches",
+        "AS_GCM_UT_nullifyEmptyNestedCdtFields"
+      ],
+      "called_by": [
+        "AS GCM Copy Clause Set Clauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e825-ca6c-8000-9bf8-011c48011c48_2526390",
+      "name": "AS_GCM_QE_getClauseSetContractTypeDetails",
+      "type": "Expression Rule",
+      "description": "Query Entity to get clause set contract type details",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryEntity",
+        "AS_GCM_ENT_CLAUSESET_CONTRACT_TYPE"
+      ],
+      "called_by": [
+        "AS GCM Copy Clause Set Clauses",
+        "AS_GCM_CPS_basicInfoInProvideClauseSetDetails",
+        "AS_GCM_CPS_contractTypesInProvideClauseSetDetails",
+        "AS_GCM_FM_copyClauseSetClauses",
+        "AS_GCM_UT_clausesetSaveForAmendmentOrModification"
+      ]
+    },
+    {
+      "uuid": "_a-0000e63a-a5cb-8000-9bc6-011c48011c48_1230199",
+      "name": "AS_GCM_QE_getClauseSetDetails",
+      "type": "Expression Rule",
+      "description": "Query Entity to get clause set details",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_booleanDefaultFalse",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_ENT_CLAUSE_SET",
+        "AS_GCM_REF_ID_USAGE_EXCLUDED",
+        "AS_GCM_UT_queryRecordByIdentifier"
+      ],
+      "called_by": [
+        "AS_GCM_BL_populateClauseSetClauseDetailsInClauseSet",
+        "AS_GCM_CPS_basicInfoInProvideClauseSetDetails",
+        "AS_GCM_CPS_contractDetailsInProvideClauseSetDetails",
+        "AS_GCM_CRD_collapsibleSection",
+        "AS_GCM_FM_copyClauseSetClauses",
+        "AS_GCM_UT_clausesetSaveForAmendmentOrModification",
+        "AS_GCM_VD_duplicateValidationForSetNumbAndCategNumbCombo"
+      ]
+    },
+    {
+      "uuid": "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1163937",
+      "name": "AS_GCM_QR_getRefClause",
+      "type": "Expression Rule",
+      "description": "Returns ref clause details based on the given filter set",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+        "AS_CO_UT_booleanDefaultFalse",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GAM_UT_ArrayLength"
+      ],
+      "called_by": [
+        "AS_GCM_BL_populateClauseSetClauseDetailsInClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0001eda5-a49c-8000-9e01-011c48011c48_15672730",
+      "name": "AS_GCM_QR_getRefClauseSectionMapping",
+      "type": "Expression Rule",
+      "description": "Query rule to get R Clause Section Mapping details",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_booleanDefaultTrue",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_BL_populateClauseSetClauseDetailsInClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1164426",
+      "name": "AS_GCM_QR_getRefData",
+      "type": "Expression Rule",
+      "description": "Returns a list of reference data",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_booleanDefaultFalse",
+        "AS_CO_UT_booleanDefaultTrue",
+        "AS_CO_UT_queryRecord"
+      ],
+      "called_by": [
+        "AS_GCM_CPS_basicInfoInProvideClauseSetDetails",
+        "AS_GCM_FM_copyClauseSetClauses",
+        "AS_GCM_updateClauseSetDetailsfromClauseSetContext"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9ae-8772-8000-9c5b-011c48011c48_5121036",
+      "name": "AS_GCM_UT_clausesetSaveForAmendmentOrModification",
+      "type": "Expression Rule",
+      "description": "List of saves for clause set details when Amendment or Modification while creation ",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_QE_getClauseSetContractTypeDetails",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_REF_ID_CATEGORY_AMENDMENT",
+        "AS_GCM_REF_ID_CATEGORY_MODIFICATION",
+        "AS_GCM_REF_ID_CLAUSE_SET_STATUS_FINALIZED",
+        "AS_GCM_UT_constructClauseSetBasedOnCategoryAndSetNumber",
+        "AS_GCM_updateClauseSetDetailsfromClauseSetContext"
+      ],
+      "called_by": [
+        "AS_GCM_CPS_basicInfoInProvideClauseSetDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e63a-a5cb-8000-9bc6-011c48011c48_1246166",
+      "name": "AS_GCM_UT_constructClauseSetBasedOnCategoryAndSetNumber",
+      "type": "Expression Rule",
+      "description": "Construct contract details of a clause set using its set number, if the Clause set number already exists in the system.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_updateCdtFields",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs"
+      ],
+      "called_by": [
+        "AS_GCM_UT_clausesetSaveForAmendmentOrModification"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3261182",
+      "name": "AS_GCM_UT_formatDataBasedOnReturnType",
+      "type": "Expression Rule",
+      "description": "Returns the data after formatting based on return type",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_GCM_updateDataByModifierMaps"
+      ],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching"
+      ]
+    },
+    {
+      "uuid": "5f18e821-865e-464d-b974-57c20096c58f",
+      "name": "AS_GCM_UT_getIdentifiersInBatches",
+      "type": "Expression Rule",
+      "description": "Returns the Identifiers in batches based on the batchingSize",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_UT_isBlank",
+        "AS_GCM_INT_QUERY_BATCH_SIZE_TINY"
+      ],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3284363",
+      "name": "AS_GCM_UT_getPrimaryKeyFieldByType",
+      "type": "Expression Rule",
+      "description": "Returns PrimaryKey Field based on type",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_nullifyEmptyNestedCdtFields"
+      ]
+    },
+    {
+      "uuid": "f28850a6-d0cc-4841-a587-a36a568d70a3",
+      "name": "AS_GCM_UT_nullifyEmptyNestedCdtFields",
+      "type": "Expression Rule",
+      "description": "Nulls out the nested cdt fields which are blank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_returnCdtFields",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+        "AS_GCM_UT_getPrimaryKeyFieldByType"
+      ],
+      "called_by": [
+        "AS_GCM_BL_populateClauseSetClauseDetailsInClauseSet",
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec50-376f-8000-9d94-011c48011c48_12937069",
+      "name": "AS_GCM_UT_queryRecordByIdentifier",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_rejectNullValuesFromArray"
+      ],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1214493",
+      "name": "AS_GCM_UT_updateClauseSetDetailsOnSubmission",
+      "type": "Expression Rule",
+      "description": "Rule to capture metadata for AS_GCM_ClauseSet after submit",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_captureMetadata",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+        "AS_GCM_REF_ID_CLAUSE_SET_STATUS_GENERATING"
+      ],
+      "called_by": [
+        "AS GCM Copy Clause Set Clauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1403938",
+      "name": "AS_GCM_VD_duplicateValidationForSetNumbAndCategNumbCombo",
+      "type": "Expression Rule",
+      "description": "Checks the duplicate validation for Set number and category number combo",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_QE_getClauseSetDetails"
+      ],
+      "called_by": [
+        "AS_GCM_VD_isValidClauseSet",
+        "AS_GCM_dynamicFieldPropertiesForClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea70-53bb-8000-9cb1-011c48011c48_7666025",
+      "name": "AS_GCM_VD_isValidClauseSet",
+      "type": "Expression Rule",
+      "description": "Rule to check if the given clause set is valid (based on mandatory fields along with nested fields and corresponding field validations) *** Used for GCW headless integration ***",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_REF_ID_AWARD_CATEG_NEW",
+        "AS_GCM_REF_ID_CATEGORY_AMENDMENT",
+        "AS_GCM_REF_ID_CATEGORY_MODIFICATION",
+        "AS_GCM_REF_ID_CATEGORY_NEW_SOLICITATION",
+        "AS_GCM_REF_ID_CLAUSE_SET_TYPE_AWARD",
+        "AS_GCM_REF_ID_CLAUSE_SET_TYPE_SOLICITATION",
+        "AS_GCM_VD_duplicateValidationForSetNumbAndCategNumbCombo"
+      ],
+      "called_by": [
+        "AS GCM Copy Clause Set Clauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb97-b2e8-8000-9d39-011c48011c48_11215968",
+      "name": "AS_GCM_clauseSetContractDetailsDynamicComponentsMap",
+      "type": "Expression Rule",
+      "description": "Contains a map with the components",
+      "parameters": [],
+      "calls": [
+        "AS_GAM_UT_ArrayLength",
+        "AS_GCM_BOL_PSC_NAICS_TOGGLE",
+        "AS_GCM_DPL_CO_INP_currencyField",
+        "AS_GCM_DPL_CO_INP_paragraphField",
+        "AS_GCM_DPL_CO_INP_textField"
+      ],
+      "called_by": [
+        "AS_GCM_CPS_contractDetailsInProvideClauseSetDetails",
+        "AS_GCM_FM_copyClauseSetClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea70-53bb-8000-9cb1-011c48011c48_7712019",
+      "name": "AS_GCM_cloneCdt",
+      "type": "Expression Rule",
+      "description": "Resets the fields from AS_GCM_CONS_cdtFieldsToResetForCloning",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_updateCdtFields",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+        "AS_GCM_CONS_cdtFieldsToResetForCloning"
+      ],
+      "called_by": [
+        "AS GCM Copy Clause Set Clauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e994-0db4-8000-9c52-011c48011c48_4895132",
+      "name": "AS_GCM_dynamicFieldPropertiesForClauseSet",
+      "type": "Expression Rule",
+      "description": "Returns a list of map which has the value and readOnly properties for the fields received from GCW, GCA and Copy clause set clauses",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_PARAGRAPH_LENGTH_MEDIUM",
+        "AS_CO_ENUM_TEXT_LENGTH_LONG",
+        "AS_CO_UT_booleanDefaultFalse",
+        "AS_CO_UT_displayRequiredMessage",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+        "AS_GAM_ENUM_TEXT_LENGTH_MEDIUM_SHORT",
+        "AS_GAM_UT_ArrayLength",
+        "AS_GAM_createMap",
+        "AS_GAM_filterCdtOrRecordDataByField",
+        "AS_GCM_ENUM_CLAUSE_SET_SECTION_IDENTIFIER_BASIC_INFORMATION",
+        "AS_GCM_ENUM_CLAUSE_SET_SECTION_IDENTIFIER_CONTRACT_DETAILS",
+        "AS_GCM_ENUM_TEXT_LENGTH_FOR_NAICS_CODE",
+        "AS_GCM_ENUM_TEXT_LENGTH_FOR_PCS_CODE",
+        "AS_GCM_ESTIMATED_AMOUNT_LIMIT",
+        "AS_GCM_REF_ID_CATEGORY_AMENDMENT",
+        "AS_GCM_REF_ID_CATEGORY_MODIFICATION",
+        "AS_GCM_VD_duplicateValidationForSetNumbAndCategNumbCombo"
+      ],
+      "called_by": [
+        "AS_GCM_CPS_basicInfoInProvideClauseSetDetails",
+        "AS_GCM_CPS_contractDetailsInProvideClauseSetDetails",
+        "AS_GCM_CRD_collapsibleSection",
+        "AS_GCM_FM_copyClauseSetClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9761091",
+      "name": "AS_GCM_filterRecords",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_populateClauseSetClauseDetailsInClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9760853",
+      "name": "AS_GCM_setRecordFields",
+      "type": "Expression Rule",
+      "description": "Runs a bulk update on a record object, setting new values for its fields",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS GCM Copy Clause Set Clauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e915-02bc-8000-9c1f-011c48011c48_3773120",
+      "name": "AS_GCM_substituteListFromTextUsingReduce",
+      "type": "Expression Rule",
+      "description": "This rule calls the fn!substitute in a fn!reduce to replace all the text with the given text. If no input is passed to ri!replaceWith the text will be replaced with empty string",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_updateDataByModifierMaps_Reducer"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9ae-8772-8000-9c5b-011c48011c48_5122574",
+      "name": "AS_GCM_updateClauseSetDetailsfromClauseSetContext",
+      "type": "Expression Rule",
+      "description": "To update the clause set details from the clause set context ",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+        "AS_GAM_createMap",
+        "AS_GCM_DefaultClauseSetContextFields",
+        "AS_GCM_QR_getRefData"
+      ],
+      "called_by": [
+        "AS_GCM_UT_clausesetSaveForAmendmentOrModification"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec90-d194-8000-9dac-011c48011c48_13571682",
+      "name": "AS_GCM_updateDataByModifierMaps",
+      "type": "Expression Rule",
+      "description": "Modifies the data by applying the values supplied in modifierMaps",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_updateDataByModifierMaps_Reducer"
+      ],
+      "called_by": [
+        "AS_GCM_UT_formatDataBasedOnReturnType"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec90-d194-8000-9dac-011c48011c48_13571757",
+      "name": "AS_GCM_updateDataByModifierMaps_Reducer",
+      "type": "Expression Rule",
+      "description": "Modifies the data by applying the value supplied in modifierMap used in reduce",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_substituteListFromTextUsingReduce"
+      ],
+      "called_by": [
+        "AS_GCM_updateDataByModifierMaps"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_74494",
+      "name": "AS_CO_CP_pickerFieldUsers",
+      "type": "Interface",
+      "description": "Generic user Picker field to handle read-only logic dynamically. ",
+      "parameters": [
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "instructions",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "required",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "requiredMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "readOnly",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "disabled",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "maxSelections",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 6
+        },
+        {
+          "name": "groupFilter",
+          "type": "http://www.appian.com/ae/types/2009:Group",
+          "raw_type": "http://www.appian.com/ae/types/2009:Group",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 7
+        },
+        {
+          "name": "value",
+          "type": "http://www.appian.com/ae/types/2009:User?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:User?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 8
+        },
+        {
+          "name": "validations",
+          "type": "http://www.appian.com/ae/types/2009:Text?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 9
+        },
+        {
+          "name": "validationGroup",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 10
+        },
+        {
+          "name": "saveInto",
+          "type": "http://www.appian.com/ae/types/2009:Save?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Save?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 11
+        },
+        {
+          "name": "labelPosition",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 12
+        },
+        {
+          "name": "placeholder",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 13
+        },
+        {
+          "name": "helpTooltip",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 14
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 15
+        },
+        {
+          "name": "accessibilityText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 16
+        }
+      ],
+      "calls": [
+        "AS_CO_UT_displayRequiredMessage",
+        "AS_CO_UT_formatFieldEntryPlaceHolder",
+        "AS_CO_UT_getLabelPosition",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_userSafeLink"
+      ],
+      "called_by": [
+        "AS_GCM_CPS_basicInfoInProvideClauseSetDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_74506",
+      "name": "AS_CO_CP_radioButtonField",
+      "type": "Interface",
+      "description": "Generic radio button field that handles read-only logic dynamically. \n\nFor instances where a custom value should be displayed when the component is read-only, pass it into the \"readOnlyValue\" input.",
+      "parameters": [
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "instructions",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "required",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "readOnly",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "disabled",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "choiceLabels",
+          "type": "http://www.appian.com/ae/types/2009:Text?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "choiceValues",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 6
+        },
+        {
+          "name": "value",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 7
+        },
+        {
+          "name": "validations",
+          "type": "http://www.appian.com/ae/types/2009:Text?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 8
+        },
+        {
+          "name": "saveInto",
+          "type": "http://www.appian.com/ae/types/2009:Save?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Save?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 9
+        },
+        {
+          "name": "validationGroup",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 10
+        },
+        {
+          "name": "requiredMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 11
+        },
+        {
+          "name": "labelPosition",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 12
+        },
+        {
+          "name": "choiceLayout",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 13
+        },
+        {
+          "name": "helpTooltip",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 14
+        },
+        {
+          "name": "readOnlyValue",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 15
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 16
+        },
+        {
+          "name": "accessibilityText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 17
+        },
+        {
+          "name": "choiceStyle",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 18
+        }
+      ],
+      "calls": [
+        "AS_CO_DSP_standardReadOnlyField",
+        "AS_CO_UT_displayRequiredMessage",
+        "AS_CO_UT_getLabelPosition"
+      ],
+      "called_by": [
+        "AS_GCM_CPS_basicInfoInProvideClauseSetDetails",
+        "AS_GCM_FM_copyClauseSetClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_74131",
+      "name": "AS_CO_DSP_standardReadOnlyField",
+      "type": "Interface",
+      "description": "Standard readOnly field, utilizes a!textField(), use a!richTextDisplayField() for further formatting",
+      "parameters": [
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "instructions",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "value",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "labelPosition",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "helpTooltip",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "accessibilityText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 6
+        },
+        {
+          "name": "align",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 7
+        },
+        {
+          "name": "showHyphenIfValueNull",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 8
+        }
+      ],
+      "calls": [
+        "AS_CO_UT_booleanDefaultTrue",
+        "AS_CO_UT_getLabelPosition",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_CO_CP_radioButtonField",
+        "AS_CO_INP_textField",
+        "AS_GCM_DPL_CO_INP_paragraphField",
+        "AS_GCM_DPL_CO_INP_textField",
+        "AS_GCM_DPL_CO_dropdownField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73562",
+      "name": "AS_CO_INP_textField",
+      "type": "Interface",
+      "description": "Standard wrapper for a!textField()",
+      "parameters": [
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "instructions",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "required",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "readOnly",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "disabled",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "value",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "validations",
+          "type": "http://www.appian.com/ae/types/2009:Text?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 6
+        },
+        {
+          "name": "saveInto",
+          "type": "http://www.appian.com/ae/types/2009:Save?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Save?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 7
+        },
+        {
+          "name": "validationGroup",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 8
+        },
+        {
+          "name": "requiredMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 9
+        },
+        {
+          "name": "align",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 10
+        },
+        {
+          "name": "labelPosition",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 11
+        },
+        {
+          "name": "placeholder",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 12
+        },
+        {
+          "name": "helpTooltip",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 13
+        },
+        {
+          "name": "masked",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 14
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 15
+        },
+        {
+          "name": "accessibilityText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 16
+        },
+        {
+          "name": "maxLength",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 17
+        },
+        {
+          "name": "refreshAfter",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 18
+        },
+        {
+          "name": "showCharacterCount",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 19
+        },
+        {
+          "name": "characterLimit",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 20
+        },
+        {
+          "name": "inputPurpose",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 21
+        }
+      ],
+      "calls": [
+        "AS_CO_DSP_standardReadOnlyField",
+        "AS_CO_UT_displayRequiredMessage",
+        "AS_CO_UT_getLabelPosition",
+        "AS_CO_VD_textValidation"
+      ],
+      "called_by": [
+        "AS_GCM_DPL_CO_INP_currencyField"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed5b-ded3-8000-9df2-011c48011c48_15127729",
+      "name": "AS_GCM_CPS_ClauseSetRelatedActionPlaceholder",
+      "type": "Interface",
+      "description": "Placeholder screen for Clause Set and Clause Set Clauses related action while the Clause Set is in Generation state",
+      "parameters": [
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "userAction",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "isSmallDialog",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        }
+      ],
+      "calls": [
+        "AS_CO_ENUM_USER_ACTION_CANCEL",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_DOC_CLAUSE_SET_GENERATION_STATE"
+      ],
+      "called_by": [
+        "AS_GCM_FM_copyClauseSetClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb72-c933-8000-9d28-011c48011c48_10465317",
+      "name": "AS_GCM_CPS_basicInfoInProvideClauseSetDetails",
+      "type": "Interface",
+      "description": "Contains the basic information section in provide clause set details ",
+      "parameters": [
+        {
+          "name": "clauseSet",
+          "type": "urn:com:appian:types:AS:GCM:AS_GCM_ClauseSet",
+          "raw_type": "urn:com:appian:types:AS:GCM:AS_GCM_ClauseSet",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "typeData",
+          "type": "urn:com:appian:types:AS:GCM:AS_GCM_R_Data?list",
+          "raw_type": "urn:com:appian:types:AS:GCM:AS_GCM_R_Data?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "solicitationCategoryData",
+          "type": "urn:com:appian:types:AS:GCM:AS_GCM_R_Data?list",
+          "raw_type": "urn:com:appian:types:AS:GCM:AS_GCM_R_Data?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "awardCategoryData",
+          "type": "urn:com:appian:types:AS:GCM:AS_GCM_R_Data?list",
+          "raw_type": "urn:com:appian:types:AS:GCM:AS_GCM_R_Data?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "questionnaire",
+          "type": "urn:com:appian:types:AS:GCM:QNM:AS_GCM_QNM_Questionnaire",
+          "raw_type": "urn:com:appian:types:AS:GCM:QNM:AS_GCM_QNM_Questionnaire",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "isExistingId",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 6
+        },
+        {
+          "name": "existingClauseSetDetails",
+          "type": "urn:com:appian:types:AS:GCM:AS_GCM_ClauseSet",
+          "raw_type": "urn:com:appian:types:AS:GCM:AS_GCM_ClauseSet",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 7
+        },
+        {
+          "name": "contractTypeMaps",
+          "type": "urn:com:appian:types:AS:GCM:AS_GCM_ClauseSet_ContractType_Map?list",
+          "raw_type": "urn:com:appian:types:AS:GCM:AS_GCM_ClauseSet_ContractType_Map?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 8
+        },
+        {
+          "name": "existingContractTypeMaps",
+          "type": "urn:com:appian:types:AS:GCM:AS_GCM_ClauseSet_ContractType_Map?list",
+          "raw_type": "urn:com:appian:types:AS:GCM:AS_GCM_ClauseSet_ContractType_Map?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 9
+        },
+        {
+          "name": "clauseSetContext",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 10
+        },
+        {
+          "name": "dynamicFieldProperties",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 11
+        },
+        {
+          "name": "contractFormatData",
+          "type": "urn:com:appian:recordtype:datatype:12b3d808-5bcd-47fa-8f90-8bc2b78b9553?list",
+          "raw_type": "urn:com:appian:recordtype:datatype:12b3d808-5bcd-47fa-8f90-8bc2b78b9553?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 12
+        }
+      ],
+      "calls": [
+        "AS_CO_CP_pickerFieldUsers",
+        "AS_CO_CP_radioButtonField",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_booleanDefaultFalse",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_GAM_GRP_CONTRACTING_OFFICER",
+        "AS_GAM_GRP_CONTRACTING_OFFICER_REPRESENTATIVE",
+        "AS_GAM_GRP_CONTRACT_SPECIALIST",
+        "AS_GAM_translateMultipleBundleKeys",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_CRD_collapsibleSection",
+        "AS_GCM_DPL_CO_INP_textField",
+        "AS_GCM_DPL_CO_dropdownField",
+        "AS_GCM_ENUM_CLAUSE_SET_SECTION_IDENTIFIER_BASIC_INFORMATION",
+        "AS_GCM_QE_getClauseSetContractTypeDetails",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_QR_getRefData",
+        "AS_GCM_REF_ID_CATEGORY_AMENDMENT",
+        "AS_GCM_REF_ID_CATEGORY_MODIFICATION",
+        "AS_GCM_REF_ID_CLAUSE_SET_TYPE_AWARD",
+        "AS_GCM_REF_TYPE_AWARD_TYPE",
+        "AS_GCM_REF_TYPE_CLAUSE_SET_TYPE",
+        "AS_GCM_REF_TYPE_CONTRACT_FORMAT",
+        "AS_GCM_REF_TYPE_SOLICITATION_TYPE",
+        "AS_GCM_UT_clausesetSaveForAmendmentOrModification",
+        "AS_GCM_dynamicFieldPropertiesForClauseSet"
+      ],
+      "called_by": [
+        "AS_GCM_FM_copyClauseSetClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e7f8-737a-8000-9bf7-011c48011c48_2513395",
+      "name": "AS_GCM_CPS_contractDetailsInProvideClauseSetDetails",
+      "type": "Interface",
+      "description": "Contains Contract Details Fields",
+      "parameters": [
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "clauseSet",
+          "type": "urn:com:appian:types:AS:GCM:AS_GCM_ClauseSet",
+          "raw_type": "urn:com:appian:types:AS:GCM:AS_GCM_ClauseSet",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "contractMethodData",
+          "type": "urn:com:appian:types:AS:GCM:AS_GCM_R_Data?list",
+          "raw_type": "urn:com:appian:types:AS:GCM:AS_GCM_R_Data?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "dynamicFieldProperties",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "contractDetailsExpanded",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "componentsMap",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        }
+      ],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_GAM_translateMultipleBundleKeys",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_CRD_collapsibleSection",
+        "AS_GCM_DPL_CO_dropdownField",
+        "AS_GCM_ENUM_CLAUSE_SET_SECTION_IDENTIFIER_CONTRACT_DETAILS",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_clauseSetContractDetailsDynamicComponentsMap",
+        "AS_GCM_dynamicFieldPropertiesForClauseSet"
+      ],
+      "called_by": [
+        "AS_GCM_FM_copyClauseSetClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000e7f8-737a-8000-9bf7-011c48011c48_2511568",
+      "name": "AS_GCM_CPS_contractTypesInProvideClauseSetDetails",
+      "type": "Interface",
+      "description": "Contains contract types section in provide clause set details",
+      "parameters": [
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "contractTypeMaps",
+          "type": "urn:com:appian:types:AS:GCM:AS_GCM_ClauseSet_ContractType_Map?list",
+          "raw_type": "urn:com:appian:types:AS:GCM:AS_GCM_ClauseSet_ContractType_Map?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AS_CO_UT_indexPath",
+        "AS_GCM_CO_INT_QUERY_RECORD_MAX_BATCH_SIZE",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_CRD_collapsibleSection",
+        "AS_GCM_MTR_SAVE_addContractType",
+        "AS_GCM_MTR_SAVE_removeContractType",
+        "AS_GCM_QE_getClauseSetContractTypeDetails",
+        "AS_GCM_TOGGLE_AUTOMATION_TESTING_ENABLED"
+      ],
+      "called_by": [
+        "AS_GCM_FM_copyClauseSetClauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb97-b2e8-8000-9d39-011c48011c48_11210701",
+      "name": "AS_GCM_CRD_collapsibleSection",
+      "type": "Interface",
+      "description": "Contains a collapsible section implemented using cardLayout",
+      "parameters": [
+        {
+          "name": "dynamicFieldProperties",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "sectionLabel",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "isExpanded",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "contents",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "bundle",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "sectionIdentifier",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 6
+        }
+      ],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_filterCdtByMultipleFieldValuePairs",
+        "AS_CO_UT_isNotBlank",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_ENUM_CLAUSE_SET_SECTION_IDENTIFIER_BASIC_INFORMATION",
+        "AS_GCM_HEX_CODE_GRAY_3",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_dynamicFieldPropertiesForClauseSet"
+      ],
+      "called_by": [
+        "AS_GCM_CPS_basicInfoInProvideClauseSetDetails",
+        "AS_GCM_CPS_contractDetailsInProvideClauseSetDetails",
+        "AS_GCM_CPS_contractTypesInProvideClauseSetDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3311082",
+      "name": "AS_GCM_DPL_CO_INP_currencyField",
+      "type": "Interface",
+      "description": "GCM - Generic currency field that shows the amount in the required format.",
+      "parameters": [
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "value",
+          "type": "http://www.w3.org/2001/XMLSchema:double",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:double",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "readOnly",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "showDecimal",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "validations",
+          "type": "http://www.appian.com/ae/types/2009:Text?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "required",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "additionalSaveIntos",
+          "type": "http://www.appian.com/ae/types/2009:Save?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Save?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 6
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 7
+        },
+        {
+          "name": "minSize",
+          "type": "http://www.w3.org/2001/XMLSchema:double",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:double",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 8
+        },
+        {
+          "name": "maxSize",
+          "type": "http://www.w3.org/2001/XMLSchema:double",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:double",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 9
+        },
+        {
+          "name": "labelPosition",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 10
+        },
+        {
+          "name": "placeholder",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 11
+        },
+        {
+          "name": "requiredMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 12
+        },
+        {
+          "name": "disabled",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 13
+        }
+      ],
+      "calls": [
+        "AS_CO_INP_textField",
+        "AS_CO_UT_displayRequiredMessage",
+        "AS_CO_VD_numberValidation",
+        "AS_GCM_DPL_CO_UT_formatCurrencyValue"
+      ],
+      "called_by": [
+        "AS_GCM_clauseSetContractDetailsDynamicComponentsMap"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb28-f476-8000-9d09-011c48011c48_9642015",
+      "name": "AS_GCM_DPL_CO_INP_paragraphField",
+      "type": "Interface",
+      "description": "Standard wrapper for a!paragraphField()",
+      "parameters": [
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "instructions",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "required",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "readOnly",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "disabled",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "value",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "validations",
+          "type": "http://www.appian.com/ae/types/2009:Text?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 6
+        },
+        {
+          "name": "saveInto",
+          "type": "http://www.appian.com/ae/types/2009:Save?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Save?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 7
+        },
+        {
+          "name": "labelPosition",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 8
+        },
+        {
+          "name": "validationGroup",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 9
+        },
+        {
+          "name": "requiredMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 10
+        },
+        {
+          "name": "height",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 11
+        },
+        {
+          "name": "placeholder",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 12
+        },
+        {
+          "name": "helpTooltip",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 13
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 14
+        },
+        {
+          "name": "accessibilityText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 15
+        },
+        {
+          "name": "showHyphenIfValueNull",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 16
+        },
+        {
+          "name": "characterLimit",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 17
+        },
+        {
+          "name": "showCharacterCount",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 18
+        }
+      ],
+      "calls": [
+        "AS_CO_DSP_standardReadOnlyField",
+        "AS_CO_UT_displayRequiredMessage",
+        "AS_CO_UT_getLabelPosition"
+      ],
+      "called_by": [
+        "AS_GCM_clauseSetContractDetailsDynamicComponentsMap"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb28-f476-8000-9d09-011c48011c48_9642008",
+      "name": "AS_GCM_DPL_CO_INP_textField",
+      "type": "Interface",
+      "description": "Standard wrapper for a!textField()",
+      "parameters": [
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "instructions",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "required",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "readOnly",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "disabled",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "value",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "validations",
+          "type": "http://www.appian.com/ae/types/2009:Text?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 6
+        },
+        {
+          "name": "saveInto",
+          "type": "http://www.appian.com/ae/types/2009:Save?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Save?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 7
+        },
+        {
+          "name": "validationGroup",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 8
+        },
+        {
+          "name": "requiredMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 9
+        },
+        {
+          "name": "align",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 10
+        },
+        {
+          "name": "labelPosition",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 11
+        },
+        {
+          "name": "placeholder",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 12
+        },
+        {
+          "name": "helpTooltip",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 13
+        },
+        {
+          "name": "masked",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 14
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 15
+        },
+        {
+          "name": "accessibilityText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 16
+        },
+        {
+          "name": "characterLimit",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 17
+        },
+        {
+          "name": "refreshAfter",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 18
+        },
+        {
+          "name": "showCharacterCount",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": "Default: false",
+          "display_order": 19
+        },
+        {
+          "name": "inputPurpose",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 20
+        }
+      ],
+      "calls": [
+        "AS_CO_DSP_standardReadOnlyField",
+        "AS_CO_UT_displayRequiredMessage",
+        "AS_CO_UT_getLabelPosition"
+      ],
+      "called_by": [
+        "AS_GCM_CPS_basicInfoInProvideClauseSetDetails",
+        "AS_GCM_clauseSetContractDetailsDynamicComponentsMap"
+      ]
+    },
+    {
+      "uuid": "_a-0000e8cc-c513-8000-9c0f-011c48011c48_3405575",
+      "name": "AS_GCM_DPL_CO_dropdownField",
+      "type": "Interface",
+      "description": "Generic single select dropdown field that handles read-only logic dynamically. \n\nFor instances where a custom value should be displayed when the component is read-only, pass it into the \"readOnlyValue\" input.",
+      "parameters": [
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "labelPosition",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "instructions",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "required",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "readOnly",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "disabled",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "choiceLabels",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 6
+        },
+        {
+          "name": "choiceValues",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 7
+        },
+        {
+          "name": "placeholder",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 8
+        },
+        {
+          "name": "value",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 9
+        },
+        {
+          "name": "validations",
+          "type": "http://www.appian.com/ae/types/2009:Text?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 10
+        },
+        {
+          "name": "saveInto",
+          "type": "http://www.appian.com/ae/types/2009:Save?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Save?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 11
+        },
+        {
+          "name": "validationGroup",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 12
+        },
+        {
+          "name": "requiredMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 13
+        },
+        {
+          "name": "helpTooltip",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 14
+        },
+        {
+          "name": "noPlaceholder",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 15
+        },
+        {
+          "name": "readOnlyValue",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 16
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 17
+        },
+        {
+          "name": "accessibilityText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 18
+        },
+        {
+          "name": "searchDisplay",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 19
+        },
+        {
+          "name": "data",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 20
+        },
+        {
+          "name": "sort",
+          "type": "http://www.appian.com/ae/types/2009:SortInfo?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:SortInfo?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 21
+        },
+        {
+          "name": "marginAbove",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 22
+        }
+      ],
+      "calls": [
+        "AS_CO_DSP_standardReadOnlyField",
+        "AS_CO_UT_displayCommonObjectBundleLabel",
+        "AS_CO_UT_displayRequiredMessage",
+        "AS_CO_UT_formatFieldEntryPlaceHolder",
+        "AS_CO_UT_getLabelPosition",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_CPS_basicInfoInProvideClauseSetDetails",
+        "AS_GCM_CPS_contractDetailsInProvideClauseSetDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1302529",
+      "name": "AS_GCM_FM_confirmationScreenForClauseSet",
+      "type": "Interface",
+      "description": "Interface to display confirmation message when clause set is created or updated, copy clause set and create award",
+      "parameters": [
+        {
+          "name": "clauseSet",
+          "type": "urn:com:appian:types:AS:GCM:AS_GCM_ClauseSet",
+          "raw_type": "urn:com:appian:types:AS:GCM:AS_GCM_ClauseSet",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "isCreateClauseSet",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "clauseSetContext",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        }
+      ],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GAM_UT_recordDashboardLink",
+        "AS_GCM_CO_I18N_UT_displayLabel_RichText",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_DOC_CLAUSES_CONFIRMATION_STATE_IMAGE",
+        "AS_GCM_ENUM_TEXT_CLAUSE_SETS_SITE_PAGE",
+        "AS_GCM_ENUM_TEXT_WEB_ADDRESS_IDENTIFIER",
+        "AS_GCM_TOGGLE_AUTOMATION_TESTING_ENABLED"
+      ],
+      "called_by": [
+        "AS GCM Copy Clause Set Clauses"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb4d-def5-8000-9d18-011c48011c48_10107829",
+      "name": "AS_GCM_FM_copyClauseSetClauses",
+      "type": "Interface",
+      "description": "Interface to copy a clause set clauses ",
+      "parameters": [
+        {
+          "name": "userAction",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "newClauseSet",
+          "type": "urn:com:appian:types:AS:GCM:AS_GCM_ClauseSet",
+          "raw_type": "urn:com:appian:types:AS:GCM:AS_GCM_ClauseSet",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "newContractTypeMaps",
+          "type": "urn:com:appian:types:AS:GCM:AS_GCM_ClauseSet_ContractType_Map?list",
+          "raw_type": "urn:com:appian:types:AS:GCM:AS_GCM_ClauseSet_ContractType_Map?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "clauseSetToCopy",
+          "type": "urn:com:appian:types:AS:GCM:AS_GCM_ClauseSet",
+          "raw_type": "urn:com:appian:types:AS:GCM:AS_GCM_ClauseSet",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "copyFillins",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        }
+      ],
+      "calls": [
+        "AS_CO_CP_radioButtonField",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_ENUM_USER_ACTION_CANCEL",
+        "AS_CO_ENUM_USER_ACTION_SUBMIT",
+        "AS_CO_UT_captureMetadata",
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_filterCdtByMultipleFieldValuePairs",
+        "AS_CO_UT_rejectCdtByField",
+        "AS_CO_UT_updateCdtFields",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+        "AS_CO_UT_whereContains",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_CPS_ClauseSetRelatedActionPlaceholder",
+        "AS_GCM_CPS_basicInfoInProvideClauseSetDetails",
+        "AS_GCM_CPS_contractDetailsInProvideClauseSetDetails",
+        "AS_GCM_CPS_contractTypesInProvideClauseSetDetails",
+        "AS_GCM_ENUM_CLAUSE_SET_SECTION_IDENTIFIER_CONTRACT_DETAILS",
+        "AS_GCM_QE_getClauseSetContractTypeDetails",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_QR_getRefData",
+        "AS_GCM_REF_ID_AWARD_CATEG_NEW",
+        "AS_GCM_REF_ID_CATEGORY_NEW_SOLICITATION",
+        "AS_GCM_REF_ID_CLAUSE_SET_STATUS_GENERATING",
+        "AS_GCM_REF_ID_CLAUSE_SET_TYPE_AWARD",
+        "AS_GCM_REF_TYPE_AWARD_TYPE",
+        "AS_GCM_REF_TYPE_CLAUSE_SET_TYPE",
+        "AS_GCM_REF_TYPE_CONTRACT_FORMAT",
+        "AS_GCM_REF_TYPE_CONTRACT_METHOD",
+        "AS_GCM_REF_TYPE_SOLICITATION_TYPE",
+        "AS_GCM_clauseSetContractDetailsDynamicComponentsMap",
+        "AS_GCM_dynamicFieldPropertiesForClauseSet"
+      ],
+      "called_by": [
+        "AS GCM Copy Clause Set Clauses"
+      ]
+    },
+    {
+      "uuid": "0010ea76-4cc1-8000-78de-7f0000014e7a",
+      "name": "AS GCM Copy Clause Set Clauses",
+      "type": "Process Model",
+      "description": "Process for copying a clause set from GCW and Coping clause set clauses form GCA",
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_USER_ACTION_SUBMIT",
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_ADT_ENUM_AUDIT_ACTION_CODE_COPY",
+        "AS_GCM_ADT_UT_constructCopyClauseSetAuditData",
+        "AS_GCM_BL_populateClauseSetClauseDetailsInClauseSet",
+        "AS_GCM_ENT_A_R_CLAUSE_SET_FIELD",
+        "AS_GCM_FM_confirmationScreenForClauseSet",
+        "AS_GCM_FM_copyClauseSetClauses",
+        "AS_GCM_INT_QUERY_BATCH_SIZE_LARGE",
+        "AS_GCM_QE_getClauseSetClauseDetailsWithBatching",
+        "AS_GCM_QE_getClauseSetContractTypeDetails",
+        "AS_GCM_REF_ID_CLAUSE_ADDED_VIA_COPIED",
+        "AS_GCM_REF_ID_CLAUSE_SET_STATUS_GENERATING",
+        "AS_GCM_REF_ID_CLAUSE_SET_TYPE_AWARD",
+        "AS_GCM_REF_ID_TYPE_CLAUSE",
+        "AS_GCM_UT_updateClauseSetDetailsOnSubmission",
+        "AS_GCM_VD_isValidClauseSet",
+        "AS_GCM_cloneCdt",
+        "AS_GCM_setRecordFields"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "382dda7d-5334-4c9b-a96f-b02ae5c6848a",
+      "name": "AS_CO_Example_RECORD",
+      "type": "Record Type",
+      "description": "Example record type",
+      "actions": [],
+      "views": [
+        "Record Header",
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_Filter",
+        "AS_CO_UT_isRecordTypeData"
+      ]
+    }
+  ]
+}

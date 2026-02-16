@@ -1,0 +1,2188 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GCM CEDM Export Environment Data",
+    "parent_name": null,
+    "total_objects": 120
+  },
+  "entry_point": {
+    "complexity_score": 49.0,
+    "total_nodes": 25,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GCM CEDM Export Environment Data",
+      "complexity_score": 49.0,
+      "total_nodes": 25,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Get Export Data"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Split",
+          "type": "AND_GATEWAY",
+          "next": [
+            "Write Requested Transfer Request",
+            "Wait For 5 minutes"
+          ]
+        },
+        {
+          "name": "Wait For 5 minutes",
+          "type": "Timer/Rule/Receive Message",
+          "next": [
+            "Write Failed Transfer Request"
+          ]
+        },
+        {
+          "name": "Write Failed Transfer Request",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Log Process Time Out"
+          ]
+        },
+        {
+          "name": "End Event",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Write Requested Transfer Request",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Log Export Initiation"
+          ]
+        },
+        {
+          "name": "Log Email",
+          "type": "Start Process",
+          "next": [
+            "Write Completed Transfer Request"
+          ]
+        },
+        {
+          "name": "Write Completed Transfer Request",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Document Management"
+          ]
+        },
+        {
+          "name": "Document Management",
+          "type": "Start Process (v2)",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Export Data",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Create Documents for exported data"
+          ]
+        },
+        {
+          "name": "Create Documents for exported data",
+          "type": "Text Doc from Template",
+          "next": [
+            "Export Clause Text"
+          ]
+        },
+        {
+          "name": "Create Zip File",
+          "type": "com.vuram.plugins.zipextractor.createzipcontent",
+          "next": [
+            "Log Export Completion"
+          ]
+        },
+        {
+          "name": "Log Export Completion",
+          "type": "Start Process",
+          "next": [
+            "Send E-Mail"
+          ]
+        },
+        {
+          "name": "Export Clause Text",
+          "type": "Start Process",
+          "next": [
+            "Create Zip File"
+          ]
+        },
+        {
+          "name": "Submit? or Validate?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node (No)",
+            "Split (Yes)",
+            "Display Validation (Validate)"
+          ]
+        },
+        {
+          "name": "Log Process Time Out",
+          "type": "Start Process",
+          "next": [
+            "Send Failure E-Mail"
+          ]
+        },
+        {
+          "name": "Log Export Initiation",
+          "type": "Start Process",
+          "next": [
+            "Export Data"
+          ]
+        },
+        {
+          "name": "Send Failure E-Mail",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Event"
+          ]
+        },
+        {
+          "name": "Send E-Mail",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Log Email"
+          ]
+        },
+        {
+          "name": "Get Duplicate Validation",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Submit? or Validate?"
+          ]
+        },
+        {
+          "name": "Display Validation",
+          "type": "USER_TASK",
+          "next": [
+            "Cancel?"
+          ],
+          "interface": "AS_GCM_CEDM_FM_importAndExportValidationMessage"
+        },
+        {
+          "name": "Get Export Data",
+          "type": "USER_TASK",
+          "next": [
+            "Get Duplicate Validation"
+          ],
+          "interface": "AS_GCM_CEDM_FM_exportEnvironmentData"
+        },
+        {
+          "name": "End Event",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Cancel?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Event",
+            "Get Export Data (No)"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290169",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_AGGREGATION",
+      "type": "Constant",
+      "description": "AGGREGATION - Returns an array of Dictionary when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "AGGREGATION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_CONS_QE_RETURN_TYPES",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_CEDM_validateExportAndImportDuplicates",
+        "AS_GCM_CO_UT_queryRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290131",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+      "type": "Constant",
+      "description": "DATA_SUBSET - Returns a type of DataSubset when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "DATA_SUBSET",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_CONS_QE_RETURN_TYPES",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_CEDM_RetrievePrecedentRecordFieldMaps_Recursion",
+        "AS_GCM_CEDM_exportDataForMigration",
+        "AS_GCM_CO_UT_queryRecord",
+        "AS_GCM_UT_getIdentifiersInBatches"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290163",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "description": "OBJECT_ARRAY - Returns an array type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "OBJECT_ARRAY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_CONS_QE_RETURN_TYPES",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_CEDM_RetrievePrecedentRecordFieldMaps_Recursion",
+        "AS_GCM_CEDM_exportDataForMigration",
+        "AS_GCM_CO_UT_queryRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290157",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "description": "SINGLE_OBJECT - Returns a single type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "SINGLE_OBJECT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM QNM R Question",
+        "AS_CO_CONS_QE_RETURN_TYPES",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_CEDM_GetRecordFieldsListByRecordType",
+        "AS_GCM_CO_UT_queryRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290175",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+      "type": "Constant",
+      "description": "TOTAL_COUNT - Returns an Integer when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "TOTAL_COUNT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_CONS_QE_RETURN_TYPES",
+        "AS_CO_UT_queryEntity",
+        "AS_GCM_CEDM_FM_exportEnvironmentData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73173",
+      "name": "AS_CO_ENUM_USER_ACTION_CANCEL",
+      "type": "Constant",
+      "description": "CANCEL.USER_ACTION - Value to use to drive process logic after a user performs a \"Cancel\" action",
+      "value": "CANCEL.USER_ACTION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CEDM_FM_exportEnvironmentData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73305",
+      "name": "AS_CO_ENUM_USER_ACTION_SUBMIT",
+      "type": "Constant",
+      "description": "SUBMIT.USER_ACTION - Value to use to drive process logic after a user performs a \"Submit\" action",
+      "value": "SUBMIT.USER_ACTION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM CEDM Export Environment Data",
+        "AS_GCM_CEDM_FM_exportEnvironmentData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_225990",
+      "name": "AS_CO_INT_QUERY_MAX_BATCH_SIZE",
+      "type": "Constant",
+      "description": "Value: 1000 - The maximum size to pass to all queries to avoid accidentally querying too much data",
+      "value": "1000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_CO_UT_queryRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec62-ac34-8000-9d9a-011c48011c48_13147325",
+      "name": "AS_GCM_CEDM_FLD_DATA_DOCUMENTS_FOLDER",
+      "type": "Constant",
+      "description": "Value: AS GCM CEDM Data Documents Folder",
+      "value": "_a-0000ec62-ac34-8000-9d9a-011c48011c48_13147199",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationFolder",
+      "calls": [],
+      "called_by": [
+        "AS GCM CEDM Export Environment Data"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec75-2131-8000-9da0-011c48011c48_13343531",
+      "name": "AS_GCM_CEDM_INT_EXPORT_PROCESS_TIME_OUT",
+      "type": "Constant",
+      "description": "Value: 5",
+      "value": "5",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM CEDM Export Environment Data"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed8a-02db-8000-9dfc-011c48011c48_15441123",
+      "name": "AS_GCM_CEDM_INT_MAX_ATTACHMENT_SIZE_FOR_EMAIL",
+      "type": "Constant",
+      "description": "Value: 25 MB",
+      "value": "25000000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM CEDM Export Environment Data"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec75-2131-8000-9da0-011c48011c48_13323114",
+      "name": "AS_GCM_CEDM_PM_DOCUMENT_MANAGEMENT",
+      "type": "Constant",
+      "description": "Value: AS GCM CEDM Document Management",
+      "value": "AS GCM CEDM Document Management",
+      "value_type": "http://www.appian.com/ae/types/2009:ProcessModel",
+      "calls": [],
+      "called_by": [
+        "AS GCM CEDM Export Environment Data"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee79-e5e2-8000-9e3c-011c48011c48_16909858",
+      "name": "AS_GCM_CEDM_TXT_ENTITY_UUID_CLAUSE_TEXT",
+      "type": "Constant",
+      "description": "UUID :  {urn:com:appian:types:AS:GCM}AS_GCM_R_Clause_Texts",
+      "value": "AS_GCM_R_Clause_Texts",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CEDM_parseImportedFileContent",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee83-219b-8000-9e3e-011c48011c48_16974418",
+      "name": "AS_GCM_CEDM_TXT_RECORD_UUID_QUESTIONNAIRE",
+      "type": "Constant",
+      "description": "UUID :  \"9f80ae61-036a-46c1-8975-aebefe443c6e\"",
+      "value": "AS GCM QNM T Questionnaire",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Questionnaire"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee83-219b-8000-9e3e-011c48011c48_16974425",
+      "name": "AS_GCM_CEDM_TXT_RECORD_UUID_QUESTION_CATEGORY",
+      "type": "Constant",
+      "description": "UUID :  \"261190bc-e795-4938-96b2-bf33b805f23c\"",
+      "value": "AS GCM QNM T Question Category",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Questionnaire",
+        "AS_GCM_CEDM_validateExportAndImportDuplicates"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee83-219b-8000-9e3e-011c48011c48_16966789",
+      "name": "AS_GCM_CEDM_TXT_RECORD_UUID_RULE",
+      "type": "Constant",
+      "description": "UUID :  \"0e51d64b-81db-423f-87e6-ef610fc3274c\"",
+      "value": "AS GCM QNM T Rule",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Rule",
+        "AS_GCM_CEDM_validateExportAndImportDuplicates"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee83-219b-8000-9e3e-011c48011c48_16966861",
+      "name": "AS_GCM_CEDM_TXT_RECORD_UUID_RULE_CLAUSES",
+      "type": "Constant",
+      "description": "UUID :  \"332a532b-db8b-4352-986c-a6a050794136\"",
+      "value": "AS GCM QNM T Rule Condition Clause",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Rule",
+        "AS_GCM_CEDM_validateExportAndImportDuplicates"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee83-219b-8000-9e3e-011c48011c48_16966831",
+      "name": "AS_GCM_CEDM_TXT_RECORD_UUID_RULE_CONDITIONS",
+      "type": "Constant",
+      "description": "UUID :  8e79dbce-be6e-4d8a-a0c0-3d15a509c904",
+      "value": "AS GCM QNM T Rule Condition",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Rule",
+        "AS_GCM_CEDM_validateExportAndImportDuplicates"
+      ]
+    },
+    {
+      "uuid": "_a-0000eee8-b1ee-8000-9e5a-011c48011c48_17685213",
+      "name": "AS_GCM_CEDM_TXT_RECORD_UUID_RULE_CONDITION_GROUP",
+      "type": "Constant",
+      "description": "UUID : df718ee2-d9ba-4f1a-9500-07a07906abf5",
+      "value": "AS GCM QNM T Rule Condition Group",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Rule"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee79-e5e2-8000-9e3c-011c48011c48_16903374",
+      "name": "AS_GCM_CEDM_TXT_RECORD_UUID_R_CLAUSE",
+      "type": "Constant",
+      "description": "UUID :  83b74fc4-71d0-456a-8b20-12ea04b76cd1",
+      "value": "AS GCM R Clause",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM CEDM Export Environment Data",
+        "AS_GCM_CEDM_parseImportedFileContent",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Rule"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee95-95bf-8000-9e42-011c48011c48_17102131",
+      "name": "AS_GCM_CEDM_TXT_RECORD_UUID_R_QUESTION",
+      "type": "Constant",
+      "description": "UUID :  \"f0bfb0f8-c45d-425c-8450-802bf04a87cf\"",
+      "value": "AS GCM QNM R Question",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CEDM_validateExportAndImportDuplicates"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee95-95bf-8000-9e42-011c48011c48_17102140",
+      "name": "AS_GCM_CEDM_TXT_RECORD_UUID_R_RESPONSE",
+      "type": "Constant",
+      "description": "UUID :  \"2e619bc1-d0a1-4346-9fcf-efccb39aee72\"",
+      "value": "AS GCM QNM R Response",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CEDM_validateExportAndImportDuplicates"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee95-95bf-8000-9e42-011c48011c48_17102174",
+      "name": "AS_GCM_CEDM_TXT_RECORD_UUID_R_RESPONSE_REQUIREMENT",
+      "type": "Constant",
+      "description": "UUID :  \"527dae14-6fb4-453c-97c9-787080f6805c\"",
+      "value": "AS GCM QNM R Response Requirement",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CEDM_validateExportAndImportDuplicates"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee79-e5e2-8000-9e3c-011c48011c48_16904851",
+      "name": "AS_GCM_CEDM_TXT_RECORD_UUID_R_TEMPLATE",
+      "type": "Constant",
+      "description": "UUID :  58275e5f-625f-4d0b-9b27-58f09b63e138",
+      "value": "AS GCM R Template",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CEDM_typeConfigMapForDataMigration"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee79-e5e2-8000-9e3c-011c48011c48_16903763",
+      "name": "AS_GCM_CEDM_TXT_RECORD_UUID_TEMPLATE_CLAUSE",
+      "type": "Constant",
+      "description": "UUID :  45e43675-a470-44de-a93f-b87863905cdb",
+      "value": "AS GCM Template Clause",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CEDM_typeConfigMapForDataMigration"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee83-219b-8000-9e3e-011c48011c48_16974432",
+      "name": "AS_GCM_CEDM_TXT_RECORD_UUID_T_QUESTION",
+      "type": "Constant",
+      "description": "UUID :  \"66fc3179-f0d8-4d6d-bbce-92b85f7c665a\"",
+      "value": "AS GCM QNM T Question",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Questionnaire",
+        "AS_GCM_CEDM_validateExportAndImportDuplicates"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee83-219b-8000-9e3e-011c48011c48_16974446",
+      "name": "AS_GCM_CEDM_TXT_RECORD_UUID_T_QUESTION_PRECEDENT",
+      "type": "Constant",
+      "description": "UUID :  \"e2cf072a-7e15-42a5-8c16-db069819e29d\"",
+      "value": "AS GCM QNM T Question Precedent",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Questionnaire"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee83-219b-8000-9e3e-011c48011c48_16974439",
+      "name": "AS_GCM_CEDM_TXT_RECORD_UUID_T_QUESTION_PRECEDENT_SET",
+      "type": "Constant",
+      "description": "UUID :  \"2f0273e8-8328-4188-a69f-4ed87a5fd3fb\"",
+      "value": "AS GCM QNM T Question Precedent Set",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Questionnaire"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee83-219b-8000-9e3e-011c48011c48_16974468",
+      "name": "AS_GCM_CEDM_TXT_RECORD_UUID_T_RESPONSE",
+      "type": "Constant",
+      "description": "UUID :  \"31984f80-8be1-4643-801f-3a945c47fa47\"",
+      "value": "AS GCM QNM T Response",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Questionnaire"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee83-219b-8000-9e3e-011c48011c48_16974453",
+      "name": "AS_GCM_CEDM_TXT_RECORD_UUID_T_RESPONSE_REQUIREMENT",
+      "type": "Constant",
+      "description": "UUID :  \"b8a7a846-c78a-4d16-97f9-98307652b25e\"",
+      "value": "AS GCM QNM T Response Requirement",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Questionnaire"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec75-2131-8000-9da0-011c48011c48_13320720",
+      "name": "AS_GCM_CEDM_TXT_REQUEST_STATUS_COMPLETED",
+      "type": "Constant",
+      "description": "Value: COMPLETED",
+      "value": "COMPLETED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM CEDM Export Environment Data"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec75-2131-8000-9da0-011c48011c48_13320695",
+      "name": "AS_GCM_CEDM_TXT_REQUEST_STATUS_FAILED",
+      "type": "Constant",
+      "description": "Value: FAILED",
+      "value": "FAILED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM CEDM Export Environment Data"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec75-2131-8000-9da0-011c48011c48_13320688",
+      "name": "AS_GCM_CEDM_TXT_REQUEST_STATUS_IMPORT_IN_PROGRESS",
+      "type": "Constant",
+      "description": "Value: IMPORT_IN_PROGRESS",
+      "value": "IMPORT_IN_PROGRESS",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM CEDM Export Environment Data"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec75-2131-8000-9da0-011c48011c48_13320540",
+      "name": "AS_GCM_CEDM_TXT_REQUEST_TYPE_EXPORT",
+      "type": "Constant",
+      "description": "Value: EXPORT",
+      "value": "EXPORT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM CEDM Export Environment Data"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb72-c933-8000-9d28-011c48011c48_10487326",
+      "name": "AS_GCM_CO_INT_QUERY_RECORD_MAX_BATCH_SIZE",
+      "type": "Constant",
+      "description": "Batch size: 5000",
+      "value": "5000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CEDM_RetrievePrecedentRecordFieldMaps_Recursion",
+        "AS_GCM_CEDM_exportDataForMigration",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Question",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Questionnaire",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Rule",
+        "AS_GCM_CO_UT_queryRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1529547",
+      "name": "AS_GCM_ENT_R_CLAUSE_TEXTS",
+      "type": "Constant",
+      "description": "Value: AS_GCM_R_Clause_Texts",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CEDM_typeConfigMapForDataMigration"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3111916",
+      "name": "AS_GCM_INT_QUERY_BATCH_SIZE_TINY",
+      "type": "Constant",
+      "description": "Batch size: 10",
+      "value": "10",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_getIdentifiersInBatches"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_51398",
+      "name": "AS_GCM_TXT_APPLICATION_VERSION",
+      "type": "Constant",
+      "description": "GCM Application version constant",
+      "value": "25.04.03.06.00",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CEDM_exportDataForMigration",
+        "AS_GCM_CEDM_parseImportedFileContent"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290200",
+      "name": "AS_CO_CONS_QE_RETURN_TYPES",
+      "type": "Expression Rule",
+      "description": "All available query entity return types, used by rule `AS_CO_UT_queryEntity`",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_AGGREGATION",
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT"
+      ],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_CO_UT_queryRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_283314",
+      "name": "AS_CO_TYPE_Dictionary",
+      "type": "Expression Rule",
+      "description": "Returns `type!{}Dictionary` used for casting purposes",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_CO_UT_queryRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed08-d796-8000-9dda-011c48011c48_14567642",
+      "name": "AS_CO_UT_ContainsValueByField",
+      "type": "Expression Rule",
+      "description": "it's only used by `AS_CO_UT_Filter`.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_Filter_Reducer"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed08-d796-8000-9dda-011c48011c48_14552299",
+      "name": "AS_CO_UT_Filter",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_Example_RECORD",
+        "AS_CO_UT_Filter_Reducer"
+      ],
+      "called_by": [
+        "AS_GCM_CEDM_validateExportAndImportDuplicates"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed08-d796-8000-9dda-011c48011c48_14552306",
+      "name": "AS_CO_UT_Filter_Reducer",
+      "type": "Expression Rule",
+      "description": "Do not call this rule directly, it's only used by `AS_CO_UT_Filter`.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_ContainsValueByField"
+      ],
+      "called_by": [
+        "AS_CO_UT_Filter"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157603",
+      "name": "AS_CO_UT_cast",
+      "type": "Expression Rule",
+      "description": "Casts a variable to the type of either the input `type`, or the typeof of the input `typeof`, and properly handles for null inputs",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_checkIfSingleType",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_returnTypeNumber"
+      ],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_returnArrayTypeNumber",
+        "AS_CO_UT_zINTERNAL_indexPath_nestedFieldArrayConvertHandler",
+        "AS_GCM_CEDM_parseImportedFileContent",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration",
+        "AS_GCM_CO_UT_queryRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_291952",
+      "name": "AS_CO_UT_checkIfArrayType",
+      "type": "Expression Rule",
+      "description": "Returns true if the `type` or `typeOf` inputs represent an array type",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_checkIfSingleType"
+      ],
+      "called_by": [
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+        "AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_handler",
+        "AS_CO_UT_zINTERNAL_updateCdtFields_handler"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157548",
+      "name": "AS_CO_UT_checkIfSingleType",
+      "type": "Expression Rule",
+      "description": "Returns true if the `type` or `typeOf` inputs represent a singular, non-array type",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_returnSingleTypeObject",
+        "AS_CO_UT_returnTypeNumber"
+      ],
+      "called_by": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_checkIfArrayType"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_280802",
+      "name": "AS_CO_UT_chooseWherecontainsHelper",
+      "type": "Expression Rule",
+      "description": "Helps when combining choose() and wherecontains(), returns 1 if no match found, or else returns the index + 1",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_whereContains"
+      ],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_CO_UT_queryRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb44-a528-8000-9d15-011c48011c48_9978504",
+      "name": "AS_CO_UT_displayRequiredMessage",
+      "type": "Expression Rule",
+      "description": "Returns default required message (used for all editable fields) if required message is not passed.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CEDM_FM_exportEnvironmentData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_187421",
+      "name": "AS_CO_UT_displayValue",
+      "type": "Expression Rule",
+      "description": "Executes displayValue, but allows setting the default to either the first or last value of the replacement list, or a custom value",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_CO_UT_queryRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73758",
+      "name": "AS_CO_UT_distinct",
+      "type": "Expression Rule",
+      "description": "Returns the distinct values from a list.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CEDM_RetrievePrecedentRecordFieldMaps_Recursion",
+        "AS_GCM_CEDM_exportDataForMigration",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_268381",
+      "name": "AS_CO_UT_enumForCount",
+      "type": "Expression Rule",
+      "description": "Return an enumerator for the count of the input objects",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_handler",
+        "AS_CO_UT_zINTERNAL_updateCdtFields_handler"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_100254",
+      "name": "AS_CO_UT_getSiteUrl",
+      "type": "Expression Rule",
+      "description": "Returns the URL of the site, terminating in /suite/",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GCM CEDM Export Environment Data",
+        "AS_GCM_CEDM_emailBodyForExportEnvironmentData",
+        "AS_GCM_CEDM_exportDataForMigration"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76433",
+      "name": "AS_CO_UT_indexPath",
+      "type": "Expression Rule",
+      "description": "Pass in a field (i.e. member[1].name) and this will index(index(index( for each field",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_zINTERNAL_indexPath_nestedFieldArrayHandler"
+      ],
+      "called_by": [
+        "AS GCM CEDM Export Environment Data",
+        "AS_GAM_returnCdtOrRecordIndicesByField",
+        "AS_GCM_CEDM_FM_exportEnvironmentData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GCM CEDM Export Environment Data",
+        "AS_CO_UT_enumForCount",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_sortArray",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+        "AS_CO_UT_whereContains",
+        "AS_CO_UT_zINTERNAL_indexPath_nestedFieldArrayConvertHandler",
+        "AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_handler",
+        "AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_nestHandler",
+        "AS_CO_UT_zINTERNAL_updateCdtFields_updateHandler",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GAM_UT_ArrayLength",
+        "AS_GAM_UT_queryEntityWithSelection",
+        "AS_GAM_UT_sortAnyData",
+        "AS_GAM_rejectCdtOrRecordDataByField",
+        "AS_GCM_CEDM_FM_exportEnvironmentData",
+        "AS_GCM_CEDM_RetrievePrecedentRecordFieldMaps_Recursion",
+        "AS_GCM_CEDM_emailBodyForExportEnvironmentData",
+        "AS_GCM_CEDM_parseImportedFileContent",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration",
+        "AS_GCM_CO_UT_queryRecord",
+        "AS_GCM_UT_getIdentifiersInBatches"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around AS_CO_UT_isBlank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_handler",
+        "AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_nestHandler",
+        "AS_GCM_CEDM_RetrievePrecedentRecordFieldMaps_Recursion",
+        "AS_GCM_CEDM_parseImportedFileContent",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration",
+        "AS_GCM_CO_UT_queryRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9e2-fe39-8000-9c72-011c48011c48_5802508",
+      "name": "AS_CO_UT_isRecordTypeData",
+      "type": "Expression Rule",
+      "description": "Returns true if the passed data is of type record type",
+      "parameters": [],
+      "calls": [
+        "AS_CO_Example_RECORD"
+      ],
+      "called_by": [
+        "AS_GAM_returnCdtOrRecordIndicesByField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157870",
+      "name": "AS_CO_UT_queryEntity",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_CONS_QE_RETURN_TYPES",
+        "AS_CO_ENUM_QE_RETURN_TYPE_AGGREGATION",
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+        "AS_CO_INT_QUERY_MAX_BATCH_SIZE",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_chooseWherecontainsHelper",
+        "AS_CO_UT_displayValue",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_returnArrayTypeNumber"
+      ],
+      "called_by": [
+        "AS_GCM_CEDM_RetrievePrecedentRecordFieldMaps_Recursion",
+        "AS_GCM_CEDM_exportDataForMigration"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6c8-d132-8000-9bbe-011c48011c48_469266",
+      "name": "AS_CO_UT_queryRecord",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_CONS_QE_RETURN_TYPES",
+        "AS_CO_ENUM_QE_RETURN_TYPE_AGGREGATION",
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_INT_QUERY_MAX_BATCH_SIZE",
+        "AS_CO_TYPE_Dictionary",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_chooseWherecontainsHelper",
+        "AS_CO_UT_displayValue",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_returnArrayTypeNumber",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs"
+      ],
+      "called_by": [
+        "AS_GCM_CEDM_FM_exportEnvironmentData",
+        "AS_GCM_CEDM_GetRecordFieldsListByRecordType"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367",
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_zINTERNAL_indexPath_nestedFieldArrayHandler",
+        "AS_GCM_CEDM_RetrievePrecedentRecordFieldMaps_Recursion",
+        "AS_GCM_CEDM_exportDataForMigration",
+        "AS_GCM_CEDM_parseImportedFileContent",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration",
+        "AS_GCM_CEDM_validateExportAndImportDuplicates"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73980",
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "description": "Returns nullableValue only if it is not null. Else returns replacementValue.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_chooseWherecontainsHelper",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_sortArray",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GAM_UT_queryEntityWithSelection"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39610",
+      "name": "AS_CO_UT_returnArrayTypeNumber",
+      "type": "Expression Rule",
+      "description": "Returns the array type number from the input type. If type number being passed is already that of a array, returns the same number.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast"
+      ],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_CO_UT_queryRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_101148",
+      "name": "AS_CO_UT_returnNullDictionary",
+      "type": "Expression Rule",
+      "description": "Returns a null dictionary",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_nestHandler"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_101176",
+      "name": "AS_CO_UT_returnNullDictionaryList",
+      "type": "Expression Rule",
+      "description": "Returns a null list of dictionary",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_handler",
+        "AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_nestHandler",
+        "AS_CO_UT_zINTERNAL_updateCdtFields_handler"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75842",
+      "name": "AS_CO_UT_returnSingleTypeObject",
+      "type": "Expression Rule",
+      "description": "Takes in either an array type or a primitive type and returns the singular type object, works for CDTs or primitive types",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_checkIfSingleType",
+        "AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_handler",
+        "AS_CO_UT_zINTERNAL_updateCdtFields_handler"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157503",
+      "name": "AS_CO_UT_returnTypeNumber",
+      "type": "Expression Rule",
+      "description": "Returns the typeNumber of either `type` or `typeOf`",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_checkIfSingleType"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_87660",
+      "name": "AS_CO_UT_sortArray",
+      "type": "Expression Rule",
+      "description": "Sorts an array of primitive types (e.g. text, integers, dates)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GAM_UT_sortAnyData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_162769",
+      "name": "AS_CO_UT_typeCompare",
+      "type": "Expression Rule",
+      "description": "Returns true if the two input types match",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_whereContains",
+        "AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_handler",
+        "AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_nestHandler",
+        "AS_CO_UT_zINTERNAL_updateCdtFields_handler"
+      ]
+    },
+    {
+      "uuid": "_a-0000e811-1167-8000-9c18-011c48011c48_3510541",
+      "name": "AS_CO_UT_updateCdtByKeyValues",
+      "type": "Expression Rule",
+      "description": "Allows passing a map of key-value pairs as an update parameter",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs"
+      ],
+      "called_by": [
+        "AS_GCM_CEDM_RetrievePrecedentRecordFieldMaps_Recursion"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_269170",
+      "name": "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+      "type": "Expression Rule",
+      "description": "Allows passing field-value pairs to handle for use cases where you have to set newValues as arrays",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_checkIfArrayType",
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_updateCdtByKeyValues",
+        "AS_GCM_CO_UT_queryRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_268479",
+      "name": "AS_CO_UT_updateCdtFieldsByPath",
+      "type": "Expression Rule",
+      "description": "Updates one or more fields of a CDT, allows passing a path (e.g. fieldA[1].fieldB...)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_handler"
+      ],
+      "called_by": [
+        "AS_GCM_CEDM_typeConfigMapForDataMigration"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_272151",
+      "name": "AS_CO_UT_whereContains",
+      "type": "Expression Rule",
+      "description": "Enhanced wherecontains() which avoids type-casting issues and properly handles for document and group types",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_typeCompare"
+      ],
+      "called_by": [
+        "AS_CO_UT_chooseWherecontainsHelper",
+        "AS_GAM_returnCdtOrRecordIndicesByField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76617",
+      "name": "AS_CO_UT_zINTERNAL_indexPath_nestedFieldArrayConvertHandler",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_CO_UT_indexPath`",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_zINTERNAL_indexPath_nestedFieldArrayHandler"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75913",
+      "name": "AS_CO_UT_zINTERNAL_indexPath_nestedFieldArrayHandler",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_CO_UT_indexPath`",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_zINTERNAL_indexPath_nestedFieldArrayConvertHandler"
+      ],
+      "called_by": [
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_handler"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_268729",
+      "name": "AS_CO_UT_zINTERNAL_indexPath_separateFieldHandler",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_CO_UT_updateCdtFieldsByPath`",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_nestHandler"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_268798",
+      "name": "AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_handler",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_CO_UT_updateCdtFieldsByPath`",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_checkIfArrayType",
+        "AS_CO_UT_enumForCount",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_returnNullDictionaryList",
+        "AS_CO_UT_returnSingleTypeObject",
+        "AS_CO_UT_typeCompare",
+        "AS_CO_UT_zINTERNAL_indexPath_nestedFieldArrayHandler",
+        "AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_nestHandler",
+        "AS_CO_UT_zINTERNAL_updateCdtFields_updateHandler"
+      ],
+      "called_by": [
+        "AS_CO_UT_updateCdtFieldsByPath"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_268524",
+      "name": "AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_nestHandler",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_CO_UT_updateCdtFieldsByPath`",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_returnNullDictionary",
+        "AS_CO_UT_returnNullDictionaryList",
+        "AS_CO_UT_typeCompare",
+        "AS_CO_UT_zINTERNAL_indexPath_separateFieldHandler",
+        "AS_CO_UT_zINTERNAL_updateCdtFields_handler"
+      ],
+      "called_by": [
+        "AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_handler"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_268359",
+      "name": "AS_CO_UT_zINTERNAL_updateCdtFields_dicionaryHandler",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_CO_UT_updateCdtFields`",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_zINTERNAL_updateCdtFields_updateHandler"
+      ],
+      "called_by": [
+        "AS_CO_UT_zINTERNAL_updateCdtFields_handler"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_268432",
+      "name": "AS_CO_UT_zINTERNAL_updateCdtFields_handler",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_CO_UT_updateCdtFields`",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_checkIfArrayType",
+        "AS_CO_UT_enumForCount",
+        "AS_CO_UT_returnNullDictionaryList",
+        "AS_CO_UT_returnSingleTypeObject",
+        "AS_CO_UT_typeCompare",
+        "AS_CO_UT_zINTERNAL_updateCdtFields_dicionaryHandler",
+        "AS_CO_UT_zINTERNAL_updateCdtFields_updateHandler"
+      ],
+      "called_by": [
+        "AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_nestHandler"
+      ]
+    },
+    {
+      "uuid": "_a-0000e416-3948-8000-9bb5-011c48011c48_292774",
+      "name": "AS_CO_UT_zINTERNAL_updateCdtFields_updateHandler",
+      "type": "Expression Rule",
+      "description": "Used by rule `AS_CO_UT_updateCdtFields`",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_zINTERNAL_updateCdtFieldsByPath_handler",
+        "AS_CO_UT_zINTERNAL_updateCdtFields_dicionaryHandler",
+        "AS_CO_UT_zINTERNAL_updateCdtFields_handler"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53662",
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "description": "Displays a label by the `bundleKey` from passed in bundle data, optionally accepts arguments",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_CEDM_FM_importAndExportValidationMessage"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1021202",
+      "name": "AS_GAM_UT_ArrayLength",
+      "type": "Expression Rule",
+      "description": "Gives length of an array based on input of array",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_CEDM_exportDataForMigration"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1523563",
+      "name": "AS_GAM_UT_queryEntityWithSelection",
+      "type": "Expression Rule",
+      "description": "Generic query entity with query selection (So that huge load can be avoided while querying)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_CEDM_RetrievePrecedentRecordFieldMaps_Recursion",
+        "AS_GCM_CEDM_exportDataForMigration"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec06-6336-8000-9d71-011c48011c48_12268070",
+      "name": "AS_GAM_UT_sortAnyData",
+      "type": "Expression Rule",
+      "description": "Sorts a CDT, dictionary, record or complex type.  Pass nullsFirst to explicitly sort nulls first or last. Also sorts simple type data when the field is null",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_sortArray",
+        "AS_GAM_filterCdtOrRecordDataByField",
+        "AS_GAM_rejectCdtOrRecordDataByField"
+      ],
+      "called_by": [
+        "AS_GCM_CEDM_typeConfigMapForDataMigration"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9e2-fe39-8000-9c72-011c48011c48_5802259",
+      "name": "AS_GAM_filterCdtOrRecordDataByField",
+      "type": "Expression Rule",
+      "description": "Filters CDT or record data by a matching a single value or list of values in a single field, if a list is passed, all matches are returned",
+      "parameters": [],
+      "calls": [
+        "AS_GAM_returnCdtOrRecordIndicesByField"
+      ],
+      "called_by": [
+        "AS_GAM_UT_sortAnyData"
+      ]
+    },
+    {
+      "uuid": "_a-0000eaf1-8805-8000-9cec-011c48011c48_9106170",
+      "name": "AS_GAM_rejectCdtOrRecordDataByField",
+      "type": "Expression Rule",
+      "description": "Rejects CDT or record data by a matching a single value or list of values in a single field, if a list is passed, all matches are rejected",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_GAM_returnCdtOrRecordIndicesByField"
+      ],
+      "called_by": [
+        "AS_GAM_UT_sortAnyData"
+      ]
+    },
+    {
+      "uuid": "_a-0000eae2-5167-8000-9ce4-011c48011c48_8879314",
+      "name": "AS_GAM_returnCdtOrRecordIndicesByField",
+      "type": "Expression Rule",
+      "description": "Returns the Index CDT or record data by matching a single value or list of values in a single field",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isRecordTypeData",
+        "AS_CO_UT_whereContains"
+      ],
+      "called_by": [
+        "AS_GAM_filterCdtOrRecordDataByField",
+        "AS_GAM_rejectCdtOrRecordDataByField"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee30-1118-8000-9e27-011c48011c48_16428105",
+      "name": "AS_GCM_CEDM_GetRecordFieldsListByRecordType",
+      "type": "Expression Rule",
+      "description": "Returns list of simple record fields based on given record type",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_queryRecord"
+      ],
+      "called_by": [
+        "AS_GCM_CEDM_typeConfigMapForDataMigration"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed77-8e71-8000-9df8-011c48011c48_15330888",
+      "name": "AS_GCM_CEDM_RetrievePrecedentRecordFieldMaps_Recursion",
+      "type": "Expression Rule",
+      "description": "Recursion rule to return precedent record field maps based on parent record",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_distinct",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_updateCdtByKeyValues",
+        "AS_GAM_UT_queryEntityWithSelection",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration",
+        "AS_GCM_CO_INT_QUERY_RECORD_MAX_BATCH_SIZE",
+        "AS_GCM_CO_UT_queryRecord",
+        "AS_GCM_UT_getIdentifiersInBatches",
+        "AS_GCM_filterRecords"
+      ],
+      "called_by": [
+        "AS_GCM_CEDM_exportDataForMigration"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed77-8e71-8000-9df8-011c48011c48_15332486",
+      "name": "AS_GCM_CEDM_constructLogMap",
+      "type": "Expression Rule",
+      "description": "Returns the config map for log",
+      "parameters": [],
+      "calls": [
+        "AS GCM R Data"
+      ],
+      "called_by": [
+        "AS GCM CEDM Export Environment Data"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec62-ac34-8000-9d9a-011c48011c48_13156199",
+      "name": "AS_GCM_CEDM_emailBodyForExportEnvironmentData",
+      "type": "Expression Rule",
+      "description": "Returns the email body for Exported Environment Data",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_getSiteUrl",
+        "AS_CO_UT_isBlank",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_filterRecords"
+      ],
+      "called_by": [
+        "AS GCM CEDM Export Environment Data"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee83-219b-8000-9e3e-011c48011c48_17015500",
+      "name": "AS_GCM_CEDM_emailBodyForExportEnvironmentDataFailure",
+      "type": "Expression Rule",
+      "description": "Returns the email body for Exported Environment Data Failure",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_CO_UT_loadBundleFromFolder"
+      ],
+      "called_by": [
+        "AS GCM CEDM Export Environment Data"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec62-ac34-8000-9d9a-011c48011c48_13126974",
+      "name": "AS_GCM_CEDM_exportDataForMigration",
+      "type": "Expression Rule",
+      "description": "Rule to return exported data in json format ",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_distinct",
+        "AS_CO_UT_getSiteUrl",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GAM_UT_ArrayLength",
+        "AS_GAM_UT_queryEntityWithSelection",
+        "AS_GCM_CEDM_RetrievePrecedentRecordFieldMaps_Recursion",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration",
+        "AS_GCM_CO_INT_QUERY_RECORD_MAX_BATCH_SIZE",
+        "AS_GCM_CO_UT_queryRecord",
+        "AS_GCM_TXT_APPLICATION_VERSION",
+        "AS_GCM_UT_getIdentifiersInBatches",
+        "AS_GCM_filterRecords"
+      ],
+      "called_by": [
+        "AS GCM CEDM Export Environment Data"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec62-ac34-8000-9d9a-011c48011c48_13127649",
+      "name": "AS_GCM_CEDM_parseImportedFileContent",
+      "type": "Expression Rule",
+      "description": "Rule to parse the imported file content",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GCM_CEDM_TXT_ENTITY_UUID_CLAUSE_TEXT",
+        "AS_GCM_CEDM_TXT_RECORD_UUID_R_CLAUSE",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration",
+        "AS_GCM_TXT_APPLICATION_VERSION",
+        "AS_GCM_filterRecords"
+      ],
+      "called_by": [
+        "AS GCM CEDM Export Environment Data"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec62-ac34-8000-9d9a-011c48011c48_13126426",
+      "name": "AS_GCM_CEDM_typeConfigMapForDataMigration",
+      "type": "Expression Rule",
+      "description": "Config Maps for CEDM Data Migration",
+      "parameters": [],
+      "calls": [
+        "AS GCM Fill In Recommendation",
+        "AS GCM QNM T Question",
+        "AS GCM R Clause Section Mapping",
+        "AS GCM R Data",
+        "AS GCM R Section",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_distinct",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_updateCdtFieldsByPath",
+        "AS_GAM_UT_sortAnyData",
+        "AS_GCM_CEDM_GetRecordFieldsListByRecordType",
+        "AS_GCM_CEDM_TXT_ENTITY_UUID_CLAUSE_TEXT",
+        "AS_GCM_CEDM_TXT_RECORD_UUID_R_CLAUSE",
+        "AS_GCM_CEDM_TXT_RECORD_UUID_R_TEMPLATE",
+        "AS_GCM_CEDM_TXT_RECORD_UUID_TEMPLATE_CLAUSE",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Question",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Questionnaire",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Rule",
+        "AS_GCM_CO_INT_QUERY_RECORD_MAX_BATCH_SIZE",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_ENT_R_CLAUSE_TEXTS"
+      ],
+      "called_by": [
+        "AS GCM CEDM Export Environment Data",
+        "AS_GCM_CEDM_FM_exportEnvironmentData",
+        "AS_GCM_CEDM_RetrievePrecedentRecordFieldMaps_Recursion",
+        "AS_GCM_CEDM_exportDataForMigration",
+        "AS_GCM_CEDM_parseImportedFileContent",
+        "AS_GCM_CEDM_validateExportAndImportDuplicates"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee39-4c1d-8000-9e29-011c48011c48_16493868",
+      "name": "AS_GCM_CEDM_typeConfigMapForDataMigration_Question",
+      "type": "Expression Rule",
+      "description": "Config Maps for CEDM Export and Import process for Question",
+      "parameters": [],
+      "calls": [
+        "AS GCM QNM R Question",
+        "AS GCM QNM R Response",
+        "AS GCM QNM R Response Requirement",
+        "AS GCM QNM T Question",
+        "AS_GCM_CO_INT_QUERY_RECORD_MAX_BATCH_SIZE"
+      ],
+      "called_by": [
+        "AS_GCM_CEDM_typeConfigMapForDataMigration"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee39-4c1d-8000-9e29-011c48011c48_16476246",
+      "name": "AS_GCM_CEDM_typeConfigMapForDataMigration_Questionnaire",
+      "type": "Expression Rule",
+      "description": "Config Maps for CEDM Export and Import process",
+      "parameters": [],
+      "calls": [
+        "AS GCM QNM R Question",
+        "AS GCM QNM T Question",
+        "AS GCM QNM T Question Category",
+        "AS GCM QNM T Question Precedent",
+        "AS GCM QNM T Question Precedent Set",
+        "AS GCM QNM T Response",
+        "AS GCM QNM T Response Requirement",
+        "AS_GCM_CEDM_TXT_RECORD_UUID_QUESTIONNAIRE",
+        "AS_GCM_CEDM_TXT_RECORD_UUID_QUESTION_CATEGORY",
+        "AS_GCM_CEDM_TXT_RECORD_UUID_T_QUESTION",
+        "AS_GCM_CEDM_TXT_RECORD_UUID_T_QUESTION_PRECEDENT",
+        "AS_GCM_CEDM_TXT_RECORD_UUID_T_QUESTION_PRECEDENT_SET",
+        "AS_GCM_CEDM_TXT_RECORD_UUID_T_RESPONSE",
+        "AS_GCM_CEDM_TXT_RECORD_UUID_T_RESPONSE_REQUIREMENT",
+        "AS_GCM_CO_INT_QUERY_RECORD_MAX_BATCH_SIZE"
+      ],
+      "called_by": [
+        "AS_GCM_CEDM_typeConfigMapForDataMigration"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee42-8707-8000-9e2b-011c48011c48_16523297",
+      "name": "AS_GCM_CEDM_typeConfigMapForDataMigration_Rule",
+      "type": "Expression Rule",
+      "description": "Config Maps of Rule related records for CEDM Export and Import process",
+      "parameters": [],
+      "calls": [
+        "AS GCM QNM T Question",
+        "AS GCM QNM T Response",
+        "AS GCM R Data",
+        "AS_GCM_CEDM_TXT_RECORD_UUID_RULE",
+        "AS_GCM_CEDM_TXT_RECORD_UUID_RULE_CLAUSES",
+        "AS_GCM_CEDM_TXT_RECORD_UUID_RULE_CONDITIONS",
+        "AS_GCM_CEDM_TXT_RECORD_UUID_RULE_CONDITION_GROUP",
+        "AS_GCM_CEDM_TXT_RECORD_UUID_R_CLAUSE",
+        "AS_GCM_CO_INT_QUERY_RECORD_MAX_BATCH_SIZE"
+      ],
+      "called_by": [
+        "AS_GCM_CEDM_typeConfigMapForDataMigration"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee83-219b-8000-9e3e-011c48011c48_16971179",
+      "name": "AS_GCM_CEDM_validateExportAndImportDuplicates",
+      "type": "Expression Rule",
+      "description": "Rule to validate the duplicate entries in Import and Export actions",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_AGGREGATION",
+        "AS_CO_UT_Filter",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GCM_CEDM_TXT_RECORD_UUID_QUESTION_CATEGORY",
+        "AS_GCM_CEDM_TXT_RECORD_UUID_RULE",
+        "AS_GCM_CEDM_TXT_RECORD_UUID_RULE_CLAUSES",
+        "AS_GCM_CEDM_TXT_RECORD_UUID_RULE_CONDITIONS",
+        "AS_GCM_CEDM_TXT_RECORD_UUID_R_QUESTION",
+        "AS_GCM_CEDM_TXT_RECORD_UUID_R_RESPONSE",
+        "AS_GCM_CEDM_TXT_RECORD_UUID_R_RESPONSE_REQUIREMENT",
+        "AS_GCM_CEDM_TXT_RECORD_UUID_T_QUESTION",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration",
+        "AS_GCM_CO_UT_queryRecord"
+      ],
+      "called_by": [
+        "AS GCM CEDM Export Environment Data"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53654",
+      "name": "AS_GCM_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "description": "Loads a property bundle file by name from a folder, returns a dictionary of the key-value pairs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CEDM_FM_exportEnvironmentData",
+        "AS_GCM_CEDM_FM_importAndExportValidationMessage",
+        "AS_GCM_CEDM_emailBodyForExportEnvironmentData",
+        "AS_GCM_CEDM_emailBodyForExportEnvironmentDataFailure",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee4b-c1c8-8000-9e2d-011c48011c48_16589126",
+      "name": "AS_GCM_CO_UT_queryRecord",
+      "type": "Expression Rule",
+      "description": "GCM specific Helper rule to execute record queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_CONS_QE_RETURN_TYPES",
+        "AS_CO_ENUM_QE_RETURN_TYPE_AGGREGATION",
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_INT_QUERY_MAX_BATCH_SIZE",
+        "AS_CO_TYPE_Dictionary",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_chooseWherecontainsHelper",
+        "AS_CO_UT_displayValue",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_returnArrayTypeNumber",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+        "AS_GCM_CO_INT_QUERY_RECORD_MAX_BATCH_SIZE"
+      ],
+      "called_by": [
+        "AS_GCM_CEDM_RetrievePrecedentRecordFieldMaps_Recursion",
+        "AS_GCM_CEDM_exportDataForMigration",
+        "AS_GCM_CEDM_validateExportAndImportDuplicates"
+      ]
+    },
+    {
+      "uuid": "5f18e821-865e-464d-b974-57c20096c58f",
+      "name": "AS_GCM_UT_getIdentifiersInBatches",
+      "type": "Expression Rule",
+      "description": "Returns the Identifiers in batches based on the batchingSize",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_UT_isBlank",
+        "AS_GCM_INT_QUERY_BATCH_SIZE_TINY"
+      ],
+      "called_by": [
+        "AS_GCM_CEDM_RetrievePrecedentRecordFieldMaps_Recursion",
+        "AS_GCM_CEDM_exportDataForMigration"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9761091",
+      "name": "AS_GCM_filterRecords",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GCM CEDM Export Environment Data",
+        "AS_GCM_CEDM_FM_exportEnvironmentData",
+        "AS_GCM_CEDM_RetrievePrecedentRecordFieldMaps_Recursion",
+        "AS_GCM_CEDM_emailBodyForExportEnvironmentData",
+        "AS_GCM_CEDM_exportDataForMigration",
+        "AS_GCM_CEDM_parseImportedFileContent"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec50-376f-8000-9d94-011c48011c48_12909959",
+      "name": "AS_GCM_getColorBasedOnColorName",
+      "type": "Expression Rule",
+      "description": "The rule returns the hex code when a color name is passed",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_CEDM_FM_importAndExportValidationMessage"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec62-ac34-8000-9d9a-011c48011c48_13126277",
+      "name": "AS_GCM_CEDM_FM_exportEnvironmentData",
+      "type": "Interface",
+      "description": "The interface to export the environment data",
+      "parameters": [
+        {
+          "name": "userAction",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "uuidsToExport",
+          "type": "http://www.appian.com/ae/types/2009:Text?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT",
+        "AS_CO_ENUM_USER_ACTION_CANCEL",
+        "AS_CO_ENUM_USER_ACTION_SUBMIT",
+        "AS_CO_UT_displayRequiredMessage",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_filterRecords"
+      ],
+      "called_by": [
+        "AS GCM CEDM Export Environment Data"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee83-219b-8000-9e3e-011c48011c48_16977267",
+      "name": "AS_GCM_CEDM_FM_importAndExportValidationMessage",
+      "type": "Interface",
+      "description": "Interface to display the form layout for displaying validation during CEDM import and export actions.",
+      "parameters": [
+        {
+          "name": "isExport",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "displayValidation",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "cancel",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        }
+      ],
+      "calls": [
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_getColorBasedOnColorName"
+      ],
+      "called_by": [
+        "AS GCM CEDM Export Environment Data"
+      ]
+    },
+    {
+      "uuid": "0005ec65-afc7-8000-b364-7f0000014e7a",
+      "name": "AS GCM CEDM Export Environment Data",
+      "type": "Process Model",
+      "description": "Process to export the environment data",
+      "calls": [
+        "AS_CO_ENUM_USER_ACTION_SUBMIT",
+        "AS_CO_UT_getSiteUrl",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isBlank",
+        "AS_GCM_CEDM_FLD_DATA_DOCUMENTS_FOLDER",
+        "AS_GCM_CEDM_FM_exportEnvironmentData",
+        "AS_GCM_CEDM_FM_importAndExportValidationMessage",
+        "AS_GCM_CEDM_INT_EXPORT_PROCESS_TIME_OUT",
+        "AS_GCM_CEDM_INT_MAX_ATTACHMENT_SIZE_FOR_EMAIL",
+        "AS_GCM_CEDM_PM_DOCUMENT_MANAGEMENT",
+        "AS_GCM_CEDM_TXT_RECORD_UUID_R_CLAUSE",
+        "AS_GCM_CEDM_TXT_REQUEST_STATUS_COMPLETED",
+        "AS_GCM_CEDM_TXT_REQUEST_STATUS_FAILED",
+        "AS_GCM_CEDM_TXT_REQUEST_STATUS_IMPORT_IN_PROGRESS",
+        "AS_GCM_CEDM_TXT_REQUEST_TYPE_EXPORT",
+        "AS_GCM_CEDM_constructLogMap",
+        "AS_GCM_CEDM_emailBodyForExportEnvironmentData",
+        "AS_GCM_CEDM_emailBodyForExportEnvironmentDataFailure",
+        "AS_GCM_CEDM_exportDataForMigration",
+        "AS_GCM_CEDM_parseImportedFileContent",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration",
+        "AS_GCM_CEDM_validateExportAndImportDuplicates",
+        "AS_GCM_filterRecords"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "eb8317e5-4eb6-4d46-8cd5-9ebcfafd6b67",
+      "name": "AS GCM Fill In Recommendation",
+      "type": "Record Type",
+      "description": "Synced Record for Fill In Recommendation.",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS GCM R Data"
+      ],
+      "called_by": [
+        "AS_GCM_CEDM_typeConfigMapForDataMigration"
+      ]
+    },
+    {
+      "uuid": "f0bfb0f8-c45d-425c-8450-802bf04a87cf",
+      "name": "AS GCM QNM R Question",
+      "type": "Record Type",
+      "description": "Sync records for AS_GCM_QNM_R_Question",
+      "actions": [
+        "newQuestion",
+        "importQuestion",
+        "updateQuestion"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS GCM QNM R Response",
+        "AS GCM QNM R Response Requirement",
+        "AS GCM QNM T Question",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT"
+      ],
+      "called_by": [
+        "AS GCM QNM R Response",
+        "AS GCM QNM R Response Requirement",
+        "AS GCM QNM T Question",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Question",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Questionnaire"
+      ]
+    },
+    {
+      "uuid": "2e619bc1-d0a1-4346-9fcf-efccb39aee72",
+      "name": "AS GCM QNM R Response",
+      "type": "Record Type",
+      "description": "Sync records for AS_GCM_QNM_R_Response",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS GCM QNM R Question"
+      ],
+      "called_by": [
+        "AS GCM QNM R Question",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Question"
+      ]
+    },
+    {
+      "uuid": "527dae14-6fb4-453c-97c9-787080f6805c",
+      "name": "AS GCM QNM R Response Requirement",
+      "type": "Record Type",
+      "description": "Sync records for AS_GCM_QNM_R_ResponseRequirement",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS GCM QNM R Question"
+      ],
+      "called_by": [
+        "AS GCM QNM R Question",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Question"
+      ]
+    },
+    {
+      "uuid": "66fc3179-f0d8-4d6d-bbce-92b85f7c665a",
+      "name": "AS GCM QNM T Question",
+      "type": "Record Type",
+      "description": "Synced record for questionnaire questions",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS GCM QNM R Question",
+        "AS GCM QNM T Question Category",
+        "AS GCM QNM T Question Precedent Set",
+        "AS GCM QNM T Response",
+        "AS GCM QNM T Response Requirement"
+      ],
+      "called_by": [
+        "AS GCM QNM R Question",
+        "AS GCM QNM T Question Category",
+        "AS GCM QNM T Question Precedent",
+        "AS GCM QNM T Question Precedent Set",
+        "AS GCM QNM T Response",
+        "AS GCM QNM T Response Requirement",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Question",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Questionnaire",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Rule"
+      ]
+    },
+    {
+      "uuid": "261190bc-e795-4938-96b2-bf33b805f23c",
+      "name": "AS GCM QNM T Question Category",
+      "type": "Record Type",
+      "description": "Sync record for AS_GCM_QNM_T_QuestionCategory.",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS GCM QNM T Question"
+      ],
+      "called_by": [
+        "AS GCM QNM T Question",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Questionnaire"
+      ]
+    },
+    {
+      "uuid": "e2cf072a-7e15-42a5-8c16-db069819e29d",
+      "name": "AS GCM QNM T Question Precedent",
+      "type": "Record Type",
+      "description": "Sync Record for AS_GCM_QNM_T_QSTN_PRECEDENT",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS GCM QNM T Question",
+        "AS GCM QNM T Question Precedent Set",
+        "AS GCM QNM T Response Requirement"
+      ],
+      "called_by": [
+        "AS GCM QNM T Question Precedent Set",
+        "AS GCM QNM T Response Requirement",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Questionnaire"
+      ]
+    },
+    {
+      "uuid": "2f0273e8-8328-4188-a69f-4ed87a5fd3fb",
+      "name": "AS GCM QNM T Question Precedent Set",
+      "type": "Record Type",
+      "description": "Sync record for AS_GCM_QNM_T_QSTN_PRCDNT_ST",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS GCM QNM T Question",
+        "AS GCM QNM T Question Precedent"
+      ],
+      "called_by": [
+        "AS GCM QNM T Question",
+        "AS GCM QNM T Question Precedent",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Questionnaire"
+      ]
+    },
+    {
+      "uuid": "31984f80-8be1-4643-801f-3a945c47fa47",
+      "name": "AS GCM QNM T Response",
+      "type": "Record Type",
+      "description": "Synced record for questionnaire question responses",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS GCM QNM T Question"
+      ],
+      "called_by": [
+        "AS GCM QNM T Question",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Questionnaire",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Rule"
+      ]
+    },
+    {
+      "uuid": "b8a7a846-c78a-4d16-97f9-98307652b25e",
+      "name": "AS GCM QNM T Response Requirement",
+      "type": "Record Type",
+      "description": "Sync records for AS_GCM_QNM_T_RSPNS_RQREMENT",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS GCM QNM T Question",
+        "AS GCM QNM T Question Precedent"
+      ],
+      "called_by": [
+        "AS GCM QNM T Question",
+        "AS GCM QNM T Question Precedent",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Questionnaire"
+      ]
+    },
+    {
+      "uuid": "180bd846-b3d3-47e2-a7b0-87562992811f",
+      "name": "AS GCM R Clause Section Mapping",
+      "type": "Record Type",
+      "description": "Sync record for AS_GCM_R_CLS_SCT_MPNG Table",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS GCM R Section"
+      ],
+      "called_by": [
+        "AS_GCM_CEDM_typeConfigMapForDataMigration"
+      ]
+    },
+    {
+      "uuid": "12b3d808-5bcd-47fa-8f90-8bc2b78b9553",
+      "name": "AS GCM R Data",
+      "type": "Record Type",
+      "description": "Synced Record for R DATA table",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "AS GCM Fill In Recommendation",
+        "AS GCM R Section",
+        "AS_GCM_CEDM_constructLogMap",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration_Rule"
+      ]
+    },
+    {
+      "uuid": "47bbc0df-53ea-44bb-9bd4-1832c78eeb1f",
+      "name": "AS GCM R Section",
+      "type": "Record Type",
+      "description": "Synced Record for AS_GCM_R_Section",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AS GCM R Data"
+      ],
+      "called_by": [
+        "AS GCM R Clause Section Mapping",
+        "AS_GCM_CEDM_typeConfigMapForDataMigration"
+      ]
+    },
+    {
+      "uuid": "382dda7d-5334-4c9b-a96f-b02ae5c6848a",
+      "name": "AS_CO_Example_RECORD",
+      "type": "Record Type",
+      "description": "Example record type",
+      "actions": [],
+      "views": [
+        "Record Header",
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_Filter",
+        "AS_CO_UT_isRecordTypeData"
+      ]
+    }
+  ]
+}

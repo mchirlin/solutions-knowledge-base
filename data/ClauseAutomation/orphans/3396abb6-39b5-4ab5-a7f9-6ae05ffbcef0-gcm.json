@@ -1,0 +1,40 @@
+{
+  "uuid": "3396abb6-39b5-4ab5-a7f9-6ae05ffbcef0-gcm",
+  "name": "AS_GCM_QNM_GRD_addResponseOptions",
+  "type": "Interface",
+  "description": "Interface to add the response options for questions",
+  "sail_code": "#\"SYSTEM_SYSRULES_gridLayout\"(\n  labelPosition: \"COLLAPSED\",\n  headerCells: {\n    #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(\n      label: \"\"\n    ),\n    #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(\n      label: \"\",\n      showWhen: rule!AS_CO_UT_not(ri!preventModification)\n    )\n  },\n  columnConfigs: {\n    #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(),\n    #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(\n      width: \"ICON\",\n      showWhen: rule!AS_CO_UT_not(ri!preventModification)\n    )\n  },\n  rows: #\"SYSTEM_SYSRULES_forEach\"(\n    items: ri!question[recordType!AS GCM QNM R Question.defaultResponseOptions],\n    expression: #\"SYSTEM_SYSRULES_gridRowLayout\"(\n      id: fv!index,\n      contents: {\n        rule!AS_GCM_DPL_CO_INP_textField(\n          required: true,\n          label: \"\",\n          readOnly: false,\n          disabled: ri!preventModification,\n          value: fv!item[recordType!AS GCM QNM R Response.label],\n          validations: if(\n            rule!AS_CO_UT_checkIfDuplicateExistsInArrayByIndex(\n              array: ri!question[recordType!AS GCM QNM R Question.defaultResponseOptions.value],\n              index: fv!index,\n              skipNulls: true,\n              caseSensitive: false\n            ),\n            \"\",\n            \"\"\n          ),\n          saveInto: a!save(\n            {\n              fv!item[recordType!AS GCM QNM R Response.label],\n              fv!item[recordType!AS GCM QNM R Response.value]\n            },\n            save!value\n          ),\n          characterLimit: cons!AS_CO_ENUM_TEXT_LENGTH_LONG\n        ),\n        #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n          value: #\"SYSTEM_SYSRULES_richTextIcon\"(\n            icon: \"trash\",\n            altText: concat(\n              \"Remove\",\n              char(32),\n              fv!item[recordType!AS GCM QNM R Response.label]\n            ),\n            link: #\"SYSTEM_SYSRULES_dynamicLink\"(\n              saveInto: a!save(\n                ri!question[recordType!AS GCM QNM R Question.defaultResponseOptions],\n                remove(\n                  ri!question[recordType!AS GCM QNM R Question.defaultResponseOptions],\n                  fv!index\n                )\n              ),\n              showWhen: rule!AS_CO_UT_not(ri!preventModification)\n            ),\n            linkStyle: \"STANDALONE\",\n            size: \"MEDIUM\"\n          ),\n          showWhen: rule!AS_CO_UT_not(ri!preventModification)\n        )\n      }\n    )\n  ),\n  addRowLink: #\"SYSTEM_SYSRULES_dynamicLink\"(\n    label: \"\",\n    saveInto: {\n      a!save(\n        ri!question[recordType!AS GCM QNM R Question.defaultResponseOptions],\n        append(\n          ri!question[recordType!AS GCM QNM R Question.defaultResponseOptions],\n          recordType!AS GCM QNM R Response(\n            recordType!AS GCM QNM R Response.fieldKey: \"\",\n            recordType!AS GCM QNM R Response.label: \"\",\n            recordType!AS GCM QNM R Response.isActive: true()\n          )\n        )\n      )\n    },\n    showWhen: rule!AS_CO_UT_not(ri!preventModification)\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_not",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_DPL_CO_INP_textField",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_checkIfDuplicateExistsInArrayByIndex",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_TEXT_LENGTH_LONG",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QNM_ENUM_QUESTION_TYPE_CODE_SINGLE_RADIO_BUTTON_TEXT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

@@ -1,0 +1,15 @@
+{
+  "uuid": "_a-0000e69a-ff03-8000-9bd0-011c48011c48_1582327",
+  "name": "AS_GAM_UT_createSearchLogicalExpressionForRecord",
+  "type": "Expression Rule",
+  "description": "Creates a wild-card search logical expression across multiple fields of a record",
+  "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}LogicalExpression',\n  if(\n    rule!AS_CO_UT_isBlank(ri!searchTerm),\n    null,\n    #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n      operator: \"AND\",\n      logicalExpressions: #\"SYSTEM_SYSRULES_forEach\"(\n        items: split(trim(ri!searchTerm), \" \"),\n        expression: a!localVariables(\n          local!searchTerm: fv!item,\n          #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n            operator: \"OR\",\n            ignoreFiltersWithEmptyValues: true,\n            filters: #\"SYSTEM_SYSRULES_forEach\"(\n              items: ri!fields,\n              expression: #\"SYSTEM_SYSRULES_queryFilter\"(\n                field: fv!item,\n                operator: \"includes\",\n                value: local!searchTerm\n              )\n            )\n          )\n        )\n      )\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

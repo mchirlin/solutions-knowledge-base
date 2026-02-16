@@ -1,0 +1,589 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GCM QNM Write Questionnaire",
+    "parent_name": null,
+    "total_objects": 30
+  },
+  "entry_point": {
+    "complexity_score": 17.0,
+    "total_nodes": 9,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GCM QNM Write Questionnaire",
+      "complexity_score": 17.0,
+      "total_nodes": 9,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Populate Deleted Map"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Write Finalised Questionnaire",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Is Edit Questionnaire?"
+          ]
+        },
+        {
+          "name": "Populate Deleted Map",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write Initial Questionnaire"
+          ]
+        },
+        {
+          "name": "Write Initial Questionnaire",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Finalise  Questionnaire"
+          ]
+        },
+        {
+          "name": "Delete Responses",
+          "type": "SUBPROCESS",
+          "next": [
+            "End Node"
+          ],
+          "subprocess": "AS GCM QNM Delete Template Responses"
+        },
+        {
+          "name": "Finalise  Questionnaire",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write Finalised Questionnaire"
+          ]
+        },
+        {
+          "name": "Is Edit Questionnaire?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node (No)",
+            "Delete Responses (Yes)",
+            "Set Default (Set Default)"
+          ]
+        },
+        {
+          "name": "Set Default",
+          "type": "Start Process (v2)",
+          "next": [
+            "End Node"
+          ]
+        }
+      ]
+    },
+    "subprocesses": [
+      {
+        "name": "AS GCM QNM Delete Template Responses",
+        "complexity_score": 13.0,
+        "total_nodes": 7,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Populate deleted template data"
+            ]
+          },
+          {
+            "name": "Delete T Response Requirements",
+            "type": "Delete Records",
+            "next": [
+              "End Node"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Delete T Responses",
+            "type": "Delete Records",
+            "next": [
+              "Delete T Response Requirements?"
+            ]
+          },
+          {
+            "name": "Delete T Response Requirements?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "End Node (No)",
+              "Delete T Response Requirements (Yes)"
+            ]
+          },
+          {
+            "name": "Delete T Responses?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Delete T Response Requirements? (No)",
+              "Delete T Responses (Yes)"
+            ]
+          },
+          {
+            "name": "Populate deleted template data",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Delete T Responses?"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290163",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "description": "OBJECT_ARRAY - Returns an array type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "OBJECT_ARRAY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_QNM_QR_getQuestionnaire_Template"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290157",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "description": "SINGLE_OBJECT - Returns a single type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "SINGLE_OBJECT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_QNM_QR_getQuestionnaire_Template"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73305",
+      "name": "AS_CO_ENUM_USER_ACTION_SUBMIT",
+      "type": "Constant",
+      "description": "SUBMIT.USER_ACTION - Value to use to drive process logic after a user performs a \"Submit\" action",
+      "value": "SUBMIT.USER_ACTION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS GCM QNM Write Questionnaire"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec62-ac34-8000-9d9a-011c48011c48_13167667",
+      "name": "AS_GCM_QNM_ENUM_TEMPLATE_QUESTION_VISIBILITY_ALWAYS_VISIBLE",
+      "type": "Constant",
+      "description": "value : ALWAYS_VISIBLE",
+      "value": "ALWAYS_VISIBLE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QNM_refreshNegativeFksInQuestionnaire"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec87-976c-8000-9da9-011c48011c48_13508677",
+      "name": "AS_GCM_QNM_PM_SET_DEFAULT_QUESTIONNAIRE_TEMPLATE",
+      "type": "Constant",
+      "description": "PM - AS GCM QNM Set Default Questionnaire Template",
+      "value": "AS GCM QNM Set Default Questionnaire Template",
+      "value_type": "http://www.appian.com/ae/types/2009:ProcessModel",
+      "calls": [],
+      "called_by": [
+        "AS GCM QNM Write Questionnaire"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157603",
+      "name": "AS_CO_UT_cast",
+      "type": "Expression Rule",
+      "description": "Casts a variable to the type of either the input `type`, or the typeof of the input `typeof`, and properly handles for null inputs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_UT_queryRecordByIdentifier"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6a4-3c85-8000-9ba5-011c48011c48_45984",
+      "name": "AS_CO_UT_indexWhere",
+      "type": "Expression Rule",
+      "description": "Will find the index of a value in one array and return the value in a different array at that same index",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_populateResponseRequirementsToBeDeleted",
+        "AS_GCM_QNM_populateResponsesToBeDeleted",
+        "AS_GCM_QNM_updateQuestionnaireRecordAfterWrite"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GCM QNM Delete Template Responses",
+        "AS GCM QNM Write Questionnaire",
+        "AS_CO_UT_indexWhere",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_whereContains",
+        "AS_GAM_UT_ArrayLength",
+        "AS_GCM_QNM_populateResponseRequirementsToBeDeleted",
+        "AS_GCM_QNM_populateResponsesToBeDeleted"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6c8-d132-8000-9bbe-011c48011c48_469266",
+      "name": "AS_CO_UT_queryRecord",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_QR_getQuestionnaire_Template"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367",
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_QR_getQuestionnaire_Template",
+        "AS_GCM_QNM_populateQuestionsAndSectionsToBeDeleted",
+        "AS_GCM_UT_queryRecordByIdentifier",
+        "AS_GCM_setRecordFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73980",
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "description": "Returns nullableValue only if it is not null. Else returns replacementValue.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_QR_getQuestionnaire_Template",
+        "AS_GCM_setRecordFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_162769",
+      "name": "AS_CO_UT_typeCompare",
+      "type": "Expression Rule",
+      "description": "Returns true if the two input types match",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_whereContains"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_272151",
+      "name": "AS_CO_UT_whereContains",
+      "type": "Expression Rule",
+      "description": "Enhanced wherecontains() which avoids type-casting issues and properly handles for document and group types",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_typeCompare"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_updatePrecedentsAfterInitialWrite",
+        "AS_GCM_QNM_updateQuestionnaireRecordAfterWrite"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1021202",
+      "name": "AS_GAM_UT_ArrayLength",
+      "type": "Expression Rule",
+      "description": "Gives length of an array based on input of array",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_QR_getQuestionnaire_Template"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_39379-gcm",
+      "name": "AS_GCM_QNM_QR_getQuestionnaire_Template",
+      "type": "Expression Rule",
+      "description": "Query expression for AS GCM QNM T Questionnaire",
+      "parameters": [],
+      "calls": [
+        "AS GCM QNM T Questionnaire",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_replaceNull",
+        "AS_GAM_UT_ArrayLength",
+        "AS_GCM_UT_queryRecordByIdentifier"
+      ],
+      "called_by": [
+        "AS GCM QNM Write Questionnaire",
+        "AS_GCM_QNM_updateQuestionnaireRecordAfterWrite"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec62-ac34-8000-9d9a-011c48011c48_13177701",
+      "name": "AS_GCM_QNM_populateQuestionsAndSectionsToBeDeleted",
+      "type": "Expression Rule",
+      "description": "Rule to return IDs of questions and sections to be deleted during edit",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_rejectNullValuesFromArray"
+      ],
+      "called_by": [
+        "AS GCM QNM Write Questionnaire"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec62-ac34-8000-9d9a-011c48011c48_13170714",
+      "name": "AS_GCM_QNM_populateResponseRequirementsToBeDeleted",
+      "type": "Expression Rule",
+      "description": "Populate the response requirements that has to be deleted from the template Questionnaire",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_indexWhere",
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS GCM QNM Delete Template Responses"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec62-ac34-8000-9d9a-011c48011c48_13169774",
+      "name": "AS_GCM_QNM_populateResponsesToBeDeleted",
+      "type": "Expression Rule",
+      "description": "Populate the responses that has to be deleted from the template Questionnaire",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_indexWhere",
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS GCM QNM Delete Template Responses"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec62-ac34-8000-9d9a-011c48011c48_13179551",
+      "name": "AS_GCM_QNM_refreshNegativeFksInQuestionnaire",
+      "type": "Expression Rule",
+      "description": "Rule to neglect the negative PKs in the Questionnaire",
+      "parameters": [],
+      "calls": [
+        "AS GCM QNM T Question Precedent",
+        "AS_GCM_QNM_ENUM_TEMPLATE_QUESTION_VISIBILITY_ALWAYS_VISIBLE",
+        "AS_GCM_setRecordFields"
+      ],
+      "called_by": [
+        "AS GCM QNM Write Questionnaire"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec46-fcf4-8000-9d91-011c48011c48_12816472",
+      "name": "AS_GCM_QNM_setMetaDataForTemplateQuestionCategoryRecord",
+      "type": "Expression Rule",
+      "description": "Rule to capture metadata for AS GCM QNM T Question Category",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_setRecordFields"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_setMetaDataForTemplateQuestionnaireRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec46-fcf4-8000-9d91-011c48011c48_12823624",
+      "name": "AS_GCM_QNM_setMetaDataForTemplateQuestionnaireRecord",
+      "type": "Expression Rule",
+      "description": "Rule to capture metadata for AS GCM QNM T Questionnaire",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_QNM_setMetaDataForTemplateQuestionCategoryRecord",
+        "AS_GCM_QNM_setMetaDataForTemplateQuestionsRecord",
+        "AS_GCM_setRecordFields"
+      ],
+      "called_by": [
+        "AS GCM QNM Write Questionnaire"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec46-fcf4-8000-9d91-011c48011c48_12812729",
+      "name": "AS_GCM_QNM_setMetaDataForTemplateQuestionsRecord",
+      "type": "Expression Rule",
+      "description": "Rule to capture metadata for AS GCM QNM T Question",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_setRecordFields"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_setMetaDataForTemplateQuestionnaireRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec75-2131-8000-9da0-011c48011c48_13308878",
+      "name": "AS_GCM_QNM_updatePrecedentsAfterInitialWrite",
+      "type": "Expression Rule",
+      "description": "Rule to update the QNR Precedents record after Write",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_whereContains",
+        "AS_GCM_setRecordFields"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_updateQuestionnaireRecordAfterWrite"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec62-ac34-8000-9d9a-011c48011c48_13180304",
+      "name": "AS_GCM_QNM_updateQuestionnaireRecordAfterWrite",
+      "type": "Expression Rule",
+      "description": "Rule to update the Questionnaire record after Write",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_indexWhere",
+        "AS_CO_UT_whereContains",
+        "AS_GCM_QNM_QR_getQuestionnaire_Template",
+        "AS_GCM_QNM_updatePrecedentsAfterInitialWrite",
+        "AS_GCM_setRecordFields"
+      ],
+      "called_by": [
+        "AS GCM QNM Write Questionnaire"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec50-376f-8000-9d94-011c48011c48_12937069",
+      "name": "AS_GCM_UT_queryRecordByIdentifier",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_rejectNullValuesFromArray"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_QR_getQuestionnaire_Template"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9760853",
+      "name": "AS_GCM_setRecordFields",
+      "type": "Expression Rule",
+      "description": "Runs a bulk update on a record object, setting new values for its fields",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_QNM_refreshNegativeFksInQuestionnaire",
+        "AS_GCM_QNM_setMetaDataForTemplateQuestionCategoryRecord",
+        "AS_GCM_QNM_setMetaDataForTemplateQuestionnaireRecord",
+        "AS_GCM_QNM_setMetaDataForTemplateQuestionsRecord",
+        "AS_GCM_QNM_updatePrecedentsAfterInitialWrite",
+        "AS_GCM_QNM_updateQuestionnaireRecordAfterWrite"
+      ]
+    },
+    {
+      "uuid": "0002e4d4-c334-8000-1229-7f0000014e7a-gcm",
+      "name": "AS GCM QNM Delete Template Responses",
+      "type": "Process Model",
+      "description": "Process to delete the question category of a template",
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_GCM_QNM_populateResponseRequirementsToBeDeleted",
+        "AS_GCM_QNM_populateResponsesToBeDeleted"
+      ],
+      "called_by": [
+        "AS GCM QNM Write Questionnaire"
+      ]
+    },
+    {
+      "uuid": "0002e4ce-c67e-8000-1182-7f0000014e7a-gcm",
+      "name": "AS GCM QNM Write Questionnaire",
+      "type": "Process Model",
+      "description": "Process to Write Questionnaire and related records",
+      "calls": [
+        "AS GCM QNM Delete Template Responses",
+        "AS_CO_ENUM_USER_ACTION_SUBMIT",
+        "AS_CO_UT_isBlank",
+        "AS_GCM_QNM_PM_SET_DEFAULT_QUESTIONNAIRE_TEMPLATE",
+        "AS_GCM_QNM_QR_getQuestionnaire_Template",
+        "AS_GCM_QNM_populateQuestionsAndSectionsToBeDeleted",
+        "AS_GCM_QNM_refreshNegativeFksInQuestionnaire",
+        "AS_GCM_QNM_setMetaDataForTemplateQuestionnaireRecord",
+        "AS_GCM_QNM_updateQuestionnaireRecordAfterWrite"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "e2cf072a-7e15-42a5-8c16-db069819e29d",
+      "name": "AS GCM QNM T Question Precedent",
+      "type": "Record Type",
+      "description": "Sync Record for AS_GCM_QNM_T_QSTN_PRECEDENT",
+      "actions": [],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QNM_refreshNegativeFksInQuestionnaire"
+      ]
+    },
+    {
+      "uuid": "9f80ae61-036a-46c1-8975-aebefe443c6e",
+      "name": "AS GCM QNM T Questionnaire",
+      "type": "Record Type",
+      "description": "Sync record for AS_GCM_QNM_T_Questionnaire",
+      "actions": [
+        "newQuestionnaire",
+        "update",
+        "setAsDefault",
+        "deleteQuestionnaire",
+        "cloneQuestionnaire",
+        "viewAuditHistory"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QNM_QR_getQuestionnaire_Template"
+      ]
+    }
+  ]
+}

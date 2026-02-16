@@ -1,0 +1,31 @@
+{
+  "uuid": "_a-0000e8cc-c513-8000-9c0f-011c48011c48_3394787",
+  "name": "AS_GCM_BL_compareClauseSetQuestionnaireToQuestionRuleConditions",
+  "type": "Expression Rule",
+  "description": "Compares the clause set questionnaire responses to available rules with questionnaire response conditions to determine which conditions match",
+  "sail_code": "#\"SYSTEM_SYSRULES_forEach\"(\n  items: ri!questionnaire.questions,\n  expression: a!localVariables(\n    local!question: fv!item,\n    local!conditionsHavingCurrentQuestion: rule!AS_GCM_filterRecords(\n      records: ri!conditions,\n      field: recordType!AS GCM QNM T Rule Condition.questionId,\n      value: local!question.questionTemplateId\n    ),\n    /*Conditions With equals*/\n    local!conditionsWithEquals: rule!AS_GCM_filterRecords(\n      records: local!conditionsHavingCurrentQuestion,\n      field: recordType!AS GCM QNM T Rule Condition.refOperatorId,\n      value: cons!AS_GCM_REF_ID_CONDITION_OPERATOR_EQUALS\n    ),\n    /*Conditions With Not Equals*/\n    local!conditionsWithNotEquals: rule!AS_GCM_filterRecords(\n      records: local!conditionsHavingCurrentQuestion,\n      field: recordType!AS GCM QNM T Rule Condition.refOperatorId,\n      value: cons!AS_GCM_REF_ID_CONDITION_OPERATOR_NOT_EQUALS\n    ),\n    a!flatten(\n      {\n        #\"SYSTEM_SYSRULES_forEach\"(\n          items: local!conditionsWithEquals,\n          expression: if(\n            contains(\n              touniformstring(\n                property(local!question.responses, \"value\", \"\")\n              ),\n              touniformstring(\n                fv!item[recordType!AS GCM QNM T Rule Condition.response.value]\n              )\n            ),\n            fv!item,\n            null()\n          )\n        ),\n        #\"SYSTEM_SYSRULES_forEach\"(\n          items: local!conditionsWithNotEquals,\n          expression: if(\n            not(\n              contains(\n                touniformstring(\n                  property(local!question.responses, \"value\", \"\")\n                ),\n                touniformstring(\n                  fv!item[recordType!AS GCM QNM T Rule Condition.response.value]\n                )\n              )\n            ),\n            fv!item,\n            null()\n          )\n        )\n      }\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GCM_filterRecords",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_REF_ID_CONDITION_OPERATOR_EQUALS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_REF_ID_CONDITION_OPERATOR_NOT_EQUALS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AS_GCM_BL_compareClauseSetDataAndConditions",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

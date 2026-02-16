@@ -1,0 +1,20 @@
+{
+  "uuid": "_a-0000edc1-5343-8000-9e09-011c48011c48_15826170",
+  "name": "AS_GCM_ContractTypeFilterClauseSetRecords",
+  "type": "Expression Rule",
+  "description": "Returns Contract Type filter for clause set ",
+  "sail_code": "a!localVariables(\n  local!bundle: rule!AS_GCM_CO_UT_loadBundleFromFolder(langISOCode: null()),\n  local!contractTypes: rule!AS_GCM_QR_getRefContractTypeData(\n    includeRelatedRecords: false,\n    doCastToCdt: false,\n    executeWhen: true,\n    fields: {\n      recordType!AS GCM R Contract Type.contractCode,\n      recordType!AS GCM R Contract Type.contractTypeId\n    }\n  ),\n  #\"SYSTEM_SYSRULES_recordFilterList\"(\n    name: \"Contract Type\",\n    options: #\"SYSTEM_SYSRULES_forEach\"(\n      items: local!contractTypes,\n      expression: {\n        #\"SYSTEM_SYSRULES_recordFilterListOption\"(\n          id: fv!index,\n          name: fv!item[recordType!AS GCM R Contract Type.contractCode],\n          filter: #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: recordType!AS GCM Clause Set.contractTypes.contractTypeId,\n            operator: \"=\",\n            value: fv!item[recordType!AS GCM R Contract Type.contractTypeId],\n            \n          )\n        )\n      }\n    ),\n    allowMultipleSelections: true\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_GCM_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QR_getRefContractTypeData",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

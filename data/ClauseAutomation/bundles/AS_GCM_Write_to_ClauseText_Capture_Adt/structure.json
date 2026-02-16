@@ -1,0 +1,2432 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AS GCM Write to ClauseText & Capture Adt",
+    "parent_name": null,
+    "total_objects": 151
+  },
+  "entry_point": {
+    "complexity_score": 17.0,
+    "total_nodes": 9,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AS GCM Write to ClauseText & Capture Adt",
+      "complexity_score": 17.0,
+      "total_nodes": 9,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Write to Clause Text"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Retain Ids present?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Nullify original clauseset (No)",
+            "Capture Audit for Retained Clauses"
+          ]
+        },
+        {
+          "name": "Nullify original clauseset",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Calculate fillin RA visibility and deactivate clause text",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Capture Audit for Clauses and Update Audit Action Code for clauseset"
+          ]
+        },
+        {
+          "name": "Clauses to update?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Calculate fillin RA visibility and deactivate clause text (Yes)",
+            "Capture Audit for Clauses and Update Audit Action Code for clauseset (No)"
+          ]
+        },
+        {
+          "name": "Capture Audit for Clauses and Update Audit Action Code for clauseset",
+          "type": "Write to Multiple DSE",
+          "next": [
+            "Retain Ids present?"
+          ]
+        },
+        {
+          "name": "Write to Clause Text",
+          "type": "Write to Multiple DSE",
+          "next": [
+            "Clauses to update?"
+          ]
+        },
+        {
+          "name": "Capture Audit for Retained Clauses",
+          "type": "Write to Multiple DSE",
+          "next": [
+            "Nullify original clauseset"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_181584-adt",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_ADD",
+      "type": "Constant",
+      "description": "ADD - used by the auditing module",
+      "value": "ADD",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_determineAuditActionCode",
+        "AS_GCM_UT_captureAuditForClauseSetClauseAndClauseTextForClauseAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_181602-adt",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_DEACTIVATE",
+      "type": "Constant",
+      "description": "DEACTIVATE - used by the auditing module",
+      "value": "DEACTIVATE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_determineAuditActionCode",
+        "AS_GCM_UT_captureAuditForClauseSetClauseAndClauseTextForClauseAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_181590-adt",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_DELETE",
+      "type": "Constant",
+      "description": "DELETE - used by the auditing module",
+      "value": "DELETE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_determineAuditActionCode"
+      ]
+    },
+    {
+      "uuid": "_a-0000e583-8ce5-8000-9bb7-011c48011c48_810929",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_INITIATED",
+      "type": "Constant",
+      "description": "INITIATED - used by the auditing module",
+      "value": "INITIATED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject"
+      ]
+    },
+    {
+      "uuid": "_a-0000e69a-ff03-8000-9bd0-011c48011c48_1592551",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_MANUAL_SYNC",
+      "type": "Constant",
+      "description": "Audit Action Code - \"MANUAL_SYNC\"\nAction Code to track that the clause is modified using manual sync",
+      "value": "MANUAL_SYNC",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject"
+      ]
+    },
+    {
+      "uuid": "_a-0000e4ea-0367-8000-9ba7-011c48011c48_308539",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_MANUAL_UPDATE",
+      "type": "Constant",
+      "description": "MANUAL UPDATE - used by the auditing module",
+      "value": "MANUAL_UPDATE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_181596-adt",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_MODIFY",
+      "type": "Constant",
+      "description": "MODIFY - used by the auditing module",
+      "value": "MODIFY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_ADT_UT_determineAuditActionCode",
+        "AS_GCM_UT_captureAuditForClauseSetClauseAndClauseTextForClauseAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_181608-adt",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_REACTIVATE",
+      "type": "Constant",
+      "description": "REACTIVATE - used by the auditing module",
+      "value": "REACTIVATE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_determineAuditActionCode"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_232728-adt",
+      "name": "AS_ADT_ENUM_AUDIT_ACTION_CODE_UNCHANGED",
+      "type": "Constant",
+      "description": "UNCHANGED - used by the auditing module",
+      "value": "UNCHANGED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GCM_UT_captureAuditForClauseSetClauseAndClauseTextForClauseAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290131",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+      "type": "Constant",
+      "description": "DATA_SUBSET - Returns a type of DataSubset when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "DATA_SUBSET",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_BL_populateClauseSetClauseTextDetailsByBatching",
+        "AS_GCM_QE_getClauseSetClauseTextsWithBatching",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_QE_getRefClauseTextsWithBatching",
+        "AS_GCM_QR_getFillInRecDetails",
+        "AS_GCM_UT_formatDataBasedOnReturnType",
+        "AS_GCM_UT_getIdentifiersInBatches"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290163",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "description": "OBJECT_ARRAY - Returns an array type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "OBJECT_ARRAY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_BL_populateClauseSetClauseTextDetailsByBatching",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_QE_getRefClauseTexts",
+        "AS_GCM_QE_getRefClauseTextsWithBatching",
+        "AS_GCM_QE_getRefClauseTextsWithQuerySelection",
+        "AS_GCM_QR_getClauseSetClauseTextDetails",
+        "AS_GCM_QR_getFillInRecDetails",
+        "AS_GCM_UT_formatDataBasedOnReturnType",
+        "AS_GCM_autoPopulateFillinandSetMetaDataOnClauseAddition"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_290157",
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+      "type": "Constant",
+      "description": "SINGLE_OBJECT - Returns a single type of the CDT when passed to rule `AS_CO_UT_queryEntity`",
+      "value": "SINGLE_OBJECT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GCM_BL_populateClauseSetClauseTextDetailsByBatching",
+        "AS_GCM_QR_getClauseSetClauseTextDetails",
+        "AS_GCM_UT_formatDataBasedOnReturnType"
+      ]
+    },
+    {
+      "uuid": "_a-0000e35d-b03e-8000-9ba2-011c48011c48_40657",
+      "name": "AS_CO_TXT_DEFAULT_CURRENCY_CODE",
+      "type": "Constant",
+      "description": "Value: USD - The default currency code",
+      "value": "USD",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_DPL_CO_UT_formatCurrencyValue"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5d4-2024-8000-9baf-011c48011c48_336091",
+      "name": "AS_FRM_BOOL_RULE_CUSTOMIZATION_1_0_ENABLED",
+      "type": "Constant",
+      "description": "Returns true if customizable rules using the 1.0 SDK is enabled",
+      "value": "true",
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "AS_FRM_determineRuntimeRule"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_941756",
+      "name": "AS_GAM_ADT_TXT_AUDIT_TYPE_ACTION_ONLY",
+      "type": "Constant",
+      "description": "Value: ACTION_ONLY",
+      "value": "ACTION_ONLY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GAM_ADT_UT_buildAuditEntityData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_941763",
+      "name": "AS_GAM_ADT_TXT_AUDIT_TYPE_MANIPULATION",
+      "type": "Constant",
+      "description": "Value: MANIPULATION",
+      "value": "MANIPULATION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GAM_ADT_UT_buildAuditEntityData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1550086",
+      "name": "AS_GCM_ENT_A_R_CLAUSE_SET_CLAUSE",
+      "type": "Constant",
+      "description": "Data store entity constant for AS_GCM_A_R_ClauseSet_Clause",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_captureAuditForClauseSetClauseAndClauseTextForClauseAudit",
+        "AS_GCM_UT_clauseSetClauseStartAuditProcess_ParametersInCreateClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1573250",
+      "name": "AS_GCM_ENT_A_R_CLAUSE_SET_CLAUSE_FIELD",
+      "type": "Constant",
+      "description": "Data store entity constant for AS_GCM_A_R_ClauseSet_Clause_Field",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_captureAuditForClauseSetClauseAndClauseTextForClauseAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e881-70d9-8000-9c06-011c48011c48_2892195",
+      "name": "AS_GCM_ENT_A_R_CLAUSE_SET_SIMPLE_WRITE",
+      "type": "Constant",
+      "description": "Data store entity constant for AS_GCM_A_R_ClauseSet for simple fields",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_captureAuditForClauseSetClauseAndClauseTextForClauseAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e615-fd0f-8000-9bc1-011c48011c48_1196828",
+      "name": "AS_GCM_ENT_CLAUSE_SET_CLAUSE",
+      "type": "Constant",
+      "description": "Data Store Entity constant for AS_GCM_ClauseSet_Clause",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_populateClauseSetClauseTextDetailsByBatching",
+        "AS_GCM_QE_getClauseSetClauseDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1543337",
+      "name": "AS_GCM_ENT_CLAUSE_SET_CLAUSE_TEXT",
+      "type": "Constant",
+      "description": "Data Store Entity constant for AS_GCM_ClauseSet_Clause_Text",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write to ClauseText & Capture Adt",
+        "AS_GCM_BL_populateClauseSetClauseTextDetailsByBatching",
+        "AS_GCM_QE_getClauseSetClauseTextsWithBatching",
+        "AS_GCM_UT_getClauseSetClauseTextsWithQuerySelection"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1529547",
+      "name": "AS_GCM_ENT_R_CLAUSE_TEXTS",
+      "type": "Constant",
+      "description": "Value: AS_GCM_R_Clause_Texts",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QE_getRefClauseTexts",
+        "AS_GCM_QE_getRefClauseTextsWithQuerySelection"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec06-6336-8000-9d71-011c48011c48_12276407",
+      "name": "AS_GCM_ENUM_QUERY_THRESHOLD_LIMIT_IN_BYTES",
+      "type": "Constant",
+      "description": "Value: 900,000\n\nThe default query threshold limit is 1MB to stay on the safer side setting this constant value to 900,000.",
+      "value": "900000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetClauseTextsWithBatching",
+        "AS_GCM_QE_getRefClauseTextsWithBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3111916",
+      "name": "AS_GCM_INT_QUERY_BATCH_SIZE_TINY",
+      "type": "Constant",
+      "description": "Batch size: 10",
+      "value": "10",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetClauseTextsWithBatching",
+        "AS_GCM_QE_getRefClauseTextsWithBatching",
+        "AS_GCM_UT_getIdentifiersInBatches"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1404475",
+      "name": "AS_GCM_REF_ID_CATEGORY_AMENDMENT",
+      "type": "Constant",
+      "description": "Value: 14",
+      "value": "14",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write to ClauseText & Capture Adt",
+        "AS_GCM_BL_populateClauseSetClauseTextDetailsByBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1404467",
+      "name": "AS_GCM_REF_ID_CATEGORY_MODIFICATION",
+      "type": "Constant",
+      "description": "Value: 42",
+      "value": "42",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS GCM Write to ClauseText & Capture Adt",
+        "AS_GCM_BL_populateClauseSetClauseTextDetailsByBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1308531",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_CLAUSE_STATUS_COMPLETE",
+      "type": "Constant",
+      "description": "Contains Ref data Id for status Complete\nValue: 47",
+      "value": "47",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_returnClauseSetClauseStatusId"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1308544",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_CLAUSE_STATUS_INCOMPLETE",
+      "type": "Constant",
+      "description": "Contains Ref data Id for status Incomplete\nValue: 46",
+      "value": "46",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_returnClauseSetClauseStatusId"
+      ]
+    },
+    {
+      "uuid": "_a-0000ea8c-0452-8000-9cbc-011c48011c48_7952400",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_DATA_CLAUSE_SET_TYPE",
+      "type": "Constant",
+      "description": "Constant for RefId : 104\n",
+      "value": "104",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_dynamicFillinRecommendation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3290164",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACTING_OFFICER",
+      "type": "Constant",
+      "description": "Label: Contracting office\nRef Id: 95",
+      "value": "95",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_dynamicFillinRecommendation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3290126",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_CATEGORY",
+      "type": "Constant",
+      "description": "Label: Contract category\nRef Id: 90",
+      "value": "90",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_dynamicFillinRecommendation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3290209",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_END_DATE",
+      "type": "Constant",
+      "description": "Label: Contract end date\nRef Id: 99",
+      "value": "99",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_dynamicFillinRecommendation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3290112",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_METHOD",
+      "type": "Constant",
+      "description": "Label: Contract method\nRef Id: 91",
+      "value": "91",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_dynamicFillinRecommendation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3290183",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_OFFICER_REP",
+      "type": "Constant",
+      "description": "Label: Contracting office representative\nRef Id: 97",
+      "value": "97",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_dynamicFillinRecommendation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3290171",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_SPECIALIST",
+      "type": "Constant",
+      "description": "Label: Contract specialist\nRef Id: 96",
+      "value": "96",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_dynamicFillinRecommendation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3290203",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_START_DATE",
+      "type": "Constant",
+      "description": "Label: Contract start date\nRef Id: 98",
+      "value": "98",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_dynamicFillinRecommendation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3290141",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_DATA_ESTIMATED_DOLLAR_AMOUNT",
+      "type": "Constant",
+      "description": "Label: Estimated dollar amount\nRef Id: 92",
+      "value": "92",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_dynamicFillinRecommendation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3290153",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_DATA_NAICS_CODE",
+      "type": "Constant",
+      "description": "Label: Naics\nRef Id: 94",
+      "value": "94",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_dynamicFillinRecommendation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3290147",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_DATA_PSC",
+      "type": "Constant",
+      "description": "Label: Psc\nRef Id: 93",
+      "value": "93",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_dynamicFillinRecommendation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1276927",
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_STATUS_FINALIZED",
+      "type": "Constant",
+      "description": "Contains Ref data Id for status Finalized\nValue: 40",
+      "value": "40",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_populateClauseSetClauseTextDetailsByBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000e69a-ff03-8000-9bd0-011c48011c48_1621530",
+      "name": "AS_GCM_REF_ID_FORMAT_FULL_TEXT",
+      "type": "Constant",
+      "description": "Value: 6\nNote: It was formerly AS_GCM_REF_ID_FORMAT_UCF. Its renamed because of ref_label change in AS_GCM_R_DATA table.",
+      "value": "6",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_returnClauseSetClauseStatusId"
+      ]
+    },
+    {
+      "uuid": "_a-0000e69a-ff03-8000-9bd0-011c48011c48_1621523",
+      "name": "AS_GCM_REF_ID_FORMAT_IBR",
+      "type": "Constant",
+      "description": "Value: 7",
+      "value": "7",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_returnClauseSetClauseStatusId"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec06-6336-8000-9d71-011c48011c48_12250018",
+      "name": "AS_GCM_TXT_CUSTOM_FILL_IN_TYPE_TABLE",
+      "type": "Constant",
+      "description": "Value: Table",
+      "value": "Table",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_extractUuidAndFillinTypeFromClassParameter"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec34-8724-8000-9d8b-011c48011c48_12668302",
+      "name": "AS_GCM_TXT_FILL_IN_COMPLETED_BY_SYSTEM_AGENCY",
+      "type": "Constant",
+      "description": "Value: SYSTEM.AGENCY",
+      "value": "SYSTEM.AGENCY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_autoPopulateFillinandSetMetaDataOnClauseAddition",
+        "AS_GCM_constructClauseTextMetaDataFromClauseText"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec3d-c379-8000-9d8e-011c48011c48_12715099",
+      "name": "AS_GCM_TXT_REGEX_FOR_HIDDEN_SPAN_TAG_FILLIN_METADATA",
+      "type": "Constant",
+      "description": "Value: \"<span hidden=\"\">(\\{.*?\\})</span>$\"",
+      "value": "<span hidden=\"\">(\\{.*?\\})</span>$",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetClauseTextsWithBatching",
+        "AS_GCM_autoPopulateFillinandSetMetaDataOnClauseAddition",
+        "AS_GCM_extractFillinMetadataFromClauseText"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-79a3-8000-7714-45ef9045ef90_8682-adt",
+      "name": "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+      "type": "Expression Rule",
+      "description": "Audit config for the AS_ADT_SAMPLE_Parent CDT",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit",
+        "AS_ADT_UT_calculateAudit_MultipleObjects",
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_ADT_UT_determineAuditActionCode",
+        "AS_GAM_ADT_UT_buildAuditEntityData",
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructManipulatedAuditData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_237233-adt",
+      "name": "AS_ADT_UT_buildSimpleFieldChanges",
+      "type": "Expression Rule",
+      "description": "Given a list of simple fields from an auditing configuration, an old object, and a new object, returns  list of simple field dictionaries which can be cast to the simple field auditing type of any complex auditing object.",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_UT_buildSimpleFieldChangesDictionary"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_162005-adt",
+      "name": "AS_ADT_UT_buildSimpleFieldChangesDictionary",
+      "type": "Expression Rule",
+      "description": "Given the fieldName, original object, and the new object, determines if a simple field change was made, returning {} if not, and returning a dictionary representation of the simple field audit if so.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_compare",
+        "AS_CO_UT_dynamicDictionary",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_toString"
+      ],
+      "called_by": [
+        "AS_ADT_UT_buildSimpleFieldChanges"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_161361-adt",
+      "name": "AS_ADT_UT_calculateAudit",
+      "type": "Expression Rule",
+      "description": "Primary rule to calculate audits between old and new objects (handles arrays or single objects)",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_ADT_UT_calculateAudit_MultipleObjects"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_buildFieldLevelAuditEntityData",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_165782-adt",
+      "name": "AS_ADT_UT_calculateAudit_MultipleObjects",
+      "type": "Expression Rule",
+      "description": "[DO NOT CALL DIRECTLY] Calculates audit CDTs for an array of original and new objects",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_CO_UT_distinct",
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit",
+        "AS_ADT_UT_calculateAudit_SingleObject"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_165180-adt",
+      "name": "AS_ADT_UT_calculateAudit_SingleObject",
+      "type": "Expression Rule",
+      "description": "[DO NOT CALL DIRECTLY] Calculates audit CDTs for a single of original and new object",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_INITIATED",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_MANUAL_SYNC",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_MANUAL_UPDATE",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_MODIFY",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_UNCHANGED",
+        "AS_ADT_UT_buildSimpleFieldChanges",
+        "AS_ADT_UT_calculateAudit_MultipleObjects",
+        "AS_ADT_UT_determineAuditActionCode",
+        "AS_CO_UT_compareStrong",
+        "AS_CO_UT_dynamicDictionary",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_not",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_updateCdtFields"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_MultipleObjects"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_161958-adt",
+      "name": "AS_ADT_UT_determineAuditActionCode",
+      "type": "Expression Rule",
+      "description": "Given a newObject, an oldObject, and the auditConfig, determines the auditActionCode",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_ADD",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_DEACTIVATE",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_DELETE",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_MODIFY",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_REACTIVATE",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-91f4-8000-9bc0-011c48011c48_584965-adt",
+      "name": "AS_ADT_UT_startAuditProcess_Parameters",
+      "type": "Expression Rule",
+      "description": "Populated the parameters for starting the audit process",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_getTypeNamespace",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_returnArrayTypeNumber",
+        "AS_CO_UT_returnTypeNumber"
+      ],
+      "called_by": [
+        "AS_GCM_UT_clauseSetClauseStartAuditProcess_ParametersInCreateClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39070",
+      "name": "AS_CO_UT_booleanDefaultFalse",
+      "type": "Expression Rule",
+      "description": "Default a null value to false, otherwise returns the boolean value",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_not",
+        "AS_GAM_UT_batchDataByFieldUnderThreshold_Helper",
+        "AS_GCM_BL_populateClauseSetClauseTextDetailsByBatching",
+        "AS_GCM_QE_getClauseSetDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157603",
+      "name": "AS_CO_UT_cast",
+      "type": "Expression Rule",
+      "description": "Casts a variable to the type of either the input `type`, or the typeof of the input `typeof`, and properly handles for null inputs",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_returnTypeNumber"
+      ],
+      "called_by": [
+        "AS_ADT_UT_startAuditProcess_Parameters",
+        "AS_CO_UT_initializeBlankLocalVariable",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_returnArrayTypeNumber",
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructManipulatedAuditData",
+        "AS_GAM_UT_batchDataByFieldUnderThreshold",
+        "AS_GCM_BL_constructHelperForClauseSetClauseAndClauseText",
+        "AS_GCM_BL_populateClauseSetClauseTextDetailsByBatching",
+        "AS_GCM_QE_getClauseSetClauseTextsWithBatching",
+        "AS_GCM_QE_getRefClauseTextsWithBatching",
+        "AS_GCM_UT_captureAuditForClauseSetClauseAndClauseTextForClauseAudit",
+        "AS_GCM_UT_formatDataBasedOnReturnType",
+        "AS_GCM_autoPopulateFillinandSetMetaDataOnClauseAddition",
+        "AS_GCM_mergeMultipleMapsIntoSingleMap",
+        "AS_GCM_setMetaDataForClauseSetClauseTextCdt"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_279147",
+      "name": "AS_CO_UT_castToDictionary",
+      "type": "Expression Rule",
+      "description": "Casts the input to dictionary, either a list or a non-list depending on the input",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e415-3035-8000-9bb2-011c48011c48_292117",
+      "name": "AS_CO_UT_castToDictionaryList",
+      "type": "Expression Rule",
+      "description": "Casts the input to a dictionary list",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GCM_UT_regexsearch"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_81749",
+      "name": "AS_CO_UT_checkIfUserExists",
+      "type": "Expression Rule",
+      "description": "Returns true if the user exists",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_displayUser"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73624",
+      "name": "AS_CO_UT_compare",
+      "type": "Expression Rule",
+      "description": "Compares two values and returns true if both the content of the values match (regardless of type).",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_buildSimpleFieldChangesDictionary",
+        "AS_GAM_UT_batchDataByFieldUnderThreshold_Helper"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_243040",
+      "name": "AS_CO_UT_compareStrong",
+      "type": "Expression Rule",
+      "description": "Compares two values and returns true if both the values and their types match.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_typeCompare"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73660",
+      "name": "AS_CO_UT_displayUser",
+      "type": "Expression Rule",
+      "description": "Returns a display name for a user in the format of \"firstName lastName\". Null-safe.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_checkIfUserExists"
+      ],
+      "called_by": [
+        "AS_GCM_BL_dynamicFillinRecommendation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73758",
+      "name": "AS_CO_UT_distinct",
+      "type": "Expression Rule",
+      "description": "Returns the distinct values from a list.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_MultipleObjects"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73856",
+      "name": "AS_CO_UT_dynamicDictionary",
+      "type": "Expression Rule",
+      "description": "Creates a dictionary based on the provided field-value pairs. An example implementation is provided as a test case. Returns a dictionary.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_returnNullDictionary",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs"
+      ],
+      "called_by": [
+        "AS_ADT_UT_buildSimpleFieldChangesDictionary",
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_GAM_ADT_UT_constructActionOnlyAuditData",
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75800",
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "description": "Filters a CDT by a matching a single value or list of values in a single field, if a list is passed, all matches are returned",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_returnCdtIndicesByField"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_MultipleObjects",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GCM_BL_constructHelperForClauseSetClauseAndClauseText",
+        "AS_GCM_BL_writeToClauseSetClauseAudit",
+        "AS_GCM_BL_writeToClauseSetClauseText"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_174191",
+      "name": "AS_CO_UT_getTypeNamespace",
+      "type": "Expression Rule",
+      "description": "Returns the namespace from the type! input",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_startAuditProcess_Parameters"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76433",
+      "name": "AS_CO_UT_indexPath",
+      "type": "Expression Rule",
+      "description": "Pass in a field (i.e. member[1].name) and this will index(index(index( for each field",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GCM Write to ClauseText & Capture Adt",
+        "AS_ADT_UT_buildSimpleFieldChangesDictionary",
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_CO_UT_returnCdtIndicesByField",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GAM_returnCdtOrRecordIndicesByField",
+        "AS_GCM_BL_writeToClauseSetClauseAudit",
+        "AS_GCM_BL_writeToClauseSetClauseText",
+        "AS_GCM_setMetaDataForClauseSetClauseTextCdt"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3d1-f4dc-8000-9ba4-011c48011c48_143475",
+      "name": "AS_CO_UT_initializeBlankLocalVariable",
+      "type": "Expression Rule",
+      "description": "Use this to initialize a null or empty local variable of a specific type. Pass `type` to initialize as a specific type, or `typeOf` to initialize as the type of another variable.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast"
+      ],
+      "called_by": [
+        "AS_GCM_BL_constructHelperForClauseSetClauseAndClauseText"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536",
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_MultipleObjects",
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_ADT_UT_determineAuditActionCode",
+        "AS_CO_UT_castToDictionary",
+        "AS_CO_UT_castToDictionaryList",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_CO_UT_rejectCdtByField",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_sortArray",
+        "AS_CO_UT_updateCdtFields",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+        "AS_CO_UT_whereContains",
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GAM_UT_ArrayLength",
+        "AS_GAM_UT_batchDataByFieldUnderThreshold_Helper",
+        "AS_GAM_UT_queryEntityWithSelection",
+        "AS_GAM_UT_sortAnyData",
+        "AS_GAM_rejectCdtOrRecordDataByField",
+        "AS_GCM_BL_populateClauseSetClauseTextDetailsByBatching",
+        "AS_GCM_BL_writeToClauseSetClauseAudit",
+        "AS_GCM_BL_writeToClauseSetClauseText",
+        "AS_GCM_QE_getClauseSetClauseTextsWithBatching",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_QE_getRefClauseTextsWithBatching",
+        "AS_GCM_UT_captureAuditForClauseSetClauseAndClauseTextForClauseAudit",
+        "AS_GCM_UT_findFillIns",
+        "AS_GCM_UT_formatDataBasedOnReturnType",
+        "AS_GCM_UT_getIdentifiersInBatches",
+        "AS_GCM_extractUuidAndFillinTypeFromClassParameter",
+        "AS_GCM_substituteListFromTextUsingReduce"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782",
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "description": "A not() wrapped around AS_CO_UT_isBlank",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS GCM Write to ClauseText & Capture Adt",
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_ADT_UT_determineAuditActionCode",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_checkIfUserExists",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord",
+        "AS_GAM_ADT_UT_constructActionOnlyAuditData",
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructManipulatedAuditData",
+        "AS_GAM_UT_batchDataByFieldUnderThreshold",
+        "AS_GAM_createMap",
+        "AS_GCM_BL_populateClauseSetClauseTextDetailsByBatching",
+        "AS_GCM_QE_getClauseSetClauseDetails",
+        "AS_GCM_QE_getClauseSetClauseTextsWithBatching",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_QE_getRefClauseTexts",
+        "AS_GCM_QE_getRefClauseTextsWithBatching",
+        "AS_GCM_QE_getRefClauseTextsWithQuerySelection",
+        "AS_GCM_QR_getClauseSetClauseTextDetails",
+        "AS_GCM_QR_getFillInRecDetails",
+        "AS_GCM_UT_captureAuditForClauseSetClauseAndClauseTextForClauseAudit",
+        "AS_GCM_UT_getClauseSetClauseTextsWithQuerySelection",
+        "AS_GCM_updateDataByModifierMaps",
+        "AS_GCM_updateDataByModifierMaps_Reducer"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9e2-fe39-8000-9c72-011c48011c48_5802508",
+      "name": "AS_CO_UT_isRecordTypeData",
+      "type": "Expression Rule",
+      "description": "Returns true if the passed data is of type record type",
+      "parameters": [],
+      "calls": [
+        "AS_CO_Example_RECORD"
+      ],
+      "called_by": [
+        "AS_GAM_returnCdtOrRecordIndicesByField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75636",
+      "name": "AS_CO_UT_not",
+      "type": "Expression Rule",
+      "description": "Null handles for not -- null returns true (null acts like false)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_booleanDefaultFalse"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GCM_QR_getFillInRecDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157870",
+      "name": "AS_CO_UT_queryEntity",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_returnArrayTypeNumber"
+      ],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetClauseDetails",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_QE_getRefClauseTexts"
+      ]
+    },
+    {
+      "uuid": "_a-0000e6c8-d132-8000-9bbe-011c48011c48_469266",
+      "name": "AS_CO_UT_queryRecord",
+      "type": "Expression Rule",
+      "description": "Helper rule to execute record queries with minimal overhead, pass `returnType` based on the query purpose",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_returnArrayTypeNumber",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs"
+      ],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_QR_getClauseSetClauseTextDetails",
+        "AS_GCM_QR_getFillInRecDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_271202",
+      "name": "AS_CO_UT_rejectCdtByField",
+      "type": "Expression Rule",
+      "description": "Removes CDT indices where a match of a single value or list of values in a single field is found, if a list is passed, all matches are rejected",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_returnCdtIndicesByField"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367",
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_BL_populateClauseSetClauseTextDetailsByBatching",
+        "AS_GCM_UT_captureAuditForClauseSetClauseAndClauseTextForClauseAudit",
+        "AS_GCM_extractBalancedTagThatHasGivenText",
+        "AS_GCM_setRecordFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73980",
+      "name": "AS_CO_UT_replaceNull",
+      "type": "Expression Rule",
+      "description": "Returns nullableValue only if it is not null. Else returns replacementValue.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_ADT_UT_startAuditProcess_Parameters",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_sortArray",
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GAM_UT_batchDataByFieldUnderThreshold_Helper",
+        "AS_GAM_UT_queryEntityWithSelection",
+        "AS_GCM_setRecordFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3ff-a5bc-8000-9ba8-011c48011c48_39610",
+      "name": "AS_CO_UT_returnArrayTypeNumber",
+      "type": "Expression Rule",
+      "description": "Returns the array type number from the input type. If type number being passed is already that of a array, returns the same number.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast"
+      ],
+      "called_by": [
+        "AS_ADT_UT_startAuditProcess_Parameters",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_269546",
+      "name": "AS_CO_UT_returnCdtIndicesByField",
+      "type": "Expression Rule",
+      "description": "Returns the indices of a CDT by a matching a single value or list of values in a single field, if a list is passed, all matches are returned",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_whereContains"
+      ],
+      "called_by": [
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_rejectCdtByField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76162",
+      "name": "AS_CO_UT_returnLastIndexOfArray",
+      "type": "Expression Rule",
+      "description": "Returns the last index of an array, or a null value if the array is empty",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_returnSingleTypeObject"
+      ],
+      "called_by": [
+        "AS_GAM_UT_batchDataByFieldUnderThreshold_Helper"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_101148",
+      "name": "AS_CO_UT_returnNullDictionary",
+      "type": "Expression Rule",
+      "description": "Returns a null dictionary",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_dynamicDictionary"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75842",
+      "name": "AS_CO_UT_returnSingleTypeObject",
+      "type": "Expression Rule",
+      "description": "Takes in either an array type or a primitive type and returns the singular type object, works for CDTs or primitive types",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_returnLastIndexOfArray"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157503",
+      "name": "AS_CO_UT_returnTypeNumber",
+      "type": "Expression Rule",
+      "description": "Returns the typeNumber of either `type` or `typeOf`",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_startAuditProcess_Parameters",
+        "AS_CO_UT_cast"
+      ]
+    },
+    {
+      "uuid": "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_87660",
+      "name": "AS_CO_UT_sortArray",
+      "type": "Expression Rule",
+      "description": "Sorts an array of primitive types (e.g. text, integers, dates)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GAM_UT_sortAnyData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-933d-8000-9baa-011c48011c48_112825",
+      "name": "AS_CO_UT_toString",
+      "type": "Expression Rule",
+      "description": "casts a value to a string with correct handling for integer and decimal formatting",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_ADT_UT_buildSimpleFieldChangesDictionary"
+      ]
+    },
+    {
+      "uuid": "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_162769",
+      "name": "AS_CO_UT_typeCompare",
+      "type": "Expression Rule",
+      "description": "Returns true if the two input types match",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_compareStrong",
+        "AS_CO_UT_whereContains",
+        "AS_GCM_IBRValidationDisabled_wrapper",
+        "AS_GCM_StyledTextEditorForFillInsEnabled_wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_260165",
+      "name": "AS_CO_UT_updateCdtFields",
+      "type": "Expression Rule",
+      "description": "Updates one or more fields of a CDT, with an optional input for indices",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_ADT_UT_calculateAudit_SingleObject",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_269170",
+      "name": "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+      "type": "Expression Rule",
+      "description": "Allows passing field-value pairs to handle for use cases where you have to set newValues as arrays",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_CO_UT_dynamicDictionary",
+        "AS_CO_UT_queryRecord",
+        "AS_GAM_UT_batchDataByFieldUnderThreshold_Helper",
+        "AS_GCM_UT_captureAuditForClauseSetClauseAndClauseTextForClauseAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e40a-de32-8000-9ba8-011c48011c48_272151",
+      "name": "AS_CO_UT_whereContains",
+      "type": "Expression Rule",
+      "description": "Enhanced wherecontains() which avoids type-casting issues and properly handles for document and group types",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_typeCompare"
+      ],
+      "called_by": [
+        "AS_CO_UT_returnCdtIndicesByField",
+        "AS_GAM_returnCdtOrRecordIndicesByField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5d4-2024-8000-9baf-011c48011c48_320878",
+      "name": "AS_FRM_determineRuntimeRule",
+      "type": "Expression Rule",
+      "description": "Returns the runtime rule for a default rule, uses plugin function `determineRuntimeRule()`",
+      "parameters": [],
+      "calls": [
+        "AS_FRM_BOOL_RULE_CUSTOMIZATION_1_0_ENABLED"
+      ],
+      "called_by": [
+        "AS_GCM_IBRValidationDisabled_wrapper",
+        "AS_GCM_StyledTextEditorForFillInsEnabled_wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_958752",
+      "name": "AS_GAM_ADT_UT_buildAuditEntityData",
+      "type": "Expression Rule",
+      "description": "Rule to build audit data for GAM",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_GAM_ADT_TXT_AUDIT_TYPE_ACTION_ONLY",
+        "AS_GAM_ADT_TXT_AUDIT_TYPE_MANIPULATION",
+        "AS_GAM_ADT_UT_buildFieldLevelAuditEntityData",
+        "AS_GAM_ADT_UT_constructActionOnlyAuditData",
+        "AS_GAM_ADT_UT_constructManipulatedAuditData"
+      ],
+      "called_by": [
+        "AS_GCM_UT_captureAuditForClauseSetClauseAndClauseTextForClauseAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_981349",
+      "name": "AS_GAM_ADT_UT_buildFieldLevelAuditEntityData",
+      "type": "Expression Rule",
+      "description": "Calculates the field level entity data to write for GAM",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_UT_calculateAudit"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_buildAuditEntityData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_936427",
+      "name": "AS_GAM_ADT_UT_constructActionOnlyAuditData",
+      "type": "Expression Rule",
+      "description": "Rule to construct action only audit data",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_dynamicDictionary",
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_buildAuditEntityData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_983591",
+      "name": "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+      "type": "Expression Rule",
+      "description": "Rule to construct dynamic dictionary for Manipulated audit",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_castToDictionaryList",
+        "AS_CO_UT_dynamicDictionary",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_constructManipulatedAuditData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_983535",
+      "name": "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit",
+      "type": "Expression Rule",
+      "description": "Rule to construct dynamic audit dictionary for manipulation audit",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_UNCHANGED",
+        "AS_ADT_UT_calculateAudit",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_castToDictionary",
+        "AS_CO_UT_castToDictionaryList",
+        "AS_CO_UT_dynamicDictionary",
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_not",
+        "AS_CO_UT_rejectCdtByField",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_updateCdtFields"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_constructManipulatedAuditData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5bc-4a9a-8000-9bbc-011c48011c48_936866",
+      "name": "AS_GAM_ADT_UT_constructManipulatedAuditData",
+      "type": "Expression Rule",
+      "description": "Rule to construct Manipulated audit data",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_BL_auditConfig_SAMPLE_Parent",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isNotBlank",
+        "AS_GAM_ADT_UT_constructDynamicDictionaryForManipulatedAudit",
+        "AS_GAM_ADT_UT_constructFieldChangesDictionaryForManipulatedAudit"
+      ],
+      "called_by": [
+        "AS_GAM_ADT_UT_buildAuditEntityData"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53662",
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "description": "Displays a label by the `bundleKey` from passed in bundle data, optionally accepts arguments",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_BL_dynamicFillinRecommendation"
+      ]
+    },
+    {
+      "uuid": "_a-0000e5da-a251-8000-9bbe-011c48011c48_1021202",
+      "name": "AS_GAM_UT_ArrayLength",
+      "type": "Expression Rule",
+      "description": "Gives length of an array based on input of array",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GAM_UT_batchDataByFieldUnderThreshold",
+        "AS_GCM_QE_getClauseSetClauseTextsWithBatching",
+        "AS_GCM_QE_getRefClauseTextsWithBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec06-6336-8000-9d71-011c48011c48_12260935",
+      "name": "AS_GAM_UT_batchDataByFieldUnderThreshold",
+      "type": "Expression Rule",
+      "description": "Returns a map which indicates the batches ranged from 1,2,3 ... n which are under the given threshold.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isNotBlank",
+        "AS_GAM_UT_ArrayLength",
+        "AS_GAM_UT_batchDataByFieldUnderThreshold_Helper",
+        "AS_GAM_UT_sortAnyData"
+      ],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetClauseTextsWithBatching",
+        "AS_GCM_QE_getRefClauseTextsWithBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec06-6336-8000-9d71-011c48011c48_12262720",
+      "name": "AS_GAM_UT_batchDataByFieldUnderThreshold_Helper",
+      "type": "Expression Rule",
+      "description": "Helper rule for computing the batches for AS_GAM_UT_batchDataByFieldUnderThreshold",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_booleanDefaultFalse",
+        "AS_CO_UT_compare",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull",
+        "AS_CO_UT_returnLastIndexOfArray",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs"
+      ],
+      "called_by": [
+        "AS_GAM_UT_batchDataByFieldUnderThreshold"
+      ]
+    },
+    {
+      "uuid": "_a-0000e447-9390-8000-9baa-011c48011c48_134195",
+      "name": "AS_GAM_UT_getExpectedOutputDataFromStoredValue",
+      "type": "Expression Rule",
+      "description": "The rule returns the expected data output from the stored values of Write to Multiple DSE",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GCM Write to ClauseText & Capture Adt"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1523563",
+      "name": "AS_GAM_UT_queryEntityWithSelection",
+      "type": "Expression Rule",
+      "description": "Generic query entity with query selection (So that huge load can be avoided while querying)",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_BL_populateClauseSetClauseTextDetailsByBatching",
+        "AS_GCM_QE_getClauseSetClauseTextsWithBatching",
+        "AS_GCM_QE_getRefClauseTextsWithQuerySelection",
+        "AS_GCM_UT_captureAuditForClauseSetClauseAndClauseTextForClauseAudit",
+        "AS_GCM_UT_getClauseSetClauseTextsWithQuerySelection"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec06-6336-8000-9d71-011c48011c48_12268070",
+      "name": "AS_GAM_UT_sortAnyData",
+      "type": "Expression Rule",
+      "description": "Sorts a CDT, dictionary, record or complex type.  Pass nullsFirst to explicitly sort nulls first or last. Also sorts simple type data when the field is null",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_sortArray",
+        "AS_GAM_filterCdtOrRecordDataByField",
+        "AS_GAM_rejectCdtOrRecordDataByField"
+      ],
+      "called_by": [
+        "AS_GAM_UT_batchDataByFieldUnderThreshold"
+      ]
+    },
+    {
+      "uuid": "_a-0000e994-0db4-8000-9c52-011c48011c48_4923038",
+      "name": "AS_GAM_createMap",
+      "type": "Expression Rule",
+      "description": "Creates a map with the given keys and values",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank"
+      ],
+      "called_by": [
+        "AS_GCM_constructClauseTextMetaDataFromClauseText"
+      ]
+    },
+    {
+      "uuid": "_a-0000e9e2-fe39-8000-9c72-011c48011c48_5802259",
+      "name": "AS_GAM_filterCdtOrRecordDataByField",
+      "type": "Expression Rule",
+      "description": "Filters CDT or record data by a matching a single value or list of values in a single field, if a list is passed, all matches are returned",
+      "parameters": [],
+      "calls": [
+        "AS_GAM_returnCdtOrRecordIndicesByField"
+      ],
+      "called_by": [
+        "AS_GAM_UT_sortAnyData"
+      ]
+    },
+    {
+      "uuid": "_a-0000eaf1-8805-8000-9cec-011c48011c48_9106170",
+      "name": "AS_GAM_rejectCdtOrRecordDataByField",
+      "type": "Expression Rule",
+      "description": "Rejects CDT or record data by a matching a single value or list of values in a single field, if a list is passed, all matches are rejected",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_GAM_returnCdtOrRecordIndicesByField"
+      ],
+      "called_by": [
+        "AS_GAM_UT_sortAnyData"
+      ]
+    },
+    {
+      "uuid": "_a-0000eae2-5167-8000-9ce4-011c48011c48_8879314",
+      "name": "AS_GAM_returnCdtOrRecordIndicesByField",
+      "type": "Expression Rule",
+      "description": "Returns the Index CDT or record data by matching a single value or list of values in a single field",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isRecordTypeData",
+        "AS_CO_UT_whereContains"
+      ],
+      "called_by": [
+        "AS_GAM_filterCdtOrRecordDataByField",
+        "AS_GAM_rejectCdtOrRecordDataByField"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1550139",
+      "name": "AS_GCM_ADT_BL_auditConfig_ClauseSetClauseHelper",
+      "type": "Expression Rule",
+      "description": "Returns Audit configuration for `AS_GCM_ClauseSet_Clause_Helper`",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_clauseSetClauseStartAuditProcess_ParametersInCreateClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1548032",
+      "name": "AS_GCM_BL_constructHelperForClauseSetClauseAndClauseText",
+      "type": "Expression Rule",
+      "description": "The rule constructs the helper CDT AS_GCM_ClauseSet_Clause_Helper by combining AS_GCM_ClauseSet_Clause and AS_GCM_ClauseSet_Clause_Text",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_initializeBlankLocalVariable"
+      ],
+      "called_by": [
+        "AS_GCM_UT_clauseSetClauseStartAuditProcess_ParametersInCreateClauseSet"
+      ]
+    },
+    {
+      "uuid": "_a-0000e93a-5ec9-8000-9c25-011c48011c48_4173206",
+      "name": "AS_GCM_BL_dynamicFillinRecommendation",
+      "type": "Expression Rule",
+      "description": "This rule returns the dynamic fillin recommendation for the given fillin dynamic rec Id",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_displayUser",
+        "AS_GAM_CO_I18N_UT_displayLabel",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_DPL_CO_UT_formatCurrencyValue",
+        "AS_GCM_REF_ID_CLAUSE_SET_DATA_CLAUSE_SET_TYPE",
+        "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACTING_OFFICER",
+        "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_CATEGORY",
+        "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_END_DATE",
+        "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_METHOD",
+        "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_OFFICER_REP",
+        "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_SPECIALIST",
+        "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_START_DATE",
+        "AS_GCM_REF_ID_CLAUSE_SET_DATA_ESTIMATED_DOLLAR_AMOUNT",
+        "AS_GCM_REF_ID_CLAUSE_SET_DATA_NAICS_CODE",
+        "AS_GCM_REF_ID_CLAUSE_SET_DATA_PSC"
+      ],
+      "called_by": [
+        "AS_GCM_autoPopulateFillinandSetMetaDataOnClauseAddition"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1543067",
+      "name": "AS_GCM_BL_populateClauseSetClauseTextDetailsByBatching",
+      "type": "Expression Rule",
+      "description": "This rule is used to populate the details of clauseText for clauseset clauses from R_Clause_Texts and to set isCompleteFillinAvailable for the clauses",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_booleanDefaultFalse",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GAM_UT_queryEntityWithSelection",
+        "AS_GCM_ENT_CLAUSE_SET_CLAUSE",
+        "AS_GCM_ENT_CLAUSE_SET_CLAUSE_TEXT",
+        "AS_GCM_QE_getClauseSetClauseDetails",
+        "AS_GCM_QE_getClauseSetClauseTextsWithBatching",
+        "AS_GCM_QE_getClauseSetDetails",
+        "AS_GCM_QE_getRefClauseTextsWithBatching",
+        "AS_GCM_QR_getClauseSetClauseTextDetails",
+        "AS_GCM_REF_ID_CATEGORY_AMENDMENT",
+        "AS_GCM_REF_ID_CATEGORY_MODIFICATION",
+        "AS_GCM_REF_ID_CLAUSE_SET_STATUS_FINALIZED",
+        "AS_GCM_filterRecords",
+        "AS_GCM_setMetaDataForClauseSetClauseTextCdt"
+      ],
+      "called_by": [
+        "AS_GCM_BL_writeToClauseSetClauseText"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb85-3dbf-8000-9d30-011c48011c48_10991191",
+      "name": "AS_GCM_BL_returnClauseSetClauseStatusId",
+      "type": "Expression Rule",
+      "description": "Will return status id for clause set clause ",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_IBRValidationDisabled_wrapper",
+        "AS_GCM_REF_ID_CLAUSE_SET_CLAUSE_STATUS_COMPLETE",
+        "AS_GCM_REF_ID_CLAUSE_SET_CLAUSE_STATUS_INCOMPLETE",
+        "AS_GCM_REF_ID_FORMAT_FULL_TEXT",
+        "AS_GCM_REF_ID_FORMAT_IBR"
+      ],
+      "called_by": [
+        "AS GCM Write to ClauseText & Capture Adt"
+      ]
+    },
+    {
+      "uuid": "_a-0000e69a-ff03-8000-9bd0-011c48011c48_1635942",
+      "name": "AS_GCM_BL_writeToClauseSetClauseAudit",
+      "type": "Expression Rule",
+      "description": "Writes to clause set clause audit",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isBlank",
+        "AS_GCM_UT_captureAuditForClauseSetClauseAndClauseTextForClauseAudit"
+      ],
+      "called_by": [
+        "AS GCM Write to ClauseText & Capture Adt"
+      ]
+    },
+    {
+      "uuid": "_a-0000e69a-ff03-8000-9bd0-011c48011c48_1634022",
+      "name": "AS_GCM_BL_writeToClauseSetClauseText",
+      "type": "Expression Rule",
+      "description": "Writes to clauseText of clause set clause",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_filterCdtByField",
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isBlank",
+        "AS_GCM_BL_populateClauseSetClauseTextDetailsByBatching",
+        "AS_GCM_CO_UT_loadBundleFromFolder",
+        "AS_GCM_filterRecords"
+      ],
+      "called_by": [
+        "AS GCM Write to ClauseText & Capture Adt"
+      ]
+    },
+    {
+      "uuid": "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53654",
+      "name": "AS_GCM_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "description": "Loads a property bundle file by name from a folder, returns a dictionary of the key-value pairs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_BL_dynamicFillinRecommendation",
+        "AS_GCM_BL_writeToClauseSetClauseText"
+      ]
+    },
+    {
+      "uuid": "_a-0000e8cc-c513-8000-9c0f-011c48011c48_3412015",
+      "name": "AS_GCM_DPL_CO_UT_formatCurrencyValue",
+      "type": "Expression Rule",
+      "description": "takes in a currency code and a dollar value and returns a formatted value",
+      "parameters": [],
+      "calls": [
+        "AS_CO_TXT_DEFAULT_CURRENCY_CODE"
+      ],
+      "called_by": [
+        "AS_GCM_BL_dynamicFillinRecommendation"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb97-b2e8-8000-9d39-011c48011c48_11164523",
+      "name": "AS_GCM_IBRValidationDisabled_wrapper",
+      "type": "Expression Rule",
+      "description": "A wrapper rule for the Ignore IBR Validation Errors solutions hub toggle",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_typeCompare",
+        "AS_FRM_determineRuntimeRule"
+      ],
+      "called_by": [
+        "AS_GCM_BL_returnClauseSetClauseStatusId"
+      ]
+    },
+    {
+      "uuid": "_a-0000e79a-fc04-8000-9bf4-011c48011c48_2169129",
+      "name": "AS_GCM_IsClauseTextContainsCiteTags",
+      "type": "Expression Rule",
+      "description": "Returns true if clause Text contains cite tags else returns false",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS_GCM_UT_isCompleteFillinsActionAvailable"
+      ]
+    },
+    {
+      "uuid": "_a-0000e643-f7f1-8000-9bca-011c48011c48_1270237",
+      "name": "AS_GCM_QE_getClauseSetClauseDetails",
+      "type": "Expression Rule",
+      "description": "Query Entity to get clause set clause details",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryEntity",
+        "AS_GCM_ENT_CLAUSE_SET_CLAUSE"
+      ],
+      "called_by": [
+        "AS_GCM_BL_populateClauseSetClauseTextDetailsByBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3111846",
+      "name": "AS_GCM_QE_getClauseSetClauseTextsWithBatching",
+      "type": "Expression Rule",
+      "description": "Returns clause set clause text details (AS_GCM_ClauseSet_Clause_Text) based on the dynamic batching of relationIds.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_GAM_UT_ArrayLength",
+        "AS_GAM_UT_batchDataByFieldUnderThreshold",
+        "AS_GAM_UT_queryEntityWithSelection",
+        "AS_GCM_ENT_CLAUSE_SET_CLAUSE_TEXT",
+        "AS_GCM_ENUM_QUERY_THRESHOLD_LIMIT_IN_BYTES",
+        "AS_GCM_INT_QUERY_BATCH_SIZE_TINY",
+        "AS_GCM_TXT_REGEX_FOR_HIDDEN_SPAN_TAG_FILLIN_METADATA",
+        "AS_GCM_UT_formatDataBasedOnReturnType",
+        "AS_GCM_UT_getClauseSetClauseTextsWithQuerySelection",
+        "AS_GCM_UT_getIdentifiersInBatches"
+      ],
+      "called_by": [
+        "AS_GCM_BL_populateClauseSetClauseTextDetailsByBatching",
+        "AS_GCM_UT_captureAuditForClauseSetClauseAndClauseTextForClauseAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e63a-a5cb-8000-9bc6-011c48011c48_1230199",
+      "name": "AS_GCM_QE_getClauseSetDetails",
+      "type": "Expression Rule",
+      "description": "Query Entity to get clause set details",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_booleanDefaultFalse",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryEntity",
+        "AS_CO_UT_queryRecord"
+      ],
+      "called_by": [
+        "AS_GCM_BL_populateClauseSetClauseTextDetailsByBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1529510",
+      "name": "AS_GCM_QE_getRefClauseTexts",
+      "type": "Expression Rule",
+      "description": "Returns ref clause text details (AS_GCM_R_Clause_Texts) based on the given filter set",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryEntity",
+        "AS_GCM_ENT_R_CLAUSE_TEXTS"
+      ],
+      "called_by": [
+        "AS_GCM_QE_getRefClauseTextsWithBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3125646",
+      "name": "AS_GCM_QE_getRefClauseTextsWithBatching",
+      "type": "Expression Rule",
+      "description": "Returns clause text details (AS_GCM_R_Clause_Text) based on the dynamic batching of clauseId",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_GAM_UT_ArrayLength",
+        "AS_GAM_UT_batchDataByFieldUnderThreshold",
+        "AS_GCM_ENUM_QUERY_THRESHOLD_LIMIT_IN_BYTES",
+        "AS_GCM_INT_QUERY_BATCH_SIZE_TINY",
+        "AS_GCM_QE_getRefClauseTexts",
+        "AS_GCM_QE_getRefClauseTextsWithQuerySelection",
+        "AS_GCM_UT_formatDataBasedOnReturnType",
+        "AS_GCM_UT_getIdentifiersInBatches"
+      ],
+      "called_by": [
+        "AS_GCM_BL_populateClauseSetClauseTextDetailsByBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000e881-70d9-8000-9c06-011c48011c48_2892452",
+      "name": "AS_GCM_QE_getRefClauseTextsWithQuerySelection",
+      "type": "Expression Rule",
+      "description": "Query selection rule - Returns ref clause text details (AS_GCM_R_Clause_Texts) based on the given filter set",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_isNotBlank",
+        "AS_GAM_UT_queryEntityWithSelection",
+        "AS_GCM_ENT_R_CLAUSE_TEXTS"
+      ],
+      "called_by": [
+        "AS_GCM_QE_getRefClauseTextsWithBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb8e-789f-8000-9d34-011c48011c48_11018523",
+      "name": "AS_GCM_QR_getClauseSetClauseTextDetails",
+      "type": "Expression Rule",
+      "description": "Returns clause set clause text data along with all relationships",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_queryRecord"
+      ],
+      "called_by": [
+        "AS GCM Write to ClauseText & Capture Adt",
+        "AS_GCM_BL_populateClauseSetClauseTextDetailsByBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000e915-02bc-8000-9c1f-011c48011c48_4025082",
+      "name": "AS_GCM_QR_getFillInRecDetails",
+      "type": "Expression Rule",
+      "description": "Query Record to get Fill in recommendation details",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_not",
+        "AS_CO_UT_queryRecord"
+      ],
+      "called_by": [
+        "AS_GCM_autoPopulateFillinandSetMetaDataOnClauseAddition"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee54-fb4d-8000-9e2f-011c48011c48_16649762",
+      "name": "AS_GCM_StyledTextEditorForFillInsEnabled_wrapper",
+      "type": "Expression Rule",
+      "description": "A wrapper rule to return the value from either custom rule or from default rule",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_typeCompare",
+        "AS_FRM_determineRuntimeRule"
+      ],
+      "called_by": [
+        "AS_GCM_findFillinValue"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1559515",
+      "name": "AS_GCM_UT_captureAuditForClauseSetClauseAndClauseTextForClauseAudit",
+      "type": "Expression Rule",
+      "description": "The rule constructs the audit data and returns the entity data combination to write to audit DSE for clause set clause ",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_ADD",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_DEACTIVATE",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_MODIFY",
+        "AS_ADT_ENUM_AUDIT_ACTION_CODE_UNCHANGED",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_CO_UT_isNotBlank",
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_updateCdtFieldsByFieldValuePairs",
+        "AS_GAM_ADT_UT_buildAuditEntityData",
+        "AS_GAM_UT_queryEntityWithSelection",
+        "AS_GCM_ENT_A_R_CLAUSE_SET_CLAUSE",
+        "AS_GCM_ENT_A_R_CLAUSE_SET_CLAUSE_FIELD",
+        "AS_GCM_ENT_A_R_CLAUSE_SET_SIMPLE_WRITE",
+        "AS_GCM_QE_getClauseSetClauseTextsWithBatching",
+        "AS_GCM_UT_clauseSetClauseStartAuditProcess_ParametersInCreateClauseSet"
+      ],
+      "called_by": [
+        "AS_GCM_BL_writeToClauseSetClauseAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e67d-efac-8000-9bcd-011c48011c48_1556101",
+      "name": "AS_GCM_UT_clauseSetClauseStartAuditProcess_ParametersInCreateClauseSet",
+      "type": "Expression Rule",
+      "description": "Populates the parameters for start audit of `AS_GCM_Clause_Set_Clause` while creating or updating a clause set",
+      "parameters": [],
+      "calls": [
+        "AS_ADT_UT_startAuditProcess_Parameters",
+        "AS_GCM_ADT_BL_auditConfig_ClauseSetClauseHelper",
+        "AS_GCM_BL_constructHelperForClauseSetClauseAndClauseText",
+        "AS_GCM_ENT_A_R_CLAUSE_SET_CLAUSE"
+      ],
+      "called_by": [
+        "AS_GCM_UT_captureAuditForClauseSetClauseAndClauseTextForClauseAudit"
+      ]
+    },
+    {
+      "uuid": "_a-0000e79a-fc04-8000-9bf4-011c48011c48_2075659",
+      "name": "AS_GCM_UT_findFillIns",
+      "type": "Expression Rule",
+      "description": "to find indices of fill in",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_GCM_extractUuidAndFillinTypeFromClassParameter",
+        "AS_GCM_findFillinValue",
+        "AS_GCM_mergeMultipleMapsIntoSingleMap"
+      ],
+      "called_by": [
+        "AS_GCM_autoPopulateFillinandSetMetaDataOnClauseAddition"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3261182",
+      "name": "AS_GCM_UT_formatDataBasedOnReturnType",
+      "type": "Expression Rule",
+      "description": "Returns the data after formatting based on return type",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_ENUM_QE_RETURN_TYPE_SINGLE_OBJECT",
+        "AS_CO_UT_cast",
+        "AS_CO_UT_isBlank",
+        "AS_GCM_updateDataByModifierMaps"
+      ],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetClauseTextsWithBatching",
+        "AS_GCM_QE_getRefClauseTextsWithBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3113202",
+      "name": "AS_GCM_UT_getClauseSetClauseTextsWithQuerySelection",
+      "type": "Expression Rule",
+      "description": "Get Clause Set Clause Texts With Query Selection",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_GAM_UT_queryEntityWithSelection",
+        "AS_GCM_ENT_CLAUSE_SET_CLAUSE_TEXT"
+      ],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetClauseTextsWithBatching"
+      ]
+    },
+    {
+      "uuid": "5f18e821-865e-464d-b974-57c20096c58f",
+      "name": "AS_GCM_UT_getIdentifiersInBatches",
+      "type": "Expression Rule",
+      "description": "Returns the Identifiers in batches based on the batchingSize",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_DATA_SUBSET",
+        "AS_CO_UT_isBlank",
+        "AS_GCM_INT_QUERY_BATCH_SIZE_TINY"
+      ],
+      "called_by": [
+        "AS_GCM_QE_getClauseSetClauseTextsWithBatching",
+        "AS_GCM_QE_getRefClauseTextsWithBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000e79a-fc04-8000-9bf4-011c48011c48_2321842",
+      "name": "AS_GCM_UT_isCompleteFillinsActionAvailable",
+      "type": "Expression Rule",
+      "description": "Returns true if the complete Fillins RA is available for the given clause set clause",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_IsClauseTextContainsCiteTags"
+      ],
+      "called_by": [
+        "AS GCM Write to ClauseText & Capture Adt"
+      ]
+    },
+    {
+      "uuid": "_a-0000e8e8-3f98-8000-9ba5-011c48011c48_13321",
+      "name": "AS_GCM_UT_regexsearch",
+      "type": "Expression Rule",
+      "description": "contains regexsearch() which handles the type casting issue.",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_castToDictionaryList"
+      ],
+      "called_by": [
+        "AS_GCM_extractBalancedTagThatHasGivenText"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec34-8724-8000-9d8b-011c48011c48_12649456",
+      "name": "AS_GCM_autoPopulateFillinandSetMetaDataOnClauseAddition",
+      "type": "Expression Rule",
+      "description": "pass the clause text to this rule to update the fill in values with their respective auto populate value if its available and set the metaData for those updated fillins during create or update clause set",
+      "parameters": [],
+      "calls": [
+        "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+        "AS_CO_UT_cast",
+        "AS_GCM_BL_dynamicFillinRecommendation",
+        "AS_GCM_QR_getFillInRecDetails",
+        "AS_GCM_TXT_FILL_IN_COMPLETED_BY_SYSTEM_AGENCY",
+        "AS_GCM_TXT_REGEX_FOR_HIDDEN_SPAN_TAG_FILLIN_METADATA",
+        "AS_GCM_UT_findFillIns",
+        "AS_GCM_constructClauseTextMetaDataFromClauseText",
+        "AS_GCM_filterRecords",
+        "AS_GCM_substituteListFromTextUsingReduce"
+      ],
+      "called_by": [
+        "AS_GCM_setMetaDataForClauseSetClauseTextCdt"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec3d-c379-8000-9d8e-011c48011c48_12719077",
+      "name": "AS_GCM_constructClauseTextMetaDataFromClauseText",
+      "type": "Expression Rule",
+      "description": "Return clause text metadata with fillins stats",
+      "parameters": [],
+      "calls": [
+        "AS_GAM_createMap",
+        "AS_GCM_TXT_FILL_IN_COMPLETED_BY_SYSTEM_AGENCY"
+      ],
+      "called_by": [
+        "AS_GCM_autoPopulateFillinandSetMetaDataOnClauseAddition"
+      ]
+    },
+    {
+      "uuid": "_a-0000e915-02bc-8000-9c1f-011c48011c48_3734026",
+      "name": "AS_GCM_extractBalancedTagThatHasGivenText",
+      "type": "Expression Rule",
+      "description": "Returns the balanced tag with proper opening and closing tags",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_GCM_UT_regexsearch"
+      ],
+      "called_by": [
+        "AS_GCM_removeHiddenSpanTagsFromHtml"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec34-8724-8000-9d8b-011c48011c48_12668370",
+      "name": "AS_GCM_extractFillinMetadataFromClauseText",
+      "type": "Expression Rule",
+      "description": "extract the fill in metadata from clause text and return the as a!map()",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_TXT_REGEX_FOR_HIDDEN_SPAN_TAG_FILLIN_METADATA"
+      ],
+      "called_by": [
+        "AS GCM Write to ClauseText & Capture Adt"
+      ]
+    },
+    {
+      "uuid": "_a-0000e915-02bc-8000-9c1f-011c48011c48_3773464",
+      "name": "AS_GCM_extractUuidAndFillinTypeFromClassParameter",
+      "type": "Expression Rule",
+      "description": "Extracts fillin uuid and fillin type from the class parameter of a cite tag",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank",
+        "AS_GCM_TXT_CUSTOM_FILL_IN_TYPE_TABLE",
+        "AS_GCM_removeHiddenSpanTagsFromHtml"
+      ],
+      "called_by": [
+        "AS_GCM_UT_findFillIns"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9761091",
+      "name": "AS_GCM_filterRecords",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AS GCM Write to ClauseText & Capture Adt",
+        "AS_GCM_BL_populateClauseSetClauseTextDetailsByBatching",
+        "AS_GCM_BL_writeToClauseSetClauseText",
+        "AS_GCM_autoPopulateFillinandSetMetaDataOnClauseAddition",
+        "AS_GCM_setMetaDataForClauseSetClauseTextCdt"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2b-4d79-8000-9d88-011c48011c48_12586581",
+      "name": "AS_GCM_findFillinValue",
+      "type": "Expression Rule",
+      "description": "to find indices of fill in and its value and used this rule in AS_GCM_UT_findFillIns",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_StyledTextEditorForFillInsEnabled_wrapper"
+      ],
+      "called_by": [
+        "AS_GCM_UT_findFillIns"
+      ]
+    },
+    {
+      "uuid": "_a-0000e915-02bc-8000-9c1f-011c48011c48_3773963",
+      "name": "AS_GCM_mergeMultipleMapsIntoSingleMap",
+      "type": "Expression Rule",
+      "description": "It merges the multiple maps into a single map",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast"
+      ],
+      "called_by": [
+        "AS_GCM_UT_findFillIns"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec0f-9de5-8000-9d75-011c48011c48_12361328",
+      "name": "AS_GCM_removeHiddenSpanTagsFromHtml",
+      "type": "Expression Rule",
+      "description": "Removes the hidden span tags from the given html",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_extractBalancedTagThatHasGivenText",
+        "AS_GCM_substituteListFromTextUsingReduce"
+      ],
+      "called_by": [
+        "AS_GCM_extractUuidAndFillinTypeFromClassParameter"
+      ]
+    },
+    {
+      "uuid": "_a-0000e69a-ff03-8000-9bd0-011c48011c48_1619315",
+      "name": "AS_GCM_setMetaDataForClauseSetClauseTextCdt",
+      "type": "Expression Rule",
+      "description": "Rule to capture metadata for AS_GCM_ClauseSet_Clause_Text",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_cast",
+        "AS_CO_UT_indexPath",
+        "AS_GCM_autoPopulateFillinandSetMetaDataOnClauseAddition",
+        "AS_GCM_filterRecords",
+        "AS_GCM_setRecordFields"
+      ],
+      "called_by": [
+        "AS_GCM_BL_populateClauseSetClauseTextDetailsByBatching"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb8e-789f-8000-9d34-011c48011c48_11016421",
+      "name": "AS_GCM_setMetaDataForClauseSetClauseTextRecord",
+      "type": "Expression Rule",
+      "description": "Rule to capture metadata for AS GCM Clause Set Clause Text",
+      "parameters": [],
+      "calls": [
+        "AS_GCM_setRecordFields"
+      ],
+      "called_by": [
+        "AS GCM Write to ClauseText & Capture Adt"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb32-2fbb-8000-9d0d-011c48011c48_9760853",
+      "name": "AS_GCM_setRecordFields",
+      "type": "Expression Rule",
+      "description": "Runs a bulk update on a record object, setting new values for its fields",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_rejectNullValuesFromArray",
+        "AS_CO_UT_replaceNull"
+      ],
+      "called_by": [
+        "AS_GCM_setMetaDataForClauseSetClauseTextCdt",
+        "AS_GCM_setMetaDataForClauseSetClauseTextRecord"
+      ]
+    },
+    {
+      "uuid": "_a-0000e915-02bc-8000-9c1f-011c48011c48_3773120",
+      "name": "AS_GCM_substituteListFromTextUsingReduce",
+      "type": "Expression Rule",
+      "description": "This rule calls the fn!substitute in a fn!reduce to replace all the text with the given text. If no input is passed to ri!replaceWith the text will be replaced with empty string",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isBlank"
+      ],
+      "called_by": [
+        "AS_GCM_autoPopulateFillinandSetMetaDataOnClauseAddition",
+        "AS_GCM_removeHiddenSpanTagsFromHtml",
+        "AS_GCM_updateDataByModifierMaps_Reducer"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec90-d194-8000-9dac-011c48011c48_13571682",
+      "name": "AS_GCM_updateDataByModifierMaps",
+      "type": "Expression Rule",
+      "description": "Modifies the data by applying the values supplied in modifierMaps",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_updateDataByModifierMaps_Reducer"
+      ],
+      "called_by": [
+        "AS_GCM_UT_formatDataBasedOnReturnType"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec90-d194-8000-9dac-011c48011c48_13571757",
+      "name": "AS_GCM_updateDataByModifierMaps_Reducer",
+      "type": "Expression Rule",
+      "description": "Modifies the data by applying the value supplied in modifierMap used in reduce",
+      "parameters": [],
+      "calls": [
+        "AS_CO_UT_isNotBlank",
+        "AS_GCM_substituteListFromTextUsingReduce"
+      ],
+      "called_by": [
+        "AS_GCM_updateDataByModifierMaps"
+      ]
+    },
+    {
+      "uuid": "0002e692-17c9-8000-1ec9-7f0000014e7a",
+      "name": "AS GCM Write to ClauseText & Capture Adt",
+      "type": "Process Model",
+      "description": "Process to write to clause text and capture audit for Clause set clause",
+      "calls": [
+        "AS_CO_UT_indexPath",
+        "AS_CO_UT_isNotBlank",
+        "AS_GAM_UT_getExpectedOutputDataFromStoredValue",
+        "AS_GCM_BL_returnClauseSetClauseStatusId",
+        "AS_GCM_BL_writeToClauseSetClauseAudit",
+        "AS_GCM_BL_writeToClauseSetClauseText",
+        "AS_GCM_ENT_CLAUSE_SET_CLAUSE_TEXT",
+        "AS_GCM_QR_getClauseSetClauseTextDetails",
+        "AS_GCM_REF_ID_CATEGORY_AMENDMENT",
+        "AS_GCM_REF_ID_CATEGORY_MODIFICATION",
+        "AS_GCM_UT_isCompleteFillinsActionAvailable",
+        "AS_GCM_extractFillinMetadataFromClauseText",
+        "AS_GCM_filterRecords",
+        "AS_GCM_setMetaDataForClauseSetClauseTextRecord"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "382dda7d-5334-4c9b-a96f-b02ae5c6848a",
+      "name": "AS_CO_Example_RECORD",
+      "type": "Record Type",
+      "description": "Example record type",
+      "actions": [],
+      "views": [
+        "Record Header",
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "AS_CO_UT_isRecordTypeData"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "uuid": "_a-0000e49f-7b90-8000-9bac-011c48011c48_178411",
+  "name": "AS_GAM_BL_getContractingSubFolderIdsAndNames",
+  "type": "Expression Rule",
+  "description": "Returns the contracting sub folder IDs and names of a main folder",
+  "sail_code": "if(rule!AS_CO_UT_isBlank(ri!mainFolderId),\nnull,\na!localVariables(\n  local!parentSubfolders: folder(\n    ri!mainFolderId,\n    \"folderChildren\"\n  ),\n  local!subFolderIds: a!flatten(\n    #\"SYSTEM_SYSRULES_forEach\"(\n      items: local!parentSubfolders,\n      expression: folder(\n        fv!item,\n        \"folderChildren\"\n      )\n    )\n  ),\n  {\n    folderIds: local!subFolderIds,\n    folderNames: a!flatten(\n      #\"SYSTEM_SYSRULES_forEach\"(\n        items: local!subFolderIds,\n        expression: rule!AS_GAM_UT_concatParentFolderAndSubFolderNames(folderId: fv!item)\n      )\n    )\n  }\n))",
+  "calls": [
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_UT_concatParentFolderAndSubFolderNames",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GAM_FLD_PROPERTIES_FILES",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

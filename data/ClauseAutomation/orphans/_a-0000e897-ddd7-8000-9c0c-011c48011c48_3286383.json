@@ -1,0 +1,50 @@
+{
+  "uuid": "_a-0000e897-ddd7-8000-9c0c-011c48011c48_3286383",
+  "name": "AS_GCM_CPS_ruleConditionUser",
+  "type": "Interface",
+  "description": "Component for rule condition user ",
+  "sail_code": "a!localVariables(\n  local!value: if(\n    a!isNullOrEmpty(\n      ri!ruleCondition[recordType!AS GCM QNM T Rule Condition.value]\n    ),\n    null,\n    #\"SYSTEM_SYSRULES_fromJson_v1\"(\n      ri!ruleCondition[recordType!AS GCM QNM T Rule Condition.value]\n    )\n  ),\n  if(\n    ri!readOnly,\n    #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n      labelPosition: \"COLLAPSED\",\n      value: rule!AS_CO_UT_displayUser(user: local!value)\n\n    ),\n    #\"SYSTEM_SYSRULES_pickerFieldUsers\"(\n      maxSelections: 1,\n      required: true,\n      groupFilter: a!match(\n        value: ri!ruleCondition[recordType!AS GCM QNM T Rule Condition.refClauseDataId],\n        equals: cons!AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACTING_OFFICER,\n        then: cons!AS_GAM_GRP_CONTRACTING_OFFICER,\n        equals: cons!AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_SPECIALIST,\n        then: cons!AS_GAM_GRP_CONTRACT_SPECIALIST,\n        equals: cons!AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_OFFICER_REP,\n        then: cons!AS_GAM_GRP_CONTRACTING_OFFICER_REPRESENTATIVE,\n        default: null\n      ),\n      placeholder: \"Select a user\",\n      value: local!value,\n      saveInto: {\n        local!value,\n        a!save(\n          ri!ruleCondition[recordType!AS GCM QNM T Rule Condition.value],\n          #\"SYSTEM_SYSRULES_toJson_v1\"({ tostring(save!value) })\n        ),\n        ri!additionalSaves\n      },\n      label: \"Value\",\n      labelPosition: \"ABOVE\",\n      readOnly: ri!readOnly\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_displayUser",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACTING_OFFICER",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GAM_GRP_CONTRACTING_OFFICER",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_SPECIALIST",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GAM_GRP_CONTRACT_SPECIALIST",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_REF_ID_CLAUSE_SET_DATA_CONTRACT_OFFICER_REP",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GAM_GRP_CONTRACTING_OFFICER_REPRESENTATIVE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_CO_UT_loadBundleFromFolder",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

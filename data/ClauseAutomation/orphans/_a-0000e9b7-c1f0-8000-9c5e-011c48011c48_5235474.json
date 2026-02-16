@@ -1,0 +1,50 @@
+{
+  "uuid": "_a-0000e9b7-c1f0-8000-9c5e-011c48011c48_5235474",
+  "name": "AS_GCM_ENTRYPOINT_LOGIC_isClauseSetHasValidation",
+  "type": "Expression Rule",
+  "description": "The entry point for the LOGIC_isClauseSetHasValidation rule",
+  "sail_code": "if(\n  rule!AS_CO_UT_isBlank(ri!clauseSetId),\n  false,\n  a!localVariables(\n    local!allClauses: rule!AS_GCM_QE_getClauseSetClauseDetailsWithBatching(\n      returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY,\n      setId: ri!clauseSetId,\n      executeWhen: a!isNotNullOrEmpty(ri!clauseSetId),\n      batchingSize: cons!AS_GCM_INT_QUERY_BATCH_SIZE_LARGE,\n      showInactive: false(),\n      selectionColumns: {\n        \"relationId\",\n        \"refClause.clauseId\",\n        \"refClause.clauseNumber\",\n        \"refClause.clauseTitle\",\n        \"clauseTitle\",\n        \"retainedClauseTitle\",\n        \"refClause.effectiveDate\",\n        \"effectiveDate\",\n        \"retainedEffectiveDate\",\n        \"refStatus.refDataId\",\n        \"validationAction\",\n        \"isClauseUpdated\"\n      }\n    ),\n    local!errorClauses: rule!AS_GCM_UT_checkStatusValidation(clauses: local!allClauses),\n    /*Getting only the valid relationIds to query data from the DB*/\n    local!relationIdsToQuery: index(\n      rule!AS_GCM_UT_clauseVersionValidation(clause: local!allClauses),\n      \"relationId\",\n      null()\n    ),\n    local!activeclauseSetClauses: rule!AS_GCM_QE_getClauseSetClauseDetailsWithBatching(\n      returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY,\n      relationIds: local!relationIdsToQuery,\n      executeWhen: rule!AS_CO_UT_isNotBlank(local!relationIdsToQuery),\n      batchingSize: cons!AS_GCM_INT_QUERY_BATCH_SIZE_LARGE,\n      showInactive: false(),\n      onlyGetFieldsForWrite: true(),\n      selectAdditionalFieldsForWrite: {\n        \"refClause.clauseNumber\",\n        \"refClause.clauseTitle\",\n        \"refClause.effectiveDate\",\n        \"refClause.modifiedDatetime\"\n      }\n    ),\n    local!updatedClauses: rule!AS_GCM_UT_clauseVersionValidation(clause: local!activeClauseSetClauses),\n    rule!AS_CO_UT_not(\n      and(\n        rule!AS_CO_UT_isBlank(local!errorClauses),\n        rule!AS_CO_UT_isBlank(local!updatedClauses)\n      )\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_QE_getClauseSetClauseDetailsWithBatching",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_UT_checkStatusValidation",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_GCM_UT_clauseVersionValidation",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_UT_not",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AS_CO_ENUM_QE_RETURN_TYPE_OBJECT_ARRAY",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AS_GCM_INT_QUERY_BATCH_SIZE_LARGE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

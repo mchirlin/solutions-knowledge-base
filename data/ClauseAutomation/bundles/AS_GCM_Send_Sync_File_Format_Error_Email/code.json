@@ -3,6 +3,11 @@
     "bundle_id": "AS_GCM_Send_Sync_File_Format_Error_Email"
   },
   "objects": {
+    "0004e930-7379-8000-4c43-7f0000014e7a": {
+      "name": "AS GCM Send Sync File Format Error Email",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n=getProcessEmail(pp!id)\n\n// Input: ?\n=cons!AS_GAM_GRP_APPIAN_ADMINISTRATORS\n\n// Input: ?\n= rule!AS_GCM_emailContentForClauseSyncFileFormatFailures( integrationResponseMaps: pv!integrationResponseMaps, sourceId: pv!sourceId).subject\n\n// Input: ?\n= rule!AS_GCM_emailContentForClauseSyncFileFormatFailures( integrationResponseMaps: pv!integrationResponseMaps, sourceId: pv!sourceId).body"
+    },
     "_a-0000e915-02bc-8000-9c1f-011c48011c48_4011828": {
       "name": "AS_GCM_emailContentForClauseSyncFileFormatFailures",
       "type": "Expression Rule",
@@ -13,20 +18,15 @@
       "type": "Expression Rule",
       "sail_code": "with(\n  local!lang: \"en_US\",\n/* below is deprecated for now, uncomment to support multi-language display */\n  /*if(*/\n    /*isnull(ri!langISOCode),*/\n    /*userlocale(loggedInUser()),*/\n    /*ri!langISOCode*/\n  /*),*/\n  local!bundleName: rule!AS_GCM_determineValueBySolutionFlavor(\n    options: cons!AS_GCM_TXT_VALID_SOLUTION_FLAVORS\n  ),\n  /*local!bundleName*/\n  local!output: loadbundlepropertiesfile(\n    cons!AS_GCM_FLD_PROPERTIES_FILES,\n    local!lang,\n    local!bundleName\n  )[local!bundleName],\n  local!output\n)"
     },
-    "0004e930-7379-8000-4c43-7f0000014e7a": {
-      "name": "AS GCM Send Sync File Format Error Email",
-      "type": "Process Model",
-      "sail_code": "// Input: ?\n=getProcessEmail(pp!id)\n\n// Input: ?\n=cons!AS_GAM_GRP_APPIAN_ADMINISTRATORS\n\n// Input: ?\n= rule!AS_GCM_emailContentForClauseSyncFileFormatFailures( integrationResponseMaps: pv!integrationResponseMaps, sourceId: pv!sourceId).subject\n\n// Input: ?\n= rule!AS_GCM_emailContentForClauseSyncFileFormatFailures( integrationResponseMaps: pv!integrationResponseMaps, sourceId: pv!sourceId).body"
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75800": {
+      "name": "AS_CO_UT_filterCdtByField",
+      "type": "Expression Rule",
+      "sail_code": "/*Take the input of a cdt, field, and value and returns the matching cdt data\n\nex. cdt of users, filter by field isActive and value of true to find your active users\n*/\ncast(\n  typeof(ri!cdt),\n  index(\n    a!flatten(ri!cdt),\n    rule!AS_CO_UT_returnCdtIndicesByField(\n      cdt: ri!cdt,\n      field: ri!field,\n      value: ri!value\n    ),\n    {}\n  )\n)"
     },
     "_a-0000ebbc-9d1b-8000-9d4f-011c48011c48_11603130": {
       "name": "AS_GCM_DFARS_getRefTypeFromSync",
       "type": "Expression Rule",
       "sail_code": "a!match(\n  value: ri!clauseText,\n  whenTrue: or(\n    search(\"Endofclause\", fv!value) <> 0,\n    search(\"clause:\", fv!value) <> 0,\n    search(\"following clauses\",fv!value) <> 0,\n  ),\n  then: cons!AS_GCM_REF_ID_TYPE_CLAUSE,\n  whenTrue: or(\n    search(\"Endofprovision\", fv!value) <> 0,\n    search(\"provision:\", fv!value) <> 0,\n    search(\"provision at\",fv!value) <> 0\n  ),\n  then: cons!AS_GCM_REF_ID_TYPE_PROVISION,\n  default: null\n)"
-    },
-    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75800": {
-      "name": "AS_CO_UT_filterCdtByField",
-      "type": "Expression Rule",
-      "sail_code": "/*Take the input of a cdt, field, and value and returns the matching cdt data\n\nex. cdt of users, filter by field isActive and value of true to find your active users\n*/\ncast(\n  typeof(ri!cdt),\n  index(\n    a!flatten(ri!cdt),\n    rule!AS_CO_UT_returnCdtIndicesByField(\n      cdt: ri!cdt,\n      field: ri!field,\n      value: ri!value\n    ),\n    {}\n  )\n)"
     }
   }
 }

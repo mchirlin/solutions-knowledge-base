@@ -3,55 +3,55 @@
     "bundle_id": "AS_GCM_Acquisitiongov_Weekly_Sync_Wrapper"
   },
   "objects": {
+    "_a-0000e5d4-2024-8000-9baf-011c48011c48_320878": {
+      "name": "AS_FRM_determineRuntimeRule",
+      "type": "Expression Rule",
+      "sail_code": "if( \n  cons!AS_FRM_BOOL_RULE_CUSTOMIZATION_1_0_ENABLED,\n  \n  determineruntimerule(ri!defaultRuleReference),\n  \n  ri!defaultRuleReference\n)"
+    },
     "_a-0000e86e-0144-8000-9c00-011c48011c48_2768445": {
       "name": "AS_GCM_FAR_GithubSyncEnabled_wrapper",
       "type": "Expression Rule",
       "sail_code": "a!localVariables(\n  /*Determine whether to execute the _default or _custom rule*/\n  local!runtimeRule: a!refreshVariable(\n    value: rule!AS_FRM_determineRuntimeRule(\n      defaultRuleReference: rule!AS_GCM_GithubSyncEnabled_v1_default\n    ),\n    refreshAlways: true\n  ),\n  local!runtimeRule()\n)"
-    },
-    "_a-0000ebaa-27e9-8000-9d43-011c48011c48_11482844": {
-      "name": "AS_GCM_DFARS_GithubSyncEnabled_wrapper",
-      "type": "Expression Rule",
-      "sail_code": "a!localVariables(\n  /*Determine whether to execute the _default or _custom rule*/\n  local!runtimeRule: a!refreshVariable(\n    value: rule!AS_FRM_determineRuntimeRule(\n      defaultRuleReference: rule!AS_GCM_DFARS_GithubSyncEnabled_v1_default\n    ),\n    refreshAlways: true\n  ),\n  /*Setting Default as true in case of invalid toggle value*/\n  if(\n    rule!AS_CO_UT_typeCompare(\n      value1: local!runtimeRule(),\n      value2: true()\n    ),\n    local!runtimeRule(),\n    true\n  )\n)"
-    },
-    "_a-0000e67d-efac-8000-9bcd-011c48011c48_1467520": {
-      "name": "AS_GCM_calculateAcquisitionWeeklySyncWaitUntil",
-      "type": "Expression Rule",
-      "sail_code": "a!localVariables(\n  local!timezone: \"America/New_York\",\n  a!map(\n    farWaitUntil: rule!AS_GCM_returnAcquisitionWaitUntilTimeBasedOnScheduleConfig(\n      scheduleConfig: rule!AS_GCM_FAR_AcquisitionWeeklySyncSchedule_wrapper(),\n      isSyncEnabled: rule!AS_GCM_FAR_GithubSyncEnabled_wrapper(),\n      timezone: local!timezone\n    ),\n    dfarsWaitUntil: rule!AS_GCM_returnAcquisitionWaitUntilTimeBasedOnScheduleConfig(\n      scheduleConfig: rule!AS_GCM_DFARS_AcquisitionWeeklySyncSchedule_wrapper(),\n      isSyncEnabled: rule!AS_GCM_DFARS_GithubSyncEnabled_wrapper(),\n      timezone: local!timezone\n    )\n  )\n)"
     },
     "_a-0000e67d-efac-8000-9bcd-011c48011c48_1467432": {
       "name": "AS_GCM_FAR_AcquisitionWeeklySyncSchedule_wrapper",
       "type": "Expression Rule",
       "sail_code": "a!localVariables(\n  /*Determine whether to execute the _default or _custom rule*/\n  local!runtimeRule: a!refreshVariable(\n    value: rule!AS_FRM_determineRuntimeRule(\n      defaultRuleReference: rule!AS_GCM_AcquisitionWeeklySyncSchedule_v1_default\n    ),\n    refreshAlways: true\n  ),\n  local!runtimeRule()\n)"
     },
-    "_a-0000e5d4-2024-8000-9baf-011c48011c48_320878": {
-      "name": "AS_FRM_determineRuntimeRule",
-      "type": "Expression Rule",
-      "sail_code": "if( \n  cons!AS_FRM_BOOL_RULE_CUSTOMIZATION_1_0_ENABLED,\n  \n  determineruntimerule(ri!defaultRuleReference),\n  \n  ri!defaultRuleReference\n)"
-    },
-    "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_162769": {
-      "name": "AS_CO_UT_typeCompare",
-      "type": "Expression Rule",
-      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  typeof(ri!value1) = typeof(ri!value2)\n)"
-    },
     "_a-0000ebbc-9d1b-8000-9d4f-011c48011c48_11603130": {
       "name": "AS_GCM_DFARS_getRefTypeFromSync",
       "type": "Expression Rule",
       "sail_code": "a!match(\n  value: ri!clauseText,\n  whenTrue: or(\n    search(\"Endofclause\", fv!value) <> 0,\n    search(\"clause:\", fv!value) <> 0,\n    search(\"following clauses\",fv!value) <> 0,\n  ),\n  then: cons!AS_GCM_REF_ID_TYPE_CLAUSE,\n  whenTrue: or(\n    search(\"Endofprovision\", fv!value) <> 0,\n    search(\"provision:\", fv!value) <> 0,\n    search(\"provision at\",fv!value) <> 0\n  ),\n  then: cons!AS_GCM_REF_ID_TYPE_PROVISION,\n  default: null\n)"
     },
-    "_a-0000ebd8-3ec1-8000-9d5d-011c48011c48_11855045": {
-      "name": "AS_GCM_returnAcquisitionWaitUntilTimeBasedOnScheduleConfig",
+    "_a-0000ebaa-27e9-8000-9d43-011c48011c48_11482844": {
+      "name": "AS_GCM_DFARS_GithubSyncEnabled_wrapper",
       "type": "Expression Rule",
-      "sail_code": "a!localVariables(\n  local!dayOfMonth: day(today()),\n  local!dayOfWeek: choose(\n    weekday(today()),\n    \"SUNDAY\",\n    \"MONDAY\",\n    \"TUESDAY\",\n    \"WEDNESDAY\",\n    \"THURSDAY\",\n    \"FRIDAY\",\n    \"SATURDAY\"\n  ),\n  local!shouldSyncRunToday: and(\n    /*Check that it's not disabled*/\n    ri!scheduleConfig.isDisabled <> true,\n    /*Check if the sync is enabled*/\n    ri!isSyncEnabled = true(),\n    /*Check that either its the right day of the week or the right day of the month*/\n    or(\n      contains(\n        touniformstring(ri!scheduleConfig.daysOfWeek),\n        local!dayOfWeek\n      ),\n      contains(\n        tointeger(ri!scheduleConfig.daysOfMonth),\n        local!dayOfMonth\n      )\n    )\n  ),\n  if(\n    local!shouldSyncRunToday,\n    /*Determine how long to wait until if the sync should run today*/\n    today() + ri!scheduleConfig.timeInEst - offsetfromgmt(\n      now(),\n      a!defaultValue(\n        value: ri!timezone,\n        default: \"America/New_York\"\n      )\n    ) / 60 / 24,\n    /*Else return null*/\n    null\n  )\n)"
+      "sail_code": "a!localVariables(\n  /*Determine whether to execute the _default or _custom rule*/\n  local!runtimeRule: a!refreshVariable(\n    value: rule!AS_FRM_determineRuntimeRule(\n      defaultRuleReference: rule!AS_GCM_DFARS_GithubSyncEnabled_v1_default\n    ),\n    refreshAlways: true\n  ),\n  /*Setting Default as true in case of invalid toggle value*/\n  if(\n    rule!AS_CO_UT_typeCompare(\n      value1: local!runtimeRule(),\n      value2: true()\n    ),\n    local!runtimeRule(),\n    true\n  )\n)"
     },
     "0002e68d-05ac-8000-1deb-7f0000014e7a": {
       "name": "AS GCM Acquisition.gov Weekly Sync Wrapper",
       "type": "Process Model",
       "sail_code": "// Input: ?\n=rule!AS_GCM_DFARS_getRefTypeFromSync(source: cons!AS_GCM_REF_ID_SOURCE_FAR).wrapperProcessModel\n\n// Input: ?\n= rule!AS_GCM_DFARS_getRefTypeFromSync(source: cons!AS_GCM_REF_ID_SOURCE_DFARS).wrapperProcessModel\n\n// Input: ?\n=rule!AS_GCM_calculateAcquisitionWeeklySyncWaitUntil()\n\n// Output: ?\nac!waitUntilMap.farWaitUntil\n\n// Output: ?\nac!waitUntilMap.dfarsWaitUntil"
     },
+    "_a-0000e67d-efac-8000-9bcd-011c48011c48_1467520": {
+      "name": "AS_GCM_calculateAcquisitionWeeklySyncWaitUntil",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!timezone: \"America/New_York\",\n  a!map(\n    farWaitUntil: rule!AS_GCM_returnAcquisitionWaitUntilTimeBasedOnScheduleConfig(\n      scheduleConfig: rule!AS_GCM_FAR_AcquisitionWeeklySyncSchedule_wrapper(),\n      isSyncEnabled: rule!AS_GCM_FAR_GithubSyncEnabled_wrapper(),\n      timezone: local!timezone\n    ),\n    dfarsWaitUntil: rule!AS_GCM_returnAcquisitionWaitUntilTimeBasedOnScheduleConfig(\n      scheduleConfig: rule!AS_GCM_DFARS_AcquisitionWeeklySyncSchedule_wrapper(),\n      isSyncEnabled: rule!AS_GCM_DFARS_GithubSyncEnabled_wrapper(),\n      timezone: local!timezone\n    )\n  )\n)"
+    },
     "_a-0000ebaa-27e9-8000-9d43-011c48011c48_11482793": {
       "name": "AS_GCM_DFARS_AcquisitionWeeklySyncSchedule_wrapper",
       "type": "Expression Rule",
       "sail_code": "a!localVariables(\n  /*Determine whether to execute the _default or _custom rule*/\n  local!runtimeRule: a!refreshVariable(\n    value: rule!AS_FRM_determineRuntimeRule(\n      defaultRuleReference: rule!AS_GCM_DFARS_AcquisitionWeeklySyncSchedule_v1_default\n    ),\n    refreshAlways: true\n  ),\n  local!runtimeRule()\n)"
+    },
+    "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_162769": {
+      "name": "AS_CO_UT_typeCompare",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  typeof(ri!value1) = typeof(ri!value2)\n)"
+    },
+    "_a-0000ebd8-3ec1-8000-9d5d-011c48011c48_11855045": {
+      "name": "AS_GCM_returnAcquisitionWaitUntilTimeBasedOnScheduleConfig",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!dayOfMonth: day(today()),\n  local!dayOfWeek: choose(\n    weekday(today()),\n    \"SUNDAY\",\n    \"MONDAY\",\n    \"TUESDAY\",\n    \"WEDNESDAY\",\n    \"THURSDAY\",\n    \"FRIDAY\",\n    \"SATURDAY\"\n  ),\n  local!shouldSyncRunToday: and(\n    /*Check that it's not disabled*/\n    ri!scheduleConfig.isDisabled <> true,\n    /*Check if the sync is enabled*/\n    ri!isSyncEnabled = true(),\n    /*Check that either its the right day of the week or the right day of the month*/\n    or(\n      contains(\n        touniformstring(ri!scheduleConfig.daysOfWeek),\n        local!dayOfWeek\n      ),\n      contains(\n        tointeger(ri!scheduleConfig.daysOfMonth),\n        local!dayOfMonth\n      )\n    )\n  ),\n  if(\n    local!shouldSyncRunToday,\n    /*Determine how long to wait until if the sync should run today*/\n    today() + ri!scheduleConfig.timeInEst - offsetfromgmt(\n      now(),\n      a!defaultValue(\n        value: ri!timezone,\n        default: \"America/New_York\"\n      )\n    ) / 60 / 24,\n    /*Else return null*/\n    null\n  )\n)"
     }
   }
 }

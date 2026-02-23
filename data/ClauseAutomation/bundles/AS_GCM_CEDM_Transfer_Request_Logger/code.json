@@ -3,40 +3,40 @@
     "bundle_id": "AS_GCM_CEDM_Transfer_Request_Logger"
   },
   "objects": {
-    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782": {
-      "name": "AS_CO_UT_isNotBlank",
+    "_a-0000ed77-8e71-8000-9df8-011c48011c48_15333671": {
+      "name": "AS_GCM_CEDM_constructLogFileName",
       "type": "Expression Rule",
-      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Boolean',\n  not(rule!AS_CO_UT_isBlank(ri!input))\n)"
-    },
-    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367": {
-      "name": "AS_CO_UT_rejectNullValuesFromArray",
-      "type": "Expression Rule",
-      "sail_code": "cast(\n  typeof(ri!array),\n  reject(\n    rule!AS_CO_UT_isBlank(_),\n    a!flatten(ri!array)\n  )\n)"
+      "sail_code": "\"AS GCM CEDM \" & ri!requestType & \" Log \" & datetext(now(), \"yyyy-MM-dd_HH-mm-ss\")"
     },
     "_a-0000ec62-ac34-8000-9d9a-011c48011c48_13174075": {
       "name": "AS_GCM_CEDM_PLUGIN_readDocumentContent",
       "type": "Expression Rule",
       "sail_code": "if(\n  a!isNotNullOrEmpty(ri!txtFile),\n  readdocumentcontent(ri!txtFile),\n  \"\"\n)"
     },
-    "0007ed7b-fe2d-8000-cb38-7f0000014e7a": {
-      "name": "AS GCM CEDM Transfer Request Logger",
-      "type": "Process Model",
-      "sail_code": "// Input: ?\n=pv!transferRequest\n\n// Input: ?\n=recordType!AS GCM CEDM Transfer Request\n\n// Input: ?\n=pv!transferRequest[recordType!AS GCM CEDM Transfer Request.logFileId]\n\n// Input: ?\n= rule!AS_GCM_CEDM_updateLogFile( logMaps: pv!logMaps, logFile: pv!transferRequest[recordType!AS GCM CEDM Transfer Request.logFileId])\n\n// Input: ?\n=rule!AS_GCM_CEDM_constructLogFileName( requestType: pv!transferRequest[recordType!AS GCM CEDM Transfer Request.requestType])\n\n// Input: ?\n=cons!AS_GCM_CEDM_FLD_IMPORT_EXPORT_LOG_FOLDER\n\n// Input: ?\n=\"\"\n\n// Output: ?\nappian:record-field:v1:f7ab36ba-ae92-4d2d-9fd8-d32994e4e935/0ae970ad-23ef-41f2-9c44-fcf680100b2f\"]:ac!NewDocument"
-    },
-    "_a-0000ed77-8e71-8000-9df8-011c48011c48_15333671": {
-      "name": "AS_GCM_CEDM_constructLogFileName",
-      "type": "Expression Rule",
-      "sail_code": "\"AS GCM CEDM \" & ri!requestType & \" Log \" & datetext(now(), \"yyyy-MM-dd_HH-mm-ss\")"
-    },
     "_a-0000ed77-8e71-8000-9df8-011c48011c48_15333288": {
       "name": "AS_GCM_CEDM_updateLogFile",
       "type": "Expression Rule",
       "sail_code": "a!localVariables(\n  local!existingLogContent: rule!AS_GCM_CEDM_PLUGIN_readDocumentContent(txtFile: ri!logFile),\n  local!newContent: #\"SYSTEM_SYSRULES_forEach\"(\n    items: ri!logMaps,\n    expression: joinarray(\n      rule!AS_CO_UT_rejectNullValuesFromArray(\n        {\n          if(\n            rule!AS_CO_UT_isNotBlank(index(fv!item, \"timestamp\", null)),\n            datetext(now(), \"yyyy-MM-dd HH:mm:ss\"),\n            null\n          ),\n          index(fv!item, \"logLevel\", null),\n          index(fv!item, \"name\", null),\n          index(fv!item, \"uuid\", null),\n          index(fv!item, \"logMessage\", null)\n        }\n      ),\n      char(32)\n    )\n  ),\n  local!updatedContent: joinarray(\n    rule!AS_CO_UT_rejectNullValuesFromArray(\n      {\n        local!existingLogContent,\n        local!newContent\n      }\n    ),\n    char(10)\n  ),\n  local!updatedContent\n)"
     },
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_76367": {
+      "name": "AS_CO_UT_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n  typeof(ri!array),\n  reject(\n    rule!AS_CO_UT_isBlank(_),\n    a!flatten(ri!array)\n  )\n)"
+    },
     "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536": {
       "name": "AS_CO_UT_isBlank",
       "type": "Expression Rule",
       "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  length(a!flatten(ri!value)) = 0\n)"
+    },
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782": {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Boolean',\n  not(rule!AS_CO_UT_isBlank(ri!input))\n)"
+    },
+    "0007ed7b-fe2d-8000-cb38-7f0000014e7a": {
+      "name": "AS GCM CEDM Transfer Request Logger",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n=pv!transferRequest\n\n// Input: ?\n=recordType!AS GCM CEDM Transfer Request\n\n// Input: ?\n=pv!transferRequest[recordType!AS GCM CEDM Transfer Request.logFileId]\n\n// Input: ?\n= rule!AS_GCM_CEDM_updateLogFile( logMaps: pv!logMaps, logFile: pv!transferRequest[recordType!AS GCM CEDM Transfer Request.logFileId])\n\n// Input: ?\n=rule!AS_GCM_CEDM_constructLogFileName( requestType: pv!transferRequest[recordType!AS GCM CEDM Transfer Request.requestType])\n\n// Input: ?\n=cons!AS_GCM_CEDM_FLD_IMPORT_EXPORT_LOG_FOLDER\n\n// Input: ?\n=\"\"\n\n// Output: ?\nappian:record-field:v1:f7ab36ba-ae92-4d2d-9fd8-d32994e4e935/0ae970ad-23ef-41f2-9c44-fcf680100b2f\"]:ac!NewDocument"
     }
   }
 }

@@ -3,40 +3,40 @@
     "bundle_id": "AS_GCM_Update_Specific_Clause_Set_Fields"
   },
   "objects": {
-    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782": {
-      "name": "AS_CO_UT_isNotBlank",
-      "type": "Expression Rule",
-      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Boolean',\n  not(rule!AS_CO_UT_isBlank(ri!input))\n)"
-    },
-    "_a-0000e643-f7f1-8000-9bca-011c48011c48_1403938": {
-      "name": "AS_GCM_VD_duplicateValidationForSetNumbAndCategNumbCombo",
-      "type": "Expression Rule",
-      "sail_code": "a!localVariables(\n  local!clauseSetCount: rule!AS_GCM_QE_getClauseSetDetails(\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT,\n    executeWhen: and(\n      a!isNotNullOrEmpty(ri!clauseSet.setNumber),\n      a!isNotNullOrEmpty(ri!clauseSet.categoryNumber)\n    ),\n    logicalExpression: #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n      operator: \"AND\",\n      filters: {\n        #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: \"isActive\",\n          operator: \"=\",\n          value: true\n        ),\n        #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: \"setId\",\n          operator: \"<>\",\n          value: ri!clauseSet.setId,\n          applywhen: rule!AS_CO_UT_isNotBlank(ri!clauseSet.setId)\n        ),\n        #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: \"setNumber\",\n          operator: \"=\",\n          value: ri!clauseSet.setNumber,\n          applywhen: rule!AS_CO_UT_isNotBlank(ri!clauseSet.setNumber)\n        ),\n        #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: \"categoryNumber\",\n          operator: \"=\",\n          value: ri!clauseSet.categoryNumber,\n          applywhen: rule!AS_CO_UT_isNotBlank(ri!clauseSet.categoryNumber)\n        )\n      }\n    )\n  ),\n  if(\n    local!clauseSetCount > 0,\n    \"\",\n    \"\"\n  )\n)"
-    },
     "_a-0000e63a-a5cb-8000-9bc6-011c48011c48_1230199": {
       "name": "AS_GCM_QE_getClauseSetDetails",
       "type": "Expression Rule",
       "sail_code": "a!match(\n  value: null,\n  whenTrue: and(\n    rule!AS_CO_UT_booleanDefaultFalse(ri!useQueryRecord),\n    rule!AS_CO_UT_isBlank(ri!setId)\n  ),\n  then: rule!AS_CO_UT_queryRecord(\n    returnType: ri!returnType,\n    triggerRefresh: ri!triggerRefresh,\n    recordType: recordType!AS GCM Clause Set,\n    executeWhen: ri!executeWhen,\n    fields: {\n      if(\n        ri!excludeRelatedRecords,\n        {},\n        {\n          recordType!AS GCM Clause Set.contractTypes,\n          /*  Reference data    */\n          recordType!AS GCM Clause Set.refStatus,\n          recordType!AS GCM Clause Set.refContractMethod,\n          recordType!AS GCM Clause Set.refCategory,\n          recordType!AS GCM Clause Set.refType\n        }\n      ),\n      a!defaultValue(ri!fields, {})\n    },\n    relatedRecordData: {\n      #\"SYSTEM_SYSRULES_relatedRecordData\"(\n        relationship: recordType!AS GCM Clause Set.contractTypes,\n        limit: 10,\n        filters: #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: recordType!AS GCM Clause Set Contract Type Map.isActive,\n          operator: \"=\",\n          value: true\n        )\n      ),\n      #\"SYSTEM_SYSRULES_relatedRecordData\"(\n        relationship: recordType!AS GCM Clause Set.clauses,\n        limit: 10,\n        filters: #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n          operator: \"OR\",\n          filters: {\n            #\"SYSTEM_SYSRULES_queryFilter\"(\n              field: recordType!AS GCM Clause Set Clause Synced.isActive,\n              operator: \"=\",\n              value: true\n            ),\n            #\"SYSTEM_SYSRULES_queryFilter\"(\n              field: recordType!AS GCM Clause Set Clause Synced.refUsageId,\n              operator: \"=\",\n              value: cons!AS_GCM_REF_ID_USAGE_EXCLUDED\n            )\n          }\n        )\n      )\n    },\n    logicalExpression: ri!logicalExpression,\n    filters: ri!additionalFilters,\n    pagingInfo: ri!pagingInfo,\n    sort: ri!sort,\n    aggregationFields: ri!aggregation\n  ),\n  whenTrue: and(\n    rule!AS_CO_UT_booleanDefaultFalse(ri!useQueryRecord),\n    rule!AS_CO_UT_isNotBlank(ri!setId),\n    all(\n      rule!AS_CO_UT_isBlank(_),\n      {\n        ri!additionalFilters,\n        ri!logicalExpression,\n        ri!aggregation\n      }\n    )\n  ),\n  then: rule!AS_GCM_UT_queryRecordByIdentifier(\n    refreshInterval: ri!refreshInterval,\n    triggerRefresh: ri!triggerRefresh,\n    recordType: recordType!AS GCM Clause Set,\n    identifier: ri!setId,\n    executeWhen: ri!executeWhen,\n    fields: {\n      if(\n        ri!excludeRelatedRecords,\n        {},\n        {\n          recordType!AS GCM Clause Set.contractTypes,\n          /*  Reference data    */\n          recordType!AS GCM Clause Set.refStatus,\n          recordType!AS GCM Clause Set.refContractMethod,\n          recordType!AS GCM Clause Set.refCategory,\n          recordType!AS GCM Clause Set.refType\n        }\n      ),\n      a!defaultValue(ri!fields, {})\n    },\n    relatedRecordData: {\n      #\"SYSTEM_SYSRULES_relatedRecordData\"(\n        relationship: recordType!AS GCM Clause Set.contractTypes,\n        limit: 100,\n        filters: #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: recordType!AS GCM Clause Set Contract Type Map.isActive,\n          operator: \"=\",\n          value: true\n        )\n      ),\n      #\"SYSTEM_SYSRULES_relatedRecordData\"(\n        relationship: recordType!AS GCM Clause Set.clauses,\n        limit: 100,\n        filters: #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n          operator: \"OR\",\n          filters: {\n            #\"SYSTEM_SYSRULES_queryFilter\"(\n              field: recordType!AS GCM Clause Set Clause Synced.isActive,\n              operator: \"=\",\n              value: true\n            ),\n            #\"SYSTEM_SYSRULES_queryFilter\"(\n              field: recordType!AS GCM Clause Set Clause Synced.refUsageId,\n              operator: \"=\",\n              value: cons!AS_GCM_REF_ID_USAGE_EXCLUDED\n            )\n          }\n        )\n      )\n    }\n  ),\n  default: rule!AS_CO_UT_queryEntity(\n    entity: cons!AS_GCM_ENT_CLAUSE_SET,\n    entityType: 'type!{urn:com:appian:types:AS:GCM}AS_GCM_ClauseSet',\n    returnType: ri!returnType,\n    executeWhen: and(\n      ri!executeWhen,\n      or(\n        any(\n          rule!AS_CO_UT_isNotBlank(_),\n          {\n            ri!additionalFilters,\n            ri!logicalExpression,\n            ri!aggregation\n          }\n        ),\n        rule!AS_CO_UT_isNotBlank(input: ri!setId),\n        rule!AS_CO_UT_isNotBlank(input: ri!solicitationId),\n        rule!AS_CO_UT_isNotBlank(input: ri!awardId)\n      )\n    ),\n    /* To ensure proper null checks, we'll force all queryFilter values to not be null */\n    logicalExpression: ri!logicalExpression,\n    pagingInfo: ri!pagingInfo,\n    sort: ri!sort,\n    triggerRefresh: ri!triggerRefresh,\n    filters: {\n      #\"SYSTEM_SYSRULES_queryFilter\"(\n        field: \"setId\",\n        operator: \"=\",\n        value: ri!setId\n      ),\n      #\"SYSTEM_SYSRULES_queryFilter\"(\n        field: \"solicitationId\",\n        operator: \"=\",\n        value: ri!solicitationId\n      ),\n      #\"SYSTEM_SYSRULES_queryFilter\"(\n        field: \"awardId\",\n        operator: \"=\",\n        value: ri!awardId\n      ),\n      ri!additionalFilters\n    },\n    aggregation: ri!aggregation\n  )\n)"
-    },
-    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536": {
-      "name": "AS_CO_UT_isBlank",
-      "type": "Expression Rule",
-      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  length(a!flatten(ri!value)) = 0\n)"
     },
     "_a-0000e9ef-12bc-8000-9c7a-011c48011c48_6025489": {
       "name": "AS_GCM_VLD_isAnyClauseSetFieldInvalid",
       "type": "Expression Rule",
       "sail_code": "/*Returns true if the clause set fields are violating the validation rules. Else returns false*/\nor(\n  rule!AS_CO_UT_isBlank(ri!clauseSet),\n  len(\n    ri!clauseSet[recordType!AS GCM Clause Set.setNumber]\n  ) > cons!AS_GAM_ENUM_TEXT_LENGTH_MEDIUM_SHORT,\n  len(\n    ri!clauseSet[recordType!AS GCM Clause Set.categoryNumber]\n  ) > cons!AS_GAM_ENUM_TEXT_LENGTH_MEDIUM_SHORT,\n  rule!AS_CO_UT_isNotBlank(\n    rule!AS_GCM_VD_duplicateValidationForSetNumbAndCategNumbCombo(clauseSet: ri!clauseSet)\n  )\n)"
     },
-    "0006e9f5-f6ab-8000-6a3e-7f0000014e7a": {
-      "name": "AS GCM Update Specific Clause Set Fields",
-      "type": "Process Model",
-      "sail_code": "// Input: ?\n=pv!clauseSet\n\n// Input: ?\n=cons!AS_GCM_PM_CLAUSE_SET_AUDIT\n\n// Input: ?\n= { clauseSet: rule!AS_CO_UT_cast( type: 'type!{urn:com:appian:types:AS:GCM}AS_GCM_ClauseSet', value: pv!clauseSet ), originalClauseSet: rule!AS_CO_UT_cast( type: 'type!{urn:com:appian:types:AS:GCM}AS_GCM_ClauseSet', value: pv!originalClauseSet ), initiator: pp!initiator}"
-    },
     "_a-0000e3e6-fb42-8000-9ba5-011c48011c48_157603": {
       "name": "AS_CO_UT_cast",
       "type": "Expression Rule",
       "sail_code": "with(  \n  local!typeNumber: rule!AS_CO_UT_returnTypeNumber(\n    type: ri!type,\n    typeOf: ri!typeOf\n  ),\n\n  /* If the object is empty, use null or {} depending on if it is array type or not */\n  local!objectToCast: if(\n    rule!AS_CO_UT_isNotBlank(ri!value),\n    ri!value,\n    rule!AS_CO_UT_checkIfSingleType(\n      type: ri!type,\n      typeOf: ri!typeOf\n    ),\n    null,\n    {}\n  ),\n\n  cast(\n    local!typeNumber,\n    local!objectToCast\n  )\n  \n)"
+    },
+    "_a-0000e643-f7f1-8000-9bca-011c48011c48_1403938": {
+      "name": "AS_GCM_VD_duplicateValidationForSetNumbAndCategNumbCombo",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!clauseSetCount: rule!AS_GCM_QE_getClauseSetDetails(\n    returnType: cons!AS_CO_ENUM_QE_RETURN_TYPE_TOTAL_COUNT,\n    executeWhen: and(\n      a!isNotNullOrEmpty(ri!clauseSet.setNumber),\n      a!isNotNullOrEmpty(ri!clauseSet.categoryNumber)\n    ),\n    logicalExpression: #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n      operator: \"AND\",\n      filters: {\n        #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: \"isActive\",\n          operator: \"=\",\n          value: true\n        ),\n        #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: \"setId\",\n          operator: \"<>\",\n          value: ri!clauseSet.setId,\n          applywhen: rule!AS_CO_UT_isNotBlank(ri!clauseSet.setId)\n        ),\n        #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: \"setNumber\",\n          operator: \"=\",\n          value: ri!clauseSet.setNumber,\n          applywhen: rule!AS_CO_UT_isNotBlank(ri!clauseSet.setNumber)\n        ),\n        #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: \"categoryNumber\",\n          operator: \"=\",\n          value: ri!clauseSet.categoryNumber,\n          applywhen: rule!AS_CO_UT_isNotBlank(ri!clauseSet.categoryNumber)\n        )\n      }\n    )\n  ),\n  if(\n    local!clauseSetCount > 0,\n    \"\",\n    \"\"\n  )\n)"
+    },
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_73536": {
+      "name": "AS_CO_UT_isBlank",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  length(a!flatten(ri!value)) = 0\n)"
+    },
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782": {
+      "name": "AS_CO_UT_isNotBlank",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Boolean',\n  not(rule!AS_CO_UT_isBlank(ri!input))\n)"
+    },
+    "0006e9f5-f6ab-8000-6a3e-7f0000014e7a": {
+      "name": "AS GCM Update Specific Clause Set Fields",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n=pv!clauseSet\n\n// Input: ?\n=cons!AS_GCM_PM_CLAUSE_SET_AUDIT\n\n// Input: ?\n= { clauseSet: rule!AS_CO_UT_cast( type: 'type!{urn:com:appian:types:AS:GCM}AS_GCM_ClauseSet', value: pv!clauseSet ), originalClauseSet: rule!AS_CO_UT_cast( type: 'type!{urn:com:appian:types:AS:GCM}AS_GCM_ClauseSet', value: pv!originalClauseSet ), initiator: pp!initiator}"
     }
   }
 }

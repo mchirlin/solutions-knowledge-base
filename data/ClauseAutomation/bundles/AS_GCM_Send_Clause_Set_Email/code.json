@@ -3,15 +3,10 @@
     "bundle_id": "AS_GCM_Send_Clause_Set_Email"
   },
   "objects": {
-    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782": {
-      "name": "AS_CO_UT_isNotBlank",
+    "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_100254": {
+      "name": "AS_CO_UT_getSiteUrl",
       "type": "Expression Rule",
-      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Boolean',\n  not(rule!AS_CO_UT_isBlank(ri!input))\n)"
-    },
-    "0002ed5d-7bb8-8000-c805-7f0000014e7a": {
-      "name": "AS GCM Send Clause Set Email",
-      "type": "Process Model",
-      "sail_code": "// Input: ?\n=getProcessModelEmail(pm!id)\n\n// Input: ?\n=toemailrecipient(pp!initiator)\n\n// Input: ?\n= rule!AS_GCM_emailContentForClauseSetCreateAndUpdate( isSubject: true, username: pp!initiator, clauseSet: pv!clauseSet)\n\n// Input: ?\n= rule!AS_GCM_emailContentForClauseSetCreateAndUpdate( isSubject: false, username: pp!initiator, clauseSet: pv!clauseSet, isShowClauseSetLink: pv!isShowClauseSetLink)"
+      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Text',\n  extract(linktodocument(0, \"doc\"), \"\"\"\", \"doc/\")\n)"
     },
     "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_91843": {
       "name": "AS_CO_UT_urlForRecord",
@@ -23,25 +18,30 @@
       "type": "Expression Rule",
       "sail_code": "with(\n  local!lang: \"en_US\",\n/* below is deprecated for now, uncomment to support multi-language display */\n  /*if(*/\n    /*isnull(ri!langISOCode),*/\n    /*userlocale(loggedInUser()),*/\n    /*ri!langISOCode*/\n  /*),*/\n  local!bundleName: rule!AS_GCM_determineValueBySolutionFlavor(\n    options: cons!AS_GCM_TXT_VALID_SOLUTION_FLAVORS\n  ),\n  /*local!bundleName*/\n  local!output: loadbundlepropertiesfile(\n    cons!AS_GCM_FLD_PROPERTIES_FILES,\n    local!lang,\n    local!bundleName\n  )[local!bundleName],\n  local!output\n)"
     },
-    "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53662": {
-      "name": "AS_GAM_CO_I18N_UT_displayLabel",
-      "type": "Expression Rule",
-      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Text',\n  a!localVariables(\n    local!result: a!refreshVariable(\n      value: if(\n        rule!AS_CO_UT_isBlank(ri!bundleKey),\n        null,\n        if(\n          rule!AS_CO_UT_isBlank(ri!arguments),\n          rule!AS_CO_UT_replaceNull(\n            nullableValue: ri!bundle[ri!bundleKey],\n            replacementValue: ri!bundleKey\n          ),\n          rule!AS_GAM_CO_I18N_UT_replaceArguments(\n            bundleKey: ri!bundle[ri!bundleKey],\n            arguments: ri!arguments\n          )\n        )\n      ),\n      refreshAlways: true\n    ),\n    local!result\n  )\n)"
+    "0002ed5d-7bb8-8000-c805-7f0000014e7a": {
+      "name": "AS GCM Send Clause Set Email",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n=getProcessModelEmail(pm!id)\n\n// Input: ?\n=toemailrecipient(pp!initiator)\n\n// Input: ?\n= rule!AS_GCM_emailContentForClauseSetCreateAndUpdate( isSubject: true, username: pp!initiator, clauseSet: pv!clauseSet)\n\n// Input: ?\n= rule!AS_GCM_emailContentForClauseSetCreateAndUpdate( isSubject: false, username: pp!initiator, clauseSet: pv!clauseSet, isShowClauseSetLink: pv!isShowClauseSetLink)"
     },
-    "_a-0000ed5b-ded3-8000-9df2-011c48011c48_15088557": {
-      "name": "AS_GCM_emailContentForClauseSetCreateAndUpdate",
+    "_a-0000e2ad-62e7-8000-9ba2-011c48011c48_75782": {
+      "name": "AS_CO_UT_isNotBlank",
       "type": "Expression Rule",
-      "sail_code": "a!localVariables(\n  local!bundle: rule!AS_GCM_CO_UT_loadBundleFromFolder(langISOCode: null()),\n  a!match(\n    value: {},\n    whenTrue: and(\n      a!isNullOrEmpty(ri!isSubject),\n      a!isNullOrEmpty(ri!username),\n      a!isNullOrEmpty(ri!clauseSet)\n    ),\n    then: \"\",\n    whenTrue: ri!isSubject = true,\n    then: \"Clause Set Creation is Complete\",\n    default: (\n      \"<!DOCTYPE html> \n<html>\n<body>\n<p>\" & \"Hello\" & \" \" & rule!AS_CO_UT_returnUserFirstName(ri!username) & \"<br>\" & if(\n        ri!isShowClauseSetLink = true,\n        rule!AS_GAM_CO_I18N_UT_displayLabel(\n          bundle: local!bundle,\n          bundleKey: \"txt_ClauseSetLinkForEmail\",\n          arguments: {\n            \"<a href=\" & rule!AS_CO_UT_urlForRecord(\n              recordType: recordType!AS GCM Clause Set,\n              recordId: ri!clauseSet.setId,\n              siteWebAddressIdentifier: cons!AS_GCM_ENUM_TEXT_WEB_ADDRESS_IDENTIFIER,\n              sitePage: cons!AS_GCM_ENUM_TEXT_CLAUSE_SETS_SITE_PAGE\n            ) & \">\" & ri!clauseSet.setNumber & \"</a>\"\n          }\n        ),\n        rule!AS_GAM_CO_I18N_UT_displayLabel(\n          bundle: local!bundle,\n          bundleKey: \"txt_ClauseSetLinkForEmail\",\n          arguments: { ri!clauseSet.setNumber }\n        )\n      ) & \"<br><br>\" & \"Thank You\" & \",<br>\" & \"Clause Automation Admin\" & \"</p></body>\n</html>\"\n    )\n  )\n)"
+      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Boolean',\n  not(rule!AS_CO_UT_isBlank(ri!input))\n)"
     },
     "_a-0000e6a4-3c85-8000-9ba5-011c48011c48_44806": {
       "name": "AS_CO_UT_returnUserFirstName",
       "type": "Expression Rule",
       "sail_code": "if(\n  and(\n    /*username exists*/\n    rule!AS_CO_UT_isNotBlank(ri!username),\n    /*username is a user*/\n    isusernametaken(ri!username)\n  ),\n  user(ri!username, \"firstName\"),\n  ri!username\n)"
     },
-    "_a-0000e2cd-bc96-8000-9ba2-011c48011c48_100254": {
-      "name": "AS_CO_UT_getSiteUrl",
+    "_a-0000ed5b-ded3-8000-9df2-011c48011c48_15088557": {
+      "name": "AS_GCM_emailContentForClauseSetCreateAndUpdate",
       "type": "Expression Rule",
-      "sail_code": "cast(\n   'type!{http://www.appian.com/ae/types/2009}Text',\n  extract(linktodocument(0, \"doc\"), \"\"\"\", \"doc/\")\n)"
+      "sail_code": "a!localVariables(\n  local!bundle: rule!AS_GCM_CO_UT_loadBundleFromFolder(langISOCode: null()),\n  a!match(\n    value: {},\n    whenTrue: and(\n      a!isNullOrEmpty(ri!isSubject),\n      a!isNullOrEmpty(ri!username),\n      a!isNullOrEmpty(ri!clauseSet)\n    ),\n    then: \"\",\n    whenTrue: ri!isSubject = true,\n    then: \"Clause Set Creation is Complete\",\n    default: (\n      \"<!DOCTYPE html> \n<html>\n<body>\n<p>\" & \"Hello\" & \" \" & rule!AS_CO_UT_returnUserFirstName(ri!username) & \"<br>\" & if(\n        ri!isShowClauseSetLink = true,\n        rule!AS_GAM_CO_I18N_UT_displayLabel(\n          bundle: local!bundle,\n          bundleKey: \"txt_ClauseSetLinkForEmail\",\n          arguments: {\n            \"<a href=\" & rule!AS_CO_UT_urlForRecord(\n              recordType: recordType!AS GCM Clause Set,\n              recordId: ri!clauseSet.setId,\n              siteWebAddressIdentifier: cons!AS_GCM_ENUM_TEXT_WEB_ADDRESS_IDENTIFIER,\n              sitePage: cons!AS_GCM_ENUM_TEXT_CLAUSE_SETS_SITE_PAGE\n            ) & \">\" & ri!clauseSet.setNumber & \"</a>\"\n          }\n        ),\n        rule!AS_GAM_CO_I18N_UT_displayLabel(\n          bundle: local!bundle,\n          bundleKey: \"txt_ClauseSetLinkForEmail\",\n          arguments: { ri!clauseSet.setNumber }\n        )\n      ) & \"<br><br>\" & \"Thank You\" & \",<br>\" & \"Clause Automation Admin\" & \"</p></body>\n</html>\"\n    )\n  )\n)"
+    },
+    "_a-0000e61a-f20f-8000-9ba5-011c48011c48_53662": {
+      "name": "AS_GAM_CO_I18N_UT_displayLabel",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Text',\n  a!localVariables(\n    local!result: a!refreshVariable(\n      value: if(\n        rule!AS_CO_UT_isBlank(ri!bundleKey),\n        null,\n        if(\n          rule!AS_CO_UT_isBlank(ri!arguments),\n          rule!AS_CO_UT_replaceNull(\n            nullableValue: ri!bundle[ri!bundleKey],\n            replacementValue: ri!bundleKey\n          ),\n          rule!AS_GAM_CO_I18N_UT_replaceArguments(\n            bundleKey: ri!bundle[ri!bundleKey],\n            arguments: ri!arguments\n          )\n        )\n      ),\n      refreshAlways: true\n    ),\n    local!result\n  )\n)"
     }
   }
 }

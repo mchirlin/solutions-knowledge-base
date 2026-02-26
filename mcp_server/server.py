@@ -17,10 +17,12 @@ Usage:
 
 from __future__ import annotations
 
+import asyncio
 import json
 import sys
 
-from mcp.server.fastmcp import FastMCP
+import httpx
+from mcp.server.fastmcp import FastMCP, Image
 
 from mcp_server.datasource import DataSource, GitHubDataSource, LocalDataSource
 
@@ -46,7 +48,150 @@ def _truncate(data: dict | list, max_chars: int = 80_000) -> dict | list | str:
     }
 
 
+# ── SAIL Validation Config ───────────────────────────────────────────────
+
+SAIL_VALIDATE_URL = "https://eng-test-aidc-dev.appianpreview.com/suite/webapi/evaluate-sail"
+SAIL_VALIDATE_API_KEY = (
+    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9"
+    ".eyJzdWIiOiJhYWUxMWUzNC02ZDk3LWJjYWItMTJmYS1lOTJmZDljNjMyZWMifQ"
+    ".I4QwXQ2Jz9suvbS16AVSM-OIg3gUesqHQmTUMw8JSHo"
+)
+
+# ── Screenshot Config ────────────────────────────────────────────────────
+
+_screenshot_config: dict = {}
+
+
+async def _take_screenshot(
+    site: str,
+    page_name: str | None = None,
+    width: int = 1440,
+    height: int = 900,
+    full_page: bool = True,
+    wait_seconds: float = 3.0,
+) -> bytes:
+    """Launch headless Chromium, log in to Appian, navigate to the
+    site/page, wait for rendering, and return PNG bytes."""
+    from playwright.async_api import async_playwright
+
+    host = _screenshot_config["host"].rstrip("/")
+    username = _screenshot_config["username"]
+    password = _screenshot_config["password"]
+
+    target = f"{host}/suite/sites/{site}"
+    if page_name:
+        target += f"/page/{page_name}"
+
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        context = await browser.new_context(
+            viewport={"width": width, "height": height},
+            ignore_https_errors=True,
+        )
+        pg = await context.new_page()
+
+        await pg.goto(target, wait_until="networkidle", timeout=30000)
+
+        # Fill login form if redirected to login page
+        if "login" in pg.url.lower():
+            un_field = pg.locator('input[name="un"]')
+            await un_field.wait_for(state="visible", timeout=10000)
+            await un_field.fill(username)
+            await pg.locator('input[name="pw"]').fill(password)
+
+            sign_in = pg.locator(
+                'input[type="submit"], button[type="submit"], '
+                'button:has-text("Sign In"), a:has-text("Sign In")'
+            ).first
+            await sign_in.click()
+            await pg.wait_for_load_state("networkidle", timeout=30000)
+
+            # Wait for URL to change away from login
+            for _ in range(10):
+                if "login" not in pg.url.lower():
+                    break
+                await asyncio.sleep(1)
+
+        # Post-login redirect if needed
+        if site not in pg.url:
+            await pg.goto(target, wait_until="networkidle", timeout=30000)
+
+        # Wait for SAIL rendering
+        await asyncio.sleep(wait_seconds)
+
+        png_bytes = await pg.screenshot(full_page=full_page)
+        await browser.close()
+
+    return png_bytes
+
 # ── Tools ───────────────────────────────────────────────────────────────
+
+
+@mcp.tool()
+def validate_expression(expression: str) -> dict:
+    """Validate a SAIL expression by sending it to the Appian evaluation API.
+
+    Returns the evaluated interface on success, or the error details on failure.
+
+    Args:
+        expression: The SAIL expression string to validate.
+    """
+    headers = {
+        "Appian-API-Key": SAIL_VALIDATE_API_KEY,
+    }
+    try:
+        body_bytes = expression.encode("utf-8")
+        resp = httpx.post(
+            SAIL_VALIDATE_URL,
+            headers=headers,
+            content=body_bytes,
+            timeout=30.0,
+        )
+        return {
+            "status": resp.status_code,
+            "success": resp.is_success,
+            "body": resp.json() if resp.headers.get("content-type", "").startswith("application/json") else resp.text,
+        }
+    except httpx.HTTPError as e:
+        return {"status": None, "success": False, "error": str(e)}
+
+
+@mcp.tool()
+async def screenshot_page(
+    site: str,
+    page: str = "",
+    width: int = 1440,
+    height: int = 900,
+    full_page: bool = True,
+    wait_seconds: float = 3.0,
+) -> Image:
+    """Take a screenshot of an Appian site page.
+
+    Launches a headless browser, logs in, navigates to the page,
+    waits for SAIL to render, and returns the screenshot as a
+    base64-encoded PNG. The LLM can view this image directly to
+    compare against a design mockup.
+
+    Args:
+        site: The Appian site URL stub (e.g. 'test-site').
+        page: The page URL stub within the site (e.g. 'test-interface').
+              Leave empty to screenshot the site landing page.
+        width: Browser viewport width in pixels (default 1440).
+        height: Browser viewport height in pixels (default 900).
+        full_page: If true, capture the full scrollable page (default true).
+        wait_seconds: Seconds to wait after navigation for SAIL rendering (default 3).
+    """
+    if not _screenshot_config:
+        return Image(data=b"", format="png")  # no config — return empty
+    png = await _take_screenshot(
+        site=site,
+        page_name=page or None,
+        width=width,
+        height=height,
+        full_page=full_page,
+        wait_seconds=wait_seconds,
+    )
+    return Image(data=png, format="png")
 
 
 @mcp.tool()
@@ -278,6 +423,11 @@ def main():
     parser.add_argument("--branch", default="main", help="Git branch (default: main)")
     parser.add_argument("--data-prefix", default="data", help="Path prefix in repo for app folders (default: data)")
 
+    # Screenshot options (optional — enables the screenshot_page tool)
+    parser.add_argument("--appian-host", help="Appian base URL for screenshots")
+    parser.add_argument("--appian-username", help="Appian login username for screenshots")
+    parser.add_argument("--appian-password", help="Appian login password for screenshots")
+
     args = parser.parse_args()
 
     global _ds
@@ -299,6 +449,15 @@ def main():
             branch=args.branch,
             data_prefix=args.data_prefix,
         )
+
+    # Configure screenshot if all three args provided
+    global _screenshot_config
+    if args.appian_host and args.appian_username and args.appian_password:
+        _screenshot_config.update({
+            "host": args.appian_host,
+            "username": args.appian_username,
+            "password": args.appian_password,
+        })
 
     mcp.run(transport="stdio")
 

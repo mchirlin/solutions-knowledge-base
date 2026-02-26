@@ -1,0 +1,82 @@
+{
+  "_metadata": {
+    "bundle_id": "AIA_Generic_Prompt"
+  },
+  "objects": {
+    "_a-0000ecfc-48c9-8000-9c55-011c48011c48_234937": {
+      "name": "AIA_ENUM_LlmVersions",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!allModels: a!flatten(\n    {\n      a!map(\n        label: \"Anthropic Claude Haiku 3.0 (Fast)\",\n        value: cons!AIA_MODEL_HAIKU_3,\n      ),\n      a!map(\n        label: \"Anthropic Claude Haiku 4.5 (Fast)\",\n        value: cons!AIA_MODEL_HAIKU_4_5,\n      ),\n      a!map(\n        label: \"Anthropic Claude Sonnet 3.0 (Legacy, Reasoning)\",\n        value: cons!AIA_MODEL_SONNET_3,\n      ),\n      a!map(\n        label: \"Anthropic Claude Sonnet 3.5 (Reasoning)\",\n        value: cons!AIA_MODEL_SONNET_3_5\n      ),\n      a!map(\n        label: \"Anthropic Claude Sonnet 3.7 (Reasoning)\",\n        value: cons!AIA_MODEL_SONNET_3_7\n      ),\n      a!map(\n        label: \"Anthropic Claude Sonnet 4.5 (Reasoning)\",\n        value: cons!AIA_MODEL_SONNET_4_5\n      ),\n      if(\n        ri!includeVision,\n        {\n          /*model values iwth | to split name and mode are used in AI Reviewer/Judge*/\n          a!map(\n            label: \"Anthropic Claude Haiku 4.5 (Vision)\",\n            value: cons!AIA_MODEL_HAIKU_4_5_MULTIMODAL,\n          ),\n          a!map(\n            label: \"Anthropic Claude Sonnet 3.5 (Vision)\",\n            value: cons!AIA_MODEL_SONNET_3_5_MULTIMODAL\n          ),\n          a!map(\n            label: \"Anthropic Claude Sonnet 3.7 (Vision)\",\n            value: cons!AIA_MODEL_SONNET_3_7_MULTIMODAL\n          ),\n          a!map(\n            label: \"Anthropic Claude Sonnet 4.5 (Vision)\",\n            value: cons!AIA_MODEL_SONNET_4_5_MULTIMODAL\n          )\n        },\n        null\n      )\n    }\n  ),\n  if(\n    a!defaultValue(ri!returnOnlySupportedLlms, true),\n    a!localVariables(\n      local!supportedModels: a!genAiModels(),\n      reject(\n        fn!isnull,\n        #\"SYSTEM_SYSRULES_forEach\"(\n          items: local!allModels,\n          expression: if(\n            or(\n              a!isNullOrEmpty(fv!item.value),\n              contains(\n                touniformstring(local!supportedModels.id),\n                tostring(split(fv!item.value,\"|\")[1])\n              )\n            ),\n            fv!item,\n            null\n          )\n        )\n      )\n    ),\n    local!allModels\n  )\n)"
+    },
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_86498": {
+      "name": "AIA_CreateGenAiValidation",
+      "type": "Expression Rule",
+      "sail_code": "rule!AIA_CreateValidation(\n  typeId: cons!AIA_VALIDATION_TYPE_ID_EXECUTION,\n  instanceId: ri!instanceId,\n  instanceType: ri!instanceType,\n  message: rule!AIA_CreateValidationErrorMessage(\n    type: #\"urn:appian:translation-string:v1:0a45afc5-af72-4009-8441-7caf2ce7509d\",\n    error: ri!errorMessage\n  ),\n  severity: cons!AIA_GEN_AI_SEVERITY\n)"
+    },
+    "_a-0000eed9-05f0-8000-9d10-011c48011c48_196107": {
+      "name": "AIA_IsRetryable",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!errors: {\n    \"unexpected error\",\n    \"try again\"\n  },\n  or(\n    #\"SYSTEM_SYSRULES_forEach\"(\n      local!errors,\n      find(fv!item, trim(lower(ri!error))) > 0\n    )\n  )\n)"
+    },
+    "_a-0000eed9-05f0-8000-9d10-011c48011c48_194872": {
+      "name": "AIA_DefaultModel",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!default: cons!AIA_MODEL_HAIKU_4_5,\n  if(\n    /*check default model is enabled in env*/\n    contains(\n      a!genAiModels().id,\n      local!default\n    ),\n    /*if so, use default*/\n    local!default,\n    /*else default to first available model*/\n    tostring(index(a!genAiModels().id,1,\"\"))\n  )\n)"
+    },
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_85019": {
+      "name": "AIA_IsExtractionInstance",
+      "type": "Expression Rule",
+      "sail_code": "runtimetypeof(\n  ri!Instance\n) = typeof(\n  recordType!AIA Extraction Instance()\n)"
+    },
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_90047": {
+      "name": "AIA_CreateValidationErrorMessage",
+      "type": "Expression Rule",
+      "sail_code": "#\"SYSTEM_SYSRULES_toJson_v1\"(\n  a!map(\n    type: ri!type,\n    error: ri!error\n  )\n)"
+    },
+    "_a-0000eed9-05f0-8000-9d10-011c48011c48_195035": {
+      "name": "AIA_GetLLMName",
+      "type": "Expression Rule",
+      "sail_code": "with(\n  local!options: rule!AIA_ENUM_LlmVersions(\n    includeVision: true,\n    returnOnlySupportedLlms: false\n  ),\n  displayvalue(\n    ri!llm,\n    local!options.value,\n    local!options.label,\n    \"\"\n  )\n)"
+    },
+    "_a-0000eeeb-a4e0-8000-9d56-011c48011c48_208493": {
+      "name": "AIA_GenericPromptRuntimeModel_Multimodal",
+      "type": "Expression Rule",
+      "sail_code": "a!match(\n  value: ri!llm,\n  /*general active logic for selecting llm*/\n  default: a!defaultValue(\n    ri!llm,\n    rule!AIA_DefaultModel()\n  ),\n  \n  /*one of logic can be added below*/\n\n  /*legacy haiku 3 behavior was to use 4.5 for multimodal so retain that*/\n  equals: cons!AIA_MODEL_HAIKU_3,\n  then: cons!AIA_MODEL_HAIKU_4_5\n)"
+    },
+    "_a-0000ee5d-151c-8000-9ba8-011c48011c48_32234": {
+      "name": "AIA_ProcessInputMap",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  a!isNotNullOrEmpty(ri!inputMap.parameters),\n  reduce(\n    rule!SHRD_ReduceSubstitute,\n    ri!inputMap.input,\n    ri!inputMap.parameters\n  ),\n  ri!inputMap.input\n)"
+    },
+    "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40839": {
+      "name": "AIA_Test_GetLatestExtractionInstance",
+      "type": "Expression Rule",
+      "sail_code": "rule!AIA_Extraction_GetInstanceById(\n  identifier: #\"SYSTEM_SYSRULES_queryRecordType_v3\"(\n    recordType: recordType!AIA Extraction Instance,\n    pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n      startIndex: 1,\n      batchSize: 1,\n      sort: {\n        #\"SYSTEM_SYSRULES_sortInfo\"(\n          field: recordType!AIA Extraction Instance.id\n        )\n      }\n    )\n  ).data[recordType!AIA Extraction Instance.id],\n  additionalFields: {\n    recordType!AIA Extraction Instance.instanceUuid,\n    recordType!AIA Extraction Instance.modelVersion.versionId,\n    recordType!AIA Extraction Instance.modelVersion.modelId,\n    recordType!AIA Extraction Instance.modelVersion.uuid,\n    recordType!AIA Extraction Instance.modelVersion.extractionModel.key,\n    recordType!AIA Extraction Instance.documentFolderId,\n    recordType!AIA Extraction Instance.fieldCount,\n    recordType!AIA Extraction Instance.sections,\n    recordType!AIA Extraction Instance.boundingBoxes,\n    recordType!AIA Extraction Instance.responseDocumentId,\n    recordType!AIA Extraction Instance.sourceDocumentId\n  }\n)"
+    },
+    "_a-0000eeee-1c1d-8000-9d66-011c48011c48_213902": {
+      "name": "AIA_wasFixJsonOutputInvalid",
+      "type": "Expression Rule",
+      "sail_code": "or(\n  a!isNullOrEmpty(\n    rule!AIA_ExtractJson(json: ri!responseJson)\n  ),\n  rule!AIA_ExtractJson(json: ri!responseJson).error = cons!AIA_FIX_JSON_ERROR_MESSAGE_NO_RECOGNIZABLE_JSON\n)"
+    },
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76653": {
+      "name": "AIA_CreateValidation",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!isExtraction: rule!AIA_IsExtractionInstance(\n    instance: ri!Instance\n  ),\n  recordType!AIA Instance Validation Error(\n    recordType!AIA Instance Validation Error.instanceId: a!defaultValue(\n      ri!instanceId,\n      if(\n        local!isExtraction,\n        ri!Instance[recordType!AIA Extraction Instance.id],\n        ri!Instance[recordType!AIA Classification Instance.id]\n      )\n    ),\n    recordType!AIA Instance Validation Error.instanceType: a!defaultValue(\n      ri!instanceType,\n      if(\n        local!isExtraction,\n        cons!AIA_MODEL_TYPE_VALUES[1],\n        cons!AIA_MODEL_TYPE_VALUES[2]\n      )\n    ),\n    recordType!AIA Instance Validation Error.typeId: ri!typeId,\n    recordType!AIA Instance Validation Error.message: ri!message,\n    recordType!AIA Instance Validation Error.severity: ri!severity\n  )\n)"
+    },
+    "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40909": {
+      "name": "AIA_ExtractJson",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!firstTry: rule!AIA_ExtractJsonInner(\n    json: ri!json\n  ),\n  local!result: if(\n    a!isNotNullOrEmpty(local!firstTry),\n    local!firstTry,\n    a!localVariables(\n      local!secondTry: rule!AIA_ExtractJsonInner(\n        json: index(split(ri!json, \"Appian's private AI\"), 1, null),\n      ),\n      if(\n        a!isNotNullOrEmpty(local!secondTry),\n        local!secondTry,\n        a!localVariables(\n          local!thirdTry: rule!AIA_ExtractJsonInner(\n            json: index(split(ri!json, \"Appian's private AI\"), 2, null),\n          ),\n          if(\n            a!isNotNullOrEmpty(local!thirdTry),\n            local!thirdTry,\n            a!localVariables(\n              local!forthTry: rule!AIA_ExtractJsonInner(\n                json: index(split(ri!json, \"<output>\"), 1, null),\n              ),\n              if(\n                a!isNotNullOrEmpty(local!forthTry),\n                local!forthTry,\n                a!localVariables(\n                  local!fifthTry: rule!AIA_ExtractJsonInner(\n                    json: index(split(ri!json, \"</entities>\"), 1, null),\n                  ),\n                  local!fifthTry\n                )\n              )\n            )\n          )\n        )\n      )\n    )\n  ),\n  local!finalResult: if(\n    a!isNullOrEmpty(local!result),\n    null,\n    if(\n      a!defaultValue(ri!returnList, true),\n      local!result,\n      if(\n        rule!SHRD_IsList(local!result),\n        null,\n        local!result\n      )\n    )\n  ),\n  /* Handle scenario where the result comes back as properties of a $schema */\n  if(\n    or(\n      a!defaultValue(ri!returnList, true),\n      a!isNullOrEmpty(local!finalResult),\n      not(contains(\n        a!keys(local!finalResult),\n        \"$schema\"\n      ))\n    ),\n    local!finalResult,\n    local!finalResult.properties\n  )\n)"
+    },
+    "0002ecfc-ece4-8000-0953-7f0000014e7a": {
+      "name": "AIA Generic Prompt",
+      "type": "Process Model",
+      "sail_code": "// Output: ?\npv!retryCount + 1\n\n// Output: ?\nrule!AIA_DefaultModel()\n\n// Input: ?\nrule!AIA_CreateGenAiValidation(\n  instanceId: pv!instanceId,\n  instanceType: pv!instanceType,\n  errorMessage: pv!processName & \": \" & pv!errorMessage\n)\n\n// Input: ?\nrule!AIA_CreateGenAiValidation(\n  instanceId: pv!instanceId,\n  instanceType: pv!instanceType,\n  errorMessage: a!defaultValue(\n    value: a!defaultValue(\n      value: rule!AIA_ExtractJson(json: pv!responseJson).details,\n      default: rule!AIA_ExtractJson(json: pv!responseJson).error\n    ),\n    default: #\"urn:appian:translation-string:v1:c51ac64b-a256-4c45-824c-8f9fb23e245f\"\n  )\n)\n\n// Input: ?\n=rule!AIA_ProcessInputMap(inputMap: pv!inputMap)\n\n// Input: ?\n=pv!systemPrompt\n\n// Input: ?\n=a!defaultValue(pv!llm, rule!AIA_DefaultModel())\n\n// Output: ?\nAC!ErrorMessage\n\n// Output: ?\nAC!Response\n\n// Output: ?\nAC!Success\n\n// Output: ?\n=pv!inputTokens + ac!InputTokens\n\n// Output: ?\n=pv!outputTokens + ac!OutputTokens\n\n// Input: ?\n=pv!inputMap.document\n\n// Input: ?\n=pv!systemPrompt\n\n// Input: ?\n=a!defaultValue(pv!llm, rule!AIA_DefaultModel())\n\n// Output: ?\nAC!ErrorMessage\n\n// Output: ?\nAC!Response\n\n// Output: ?\nAC!Success\n\n// Output: ?\n=pv!inputTokens + ac!InputTokens\n\n// Output: ?\n=pv!outputTokens + ac!OutputTokens\n\n// Input: ?\n=pv!inputMap.document\n\n// Input: ?\n=pv!systemPrompt\n\n// Input: ?\n=rule!AIA_GenericPromptRuntimeModel_Multimodal( llm: pv!llm)\n\n// Output: ?\nAC!ErrorMessage\n\n// Output: ?\nAC!Response\n\n// Output: ?\nAC!Success\n\n// Output: ?\n=pv!inputTokens + ac!InputTokens\n\n// Output: ?\n=pv!outputTokens + ac!OutputTokens\n\n// Input: ?\n=pv!responseJson\n\n// Input: ?\n=rule!AIA_FixJsonPrompt()\n\n// Output: ?\nAC!ErrorMessage\n\n// Output: ?\nAC!Response\n\n// Output: ?\nAC!Success\n\n// Output: ?\n=pv!inputTokens + ac!InputTokens\n\n// Output: ?\n=pv!outputTokens + ac!OutputTokens\n\n// Input: ?\nrule!AIA_CreateValidation(\n  typeId: cons!AIA_VALIDATION_TYPE_ID_EXECUTION,\n  instanceId: pv!instanceId,\n  instanceType: pv!instanceType,\n  message: rule!AIA_CreateValidationErrorMessage(\n    type: #\"urn:appian:translation-string:v1:0a45afc5-af72-4009-8441-7caf2ce7509d\",\n    error: a!match(\n      value: pv!mode,\n      equals: cons!AIA_PROMPT_OPERATION_MODE_MULTIMODAL,\n      then: #\"urn:appian:translation-string:v1:360d343f-29ab-46f3-a879-1bbd51e6ee09\"(\n        #\"urn:appian:translation-variable:v1:0457200f-78ad-465b-a042-ef29b39224f2\": rule!AIA_GetLLMName(\n          llm: rule!AIA_DefaultModel()\n        )\n      ),\n      default: #\"urn:appian:translation-string:v1:acadd74a-c657-4799-9307-d65ce10ab779\"(\n        #\"urn:appian:translation-variable:v1:0b82e972-cdc1-45d6-a4ee-adcef4d0c4b8\": rule!AIA_GetLLMName(\n          llm: rule!AIA_DefaultModel()\n        )\n      )\n    )\n  ),\n  severity: cons!AIA_SEVERITY_LOW\n)"
+    },
+    "_a-0000eeee-1c1d-8000-9d66-011c48011c48_213884": {
+      "name": "AIA_FixJsonPrompt",
+      "type": "Expression Rule",
+      "sail_code": "concat(\n  {\n    \"You are an expert JSON validator and repair engine. Your sole function is to process raw string input and return a fully valid, correctly structured JSON object according to the following strict rules:\n\n## CORE TASK:\n\n1. Input Assessment: Examine the raw input string.\n2. JSON Validation & Repair (Primary Goal): If the input string appears to contain JSON (even if malformed, truncated, or having missing quotes/commas), you MUST correct it, ensuring the final output is a single, syntactically perfect JSON object. Do not add or remove data unless necessary for structural correctness (e.g., closing a bracket, adding a comma, escaping special characters).\n3. Non-JSON Handling (Error Path): If the input string clearly does not contain any JSON structure (e.g., it is a plain sentence, a single word, or binary data), you MUST follow the Error Format rule below.\n\n## OUTPUT FORMAT RULES (MANDATORY STRUCTURE):\n\n1. Successful Repair Output: If the input was successfully repaired or was already valid JSON, the output MUST be the valid and corrected JSON object or array directly. Do NOT wrap it in a repaired_json key.\n* Structure: <The valid and corrected JSON object or array>\n2. Error Report Output: If the input did not contain any JSON to repair, the output MUST be a JSON object with the following two fields:\n* Structure: {\"\"error\"\": \"\"\",cons!AIA_FIX_JSON_ERROR_MESSAGE_NO_RECOGNIZABLE_JSON,\"\"\", \"\"details\"\": \"\"<Original User Input String>\"\"}\n* Note: The value of details must contain the user's exact original input string.\n\n## Constraint Checklist (Do NOT violate these):\n* The entire output MUST be a single, valid JSON object.\n* Do NOT include any explanatory text or commentary in your final output.\n* Always respond with the appropriate structure (the repaired JSON object directly, or the error + details object).\"\n  }\n)"
+    }
+  }
+}

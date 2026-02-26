@@ -1,0 +1,22 @@
+{
+  "_metadata": {
+    "bundle_id": "AIA_Validation_Generate_Payload_Example"
+  },
+  "objects": {
+    "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40909": {
+      "name": "AIA_ExtractJson",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!firstTry: rule!AIA_ExtractJsonInner(\n    json: ri!json\n  ),\n  local!result: if(\n    a!isNotNullOrEmpty(local!firstTry),\n    local!firstTry,\n    a!localVariables(\n      local!secondTry: rule!AIA_ExtractJsonInner(\n        json: index(split(ri!json, \"Appian's private AI\"), 1, null),\n      ),\n      if(\n        a!isNotNullOrEmpty(local!secondTry),\n        local!secondTry,\n        a!localVariables(\n          local!thirdTry: rule!AIA_ExtractJsonInner(\n            json: index(split(ri!json, \"Appian's private AI\"), 2, null),\n          ),\n          if(\n            a!isNotNullOrEmpty(local!thirdTry),\n            local!thirdTry,\n            a!localVariables(\n              local!forthTry: rule!AIA_ExtractJsonInner(\n                json: index(split(ri!json, \"<output>\"), 1, null),\n              ),\n              if(\n                a!isNotNullOrEmpty(local!forthTry),\n                local!forthTry,\n                a!localVariables(\n                  local!fifthTry: rule!AIA_ExtractJsonInner(\n                    json: index(split(ri!json, \"</entities>\"), 1, null),\n                  ),\n                  local!fifthTry\n                )\n              )\n            )\n          )\n        )\n      )\n    )\n  ),\n  local!finalResult: if(\n    a!isNullOrEmpty(local!result),\n    null,\n    if(\n      a!defaultValue(ri!returnList, true),\n      local!result,\n      if(\n        rule!SHRD_IsList(local!result),\n        null,\n        local!result\n      )\n    )\n  ),\n  /* Handle scenario where the result comes back as properties of a $schema */\n  if(\n    or(\n      a!defaultValue(ri!returnList, true),\n      a!isNullOrEmpty(local!finalResult),\n      not(contains(\n        a!keys(local!finalResult),\n        \"$schema\"\n      ))\n    ),\n    local!finalResult,\n    local!finalResult.properties\n  )\n)"
+    },
+    "_a-0000ed16-a792-8000-9c64-011c48011c48_274759": {
+      "name": "AIA_ToJson",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  a!isNullOrEmpty(ri!data),\n  \"null\",\n  #\"SYSTEM_SYSRULES_toJson_v1\"(ri!data)\n)"
+    },
+    "0002ed21-4d46-8000-0bce-7f0000014e7a": {
+      "name": "AIA Validation Generate Payload Example",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n=pv!inputExpression\n\n// Output: ?\nAC!Response\n\n// Output: ?\nprettyprintjson(\n  rule!AIA_ToJson(data: rule!AIA_ExtractJson(json: pv!response))\n)"
+    }
+  }
+}

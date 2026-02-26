@@ -1,0 +1,123 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AIA Standard Layout Process Section",
+    "parent_name": null,
+    "total_objects": 2
+  },
+  "entry_point": {
+    "complexity_score": 22.0,
+    "total_nodes": 11,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Standard Layout Process Section",
+      "complexity_score": 22.0,
+      "total_nodes": 11,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Page Count"
+          ]
+        },
+        {
+          "name": "Increase Index",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Split Doc"
+          ]
+        },
+        {
+          "name": "Write Section",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Done?"
+          ]
+        },
+        {
+          "name": "End Event",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Done?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Event",
+            "Increase Index"
+          ]
+        },
+        {
+          "name": "Route",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Event"
+          ]
+        },
+        {
+          "name": "Process Batch",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write Section"
+          ]
+        },
+        {
+          "name": "Write Section",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Event"
+          ]
+        },
+        {
+          "name": "Page Count",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "> 100 pages?"
+          ]
+        },
+        {
+          "name": "> 100 pages?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Route (< 100 pages without section)",
+            "Write Section (< 100 with section)",
+            "Split Doc"
+          ]
+        },
+        {
+          "name": "Split Doc",
+          "type": "pdftools.ExtractPDFPagesPauseOnError",
+          "next": [
+            "Process Batch"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ed96-b933-8000-9c8f-011c48011c48_921469",
+      "name": "AIA_EXTRACTION_MAX_PAGE_COUNT",
+      "type": "Constant",
+      "description": "100",
+      "value": "100",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA Standard Layout Process Section"
+      ]
+    },
+    {
+      "uuid": "000aedb4-afe4-8000-1762-7f0000014e7a",
+      "name": "AIA Standard Layout Process Section",
+      "type": "Process Model",
+      "description": "Process an individual section in a standard layout document",
+      "calls": [
+        "AIA_EXTRACTION_MAX_PAGE_COUNT"
+      ],
+      "called_by": []
+    }
+  ]
+}

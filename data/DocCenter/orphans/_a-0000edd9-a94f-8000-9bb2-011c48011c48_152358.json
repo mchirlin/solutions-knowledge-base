@@ -1,0 +1,30 @@
+{
+  "uuid": "_a-0000edd9-a94f-8000-9bb2-011c48011c48_152358",
+  "name": "AIA_Extraction_GetDocumentsForDeletion",
+  "type": "Expression Rule",
+  "description": "Get documents that are only needed during processing",
+  "sail_code": "a!flatten(\n  {\n    if(\n      cons!AIA_FLAG_DELETE_SECTIONS,\n      reject(\n        fn!isnull,\n        #\"SYSTEM_SYSRULES_forEach\"(\n          ri!ExtractionInstance[recordType!AIA Extraction Instance.sections],\n          if(\n            and(\n              rule!SHRD_DoesDocumentExist(\n                docId: fv!item[recordType!AIA Extraction Instance Section.documentId]\n              ),\n              fv!item[recordType!AIA Extraction Instance Section.documentId] <> ri!ExtractionInstance[recordType!AIA Extraction Instance.documentId],\n              or(\n                a!isNullOrEmpty(ri!ExtractionInstance[recordType!AIA Extraction Instance.sourceDocumentId]),\n                fv!item[recordType!AIA Extraction Instance Section.documentId] <> ri!ExtractionInstance[recordType!AIA Extraction Instance.sourceDocumentId]\n              )\n            ),\n            fv!item[recordType!AIA Extraction Instance Section.documentId],\n            null\n          )\n        )\n      ),\n      {}\n    ),\n    if(\n      cons!AIA_FLAG_DELETE_BOUNDING_BOXES,\n      reject(\n        fn!isnull,\n        a!flatten(\n          #\"SYSTEM_SYSRULES_forEach\"(\n            ri!ExtractionInstance[recordType!AIA Extraction Instance.boundingBoxes],\n            {\n              if(\n                rule!SHRD_DoesDocumentExist(\n                  docId: fv!item[recordType!AIA Extraction Bounding Boxes.boundingBoxesDocumentId]\n                ),\n                fv!item[recordType!AIA Extraction Bounding Boxes.boundingBoxesDocumentId],\n                null\n              ),\n              if(\n                rule!SHRD_DoesDocumentExist(\n                  docId: fv!item[recordType!AIA Extraction Bounding Boxes.inputDocumentId]\n                ),\n                fv!item[recordType!AIA Extraction Bounding Boxes.inputDocumentId],\n                null\n              )\n            }\n          )\n        )\n      ),\n      {}\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "SHRD_DoesDocumentExist",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_FLAG_DELETE_SECTIONS",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AIA_FLAG_DELETE_BOUNDING_BOXES",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AIA_Test_GetLatestExtractionInstance",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

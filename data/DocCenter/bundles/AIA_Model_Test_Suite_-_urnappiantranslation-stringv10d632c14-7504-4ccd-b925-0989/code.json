@@ -1,0 +1,257 @@
+{
+  "_metadata": {
+    "bundle_id": "AIA_Model_Test_Suite_-_urnappiantranslation-stringv10d632c14-7504-4ccd-b925-0989"
+  },
+  "objects": {
+    "_a-0000ecfc-48c9-8000-9c55-011c48011c48_234937": {
+      "name": "AIA_ENUM_LlmVersions",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!allModels: a!flatten(\n    {\n      a!map(\n        label: \"Anthropic Claude Haiku 3.0 (Fast)\",\n        value: cons!AIA_MODEL_HAIKU_3,\n      ),\n      a!map(\n        label: \"Anthropic Claude Haiku 4.5 (Fast)\",\n        value: cons!AIA_MODEL_HAIKU_4_5,\n      ),\n      a!map(\n        label: \"Anthropic Claude Sonnet 3.0 (Legacy, Reasoning)\",\n        value: cons!AIA_MODEL_SONNET_3,\n      ),\n      a!map(\n        label: \"Anthropic Claude Sonnet 3.5 (Reasoning)\",\n        value: cons!AIA_MODEL_SONNET_3_5\n      ),\n      a!map(\n        label: \"Anthropic Claude Sonnet 3.7 (Reasoning)\",\n        value: cons!AIA_MODEL_SONNET_3_7\n      ),\n      a!map(\n        label: \"Anthropic Claude Sonnet 4.5 (Reasoning)\",\n        value: cons!AIA_MODEL_SONNET_4_5\n      ),\n      if(\n        ri!includeVision,\n        {\n          /*model values iwth | to split name and mode are used in AI Reviewer/Judge*/\n          a!map(\n            label: \"Anthropic Claude Haiku 4.5 (Vision)\",\n            value: cons!AIA_MODEL_HAIKU_4_5_MULTIMODAL,\n          ),\n          a!map(\n            label: \"Anthropic Claude Sonnet 3.5 (Vision)\",\n            value: cons!AIA_MODEL_SONNET_3_5_MULTIMODAL\n          ),\n          a!map(\n            label: \"Anthropic Claude Sonnet 3.7 (Vision)\",\n            value: cons!AIA_MODEL_SONNET_3_7_MULTIMODAL\n          ),\n          a!map(\n            label: \"Anthropic Claude Sonnet 4.5 (Vision)\",\n            value: cons!AIA_MODEL_SONNET_4_5_MULTIMODAL\n          )\n        },\n        null\n      )\n    }\n  ),\n  if(\n    a!defaultValue(ri!returnOnlySupportedLlms, true),\n    a!localVariables(\n      local!supportedModels: a!genAiModels(),\n      reject(\n        fn!isnull,\n        #\"SYSTEM_SYSRULES_forEach\"(\n          items: local!allModels,\n          expression: if(\n            or(\n              a!isNullOrEmpty(fv!item.value),\n              contains(\n                touniformstring(local!supportedModels.id),\n                tostring(split(fv!item.value,\"|\")[1])\n              )\n            ),\n            fv!item,\n            null\n          )\n        )\n      )\n    ),\n    local!allModels\n  )\n)"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92467": {
+      "name": "AIA_MTR_ClassificationInstanceClassifiedWithErrors",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000eec9-5676-8000-9c92-011c48011c48_179359": {
+      "name": "AIA_MTR_ConfidenceThresholdDisabled",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000eeca-c121-8000-9cab-011c48011c48_182002": {
+      "name": "AIA_MTR_ClassificationModelVersionRestore",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee66-4fc0-8000-9baa-011c48011c48_54294": {
+      "name": "SHRD_UTIL_length",
+      "type": "Expression Rule",
+      "sail_code": "/*Gets the length of a value passed in wrapped in an array*/\nlength({ri!value})"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_180853": {
+      "name": "AIA_MTR_ExtractionInstanceCreated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000eed9-05f0-8000-9d10-011c48011c48_194872": {
+      "name": "AIA_DefaultModel",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!default: cons!AIA_MODEL_HAIKU_4_5,\n  if(\n    /*check default model is enabled in env*/\n    contains(\n      a!genAiModels().id,\n      local!default\n    ),\n    /*if so, use default*/\n    local!default,\n    /*else default to first available model*/\n    tostring(index(a!genAiModels().id,1,\"\"))\n  )\n)"
+    },
+    "_a-0000ef46-744c-8000-9fed-011c48011c48_483991": {
+      "name": "AIA_MTR_ModelTestSuiteUpdated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92592": {
+      "name": "AIA_MTR_ExtractionInstanceValidationIgnore",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ef46-744c-8000-9fed-011c48011c48_483964": {
+      "name": "AIA_MTR_ModelTestRunInitiated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92585": {
+      "name": "AIA_MTR_ExtractionInstanceValidationAccept",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92578": {
+      "name": "AIA_MTR_ExtractionModelVersionAiReview",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ef35-7551-8000-9e82-011c48011c48_376593": {
+      "name": "AIA_ModelTestSuiteRun_Initialize",
+      "type": "Expression Rule",
+      "sail_code": "recordType!AIA Model Test Suite Run(\n  recordType!AIA Model Test Suite Run.testSuiteId: ri!testSuiteId,\n  recordType!AIA Model Test Suite Run.createdBy: ri!initiator,\n  recordType!AIA Model Test Suite Run.createdOn: now(),\n  recordType!AIA Model Test Suite Run.modifiedBy: ri!initiator,\n  recordType!AIA Model Test Suite Run.modifiedOn: now()\n\n)"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92488": {
+      "name": "AIA_MTR_ExtractionInstanceError",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ec36-59aa-8000-9be0-011c48011c48_53600": {
+      "name": "AIA_Test_GetLatestExtractionModelVersion",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!modelVersion: a!refreshVariable(\n    value: rule!AIA_Extraction_GetModelVersionById(\n      identifier: index(\n        #\"SYSTEM_SYSRULES_queryRecordType_v4\"(\n          recordType: recordType!AIA Extraction Model Version,\n          fields: {\n            recordType!AIA Extraction Model Version.modelVersionId\n          },\n          pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n            startIndex: 1,\n            batchSize: 1,\n            sort: {\n              #\"SYSTEM_SYSRULES_sortInfo\"(\n                field: recordType!AIA Extraction Model Version.modelVersionId\n              )\n            }\n          )\n        ).data[recordType!AIA Extraction Model Version.modelVersionId],\n        1,\n        null\n      )\n    ),\n    refreshAlways: true\n  ),\n  local!modelVersion\n)"
+    },
+    "_a-0000ed69-99d8-8000-9ba6-011c48011c48_42914": {
+      "name": "AIA_QR_getExtractionModelVersion",
+      "type": "Expression Rule",
+      "sail_code": "rule!SHRD_UTIL_QueryRecord(\n  recordType: recordType!AIA Extraction Model Version,\n  fields: ri!fields,\n  returnType: ri!returnType,\n  executeWhen: ri!executeWhen,\n  filters: {\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!AIA Extraction Model Version.modelVersionId,\n      operator: \"=\",\n      value: ri!modelVersionId\n    ),\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!AIA Extraction Model Version.modelId,\n      operator: \"=\",\n      value: ri!modelId\n    ),\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!AIA Extraction Model Version.status,\n      operator: \"=\",\n      value: ri!status\n    )\n  },\n  pagingInfo: ri!pagingInfo\n)"
+    },
+    "_a-0000ee35-0ca2-8000-9ba6-011c48011c48_13646": {
+      "name": "AIA_LogMetric",
+      "type": "Expression Rule",
+      "sail_code": "a!match(\n  value: ri!name,\n  /* Classification Model Created */\n  equals: cons!AIA_MTR_CLASSIFICATION_MODEL_CREATED,\n  then: rule!AIA_MTR_ClassificationModelCreated(),\n  /* Classification Instance Created */\n  equals: cons!AIA_MTR_CLASSIFICATION_INSTANCE_CREATED,\n  then: rule!AIA_MTR_ClassificationInstanceCreated(),\n  /* Classification Instance Reconciled */\n  equals: cons!AIA_MTR_CLASSIFICATION_INSTANCE_RECONCILED,\n  then: rule!AIA_MTR_ClassificationInstanceReconciled(),\n  /* Classification Instance with Validation Errors */\n  equals: cons!AIA_MTR_INSTANCE_STATUS_CLASSIFIED_WITH_ERRORS,\n  then: rule!AIA_MTR_ClassificationInstanceClassifiedWithErrors(),\n  /* Classification Instance with Critical Error */\n  equals: cons!AIA_MTR_INSTANCE_STATUS_CLASSIFICATION_CRITICAL_ERROR,\n  then: rule!AIA_MTR_ClassificationInstanceError(),\n  \n  /* Extraction Model Created */\n  equals: cons!AIA_MTR_EXTRACTION_MODEL_CREATED,\n  then: rule!AIA_MTR_ExtractionModelCreated(),\n  /* Extraction Instance Created */\n  equals: cons!AIA_MTR_EXTRACTION_INSTANCE_CREATED,\n  then: rule!AIA_MTR_ExtractionInstanceCreated(),\n  /* Extraction Instance Reconciled */\n  equals: cons!AIA_MTR_EXTRACTION_INSTANCE_RECONCILED,\n  then: rule!AIA_MTR_ExtractionInstanceReconciled(),\n  /* Extraction Instance with Validation Errors */\n  equals: cons!AIA_MTR_INSTANCE_STATUS_EXTRACTED_WITH_ERRORS,\n  then: rule!AIA_MTR_ExtractionInstanceExtractedWithErrors(),\n  /* Extraction Instance with Critical Error */\n  equals: cons!AIA_MTR_INSTANCE_STATUS_EXTRACTION_CRITICAL_ERROR,\n  then: rule!AIA_MTR_ExtractionInstanceError(),\n  \n  /* Triggered when AI review raises an error (field level) */\n  equals: cons!AIA_MTR_AI_REVIEW_FIELD,\n  then: rule!AIA_MTR_ExtractionInstanceFieldAiReview(),\n  /* Triggered when AI review raises an error (instance level, this instance has 1 or more errors raised by AI review) */\n  equals: cons!AIA_MTR_AI_REVIEW_INSTANCE,\n  then: rule!AIA_MTR_ExtractionInstanceAiReview(),\n  /* Triggered when model is created with AI review turned on OR AI review is turned on for a model */\n  equals: cons!AIA_MTR_AI_REVIEW_MODEL_VERSION,\n  then: rule!AIA_MTR_ExtractionModelVersionAiReview(),\n  /* Triggered when user clicks accept */\n  equals: cons!AIA_MTR_AI_REVIEW_ACCEPT,\n  then: rule!AIA_MTR_ExtractionInstanceValidationAccept(),\n  /* Triggered when user clicks ignored */\n  equals: cons!AIA_MTR_AI_REVIEW_IGNORE,\n  then: rule!AIA_MTR_ExtractionInstanceValidationIgnore(),\n  /*triggered when spot check ocnfigured*/\n  equals: cons!AIA_MTR_SPOT_CHECK_MODEL_VERSION,\n  then: rule!AIA_MTR_ModelVersionConfigureSampling(),\n  /* Triggered when a model validation rule of type AI validation creates a validation instance */\n  equals: cons!AIA_MTR_AI_VALIDATION_RULE_OCCURANCE,\n  then: rule!AIA_MTR_InstanceValidationAiRuleOccurance(),\n  /*Confidence Threshold Enabled*/\n  equals: cons!AIA_MTR_CONFIDENCE_THRESHOLD_ENABLED,\n  then: rule!AIA_MTR_ConfidenceThresholdEnabled(),\n  /*Confidence Threshold Disabled*/\n  equals: cons!AIA_MTR_CONFIDENCE_THRESHOLD_DISABLED,\n  then: rule!AIA_MTR_ConfidenceThresholdDisabled(),\n  /*Extraction Model Version Restored*/\n  equals: cons!AIA_MTR_EXTRACTION_MODEL_VERSION_RESTORE,\n  then: rule!AIA_MTR_ExtractionModelVersionRestore(),\n  /*Classification Model Version Restored*/\n  equals: cons!AIA_MTR_CLASSIFICATION_MODEL_VERSION_RESTORE,\n  then: rule!AIA_MTR_ClassificationModelVersionRestore(),\n  /*Model Test Suite Created*/\n  equals: cons!AIA_MTR_MODEL_TEST_SUITE_CREATED,\n  then: rule!AIA_MTR_ModelTestSuiteCreated(),\n  /*Model Test Suite Updated*/\n  equals: cons!AIA_MTR_MODEL_TEST_SUITE_UPDATED,\n  then: rule!AIA_MTR_ModelTestSuiteUpdated(),\n  /*Model Test Run Initiated*/\n  equals: cons!AIA_MTR_MODEL_TEST_RUN_INITIATED,\n  then: rule!AIA_MTR_ModelTestRunInitiated(),\n  /*Classification Model Version Created with Multiple Outputs*/\n  equals: cons!AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_MODEL_VERSION_CREATED,\n  then: rule!AIA_MTR_MultipleOutputsClassificationModelVersionCreated(),\n  /*Classification Instance Created for a Model Version that Allows Multiple Outputs*/\n  equals: cons!AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_INSTANCE_CREATED,\n  then: rule!AIA_MTR_MultipleOutputsClassificationInstanceCreated(),\n  /*Classification Instance Reconciled for a Model Version that Allows Multiple Outputs*/\n  equals: cons!AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_INSTANCE_RECONCILED,\n  then: rule!AIA_MTR_MultipleOutputsClassificationInstanceReconciled(),\n  default: null\n)"
+    },
+    "_a-0000ec44-cb49-8000-9be6-011c48011c48_87122": {
+      "name": "AIA_Extraction_GetTestInstances",
+      "type": "Expression Rule",
+      "sail_code": "rule!SHRD_UTIL_QueryRecord(\n  recordType: recordType!AIA Extraction Instance,\n  returnType: ri!returnType,\n  executeWhen: or(\n    a!isNotNullOrEmpty(ri!modelVersion),\n    a!isNotNullOrEmpty(ri!model)\n  ),\n  fields: {\n    recordType!AIA Extraction Instance.modelVersion,\n    recordType!AIA Extraction Instance.modelVersion,\n    recordType!AIA Extraction Instance.fields,\n    recordType!AIA Extraction Instance.fields,\n    #\"urn:appian:record-relationship:v1:64322398-e457-4695-87d5-09794164cf77/8d64a7fc-95d1-4c81-b1d8-f583dafbf127/dbb0701f-9e25-4d41-accc-959fc64a808d/69a05e41-75be-4506-ae42-ae78ac0d6b9a\",\n  },\n  filters: {\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!AIA Extraction Instance.modelVersion.versionId,\n      operator: \"<=\",\n      value: ri!modelVersion[recordType!AIA Extraction Model Version.versionId],\n      applyWhen: a!isNotNullOrEmpty(ri!modelVersion)\n    ),\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!AIA Extraction Instance.modelVersion.modelId,\n      operator: \"=\",\n      value: a!defaultValue(\n        value: ri!model[recordType!AIA Extraction Model.modelId],\n        default: ri!modelVersion[recordType!AIA Extraction Model Version.modelId]\n      )\n    ),\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!AIA Extraction Instance.modelTestSuiteCase.modelTestSuiteId,\n      operator: \"=\",\n      value: ri!testSuiteId,\n      applyWhen: a!isNotNullOrEmpty(ri!testSuiteId)\n    ),\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!AIA Extraction Instance.testInstance,\n      operator: \"=\",\n      value: true\n    )\n  }\n)"
+    },
+    "_a-0000eeb2-df20-8000-9bfe-011c48011c48_154565": {
+      "name": "AIA_MTR_InstanceValidationAiRuleOccurance",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_180846": {
+      "name": "AIA_MTR_ClassificationModelCreated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_180860": {
+      "name": "AIA_MTR_ClassificationInstanceCreated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_180834": {
+      "name": "AIA_MTR_ExtractionModelCreated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ed46-3c8c-8000-9bac-011c48011c48_12129": {
+      "name": "AIA_UTIL_LoadBrandingMap",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!brandingDefault: getbrandingconfig(\n    cons!AIA_DOC_DEFAULT_BRANDING_CONFIG,\n    true()\n  ),\n  local!output: reduce(\n    #\"urn:appian:function:v1:a:update\"(_, _, _),\n    a!map(),\n    merge(\n      {\n        local!brandingDefault.defaultBranding.key,\n        local!brandingDefault.customBranding.key\n      },\n      {\n        local!brandingDefault.defaultBranding.value,\n        local!brandingDefault.customBranding.value\n      }\n    )\n  ),\n  local!output\n)"
+    },
+    "_a-0000ee5d-151c-8000-9ba8-011c48011c48_36163": {
+      "name": "SHRD_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!maxBatchSize: 5000,\n  /*Chosen return type*/\n  local!returnType: a!defaultValue(ri!returnType, \"OBJECT_ARRAY\"),\n  /*Determine the query parameters to use by the return type*/\n  local!queryParams: a!match(\n    value: local!returnType,\n    equals: \"OBJECT_ARRAY\",\n    then: a!map(\n      castToType: if(\n        a!isNullOrEmpty(ri!groupByFields),\n        #\"urn:appian:function:v1:a:listtype?okey=a!listType\"(ri!recordType),\n        'type!{http://www.appian.com/ae/types/2009}Map?list'\n      ),\n      fetchTotalCount: false,\n      isArray: true,\n      queryRecordByIdentifier: false,\n      pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n        startIndex: 1,\n        batchSize: a!defaultValue(\n          ri!pagingInfo.batchSize,\n          local!maxBatchSize\n        ),\n        sort: { ri!pagingInfo.sort, ri!sort }\n      )\n    ),\n    equals: \"SINGLE_OBJECT\",\n    then: a!map(\n      castToType: if(\n        a!isNullOrEmpty(ri!groupByFields),\n        ri!recordType,\n        'type!{http://www.appian.com/ae/types/2009}Map'\n      ),\n      fetchTotalCount: false,\n      isArray: false,\n      queryRecordByIdentifier: false,\n      pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n        startIndex: 1,\n        batchSize: 1,\n        sort: { ri!pagingInfo.sort, ri!sort }\n      )\n    ),\n    equals: \"RECORD_BY_ID\",\n    then: a!map(\n      castToType: ri!recordType,\n      fetchTotalCount: false,\n      isArray: false,\n      queryRecordByIdentifier: true,\n      pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n        startIndex: 1,\n        batchSize: 1,\n        sort: { ri!pagingInfo.sort, ri!sort }\n      )\n    ),\n    equals: \"DATA_SUBSET\",\n    then: a!map(\n      castToType: 'type!{http://www.appian.com/ae/types/2009}DataSubset',\n      fetchTotalCount: true,\n      isArray: false,\n      queryRecordByIdentifier: false,\n      pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n        startIndex: a!defaultValue(ri!pagingInfo.startIndex, 1),\n        batchSize: a!defaultValue(\n          ri!pagingInfo.batchSize,\n          local!maxBatchSize\n        ),\n        sort: { ri!pagingInfo.sort, ri!sort }\n      )\n    ),\n    equals: \"TOTAL_COUNT\",\n    then: a!map(\n      castToType: 'type!{http://www.appian.com/ae/types/2009}Integer',\n      fetchTotalCount: true,\n      isArray: false,\n      queryRecordByIdentifier: false,\n      pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(startIndex: 1, batchSize: 0)\n    ),\n    default: fn!error(\n      \"Invalid returnType, must be one of: OBJECT_ARRAY, SINGLE_OBJECT, RECORD_BY_ID, DATA_SUBSET, TOTAL_COUNT\"\n    )\n  ),\n  if(\n    /*Early exit for skip execution*/\n    ri!executeWhen = false,\n    cast(\n      local!queryParams.castToType,\n      if(local!queryParams.isArray, {}, null)\n    ),\n    a!localVariables(\n      /*Run the query*/\n      local!queryResult: a!refreshVariable(\n        value: if(\n          local!queryParams.queryRecordByIdentifier,\n          #\"SYSTEM_SYSRULES_queryRecordByIdentifier\"(\n            recordType: ri!recordType,\n            identifier: index({ri!identifier},1,null),\n            /*If fields is sent in using a!selectionFields(), then adding the fields contained in ri!relatedRecordData will break the query*/\n            fields: reject(\n              a!isNullOrEmpty,\n              a!flatten(\n                {\n                  ri!fields,\n                  if(\n                    or(\n                      typeof(ri!fields) = typeof(#\"SYSTEM_SYSRULES_selectionFields\"()),\n                      typeof(ri!fields) = typeof({#\"SYSTEM_SYSRULES_selectionFields\"()})\n                    ),\n                    {},\n                    index(ri!relatedRecordData, \"relationship\", {})\n                  )\n                }\n              )\n            ),\n            relatedRecordData: ri!relatedRecordData\n          ),\n          #\"SYSTEM_SYSRULES_queryRecordType_v1\"(\n            recordType: ri!recordType,\n            fields: if(\n              a!isNullOrEmpty(ri!groupByFields),\n              reject(\n                a!isNullOrEmpty,\n                a!flatten(\n                  {\n                    ri!fields,\n                    index(ri!relatedRecordData, \"relationship\", {})\n                  }\n                )\n              ),\n              #\"SYSTEM_SYSRULES_aggregationFields\"(\n                groupings: #\"SYSTEM_SYSRULES_forEach\"(\n                  items: ri!groupByFields,\n                  expression: #\"SYSTEM_SYSRULES_grouping\"(field: fv!item, alias: tostring(fv!item))\n                ),\n                measures: #\"SYSTEM_SYSRULES_measure\"(\n                  field: ri!groupByFields[1],\n                  function: \"COUNT\",\n                  alias: \"count\"\n                )\n              )\n            ),\n            filters: #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n              operator: \"AND\",\n              ignoreFiltersWithEmptyValues: true,\n              logicalExpressions: {\n                ri!logicalExpressions,\n                if(\n                  and(\n                    a!isNotNullOrEmpty(ri!searchFields),\n                    a!isNotNullOrEmpty(ri!searchTerm)\n                  ),\n                  #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n                    operator: \"AND\",\n                    logicalExpressions: #\"SYSTEM_SYSRULES_forEach\"(\n                      items: split(trim(ri!searchTerm), \" \"),\n                      expression: a!localVariables(\n                        local!splitSearchTerm: fv!item,\n                        /*   Initiate filter for each field by the value provided in searchTerm   */\n                        #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n                          operator: \"OR\",\n                          filters: #\"SYSTEM_SYSRULES_forEach\"(\n                            items: ri!searchFields,\n                            expression: #\"SYSTEM_SYSRULES_queryFilter\"(\n                              field: fv!item,\n                              operator: \"includes\",\n                              value: local!splitSearchTerm\n                            )\n                          )\n                        )\n                      )\n                    )\n                  ),\n                  {}\n                )\n              },\n              filters: ri!filters\n            ),\n            pagingInfo: if(\n              a!isNullOrEmpty(ri!groupByFields),\n              local!queryParams.pagingInfo,\n              #\"urn:appian:function:v1:a:update\"(\n                local!queryParams.pagingInfo,\n                \"sort\",\n                null\n              )\n            ),\n            fetchTotalCount: local!queryParams.fetchTotalCount,\n            relatedRecordData: if(\n              a!isNullOrEmpty(ri!groupByFields),\n              ri!relatedRecordData,\n              {}\n            )\n          )\n        ),\n        refreshOnVarChange: ri!triggerRefresh,\n        refreshAfter: { \"RECORD_ACTION\" }\n      ),\n      /*Format the output*/\n      local!output: a!match(\n        value: local!returnType,\n        equals: \"OBJECT_ARRAY\",\n        then: cast(\n          local!queryParams.castToType,\n          index(local!queryResult,\"data\",{})\n        ),\n        equals: \"SINGLE_OBJECT\",\n        then: cast(\n          local!queryParams.castToType,\n          index(local!queryResult,\"data\",{})\n        ),\n        equals: \"RECORD_BY_ID\",\n        /*do not need to cast for queryRecordByIdentifier*/\n        then: local!queryResult,\n        equals: \"DATA_SUBSET\",\n        then: cast(\n          local!queryParams.castToType,\n          local!queryResult\n        ),\n        equals: \"TOTAL_COUNT\",\n        then: cast(\n          local!queryParams.castToType,\n          index(local!queryResult,\"totalCount\",{})\n        ),\n        default: null\n      ),\n      local!output\n    )\n  )\n)"
+    },
+    "_a-0000ef55-14e0-8000-a041-011c48011c48_505631": {
+      "name": "AIA_MTR_MultipleOutputsClassificationInstanceCreated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000eec9-5676-8000-9c92-011c48011c48_179352": {
+      "name": "AIA_MTR_ConfidenceThresholdEnabled",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000eea3-15ee-8000-9bd4-011c48011c48_137447": {
+      "name": "AIA_MTR_ModelVersionConfigureSampling",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ec5c-9eda-8000-9bec-011c48011c48_117023": {
+      "name": "AIA_Extraction_GetModelVersionById",
+      "type": "Expression Rule",
+      "sail_code": "#\"SYSTEM_SYSRULES_queryRecordByIdentifier\"(\n  recordType: recordType!AIA Extraction Model Version,\n  fields: {\n    rule!AIA_EXTRACTION_MODEL_VERSION_FIELDS()\n  },\n  relatedRecordData: {\n    #\"SYSTEM_SYSRULES_relatedRecordData\"(\n      relationship: recordType!AIA Extraction Model Version.fields,\n      sort: #\"SYSTEM_SYSRULES_sortInfo\"(\n        field: recordType!AIA Extraction Model Version Field.order,\n        ascending: true\n      )\n    ),\n    #\"SYSTEM_SYSRULES_relatedRecordData\"(\n      relationship: recordType!AIA Extraction Model Version.fields,\n      sort: #\"SYSTEM_SYSRULES_sortInfo\"(\n        field: recordType!AIA Extraction Model Version Field.order,\n        ascending: true\n      )\n    )\n  },\n  identifier: ri!identifier\n)"
+    },
+    "_a-0000eeca-c121-8000-9cab-011c48011c48_181995": {
+      "name": "AIA_MTR_ExtractionModelVersionRestore",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ef3e-b586-8000-9f8a-011c48011c48_451285": {
+      "name": "AIA_Test_GetLatestExtractionModelWithTestSuite",
+      "type": "Expression Rule",
+      "sail_code": "#\"SYSTEM_SYSRULES_queryRecordByIdentifier\"(\n  recordType: recordType!AIA Extraction Model,\n  identifier: index(\n    #\"SYSTEM_SYSRULES_queryRecordType_v1\"(\n      recordType: recordType!AIA Extraction Model,\n      filters: #\"SYSTEM_SYSRULES_queryFilter\"(\n        field: recordType!AIA Extraction Model.modelTestSuites,\n        operator: \"not null\"\n      ),\n      pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n        startIndex: 1,\n        batchSize: 1,\n        sort: {\n          #\"SYSTEM_SYSRULES_sortInfo\"(\n            field: recordType!AIA Extraction Model.modelId\n          )\n        }\n      )\n    ).data[recordType!AIA Extraction Model.modelId],\n    1,\n    null\n  ),\n  fields: {\n    recordType!AIA Extraction Model.modelTestSuites,\n    recordType!AIA Extraction Model.modelTestSuites,\n    recordType!AIA Extraction Model.modelTestSuites\n  },\n)"
+    },
+    "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_203145": {
+      "name": "AIA_EXTRACTION_MODEL_VERSION_FIELDS",
+      "type": "Expression Rule",
+      "sail_code": "{\n  /* Base */\n  recordType!AIA Extraction Model Version.status,\n  recordType!AIA Extraction Model Version.updates,\n  recordType!AIA Extraction Model Version.role,\n  recordType!AIA Extraction Model Version.instructions,\n  recordType!AIA Extraction Model Version.modelId,\n  recordType!AIA Extraction Model Version.versionId,\n  recordType!AIA Extraction Model Version.llm,\n  recordType!AIA Extraction Model Version.useAiReview,\n  recordType!AIA Extraction Model Version.aiReviewLlm,\n  recordType!AIA Extraction Model Version.aiReviewRole,\n  recordType!AIA Extraction Model Version.aiReviewInstructions,\n  recordType!AIA Extraction Model Version.useConfidence,\n  recordType!AIA Extraction Model Version.confidenceThreshold,\n  recordType!AIA Extraction Model Version.useSampling,\n  recordType!AIA Extraction Model Version.samplingRate,\n  recordType!AIA Extraction Model Version.instanceCount,\n  /* Fields */\n  recordType!AIA Extraction Model Version.fields.sectionId,\n  recordType!AIA Extraction Model Version.fields.section,\n  recordType!AIA Extraction Model Version.fields.order,\n  recordType!AIA Extraction Model Version.fields.key,\n  recordType!AIA Extraction Model Version.fields.label,\n  recordType!AIA Extraction Model Version.fields.type,\n  recordType!AIA Extraction Model Version.fields.isMultiple,\n  recordType!AIA Extraction Model Version.fields.description,\n  recordType!AIA Extraction Model Version.fields.instructions,\n  recordType!AIA Extraction Model Version.fields.extractionType,\n  recordType!AIA Extraction Model Version.fields.optionRule,\n  recordType!AIA Extraction Model Version.fields.validationRule,\n  recordType!AIA Extraction Model Version.fields.extractionRule,\n  recordType!AIA Extraction Model Version.fields.postProcessRule,\n  recordType!AIA Extraction Model Version.fields.required,\n  recordType!AIA Extraction Model Version.fields.useVision,\n  recordType!AIA Extraction Model Version.fields.isHidden,\n  recordType!AIA Extraction Model Version.fields.isNotTracked,\n  recordType!AIA Extraction Model Version.fields.useAiReview,\n  /* Columns */\n  recordType!AIA Extraction Model Version.fields.columns.order,\n  recordType!AIA Extraction Model Version.fields.columns.key,\n  recordType!AIA Extraction Model Version.fields.columns.label,\n  recordType!AIA Extraction Model Version.fields.columns.type,\n  recordType!AIA Extraction Model Version.fields.columns.isMultiple,\n  recordType!AIA Extraction Model Version.fields.columns.isHidden,\n  recordType!AIA Extraction Model Version.fields.columns.isNotTracked,\n  recordType!AIA Extraction Model Version.fields.columns.description,\n  recordType!AIA Extraction Model Version.fields.columns.instructions,\n  recordType!AIA Extraction Model Version.fields.columns.extractionType,\n  recordType!AIA Extraction Model Version.fields.columns.optionRule,\n  recordType!AIA Extraction Model Version.fields.columns.validationRule,\n  recordType!AIA Extraction Model Version.fields.columns.extractionRule,\n  recordType!AIA Extraction Model Version.fields.columns.postProcessRule,\n  recordType!AIA Extraction Model Version.fields.columns.required,\n  /* Examples */\n  recordType!AIA Extraction Model Version.examples,\n  /* Sections */\n  recordType!AIA Extraction Model Version.sections.name,\n  recordType!AIA Extraction Model Version.sections.description,\n  recordType!AIA Extraction Model Version.sections.rule,\n  /* Validation Rules */\n  recordType!AIA Extraction Model Version.validationRules.name,\n  recordType!AIA Extraction Model Version.validationRules.message,\n  recordType!AIA Extraction Model Version.validationRules.severity,\n  recordType!AIA Extraction Model Version.validationRules.validations,\n  /* Extraction Model */\n  recordType!AIA Extraction Model Version.extractionModel,\n}"
+    },
+    "_a-0000ec1e-9975-8000-9bd6-011c48011c48_1378305": {
+      "name": "AIA_Extraction_GetLatestModelVersion",
+      "type": "Expression Rule",
+      "sail_code": "with(\n  local!modelVersionId: index(\n    #\"SYSTEM_SYSRULES_queryRecordType_v1\"(\n      recordType: recordType!AIA Extraction Model Version,\n      filters: #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n        operator: \"AND\",\n        filters: {\n          #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: recordType!AIA Extraction Model Version.modelId,\n            operator: \"=\",\n            value: ri!modelId\n          ),\n          #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: recordType!AIA Extraction Model Version.extractionModel.key,\n            operator: \"=\",\n            value: ri!modelKey\n          ),\n          #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: recordType!AIA Extraction Model Version.status,\n            operator: \"=\",\n            value: cons!AIA_MODEL_VERSION_STATUS_PUBLISHED\n          )\n        },\n        ignoreFiltersWithEmptyValues: true\n      ),\n      pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(startIndex: 1, batchSize: 1)\n    ).data[recordType!AIA Extraction Model Version.modelVersionId],\n    1,\n    null\n  ),\n  if(\n    a!isNullOrEmpty(local!modelVersionId),\n    null,\n    rule!AIA_Extraction_GetModelVersionById(\n      identifier: local!modelVersionId\n    )\n  )\n)"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_180874": {
+      "name": "AIA_MTR_ClassificationInstanceReconciled",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_180867": {
+      "name": "AIA_MTR_ExtractionInstanceReconciled",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92474": {
+      "name": "AIA_MTR_ClassificationInstanceError",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40839": {
+      "name": "AIA_Test_GetLatestExtractionInstance",
+      "type": "Expression Rule",
+      "sail_code": "rule!AIA_Extraction_GetInstanceById(\n  identifier: #\"SYSTEM_SYSRULES_queryRecordType_v3\"(\n    recordType: recordType!AIA Extraction Instance,\n    pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n      startIndex: 1,\n      batchSize: 1,\n      sort: {\n        #\"SYSTEM_SYSRULES_sortInfo\"(\n          field: recordType!AIA Extraction Instance.id\n        )\n      }\n    )\n  ).data[recordType!AIA Extraction Instance.id],\n  additionalFields: {\n    recordType!AIA Extraction Instance.instanceUuid,\n    recordType!AIA Extraction Instance.modelVersion.versionId,\n    recordType!AIA Extraction Instance.modelVersion.modelId,\n    recordType!AIA Extraction Instance.modelVersion.uuid,\n    recordType!AIA Extraction Instance.modelVersion.extractionModel.key,\n    recordType!AIA Extraction Instance.documentFolderId,\n    recordType!AIA Extraction Instance.fieldCount,\n    recordType!AIA Extraction Instance.sections,\n    recordType!AIA Extraction Instance.boundingBoxes,\n    recordType!AIA Extraction Instance.responseDocumentId,\n    recordType!AIA Extraction Instance.sourceDocumentId\n  }\n)"
+    },
+    "_a-0000eead-6b09-8000-9bee-011c48011c48_148667": {
+      "name": "AIA_QR_getModelTestSuite",
+      "type": "Expression Rule",
+      "sail_code": "rule!SHRD_UTIL_QueryRecord(\n  recordType: recordType!AIA Model Test Suite,\n  returnType: ri!returnType,\n  fields: ri!fields,\n  executeWhen: ri!executeWhen,\n  pagingInfo: ri!pagingInfo,\n  identifier: ri!ids,\n  filters: {\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!AIA Model Test Suite.modelUuid,\n      operator: \"=\",\n      value: ri!uuid,\n    ),\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!AIA Model Test Suite.testSuiteId,\n      operator: \"in\",\n      value: ri!ids\n    ),\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!AIA Model Test Suite.testSuiteId,\n      operator: \"not in\",\n      value: ri!idsToExclude\n    ),\n  },\n  sort: #\"SYSTEM_SYSRULES_sortInfo\"(\n    field: recordType!AIA Model Test Suite.testSuiteId,\n    ascending: true\n  )\n)"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92481": {
+      "name": "AIA_MTR_ExtractionInstanceExtractedWithErrors",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ecfe-3e3f-8000-9c58-011c48011c48_254429": {
+      "name": "AIA_Extraction_GetTestInstanceCount",
+      "type": "Expression Rule",
+      "sail_code": "a!defaultValue(\n  value: rule!AIA_Extraction_GetTestInstances(\n    returnType: \"TOTAL_COUNT\",\n    model: ri!model,\n    modelVersion: ri!modelVersion,\n    testSuiteId: ri!testSuiteId\n  ),\n  default: 0\n)"
+    },
+    "_a-0000ed46-3c8c-8000-9bac-011c48011c48_26889": {
+      "name": "AIA_UTIL_Filter",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!fieldValuePairs: a!defaultValue(\n    ri!fieldValuePairs,\n    #\"SYSTEM_SYSRULES_forEach\"(\n      items: a!flatten(ri!field),\n      expression: a!map(\n        field: fv!item,\n        value: if(\n          fv!itemCount = 1,\n          ri!value,\n          index(a!flatten(ri!value), fv!index, null)\n        )\n      )\n    )\n  ),\n  local!matchIndices: if(\n    a!isNullOrEmpty(a!flatten(ri!records)),\n    tointeger({}),\n    reduce(\n      rule!AIA_UTIL_Filter_Reducer(\n        previousIndices: _,\n        records: a!flatten(ri!records),\n        fieldValuePair: _\n      ),\n      enumerate(count(a!flatten(ri!records))) + 1,\n      local!fieldValuePairs\n    )\n  ),\n  local!rejectIndices: difference(\n    if(\n      a!isNullOrEmpty(ri!records),\n      tointeger({}),\n      enumerate(count(a!flatten(ri!records))) + 1\n    ),\n    local!matchIndices\n  ),\n  local!matches: cast(\n    runtimetypeof(ri!records),\n    index(ri!records, local!matchIndices, {})\n  ),\n  local!rejects: cast(\n    runtimetypeof(ri!records),\n    index(ri!records, local!rejectIndices, {})\n  ),\n  a!match(\n    value: a!defaultValue(ri!filterType, \"FILTER\"),\n    equals: \"FILTER\",\n    then: local!matches,\n    equals: \"REJECT\",\n    then: local!rejects,\n    equals: \"FIRST_MATCH\",\n    then: index(local!matches, 1, null),\n    equals: \"FIRST_REJECT\",\n    then: index(local!rejects, 1, null),\n    equals: \"MATCH_COUNT\",\n    then: count(local!matchIndices),\n    equals: \"REJECT_COUNT\",\n    then: count(local!rejectIndices),\n    equals: \"MATCH_INDICES\",\n    then: local!matchIndices,\n    equals: \"REJECT_INDICES\",\n    then: local!rejectIndices,\n    equals: \"FULL_RESULT\",\n    then: a!map(\n      matches: local!matches,\n      rejects: local!rejects,\n      firstMatch: index(local!matches, 1, null),\n      firstReject: index(local!rejects, 1, null),\n      matchCount: count(local!matchIndices),\n      rejectCount: count(local!rejectIndices),\n      matchIndices: local!matchIndices,\n      rejectIndices: local!rejectIndices\n    ),\n    default: fn!error(\n      \"Invalid filterType, must be one of: FILTER, REJECT, FIRST_MATCH, FIRST_REJECT, MATCH_COUNT, REJECT_COUNT, MATCH_INDICES, REJECT_INDICES, FULL_RESULT\"\n    )\n  )\n)"
+    },
+    "_a-0000ef55-14e0-8000-a041-011c48011c48_505670": {
+      "name": "AIA_MTR_MultipleOutputsClassificationInstanceReconciled",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ef55-14e0-8000-a041-011c48011c48_505575": {
+      "name": "AIA_MTR_MultipleOutputsClassificationModelVersionCreated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ef46-744c-8000-9fed-011c48011c48_483943": {
+      "name": "AIA_MTR_ModelTestSuiteCreated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "153e6a48-aaae-449b-8c5f-1f244c2afa36": {
+      "name": "AIA_ModelTestSuite_RecordAction_RunExtraction",
+      "type": "Interface",
+      "sail_code": "a!localVariables(\n  local!brandingMap: rule!AIA_UTIL_LoadBrandingMap(),\n  local!extractionModel: a!refreshVariable(\n    refreshOnReferencedVarChange: false,\n    value: ri!modelTestSuite[recordType!AIA Model Test Suite.extractionModel]\n  ),\n  local!modelVersions: rule!AIA_QR_getExtractionModelVersion(\n    returnType: \"OBJECT_ARRAY\",\n    modelId: local!extractionModel[recordType!AIA Extraction Model.modelId]\n  ),\n\n  /*default selected model version to value passed in*/\n  local!selectedModelVersion: ri!extractionModelVersion,\n\n  local!testInstanceCount: rule!AIA_Extraction_GetTestInstanceCount(\n    modelVersion: local!selectedModelVersion,\n    testSuiteId: ri!modelTestSuite[recordType!AIA Model Test Suite.testSuiteId]\n  ),\n  local!alertCount: rule!AIA_ExtractionModel_GetAlertingTestInstanceCount(\n    model: ri!extractionModelVersion[recordType!AIA Extraction Model Version.extractionModel],\n    modelVersion: local!selectedModelVersion,\n    testSuiteId: ri!modelTestSuite[recordType!AIA Model Test Suite.testSuiteId]\n  ),\n  #\"SYSTEM_SYSRULES_formLayout_v1\"(\n    label: #\"urn:appian:translation-string:v1:e8e16af5-830f-41a4-929f-0ce33120cde2\"(#\"urn:appian:translation-variable:v1:614922ac-3132-4a04-8546-3d030da81593\": ri!modelTestSuite[recordType!AIA Model Test Suite.name]),\n    contents: {\n      #\"SYSTEM_SYSRULES_stampField\"(\n        icon: \"flask\",\n        marginAbove: \"NONE\",\n        marginBelow: \"NONE\",\n        align: \"CENTER\",\n        size: \"SMALL\",\n        backgroundColor: local!brandingMap.Blue1,\n        contentColor: local!brandingMap.Blue4\n      ),\n      #\"SYSTEM_SYSRULES_columnsLayout\"(\n        columns: {\n          #\"SYSTEM_SYSRULES_columnLayout\"(),\n          #\"SYSTEM_SYSRULES_columnLayout\"(\n            width: \"MEDIUM_PLUS\",\n            contents: {\n              #\"SYSTEM_SYSRULES_dropdownField_v1\"(\n                label: #\"urn:appian:translation-string:v1:1705a350-8d9c-4709-9c2b-ddda9fd912cc\",\n                placeholder: #\"urn:appian:translation-string:v1:5de8bf06-13a1-4944-8a57-2eb4ec55209f\"(#\"urn:appian:translation-variable:v1:19e30c9c-e498-4651-ba24-bc976a60821b\": #\"urn:appian:translation-string:v1:1705a350-8d9c-4709-9c2b-ddda9fd912cc\"),\n                required: true,\n                showWhen: and(\n                  a!isNotNullOrEmpty(local!modelVersions),\n                  length(local!modelVersions) > 1\n                ),\n                value: local!selectedModelVersion[recordType!AIA Extraction Model Version.modelVersionId],\n                saveInto: {\n                  a!save(\n                    local!selectedModelVersion,\n                    rule!AIA_UTIL_Filter(\n                      records: local!modelVersions,\n                      field: recordType!AIA Extraction Model Version.modelVersionId,\n                      value: save!value,\n                      filterType: \"FIRST_MATCH\"\n                    )\n                  )\n                },\n                choiceLabels: #\"SYSTEM_SYSRULES_forEach\"(\n                  items: local!modelVersions,\n                  expression: #\"urn:appian:translation-string:v1:e545b547-89da-4d8d-ae1b-6a9484e5a972\"(\n                    #\"urn:appian:translation-variable:v1:ded61c24-753f-4c3e-8ab5-88ee3619905f\": fv!item[recordType!AIA Extraction Model Version.versionId],\n                    #\"urn:appian:translation-variable:v1:20227dbd-035f-46e5-8d2f-d413d7b7ed50\": fv!item[recordType!AIA Extraction Model Version.status],\n                    #\"urn:appian:translation-variable:v1:b6e4b42e-4a95-4a54-bb0f-a4d2bd925f0d\": rule!AIA_GetLLMName(\n                      llm: a!defaultValue(\n                        value: fv!item[recordType!AIA Extraction Model Version.llm],\n                        default: rule!AIA_DefaultModel()\n                      )\n                    )\n                  )\n                ),\n                choiceValues: local!modelVersions[recordType!AIA Extraction Model Version.modelVersionId]\n              ),\n              #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                align: \"CENTER\",\n                marginBelow: \"MORE\",\n                value: {\n                  if(\n                    local!testInstanceCount>0,\n                    #\"urn:appian:translation-string:v1:f01cd82d-751a-4e6e-a250-9dc59eee6c98\"(#\"urn:appian:translation-variable:v1:e6dec11e-8ce6-404b-85cd-c1f449f75587\": local!testInstanceCount),\n                    #\"urn:appian:translation-string:v1:fcbe21f8-20c9-4252-b39b-0c5ebed573c5\"\n                  )\n                }\n              ),\n              rule!AIA_UTIL_displayAlertBanners(\n                alertBannerIcon: \"exclamation-triangle\",\n                alertIconColor: local!brandingMap.Orange3,\n                brandingMap: local!brandingMap,\n                showWhen: local!alertCount > 0,\n                alertMessage: #\"urn:appian:translation-string:v1:6f884a04-d4b8-484a-9b47-77ae1c7aa231\"(\n                  #\"urn:appian:translation-variable:v1:4a171b48-8fca-4f09-b27d-806f8558468f\": local!alertCount\n                ),\n                bannerStyle: local!brandingMap.Orange1,\n                marginBelow: \"NONE\"\n              )\n            }\n          ),\n          #\"SYSTEM_SYSRULES_columnLayout\"()\n        },\n        marginAbove: \"LESS\",\n        marginBelow: \"LESS\"\n      )\n    },\n    buttons: #\"SYSTEM_SYSRULES_ButtonLayout\"(\n      primaryButtons: {\n        #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n          label: #\"urn:appian:translation-string:v1:e018f5d0-8c82-4a3e-8409-354cd81c1024\",\n          saveInto: {\n            a!save(\n              ri!extractionModelVersion,\n              local!selectedModelVersion\n            )\n          },\n          validate: true,\n          disabled: or(\n            a!isNullOrEmpty(local!testInstanceCount),\n            local!testInstanceCount = 0\n          ),\n          submit: true,\n          style: \"SOLID\"\n        )\n      },\n      secondaryButtons: {\n        #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n          label: #\"urn:appian:translation-string:v1:df61ccad-fe9a-4d7a-ba9a-d89b08f3467a\",\n          value: true,\n          saveInto: ri!cancel,\n          validate: false,\n          submit: true,\n          style: \"OUTLINE\"\n        )\n      }\n    ),\n    skipAutoFocus: true()\n  )\n)"
+    },
+    "_a-0000eed9-05f0-8000-9d10-011c48011c48_195035": {
+      "name": "AIA_GetLLMName",
+      "type": "Expression Rule",
+      "sail_code": "with(\n  local!options: rule!AIA_ENUM_LlmVersions(\n    includeVision: true,\n    returnOnlySupportedLlms: false\n  ),\n  displayvalue(\n    ri!llm,\n    local!options.value,\n    local!options.label,\n    \"\"\n  )\n)"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92571": {
+      "name": "AIA_MTR_ExtractionInstanceAiReview",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000edb4-d4ac-8000-9bae-011c48011c48_109540": {
+      "name": "AIA_ExtractionModel_GetAlertingTestInstanceCount",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!testInstances: rule!SHRD_UTIL_QueryRecord(\n    recordType: recordType!AIA Extraction Instance,\n    returnType: \"OBJECT_ARRAY\",\n    executeWhen: a!isNotNullOrEmpty(ri!model),\n    fields: {\n      recordType!AIA Extraction Instance.id,\n      recordType!AIA Extraction Instance.statusId,\n      recordType!AIA Extraction Instance.correctFieldCount,\n      recordType!AIA Extraction Instance.totalFieldCount,\n      recordType!AIA Extraction Instance.modelVersion.extractionModel.fieldsCount\n    },\n    filters: {\n      #\"SYSTEM_SYSRULES_queryFilter\"(\n        field: recordType!AIA Extraction Instance.modelVersion.versionId,\n        operator: \"<=\",\n        value: ri!modelVersion[recordType!AIA Extraction Model Version.versionId],\n        applyWhen: a!isNotNullOrEmpty(ri!modelVersion)\n      ),\n      #\"SYSTEM_SYSRULES_queryFilter\"(\n        field: recordType!AIA Extraction Instance.modelVersion.modelId,\n        operator: \"=\",\n        value: ri!model[recordType!AIA Extraction Model.modelId]\n      ),\n      #\"SYSTEM_SYSRULES_queryFilter\"(\n        field: recordType!AIA Extraction Instance.modelTestSuiteCase.modelTestSuiteId,\n        operator: \"=\",\n        value: ri!testSuiteId,\n        applyWhen: a!isNotNullOrEmpty(ri!testSuiteId)\n      ),\n      #\"SYSTEM_SYSRULES_queryFilter\"(\n        field: recordType!AIA Extraction Instance.testInstance,\n        operator: \"=\",\n        value: true\n      )\n    }\n  ),\n  local!alertingTestInstances: a!flatten(\n    #\"SYSTEM_SYSRULES_forEach\"(\n      items: local!testInstances,\n      expression: if(\n        and(\n          contains(cons!AIA_INSTANCE_STATUS_RECONCILED_ALL,fv!item[recordType!AIA Extraction Instance.statusId]),\n          fv!item[recordType!AIA Extraction Instance.modelVersion.extractionModel.fieldsCount] = fv!item[recordType!AIA Extraction Instance.totalFieldCount]\n        ),\n        {},\n        fv!item\n      )\n    )\n  ),\n  a!defaultValue(\n    value: rule!SHRD_UTIL_length(local!alertingTestInstances),\n    default: 0\n  )\n)"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92564": {
+      "name": "AIA_MTR_ExtractionInstanceFieldAiReview",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "8ea934d9-bb30-4922-ab0d-2ef04f78d351": {
+      "name": "AIA Model Test Suite Run Extraction",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\npv!baselineExtractionInstances[tp!instanceIndex]\n\n// Input: ?\n=pv!extractionModelVersion[recordType!AIA Extraction Model Version.modelVersionId]\n\n// Input: ?\npp!id\n\n// Input: ?\n=pv!testSuiteRunId\n\n// Output: ?\nrule!AIA_Extraction_GetTestInstances(\n  modelVersion: pv!extractionModelVersion,\n  testSuiteId: pv!modelTestSuite[recordType!AIA Model Test Suite.testSuiteId]\n)\n\n// Input: ?\n={ {\n  rule!AIA_ModelTestSuiteRun_Initialize(\n    testSuiteId: pv!modelTestSuite[recordType!AIA Model Test Suite.testSuiteId],\n    initiator: pp!initiator\n  )\n}}\n\n// Input: ?\n={recordType!AIA Model Test Suite Run}\n\n// Input: ?\n=rule!AIA_LogMetric(name: cons!AIA_MTR_MODEL_TEST_RUN_INITIATED)\n\n// Output: ?\nappian:record-relationship:v1:cfc72308-7728-469d-b7d1-88a289f669d8/c6c4662c-38f3-40ea-954b-96c522b5782b\"]:AC!RecordsUpdated\n\n// Output: ?\nac!RecordsUpdated[recordType!AIA Model Test Suite Run.testSuiteRunId]"
+    },
+    "_a-0000ed69-99d8-8000-9ba6-011c48011c48_42488": {
+      "name": "AIA_UTIL_displayAlertBanners",
+      "type": "Interface",
+      "sail_code": "#\"SYSTEM_SYSRULES_cardLayout\"(\n  showWhen: ri!showWhen,\n  padding: ri!padding,\n  contents: {\n    #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n      items: {\n        #\"SYSTEM_SYSRULES_sideBySideItem\"(\n          item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n            labelPosition: \"COLLAPSED\",\n            value: {\n              #\"SYSTEM_SYSRULES_richTextIcon\"(\n                icon: a!defaultValue(ri!alertBannerIcon, \"info-circle\"),\n                color: a!defaultValue(ri!alertIconColor, ri!brandingMap.Gray3),\n                size: \"MEDIUM\"\n              )\n            }\n          ),\n          width: \"MINIMIZE\"\n        ),\n        #\"SYSTEM_SYSRULES_sideBySideItem\"(\n          showWhen: ri!alertMessageShowWhen,\n          /* Replace this rich text with your information message */\n          item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n            labelPosition: \"COLLAPSED\",\n            value: #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n              text: ri!alertMessage,\n              color: a!defaultValue(\n                ri!alertMessageColor,\n                ri!brandingMap.Gray4\n              )\n            )\n          ),\n          width: \"MINIMIZE\"\n        ),\n        #\"SYSTEM_SYSRULES_sideBySideItem\"(\n          /* Replace this rich text with your information message */\n          item: ri!bannerRecordAction,\n          showWhen: a!isNotNullOrEmpty(ri!bannerRecordAction)\n        )\n      },\n      alignVertical: \"MIDDLE\"\n    )\n  },\n  style: a!defaultValue(ri!bannerStyle, \"STANDARD\"),\n  marginBelow: a!defaultValue(ri!marginBelow, \"STANDARD\"),\n  showBorder: ri!brandingMap.CardShowBorder,\n  shape: \"SEMI_ROUNDED\"\n)"
+    }
+  }
+}

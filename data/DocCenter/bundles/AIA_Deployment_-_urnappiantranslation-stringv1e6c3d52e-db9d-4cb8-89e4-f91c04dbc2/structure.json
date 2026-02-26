@@ -1,0 +1,712 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "AIA Deployment - =#\"urn:appian:translation-string:v1:e6c3d52e-db9d-4cb8-89e4-f91c04dbc2a4\"",
+    "parent_name": "AIA Deployment",
+    "total_objects": 44
+  },
+  "entry_point": {
+    "action_type": "RECORD_LIST_ACTION",
+    "record_type": "AIA Deployment",
+    "target_process": "AIA Create Deployment",
+    "form_interface": "AIA_SelectForDeployment",
+    "expressions": {
+      "TITLE": "=#\"urn:appian:translation-string:v1:e6c3d52e-db9d-4cb8-89e4-f91c04dbc2a4\"",
+      "DESCRIPTION": null,
+      "VISIBILITY": "=cons!AIA_SETTING_IS_DEV_SITE"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Create Deployment",
+      "complexity_score": 8.0,
+      "total_nodes": 5,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Cancel?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Create Deployment File",
+          "type": "Text Doc from Template",
+          "next": [
+            "Confirmation"
+          ]
+        },
+        {
+          "name": "Confirmation",
+          "type": "USER_TASK",
+          "next": [
+            "End Node"
+          ],
+          "interface": "AIA_DeploymentCreationConfirmation"
+        },
+        {
+          "name": "Cancel?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Create Deployment File",
+            "End Node"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_55610",
+      "name": "AIA_CLASSIFICATION_ICON",
+      "type": "Constant",
+      "description": "search",
+      "value": "search",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_SelectForDeployment"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_203014",
+      "name": "AIA_DEPLOYMENT",
+      "type": "Constant",
+      "description": "Constant reference to the AIA deployment document.",
+      "value": "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_203004",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "AIA_SelectForDeployment"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2e-dd02-8000-9bde-011c48011c48_50410",
+      "name": "AIA_EXAMPLE_DOC_EXTRACTION_PDF",
+      "type": "Constant",
+      "description": "Example doc for extraction",
+      "value": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40815",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "SHRD_ReadDocumentContent"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_55604",
+      "name": "AIA_EXTRACTION_ICON",
+      "type": "Constant",
+      "description": "sign-out",
+      "value": "sign-out",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_SelectForDeployment"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec40-0355-8000-9be4-011c48011c48_70311",
+      "name": "AIA_MODEL_TYPE_VALUES",
+      "type": "Constant",
+      "description": "(1) extraction, (2) classification",
+      "value": [
+        "extraction",
+        "classification"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_SelectForDeployment"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_97714",
+      "name": "AIA_MODEL_VERSION_STATUS_PUBLISHED",
+      "type": "Constant",
+      "description": "Published",
+      "value": "Published",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_Classification_GetLatestModelVersionIdByKey",
+        "AIA_CreateDeploymentFile",
+        "AIA_Extraction_GetLatestModelVersion"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_205938",
+      "name": "AIA_SETTING_IS_DEV_SITE",
+      "type": "Constant",
+      "description": "Is this the dev site?",
+      "value": null,
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": []
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_50791",
+      "name": "SHRD_DOT_SEPARATOR",
+      "type": "Constant",
+      "description": "\" • \"",
+      "value": " • ",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_SelectForDeployment"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec6d-e6ba-8000-9bf2-011c48011c48_134486",
+      "name": "AIA_Classification_GetLatestModelVersion",
+      "type": "Expression Rule",
+      "description": "Return latest model version for model key",
+      "parameters": [],
+      "calls": [
+        "AIA_Classification_GetLatestModelVersionIdByKey",
+        "AIA_QR_getClassificationModelVersion"
+      ],
+      "called_by": [
+        "AIA_CreateDeploymentFile"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec5c-9eda-8000-9bec-011c48011c48_119664",
+      "name": "AIA_Classification_GetLatestModelVersionIdByKey",
+      "type": "Expression Rule",
+      "description": "Get latest model version id by key",
+      "parameters": [],
+      "calls": [
+        "AIA_MODEL_VERSION_STATUS_PUBLISHED",
+        "AIA_QR_getClassificationModelVersion"
+      ],
+      "called_by": [
+        "AIA_Classification_GetLatestModelVersion"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_203057",
+      "name": "AIA_CreateDeploymentFile",
+      "type": "Expression Rule",
+      "description": "Create deployment file",
+      "parameters": [],
+      "calls": [
+        "AIA_Classification_GetLatestModelVersion",
+        "AIA_Extraction_GetLatestModelVersion",
+        "AIA_MODEL_VERSION_STATUS_PUBLISHED"
+      ],
+      "called_by": [
+        "AIA Create Deployment"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_203145",
+      "name": "AIA_EXTRACTION_MODEL_VERSION_FIELDS",
+      "type": "Expression Rule",
+      "description": "List of extraction model fields",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_GetModelVersionById"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec1e-9975-8000-9bd6-011c48011c48_1378305",
+      "name": "AIA_Extraction_GetLatestModelVersion",
+      "type": "Expression Rule",
+      "description": "Return latest model version for model id",
+      "parameters": [],
+      "calls": [
+        "AIA_Extraction_GetModelVersionById",
+        "AIA_MODEL_VERSION_STATUS_PUBLISHED"
+      ],
+      "called_by": [
+        "AIA_CreateDeploymentFile"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec5c-9eda-8000-9bec-011c48011c48_117023",
+      "name": "AIA_Extraction_GetModelVersionById",
+      "type": "Expression Rule",
+      "description": "Get model version by id",
+      "parameters": [],
+      "calls": [
+        "AIA_EXTRACTION_MODEL_VERSION_FIELDS"
+      ],
+      "called_by": [
+        "AIA_Extraction_GetLatestModelVersion"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef39-a43c-8000-9ecf-011c48011c48_429114",
+      "name": "AIA_QR_getClassificationModelVersion",
+      "type": "Expression Rule",
+      "description": "Rule to query 'AIA Classification Model Version' Record",
+      "parameters": [],
+      "calls": [
+        "SHRD_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "AIA_Classification_GetLatestModelVersion",
+        "AIA_Classification_GetLatestModelVersionIdByKey"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_12129",
+      "name": "AIA_UTIL_LoadBrandingMap",
+      "type": "Expression Rule",
+      "description": "Returns branding data for AI Analytics in the type List of Map",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_DeploymentCreationConfirmation",
+        "AIA_SelectForDeployment",
+        "AIA_UTIL_cardAsTabs",
+        "AIA_UTIL_userDateColumn"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_34388",
+      "name": "AIA_UTIL_displayDateTime",
+      "type": "Expression Rule",
+      "description": "Expression rule to Display Date Time in User Friendly Format",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_UTIL_userDateColumn"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_34420",
+      "name": "AIA_UTIL_displayUserFullName",
+      "type": "Expression Rule",
+      "description": "Interface to display User Full Name",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_UTIL_userDateColumn"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3e-060c-8000-9bb8-011c48011c48_203441",
+      "name": "SHRD_ReadDocumentContent",
+      "type": "Expression Rule",
+      "description": "Read content from text document",
+      "parameters": [],
+      "calls": [
+        "AIA_EXAMPLE_DOC_EXTRACTION_PDF"
+      ],
+      "called_by": [
+        "AIA_SelectForDeployment"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_36163",
+      "name": "SHRD_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "description": "Enhanced wrapper rule around a!queryRecord()",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_QR_getClassificationModelVersion"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_204671",
+      "name": "AIA_DeploymentCreationConfirmation",
+      "type": "Interface",
+      "description": "Deployment creation confirmation",
+      "parameters": [],
+      "calls": [
+        "AIA_UTIL_LoadBrandingMap",
+        "Close",
+        "Objects to be included while deploying models to the next environment",
+        "Process Models for Triggers",
+        "Your deployment settings have been updated successfully",
+        "db configurations for your models"
+      ],
+      "called_by": [
+        "AIA Create Deployment"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_203032",
+      "name": "AIA_SelectForDeployment",
+      "type": "Interface",
+      "description": "Prepare deployment",
+      "parameters": [
+        {
+          "name": "extractionModelIds",
+          "type": "http://www.appian.com/ae/types/2009:Integer?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Integer?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "classificationModelIds",
+          "type": "http://www.appian.com/ae/types/2009:Integer?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Integer?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "cancel",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        }
+      ],
+      "calls": [
+        "AIA_CLASSIFICATION_ICON",
+        "AIA_DEPLOYMENT",
+        "AIA_EXTRACTION_ICON",
+        "AIA_MODEL_TYPE_VALUES",
+        "AIA_UTIL_LoadBrandingMap",
+        "AIA_UTIL_cardAsTabs",
+        "AIA_UTIL_userDateColumn",
+        "After taking this action the published version of each selected models will be s",
+        "Available Models",
+        "Field Label",
+        "Grid Column Label",
+        "Label For Submit",
+        "Label for Cancel",
+        "Label for Deselect Model",
+        "Manage Models for Deployment",
+        "Navigation Bar Site Classification Page Name",
+        "Navigation Bar Site Extraction Page Name",
+        "No models selected yet",
+        "SHRD_DOT_SEPARATOR",
+        "SHRD_ReadDocumentContent",
+        "Selected Models",
+        "Version {count}"
+      ],
+      "called_by": [
+        "AIA Create Deployment"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_33494",
+      "name": "AIA_UTIL_cardAsTabs",
+      "type": "Interface",
+      "description": "card layout used as selectable tabs",
+      "parameters": [
+        {
+          "name": "tabs",
+          "type": "http://www.appian.com/ae/types/2009:Map?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "currentTab",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "isClickable",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        }
+      ],
+      "calls": [
+        "AIA_UTIL_LoadBrandingMap",
+        "Label for Selected"
+      ],
+      "called_by": [
+        "AIA_SelectForDeployment"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_55530",
+      "name": "AIA_UTIL_userDateColumn",
+      "type": "Interface",
+      "description": "Rich text for a user date column",
+      "parameters": [
+        {
+          "name": "user",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "date",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "defaultUser",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        }
+      ],
+      "calls": [
+        "AIA_UTIL_LoadBrandingMap",
+        "AIA_UTIL_displayDateTime",
+        "AIA_UTIL_displayUserFullName"
+      ],
+      "called_by": [
+        "AIA_SelectForDeployment"
+      ]
+    },
+    {
+      "uuid": "0002ecf2-444d-8000-06a6-7f0000014e7a",
+      "name": "AIA Create Deployment",
+      "type": "Process Model",
+      "description": "Create the deployment doc which will be run in the target environment",
+      "calls": [
+        "AIA_CreateDeploymentFile",
+        "AIA_DeploymentCreationConfirmation",
+        "AIA_SelectForDeployment"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "d35e2a06-89ba-427c-b213-d79c3495523c",
+      "name": "After taking this action the published version of each selected models will be s",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_SelectForDeployment"
+      ]
+    },
+    {
+      "uuid": "15631ff1-23aa-45e5-914c-2c254ed1dbad",
+      "name": "Available Models",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_SelectForDeployment"
+      ]
+    },
+    {
+      "uuid": "59ed6423-d196-42be-8a64-372f2310110a",
+      "name": "Close",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_DeploymentCreationConfirmation"
+      ]
+    },
+    {
+      "uuid": "1d2ee947-3116-4cca-8a1f-26fe5bcc2914",
+      "name": "Field Label",
+      "type": "Translation String",
+      "description": "Field Label",
+      "calls": [],
+      "called_by": [
+        "AIA_SelectForDeployment"
+      ]
+    },
+    {
+      "uuid": "51aad791-f453-4502-9cf0-f684f157f5fc",
+      "name": "Grid Column Label",
+      "type": "Translation String",
+      "description": "Grid Column Label",
+      "calls": [],
+      "called_by": [
+        "AIA_SelectForDeployment"
+      ]
+    },
+    {
+      "uuid": "d16bad4f-bd7d-4749-973b-caf37acbd5cb",
+      "name": "Label For Submit",
+      "type": "Translation String",
+      "description": "Label For Submit",
+      "calls": [],
+      "called_by": [
+        "AIA_SelectForDeployment"
+      ]
+    },
+    {
+      "uuid": "df61ccad-fe9a-4d7a-ba9a-d89b08f3467a",
+      "name": "Label for Cancel",
+      "type": "Translation String",
+      "description": "Label for Cancel",
+      "calls": [],
+      "called_by": [
+        "AIA_SelectForDeployment"
+      ]
+    },
+    {
+      "uuid": "8bbd8983-0386-4b67-9fbd-0f03dbe428b3",
+      "name": "Label for Deselect Model",
+      "type": "Translation String",
+      "description": "Label for Deselect Model",
+      "calls": [],
+      "called_by": [
+        "AIA_SelectForDeployment"
+      ]
+    },
+    {
+      "uuid": "c4fe0b43-af2b-44c8-b102-eef93af6d4c3",
+      "name": "Label for Selected",
+      "type": "Translation String",
+      "description": "Label for Selected",
+      "calls": [],
+      "called_by": [
+        "AIA_UTIL_cardAsTabs"
+      ]
+    },
+    {
+      "uuid": "e6c3d52e-db9d-4cb8-89e4-f91c04dbc2a4",
+      "name": "Manage Models for Deployment",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_SelectForDeployment"
+      ]
+    },
+    {
+      "uuid": "f04e5814-41aa-4705-bb0e-968fe8fc8ec5",
+      "name": "Navigation Bar Site Classification Page Name",
+      "type": "Translation String",
+      "description": "Navigation Bar Site Classification Page Name",
+      "calls": [],
+      "called_by": [
+        "AIA_SelectForDeployment"
+      ]
+    },
+    {
+      "uuid": "ae9a7ca9-3e53-46ea-ade4-94c52c690440",
+      "name": "Navigation Bar Site Extraction Page Name",
+      "type": "Translation String",
+      "description": "Navigation Bar Site Extraction Page Name",
+      "calls": [],
+      "called_by": [
+        "AIA_SelectForDeployment"
+      ]
+    },
+    {
+      "uuid": "dec364a0-c918-4e65-9112-c2d5ed68ceb9",
+      "name": "No models selected yet",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_SelectForDeployment"
+      ]
+    },
+    {
+      "uuid": "517a5763-0657-4f23-a135-147c521fbad5",
+      "name": "Objects to be included while deploying models to the next environment",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_DeploymentCreationConfirmation"
+      ]
+    },
+    {
+      "uuid": "b8a513fe-9bf2-42ed-b48f-61700fba41c9",
+      "name": "Process Models for Triggers",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_DeploymentCreationConfirmation"
+      ]
+    },
+    {
+      "uuid": "e3a60469-672b-43dd-8a4f-fc2fce947575",
+      "name": "Selected Models",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_SelectForDeployment"
+      ]
+    },
+    {
+      "uuid": "0dc23859-ec54-488e-8e0e-54f234016331",
+      "name": "Version {count}",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_SelectForDeployment"
+      ]
+    },
+    {
+      "uuid": "8662bdc5-644e-47f0-a289-6dbb96ab2831",
+      "name": "Your deployment settings have been updated successfully",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_DeploymentCreationConfirmation"
+      ]
+    },
+    {
+      "uuid": "9afdf456-4277-42db-9bb6-284445eae5bf",
+      "name": "db configurations for your models",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_DeploymentCreationConfirmation"
+      ]
+    }
+  ]
+}

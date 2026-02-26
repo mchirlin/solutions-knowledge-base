@@ -1,0 +1,260 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AIA Advanced IDP Processing",
+    "parent_name": null,
+    "total_objects": 13
+  },
+  "entry_point": {
+    "complexity_score": 17.0,
+    "total_nodes": 9,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Advanced IDP Processing",
+      "complexity_score": 17.0,
+      "total_nodes": 9,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Sections with Rules?"
+          ]
+        },
+        {
+          "name": "End Event",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Has bounding boxes?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Event (No)",
+            "Create Bounding Box Doc (Yes)"
+          ]
+        },
+        {
+          "name": "Find Sections",
+          "type": "Start Process",
+          "next": [
+            "Write Instance"
+          ]
+        },
+        {
+          "name": "Write Instance",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "AIA Process Bounding Boxes"
+          ]
+        },
+        {
+          "name": "Sections with Rules?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Find Sections",
+            "Process Advanced IDP"
+          ]
+        },
+        {
+          "name": "Create Bounding Box Doc",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Event"
+          ]
+        },
+        {
+          "name": "Process Advanced IDP",
+          "type": "Start Process",
+          "next": [
+            "Has bounding boxes?"
+          ]
+        },
+        {
+          "name": "AIA Process Bounding Boxes",
+          "type": "Start Process",
+          "next": [
+            "Has bounding boxes?"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ec2e-dd02-8000-9bde-011c48011c48_50410",
+      "name": "AIA_EXAMPLE_DOC_EXTRACTION_PDF",
+      "type": "Constant",
+      "description": "Example doc for extraction",
+      "value": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40815",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "SHRD_ReadDocumentContent"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeb8-377a-8000-9c16-011c48011c48_167261",
+      "name": "AIA_PM_FOR_EACH_LOOP",
+      "type": "Constant",
+      "description": "Value: AIA For Each (Loop) process model",
+      "value": "AIA For Each (Loop)",
+      "value_type": "http://www.appian.com/ae/types/2009:ProcessModel",
+      "calls": [],
+      "called_by": [
+        "AIA_UTIL_ProcessModelForEach"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeb8-377a-8000-9c16-011c48011c48_167268",
+      "name": "AIA_PM_FOR_EACH_MNI",
+      "type": "Constant",
+      "description": "Value: AIA For Each (MNI) process model",
+      "value": "AIA For Each (MNI)",
+      "value_type": "http://www.appian.com/ae/types/2009:ProcessModel",
+      "calls": [],
+      "called_by": [
+        "AIA_UTIL_ProcessModelForEach"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeb8-377a-8000-9c16-011c48011c48_167585",
+      "name": "AIA_PM_PROCESS_BOUNDING_BOXES",
+      "type": "Constant",
+      "description": "Process model - Process bounding boxes ",
+      "value": "AIA Process Bounding Boxes",
+      "value_type": "http://www.appian.com/ae/types/2009:ProcessModel",
+      "calls": [],
+      "called_by": [
+        "AIA Advanced IDP Processing"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40909",
+      "name": "AIA_ExtractJson",
+      "type": "Expression Rule",
+      "description": "Extract json from prompt builder reponse",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_GetAllBoundingBoxes"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecea-6c5f-8000-9c4b-011c48011c48_189602",
+      "name": "AIA_Extraction_GetAllBoundingBoxes",
+      "type": "Expression Rule",
+      "description": "Get all bounding boxes json for an instance",
+      "parameters": [],
+      "calls": [
+        "AIA_ExtractJson",
+        "AIA_Extraction_GetBoundingBoxesForExtraction",
+        "SHRD_ReadDocumentContent"
+      ],
+      "called_by": [
+        "AIA Advanced IDP Processing"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_158769",
+      "name": "AIA_Extraction_GetBoundingBoxesForExtraction",
+      "type": "Expression Rule",
+      "description": "Get bounding boxes for extraction",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_GetAllBoundingBoxes"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeb3-c7af-8000-9c01-011c48011c48_157749",
+      "name": "AIA_PLG_IsAutoscaleEnabled",
+      "type": "Expression Rule",
+      "description": "Returns true if the environment has autoscale enabled",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_UTIL_ProcessModelForEach"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_184766",
+      "name": "AIA_PLG_WriteFile",
+      "type": "Expression Rule",
+      "description": "Wrapper for `writeFile` plugin function",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Advanced IDP Processing"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeb8-377a-8000-9c16-011c48011c48_167255",
+      "name": "AIA_UTIL_ProcessModelForEach",
+      "type": "Expression Rule",
+      "description": "Determines the process model to run forEach regarding autoscale vs k",
+      "parameters": [],
+      "calls": [
+        "AIA_PLG_IsAutoscaleEnabled",
+        "AIA_PM_FOR_EACH_LOOP",
+        "AIA_PM_FOR_EACH_MNI"
+      ],
+      "called_by": [
+        "AIA Advanced IDP Processing"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3e-060c-8000-9bb8-011c48011c48_203441",
+      "name": "SHRD_ReadDocumentContent",
+      "type": "Expression Rule",
+      "description": "Read content from text document",
+      "parameters": [],
+      "calls": [
+        "AIA_EXAMPLE_DOC_EXTRACTION_PDF"
+      ],
+      "called_by": [
+        "AIA_Extraction_GetAllBoundingBoxes"
+      ]
+    },
+    {
+      "uuid": "ac252937-6391-4e9f-a15d-fd8c7cb9c020",
+      "name": "AIA Advanced IDP Processing",
+      "type": "Process Model",
+      "description": "Save bounding boxes",
+      "calls": [
+        "AIA Extraction Instance",
+        "AIA_Extraction_GetAllBoundingBoxes",
+        "AIA_PLG_WriteFile",
+        "AIA_PM_PROCESS_BOUNDING_BOXES",
+        "AIA_UTIL_ProcessModelForEach"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "64322398-e457-4695-87d5-09794164cf77",
+      "name": "AIA Extraction Instance",
+      "type": "Record Type",
+      "description": "Record to hold the AI Extraction scores and confidence threshold for each instance",
+      "actions": [
+        "reconcileField",
+        "reconcileUsingTestCase",
+        "runValidations",
+        "addRemoveTestCase",
+        "deleteExtractionInstance",
+        "deleteInstanceAndSkipConfirmation",
+        "updateAssociatedTestSuites"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "#\"urn:appian:translation-string:v1:ab6ce936-2015-4e58-a2d1-a10bcd2372e4\"",
+        "=#\"urn:appian:translation-string:v1:fe8f8d91-a84f-4494-9270-4959354698ce\"",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "AIA Advanced IDP Processing"
+      ]
+    }
+  ]
+}

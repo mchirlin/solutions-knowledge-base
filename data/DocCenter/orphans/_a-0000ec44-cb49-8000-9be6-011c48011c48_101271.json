@@ -1,0 +1,90 @@
+{
+  "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_101271",
+  "name": "AIA_ExtractionModel_RecordAction_Create",
+  "type": "Interface",
+  "description": "Wizard for creating a new extraction model",
+  "sail_code": "a!localVariables(\n  local!loggedInUser: loggedInUser(),\n  /*Current Step*/\n  local!currentStep: 1,\n  /*Branding Data for Styling*/\n  local!brandingMap: rule!AIA_UTIL_LoadBrandingMap(),\n  local!extractionModel: if(\n    a!isNullOrEmpty(ri!extractionModel),\n    rule!AIA_ExtractionModel_RecordAction_Create_Initialize(initiator: loggedInUser()),\n    ri!extractionModel\n  ),\n  local!availableSteps: rule!AIA_returnStepsForCreateExtractionModel(),\n  local!generateFieldData: a!map(\n    generationFieldType: cons!AIA_TXT_EXTRACTION_MODEL_GENERATION_FIELD_TYPE[3]\n  ),\n  local!oldGenerateFieldData,\n  local!lastStep: length(local!availableSteps),\n  #\"SYSTEM_SYSRULES_formLayout_v2\"(\n    focusOnFirstInput: false,\n    showTitleBarDivider: true,\n    titleBar: #\"SYSTEM_SYSRULES_sidebarTemplate\"(\n      backgroundColor: \"WHITE\",\n      additionalContents: {\n        #\"SYSTEM_SYSRULES_headingField\"(\n          text: #\"urn:appian:translation-string:v1:f70e0e6e-c620-453f-b427-4a0738fd23c1\",\n          headingTag: \"H1\",\n          fontWeight: \"BOLD\"\n        ),\n        #\"SYSTEM_SYSRULES_cardLayout\"(\n          marginAbove: \"STANDARD\",\n          padding: \"NONE\",\n          contents: {\n            #\"SYSTEM_SYSRULES_forEach\"(\n              items: local!availableSteps,\n              expression: #\"SYSTEM_SYSRULES_cardLayout\"(\n                contents: {\n                  {\n                    #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                      labelPosition: \"COLLAPSED\",\n                      value: {\n                        #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                          style: if(\n                            fv!index = local!currentStep,\n                            \"STRONG\",\n                            \"PLAIN\"\n                          ),\n                          size: \"SMALL\",\n                          text: fv!item.number,\n                          color: local!brandingMap.AccentColor\n                        )\n                      },\n                      marginBelow: \"NONE\"\n                    ),\n                    #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n                      items: {\n                        #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                          width: \"5X\",\n                          item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                            labelPosition: \"COLLAPSED\",\n                            value: {\n                              #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                                style: if(\n                                  fv!index = local!currentStep,\n                                  \"STRONG\",\n                                  \"PLAIN\"\n                                ),\n                                size: \"STANDARD\",\n                                text: fv!item.name,\n                                color: local!brandingMap.Gray4\n                              ),\n\n                            }\n                          )\n                        ),\n                        #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                          width: \"MINIMIZE\",\n                          item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                            labelPosition: \"COLLAPSED\",\n                            value: {\n                              #\"SYSTEM_SYSRULES_richTextIcon\"(\n                                showWhen: if(fv!index = local!currentStep, true, false),\n                                icon: \"arrow-right\",\n                                color: local!brandingMap.Blue3\n                              )\n                            }\n                          )\n                        )\n                      },\n                      marginBelow: \"LESS\"\n                    )\n                  }\n                },\n                style: if(\n                  fv!index = local!currentStep,\n                  local!brandingMap.Blue1,\n                  local!brandingMap.White\n                ),\n                link: #\"SYSTEM_SYSRULES_dynamicLink\"(\n                  showWhen: local!currentStep > fv!index,\n                  saveInto: a!save(local!currentStep, fv!index)\n                ),\n                accessibilityText: if(\n                  fv!index = local!currentStep,\n                  #\"urn:appian:translation-string:v1:c4fe0b43-af2b-44c8-b102-eef93af6d4c3\",\n                  {}\n                ),\n                padding: \"LESS\",\n                marginAbove: \"NONE\",\n                marginBelow: \"NONE\",\n                showBorder: local!brandingMap.CardShowBorder,\n                shape: if(\n                  fv!index = local!currentStep,\n                  local!brandingMap.CardShape,\n                  {}\n                )\n              )\n            )\n          },\n          showBorder: false(),\n          style: local!brandingMap.DefaultPageBackground\n        )\n      }\n    ),\n    contents: {\n      #\"SYSTEM_SYSRULES_sectionLayout_v1\"(\n        label: local!availableSteps[local!currentStep].number,\n        labelSize: \"EXTRA_SMALL\",\n        contents: {\n          #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n            labelPosition: \"COLLAPSED\",\n            value: {\n              #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                style: \"STRONG\",\n                text: local!availableSteps[local!currentStep].name,\n                size: \"MEDIUM_PLUS\",\n                color: local!brandingMap.Gray4\n              )\n            },\n            marginBelow: \"LESS\"\n          ),\n          #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n            labelPosition: \"COLLAPSED\",\n            value: {\n              #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                text: local!availableSteps[local!currentStep].description,\n                color: local!brandingMap.Gray3\n              )\n            },\n            marginBelow: \"STANDARD\"\n          ),\n          #\"SYSTEM_SYSRULES_columnsLayout\"(\n            columns: {\n              #\"SYSTEM_SYSRULES_columnLayout\"(\n                contents: {\n                  a!match(\n                    value: local!currentStep,\n                    equals: 1,\n                    then: rule!AIA_ExtractionModel_RecordAction_Create_ModelDetails(\n                      brandingMap: local!brandingMap,\n                      extractionModel: local!extractionModel\n                    ),\n                    equals: 2,\n                    then: #\"SYSTEM_SYSRULES_cardLayout\"(\n                      shape: local!brandingMap.CardShape,\n                      padding: \"NONE\",\n                      contents: rule!AIA_ExtractionModelVersion_Sub_ManageSections(\n                        extractionVersion: local!extractionModel[recordType!AIA Extraction Model.versions][1],\n                        brandingMap: local!brandingMap\n                      ),\n                      showBorder: local!brandingMap.CardShowBorder,\n                      style: local!brandingMap.White\n                    ),\n                    equals: 3,\n                    then: #\"SYSTEM_SYSRULES_cardLayout\"(\n                      shape: local!brandingMap.CardShape,\n                      padding: \"NONE\",\n                      contents: rule!AIA_ExtractionModeVersion_Sub_GenerateFields(\n                        brandingMap: local!brandingMap,\n                        generateFieldData: local!generateFieldData\n                      ),\n                      showBorder: local!brandingMap.CardShowBorder,\n\n                    ),\n                    equals: 4,\n                    then: rule!AIA_ExtractionModelVersion_Sub_ConfigureFields(\n                      brandingMap: local!brandingMap,\n                      isUpdate: false,\n                      extractionModelVersion: local!extractionModel[recordType!AIA Extraction Model.versions][1],\n                      extractionModel: local!extractionModel,\n                      showValidations: true()\n                    ),\n                    equals: 5,\n                    then: #\"SYSTEM_SYSRULES_cardLayout\"(\n                      shape: local!brandingMap.CardShape,\n                      padding: \"STANDARD\",\n                      contents: rule!AIA_ExtractionModel_Sub_RefinePrompt(\n                        brandingMap: local!brandingMap,\n                        extractionModelVersion: local!extractionModel[recordType!AIA Extraction Model.versions][1]\n                      ),\n                      showBorder: local!brandingMap.CardShowBorder,\n                      style: local!brandingMap.DefaultPageBackground\n                    ),\n                    default: {}\n                  )\n                },\n                width: a!match(\n                  value: local!currentStep,\n                  equals: 1,\n                  then: \"WIDE\",\n                  equals: 2,\n                  then: \"WIDE\",\n                  equals: 3,\n                  then: \"WIDE_PLUS\",\n                  equals: 4,\n                  then: \"\",\n                  equals: 5,\n                  then: \"\",\n                  equals: 6,\n                  then: \"\",\n                  default: \"WIDE\"\n                )\n              )\n            }\n          ),\n\n        },\n        labelHeadingTag: \"H2\"\n      )\n    },\n    contentsWidth: \"FULL\",\n    buttons: #\"SYSTEM_SYSRULES_ButtonLayout\"(\n      secondaryButtons: {\n        #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n          label: #\"urn:appian:translation-string:v1:e67a2d25-f970-42bf-acbe-44e96670b6df\",\n          color: local!brandingMap.AccentColor,\n          style: \"OUTLINE\",\n          submit: false,\n          saveInto: {\n            a!save(local!currentStep, local!currentStep - 1)\n          },\n          showWhen: local!currentStep <> 1\n        ),\n        #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n          label: #\"urn:appian:translation-string:v1:df61ccad-fe9a-4d7a-ba9a-d89b08f3467a\",\n          style: \"LINK\",\n          submit: true,\n          validate: false,\n          value: null,\n          saveInto: ri!extractionModel\n        )\n      },\n      primaryButtons: {\n        #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n          label: #\"urn:appian:translation-string:v1:1f6a7d97-a054-4ae4-bc78-ab32f05f4736\",\n          color: local!brandingMap.AccentColor,\n          submit: false,\n          validate: true,\n          style: \"SOLID\",\n          saveInto: {\n            rule!AIA_ExtractionModel_SaveForGenerateFields(\n              extractionModelVersion: local!extractionModel[recordType!AIA Extraction Model.versions][1],\n              currentGenerateFieldData: local!generateFieldData,\n              currentStep: local!currentStep,\n              extractionModel: local!extractionModel,\n              oldGenerateFieldData: local!oldGenerateFieldData\n            ),\n            a!save(local!currentStep, local!currentStep + 1)\n          },\n          showWhen: local!currentStep <> local!lastStep,\n          validationGroup: if(\n            local!currentStep = 4,\n            \"Fields\",\n            if(local!currentStep = 2, \"Sections\", {})\n          )\n        ),\n        #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n          label: #\"urn:appian:translation-string:v1:d00709b4-8675-4cbf-a285-2c15f3819e24\",\n          color: local!brandingMap.AccentColor,\n          submit: true(),\n          validate: true,\n          style: \"SOLID\",\n          saveInto: {\n            a!save(\n              local!extractionModel[recordType!AIA Extraction Model.versions.createdOn][1],\n              now()\n            ),\n            a!save(\n              local!extractionModel[recordType!AIA Extraction Model.versions.modifiedOn][1],\n              now()\n            ),\n            a!save(\n              local!extractionModel[recordType!AIA Extraction Model.versions.modifiedBy][1],\n              local!loggedInUser\n            ),\n            a!save(\n              local!extractionModel[recordType!AIA Extraction Model.versions.createdBy][1],\n              local!loggedInUser\n            ),\n            a!save(\n              ri!extractionModel,\n              local!extractionModel\n            ),\n            a!save(\n              ri!extractionModel,\n              #\"urn:appian:function:v1:a:update\"(\n                ri!extractionModel,\n                {\n                  recordType!AIA Extraction Model.modifiedBy,\n                  recordType!AIA Extraction Model.modifiedOn\n                },\n                { loggedInUser(), now() }\n              )\n            )\n          },\n          showWhen: local!currentStep = local!lastStep\n        )\n      }\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AIA_UTIL_LoadBrandingMap",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_ExtractionModel_RecordAction_Create_Initialize",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_returnStepsForCreateExtractionModel",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_ExtractionModel_RecordAction_Create_ModelDetails",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_ExtractionModelVersion_Sub_ManageSections",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_ExtractionModeVersion_Sub_GenerateFields",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_ExtractionModelVersion_Sub_ConfigureFields",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_ExtractionModel_Sub_RefinePrompt",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_ExtractionModel_SaveForGenerateFields",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_TXT_EXTRACTION_MODEL_GENERATION_FIELD_TYPE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "Create Extraction Model",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Label for Selected",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Button Label",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Label for Cancel",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Button Label",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Label Create",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

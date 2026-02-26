@@ -1,0 +1,26 @@
+{
+  "uuid": "_a-0000ed16-a792-8000-9c64-011c48011c48_267349",
+  "name": "AIA_RULE_RuleDynamicComponents",
+  "type": "Interface",
+  "description": "Generates the dynamic components associated to a selected rule operation. The field values will be stored in the context rule input",
+  "sail_code": "a!localVariables(\n  local!initalContext: a!refreshVariable(\n    refreshOnReferencedVarChange: false,\n    value: a!defaultValue(ri!context, a!map())\n  ),\n  /*Obtain rule operations if not provided*/\n  local!allRuleOperations: a!defaultValue(\n    value: ri!ruleOperations,\n    default: rule!AIA_RULE_ENUM_RuleOperations()\n  ),\n  /*Get the selected Rule*/\n  local!selectedRule: displayvalue(\n    ri!context.ruleOperationId,\n    local!allRuleOperations.id,\n    local!allRuleOperations,\n    null\n  ),\n  /*Get the components needed to fill the rule context*/\n  local!components: index(local!selectedRule, \"parameters\", {}),\n  {\n    #\"SYSTEM_SYSRULES_columnsLayout\"(\n      alignVertical: \"MIDDLE\",\n      columns: {\n        /*Dropdown to select the rule operation to evaluate*/\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          showWhen: ri!isCreateValidation,\n          contents: #\"SYSTEM_SYSRULES_dropdownField_v1\"(\n\n            choiceLabels: local!allRuleOperations.name,\n            choiceValues: local!allRuleOperations.id,\n            label: \"Rule Operation\",\n            labelPosition: \"ABOVE\",\n            placeholder: \"Select the rule operation to evaluate\",\n            value: ri!context.ruleOperationId,\n            saveInto: {\n              a!save(ri!context, local!initalContext),\n              ri!context.ruleOperationId\n            },\n            required: true\n          ),\n          width: \"NARROW\"\n        ),\n        /*Display components needed to execute the rule operation*/\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          contents: rule!AIA_RULE_DynamicComponents(\n            components: local!components,\n            data: ri!context\n          )\n        ),\n\n      },\n      marginBelow: \"EVEN_LESS\"\n    ),\n    #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n      marginAbove: \"NONE\",\n      labelPosition: \"COLLAPSED\",\n      value: #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n        text: local!selectedRule.description,\n        size: \"SMALL\",\n        color: \"SECONDARY\"\n      ),\n      showWhen: a!isNotNullOrEmpty(\n        index(local!selectedRule, \"description\", null)\n      )\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "AIA_RULE_ENUM_RuleOperations",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_RULE_DynamicComponents",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AIA_RULE_DynamicExpression",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

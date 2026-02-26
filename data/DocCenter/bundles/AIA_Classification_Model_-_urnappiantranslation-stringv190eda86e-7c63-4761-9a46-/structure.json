@@ -1,0 +1,235 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "AIA Classification Model - #\"urn:appian:translation-string:v1:90eda86e-7c63-4761-9a46-214dfa85e4a2\"",
+    "parent_name": "AIA Classification Model",
+    "total_objects": 11
+  },
+  "entry_point": {
+    "action_type": "RECORD_ACTION",
+    "record_type": "AIA Classification Model",
+    "target_process": "AIA Update Classification Model",
+    "form_interface": "AIA_ClassificationModel_RecordAction_UpdateModel",
+    "expressions": {
+      "TITLE": "#\"urn:appian:translation-string:v1:90eda86e-7c63-4761-9a46-214dfa85e4a2\"",
+      "DESCRIPTION": "Action to update a Classification Model",
+      "VISIBILITY": null,
+      "CONTEXT": "{\n  cancel: false(),\n  classificationModel: rv!record\n}"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Update Classification Model",
+      "complexity_score": 11.0,
+      "total_nodes": 6,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Cancel?"
+          ]
+        },
+        {
+          "name": "Cancel?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node",
+            "Write Records"
+          ]
+        },
+        {
+          "name": "Write Records",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Examples Exist?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Write Examples",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Examples Exist?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node",
+            "Write Examples"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ec5c-9eda-8000-9bec-011c48011c48_119454",
+      "name": "AIA_Classification_GetModelByKey",
+      "type": "Expression Rule",
+      "description": "Get classification model by key",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModel_Sub_ModelDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_76923",
+      "name": "SHRD_ReformatLabelAsKey",
+      "type": "Expression Rule",
+      "description": "Reformat a label as a key",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModel_Sub_ModelDetails"
+      ]
+    },
+    {
+      "uuid": "63865ec9-036c-4a78-95da-14724bbd5a71",
+      "name": "AIA_ClassificationModel_RecordAction_UpdateModel",
+      "type": "Interface",
+      "description": "Form interface for creating or updating Classification Models as an action",
+      "parameters": [
+        {
+          "name": "classificationModel",
+          "type": "urn:com:appian:recordtype:datatype:2685b10f-5739-4461-ba3a-caac3c8e6eb0",
+          "raw_type": "urn:com:appian:recordtype:datatype:2685b10f-5739-4461-ba3a-caac3c8e6eb0",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "cancel",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AIA_ClassificationModel_Sub_ModelDetails",
+        "Label for Cancel",
+        "Label for Update",
+        "Update Details"
+      ],
+      "called_by": [
+        "AIA Update Classification Model"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_32586",
+      "name": "AIA_ClassificationModel_Sub_ModelDetails",
+      "type": "Interface",
+      "description": "Interface to fill Model Details for Create Classification Model Record Action",
+      "parameters": [
+        {
+          "name": "classificationModel",
+          "type": "urn:com:appian:recordtype:datatype:2685b10f-5739-4461-ba3a-caac3c8e6eb0",
+          "raw_type": "urn:com:appian:recordtype:datatype:2685b10f-5739-4461-ba3a-caac3c8e6eb0",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "isUpdate",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AIA_Classification_GetModelByKey",
+        "Description Label",
+        "Field Label",
+        "Grid column name",
+        "SHRD_ReformatLabelAsKey"
+      ],
+      "called_by": [
+        "AIA_ClassificationModel_RecordAction_UpdateModel"
+      ]
+    },
+    {
+      "uuid": "175eb5f4-927c-4e50-8ed6-e198a14a7e70",
+      "name": "AIA Update Classification Model",
+      "type": "Process Model",
+      "description": "Update a Classification Model",
+      "calls": [
+        "AIA_ClassificationModel_RecordAction_UpdateModel"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "be96096c-d32a-4708-a91d-b5dda4f2f30c",
+      "name": "Description Label",
+      "type": "Translation String",
+      "description": "Description Label",
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModel_Sub_ModelDetails"
+      ]
+    },
+    {
+      "uuid": "1d2ee947-3116-4cca-8a1f-26fe5bcc2914",
+      "name": "Field Label",
+      "type": "Translation String",
+      "description": "Field Label",
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModel_Sub_ModelDetails"
+      ]
+    },
+    {
+      "uuid": "2b3a2e79-0b85-4b52-bbf6-b2e8d08f1447",
+      "name": "Grid column name",
+      "type": "Translation String",
+      "description": "Grid column name",
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModel_Sub_ModelDetails"
+      ]
+    },
+    {
+      "uuid": "df61ccad-fe9a-4d7a-ba9a-d89b08f3467a",
+      "name": "Label for Cancel",
+      "type": "Translation String",
+      "description": "Label for Cancel",
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModel_RecordAction_UpdateModel"
+      ]
+    },
+    {
+      "uuid": "25a51cae-0560-410b-9b56-ba2b024e6364",
+      "name": "Label for Update",
+      "type": "Translation String",
+      "description": "Label for Update",
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModel_RecordAction_UpdateModel"
+      ]
+    },
+    {
+      "uuid": "90eda86e-7c63-4761-9a46-214dfa85e4a2",
+      "name": "Update Details",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModel_RecordAction_UpdateModel"
+      ]
+    }
+  ]
+}

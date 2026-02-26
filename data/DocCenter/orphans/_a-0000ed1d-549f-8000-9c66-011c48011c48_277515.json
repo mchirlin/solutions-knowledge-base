@@ -1,0 +1,31 @@
+{
+  "uuid": "_a-0000ed1d-549f-8000-9c66-011c48011c48_277515",
+  "name": "AIA_RULE_NormalizeValue",
+  "type": "Expression Rule",
+  "description": "Normalize a value for comparison",
+  "sail_code": "a!localVariables(\n  local!isList: rule!SHRD_IsList(value: ri!value),\n  local!isNumber: or(\n    rule!SHRD_IsNumber(value: ri!value),\n    and(\n      local!isList,\n      rule!SHRD_IsNumber(value: index(ri!value, 1, null))\n    )\n  ),\n  local!isText: or(\n    runtimetypeof(ri!value) = 'type!{http://www.appian.com/ae/types/2009}Text',\n    runtimetypeof(ri!value) = 'type!{http://www.appian.com/ae/types/2009}Text?list'\n  ),\n  a!match(\n    value: ri!value,\n    whenTrue: local!isNumber,\n    then: cast(\n      'type!{http://www.appian.com/ae/types/2009}Decimal?list',\n      ri!value\n    ),\n    whenTrue: local!isText,\n    then: cast(\n      'type!{http://www.appian.com/ae/types/2009}Text?list',\n      #\"SYSTEM_SYSRULES_forEach\"(\n        {ri!value},\n        rule!AIA_RULE_NormalizeString(string: fv!item)\n      )\n    ),\n    default: ri!value\n  )\n)",
+  "calls": [
+    {
+      "name": "SHRD_IsList",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "SHRD_IsNumber",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_RULE_NormalizeString",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AIA_RULE_DynamicBooleanOperation",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

@@ -1,0 +1,165 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AIA Classification Run Model Version",
+    "parent_name": null,
+    "total_objects": 8
+  },
+  "entry_point": {
+    "complexity_score": 11.0,
+    "total_nodes": 6,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Classification Run Model Version",
+      "complexity_score": 11.0,
+      "total_nodes": 6,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Initiate Classification"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Save Classification",
+          "type": "Start Process",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Initiate Classification",
+          "type": "Start Process",
+          "next": [
+            "Document Type"
+          ]
+        },
+        {
+          "name": "Document Type",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Execute Prompt Wrapper",
+            "Save Classification (Critical Errors)",
+            "End Node"
+          ]
+        },
+        {
+          "name": "Execute Prompt Wrapper",
+          "type": "Start Process",
+          "next": [
+            "Save Classification"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76666",
+      "name": "AIA_SEVERITY_CRITICAL",
+      "type": "Constant",
+      "description": "4",
+      "value": "4",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_HasCriticalErrors"
+      ]
+    },
+    {
+      "uuid": "_a-0000eed1-1d21-8000-9cef-011c48011c48_187601",
+      "name": "AIA_TEXT_BASED_EXTENSIONS",
+      "type": "Constant",
+      "description": "csv, xml",
+      "value": [
+        "csv",
+        "xml"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_Classification_ShouldRun"
+      ]
+    },
+    {
+      "uuid": "_a-0000edd9-a94f-8000-9bb2-011c48011c48_123689",
+      "name": "AIA_Classification_ShouldRun",
+      "type": "Expression Rule",
+      "description": "Should this classification run",
+      "parameters": [],
+      "calls": [
+        "AIA_IsDocumentExtension",
+        "AIA_TEXT_BASED_EXTENSIONS"
+      ],
+      "called_by": [
+        "AIA Classification Run Model Version"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_83881",
+      "name": "AIA_HasCriticalErrors",
+      "type": "Expression Rule",
+      "description": "Does an instance have critical errors",
+      "parameters": [],
+      "calls": [
+        "AIA_IsExtractionInstance",
+        "AIA_SEVERITY_CRITICAL",
+        "AIA_UTIL_Filter"
+      ],
+      "called_by": [
+        "AIA Classification Run Model Version"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_182518",
+      "name": "AIA_IsDocumentExtension",
+      "type": "Expression Rule",
+      "description": "Is the document of one of the following extensions",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Classification_ShouldRun"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_85019",
+      "name": "AIA_IsExtractionInstance",
+      "type": "Expression Rule",
+      "description": "Returns true if the instance is an extraction instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_HasCriticalErrors"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_26889",
+      "name": "AIA_UTIL_Filter",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_HasCriticalErrors"
+      ]
+    },
+    {
+      "uuid": "5c825cfa-d291-4cf3-8c6b-4de803ee6781",
+      "name": "AIA Classification Run Model Version",
+      "type": "Process Model",
+      "description": "Parent run classification model",
+      "calls": [
+        "AIA_Classification_ShouldRun",
+        "AIA_HasCriticalErrors"
+      ],
+      "called_by": []
+    }
+  ]
+}

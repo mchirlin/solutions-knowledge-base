@@ -1,0 +1,723 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "AIA Classification Model Version - #\"urn:appian:translation-string:v1:1e2fcded-fb80-4fbf-b0c8-4ea520a14009\"",
+    "parent_name": "AIA Classification Model Version",
+    "total_objects": 42
+  },
+  "entry_point": {
+    "action_type": "RECORD_ACTION",
+    "record_type": "AIA Classification Model Version",
+    "target_process": "AIA Classification Run All Test Instance",
+    "form_interface": "AIA_ClassificationModelVersion_RecordAction_RunAllTestInstances",
+    "expressions": {
+      "TITLE": "#\"urn:appian:translation-string:v1:1e2fcded-fb80-4fbf-b0c8-4ea520a14009\"",
+      "DESCRIPTION": "#\"urn:appian:translation-string:v1:bb74eba2-b337-4c94-a68c-8c693ad0ff37\"",
+      "VISIBILITY": "and(\n  #\"urn:appian:function:v1:a:isusermemberofgroup?okey=a!isUserMemberOfGroup\"(username: loggedInUser(), groups: cons!AIA_GRP_ADMIN),\n  rule!AIA_Classification_GetTestInstanceCount(modelVersion: rv!record) > 0\n)",
+      "CONTEXT": "{\n  classificationModel: rule!AIA_Classification_GetModelByKey(\n    key: rv!record[recordType!AIA Classification Model Version.model.key]\n  ),\n  classificationModelVersion: rule!AIA_QR_getClassificationModelVersion(\n    returnType: \"RECORD_BY_ID\",\n    modelVersionId: rv!identifier,\n    fields: #\"SYSTEM_SYSRULES_selectionFields\"(\n      allFieldsFromRecordType: {\n        recordType!AIA Classification Model Version,\n        recordType!AIA Classification Model Version.categories,\n        recordType!AIA Classification Model Version.examples,\n        recordType!AIA Classification Model Version.model\n      },\n      includeRealTimeCustomFields: false\n    ),\n    relatedRecordData: #\"SYSTEM_SYSRULES_relatedRecordData\"(\n      relationship: recordType!AIA Classification Model Version.categories,\n      sort: #\"SYSTEM_SYSRULES_sortInfo\"(\n        field: recordType!AIA Classification Model Version Category.sortOrder,\n        ascending: true\n      )\n    )\n  ),\n  cancel: false()\n}"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Classification Run All Test Instance",
+      "complexity_score": 11.0,
+      "total_nodes": 6,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Cancel?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Cancel?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node",
+            "Get Test Instances"
+          ]
+        },
+        {
+          "name": "Any instances?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node",
+            "Run Instances"
+          ]
+        },
+        {
+          "name": "Run Instances",
+          "type": "Start Process",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Get Test Instances",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Any instances?"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000eb87-8639-8000-9bb1-011c48011c48_15114",
+      "name": "AIA_GRP_ADMIN",
+      "type": "Constant",
+      "description": "Admin group",
+      "value": "AIA Administrators",
+      "value_type": "http://www.appian.com/ae/types/2009:Group",
+      "calls": [],
+      "called_by": []
+    },
+    {
+      "uuid": "_a-0000edd9-a94f-8000-9bb2-011c48011c48_144286",
+      "name": "AIA_INSTANCE_STATUS_RECONCILED_ALL",
+      "type": "Constant",
+      "description": "Contains ref id for status reconciled manually & automatically",
+      "value": [
+        "4",
+        "6"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Integer?list",
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModel_GetAlertingTestInstanceCount"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecfc-48c9-8000-9c55-011c48011c48_234906",
+      "name": "AIA_MODEL_HAIKU_3",
+      "type": "Constant",
+      "description": "appian/anthropic.claude-3-haiku-20240307-v1:0",
+      "value": "appian/anthropic.claude-3-haiku-20240307-v1:0",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_LlmVersions"
+      ]
+    },
+    {
+      "uuid": "_a-0000eec9-c580-8000-9cb5-011c48011c48_20563012",
+      "name": "AIA_MODEL_HAIKU_4_5",
+      "type": "Constant",
+      "description": "appian/anthropic.claude-haiku-4-5-20251001-v1:0",
+      "value": "appian/anthropic.claude-haiku-4-5-20251001-v1:0",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_DefaultModel",
+        "AIA_ENUM_LlmVersions"
+      ]
+    },
+    {
+      "uuid": "_a-0001eed2-6cf8-8000-9cf8-011c48011c48_189647",
+      "name": "AIA_MODEL_HAIKU_4_5_MULTIMODAL",
+      "type": "Constant",
+      "description": "appian/anthropic.claude-haiku-4-5-20251001-v1:0|MULTIMODAL",
+      "value": "appian/anthropic.claude-haiku-4-5-20251001-v1:0|MULTIMODAL",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_LlmVersions"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecfc-48c9-8000-9c55-011c48011c48_234918",
+      "name": "AIA_MODEL_SONNET_3",
+      "type": "Constant",
+      "description": "appian/anthropic.claude-3-sonnet-20240229-v1:0",
+      "value": "appian/anthropic.claude-3-sonnet-20240229-v1:0",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_LlmVersions"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecfc-48c9-8000-9c55-011c48011c48_234925",
+      "name": "AIA_MODEL_SONNET_3_5",
+      "type": "Constant",
+      "description": "appian/anthropic.claude-3-5-sonnet-20240620-v1:0",
+      "value": "appian/anthropic.claude-3-5-sonnet-20240620-v1:0",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_LlmVersions"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee66-4fc0-8000-9baa-011c48011c48_69027",
+      "name": "AIA_MODEL_SONNET_3_5_MULTIMODAL",
+      "type": "Constant",
+      "description": "appian/anthropic.claude-3-5-sonnet-20240620-v1:0|MULTIMODAL",
+      "value": "appian/anthropic.claude-3-5-sonnet-20240620-v1:0|MULTIMODAL",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_LlmVersions"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3e-060c-8000-9bb8-011c48011c48_189326",
+      "name": "AIA_MODEL_SONNET_3_7",
+      "type": "Constant",
+      "description": "appian/anthropic.claude-3-7-sonnet-20250219-v1:0",
+      "value": "appian/anthropic.claude-3-7-sonnet-20250219-v1:0",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_LlmVersions"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee9c-6257-8000-9bbe-011c48011c48_119144",
+      "name": "AIA_MODEL_SONNET_3_7_MULTIMODAL",
+      "type": "Constant",
+      "description": "appian/anthropic.claude-3-7-sonnet-20250219-v1:0|MULTIMODAL",
+      "value": "appian/anthropic.claude-3-7-sonnet-20250219-v1:0|MULTIMODAL",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_LlmVersions"
+      ]
+    },
+    {
+      "uuid": "_a-0001eed2-6cf8-8000-9cf8-011c48011c48_189635",
+      "name": "AIA_MODEL_SONNET_4_5",
+      "type": "Constant",
+      "description": "appian/anthropic.claude-sonnet-4-5-20250929-v1:0",
+      "value": "appian/anthropic.claude-sonnet-4-5-20250929-v1:0",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_LlmVersions"
+      ]
+    },
+    {
+      "uuid": "_a-0001eed2-6cf8-8000-9cf8-011c48011c48_189641",
+      "name": "AIA_MODEL_SONNET_4_5_MULTIMODAL",
+      "type": "Constant",
+      "description": "appian/anthropic.claude-sonnet-4-5-20250929-v1:0|MULTIMODAL",
+      "value": "appian/anthropic.claude-sonnet-4-5-20250929-v1:0|MULTIMODAL",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_LlmVersions"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_97714",
+      "name": "AIA_MODEL_VERSION_STATUS_PUBLISHED",
+      "type": "Constant",
+      "description": "Published",
+      "value": "Published",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_Classification_GetLatestModelVersionIdByKey"
+      ]
+    },
+    {
+      "uuid": "_a-0000edd8-757d-8000-9bb0-011c48011c48_120611",
+      "name": "AIA_ClassificationModel_GetAlertingTestInstanceCount",
+      "type": "Expression Rule",
+      "description": "Expression rule to get count of unreconciled or outdated test instances on a model or model version",
+      "parameters": [],
+      "calls": [
+        "AIA_INSTANCE_STATUS_RECONCILED_ALL",
+        "SHRD_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "AIA_ClassificationModelVersion_RecordAction_RunAllTestInstances"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec6d-e6ba-8000-9bf2-011c48011c48_134486",
+      "name": "AIA_Classification_GetLatestModelVersion",
+      "type": "Expression Rule",
+      "description": "Return latest model version for model key",
+      "parameters": [],
+      "calls": [
+        "AIA_Classification_GetLatestModelVersionIdByKey",
+        "AIA_QR_getClassificationModelVersion"
+      ],
+      "called_by": [
+        "AIA_ClassificationModelVersion_RecordAction_RunAllTestInstances"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec5c-9eda-8000-9bec-011c48011c48_119664",
+      "name": "AIA_Classification_GetLatestModelVersionIdByKey",
+      "type": "Expression Rule",
+      "description": "Get latest model version id by key",
+      "parameters": [],
+      "calls": [
+        "AIA_MODEL_VERSION_STATUS_PUBLISHED",
+        "AIA_QR_getClassificationModelVersion"
+      ],
+      "called_by": [
+        "AIA_Classification_GetLatestModelVersion"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec5c-9eda-8000-9bec-011c48011c48_119454",
+      "name": "AIA_Classification_GetModelByKey",
+      "type": "Expression Rule",
+      "description": "Get classification model by key",
+      "parameters": [],
+      "calls": [],
+      "called_by": []
+    },
+    {
+      "uuid": "_a-0000ef39-a43c-8000-9ecf-011c48011c48_429287",
+      "name": "AIA_Classification_GetTestInstanceCount",
+      "type": "Expression Rule",
+      "description": "Get count of test instances for a Classification model version",
+      "parameters": [],
+      "calls": [
+        "AIA_Classification_GetTestInstances",
+        "AIA_QR_getModelTestSuite",
+        "AIA_Test_GetLatestClassificationInstance"
+      ],
+      "called_by": [
+        "AIA_ClassificationModelVersion_RecordAction_RunAllTestInstances"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecd4-7f5c-8000-9c42-011c48011c48_163335",
+      "name": "AIA_Classification_GetTestInstances",
+      "type": "Expression Rule",
+      "description": "Get test instances for a classification model version",
+      "parameters": [],
+      "calls": [
+        "SHRD_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "AIA Classification Run All Test Instance",
+        "AIA_Classification_GetTestInstanceCount"
+      ]
+    },
+    {
+      "uuid": "_a-0000eed9-05f0-8000-9d10-011c48011c48_194872",
+      "name": "AIA_DefaultModel",
+      "type": "Expression Rule",
+      "description": "Default model for AIA",
+      "parameters": [],
+      "calls": [
+        "AIA_MODEL_HAIKU_4_5"
+      ],
+      "called_by": [
+        "AIA_ClassificationModelVersion_RecordAction_RunAllTestInstances"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecfc-48c9-8000-9c55-011c48011c48_234937",
+      "name": "AIA_ENUM_LlmVersions",
+      "type": "Expression Rule",
+      "description": "Model versions",
+      "parameters": [],
+      "calls": [
+        "AIA_MODEL_HAIKU_3",
+        "AIA_MODEL_HAIKU_4_5",
+        "AIA_MODEL_HAIKU_4_5_MULTIMODAL",
+        "AIA_MODEL_SONNET_3",
+        "AIA_MODEL_SONNET_3_5",
+        "AIA_MODEL_SONNET_3_5_MULTIMODAL",
+        "AIA_MODEL_SONNET_3_7",
+        "AIA_MODEL_SONNET_3_7_MULTIMODAL",
+        "AIA_MODEL_SONNET_4_5",
+        "AIA_MODEL_SONNET_4_5_MULTIMODAL"
+      ],
+      "called_by": [
+        "AIA_GetLLMName"
+      ]
+    },
+    {
+      "uuid": "_a-0000eed9-05f0-8000-9d10-011c48011c48_195035",
+      "name": "AIA_GetLLMName",
+      "type": "Expression Rule",
+      "description": "Get name from model id",
+      "parameters": [],
+      "calls": [
+        "AIA_ENUM_LlmVersions"
+      ],
+      "called_by": [
+        "AIA_ClassificationModelVersion_RecordAction_RunAllTestInstances"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef39-a43c-8000-9ecf-011c48011c48_429114",
+      "name": "AIA_QR_getClassificationModelVersion",
+      "type": "Expression Rule",
+      "description": "Rule to query 'AIA Classification Model Version' Record",
+      "parameters": [],
+      "calls": [
+        "SHRD_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "AIA_ClassificationModelVersion_RecordAction_RunAllTestInstances",
+        "AIA_Classification_GetLatestModelVersion",
+        "AIA_Classification_GetLatestModelVersionIdByKey"
+      ]
+    },
+    {
+      "uuid": "_a-0000eead-6b09-8000-9bee-011c48011c48_148667",
+      "name": "AIA_QR_getModelTestSuite",
+      "type": "Expression Rule",
+      "description": "Query record for model test suite",
+      "parameters": [],
+      "calls": [
+        "SHRD_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "AIA_Classification_GetTestInstanceCount"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec36-59aa-8000-9be0-011c48011c48_52454",
+      "name": "AIA_Test_GetLatestClassificationInstance",
+      "type": "Expression Rule",
+      "description": "Get the latest classification instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Classification_GetTestInstanceCount"
+      ]
+    },
+    {
+      "uuid": "_a-0000edd9-a94f-8000-9bb2-011c48011c48_146472",
+      "name": "AIA_Test_GetLatestClassificationModel",
+      "type": "Expression Rule",
+      "description": "Get latest classification model",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModelVersion_RecordAction_RunAllTestInstances"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_26889",
+      "name": "AIA_UTIL_Filter",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModelVersion_RecordAction_RunAllTestInstances"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_12129",
+      "name": "AIA_UTIL_LoadBrandingMap",
+      "type": "Expression Rule",
+      "description": "Returns branding data for AI Analytics in the type List of Map",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModelVersion_RecordAction_RunAllTestInstances",
+        "AIA_UTIL_displayAlertBanners"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_36163",
+      "name": "SHRD_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "description": "Enhanced wrapper rule around a!queryRecord()",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModel_GetAlertingTestInstanceCount",
+        "AIA_Classification_GetTestInstances",
+        "AIA_QR_getClassificationModelVersion",
+        "AIA_QR_getModelTestSuite"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecd4-7f5c-8000-9c42-011c48011c48_163348",
+      "name": "AIA_ClassificationModelVersion_RecordAction_RunAllTestInstances",
+      "type": "Interface",
+      "description": "Form interface for running all test instances in a Classification Model independent of test suites (will not create a test run record)",
+      "parameters": [
+        {
+          "name": "classificationModelVersion",
+          "type": "urn:com:appian:recordtype:datatype:a8b311eb-88c5-453a-a403-318071da677d",
+          "raw_type": "urn:com:appian:recordtype:datatype:a8b311eb-88c5-453a-a403-318071da677d",
+          "required": false,
+          "default_value": null,
+          "description": "when passed in, form will force selection of this version. Else user can select version based on model provided with default being latest version",
+          "display_order": 0
+        },
+        {
+          "name": "cancel",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "classificationModel",
+          "type": "urn:com:appian:recordtype:datatype:2685b10f-5739-4461-ba3a-caac3c8e6eb0",
+          "raw_type": "urn:com:appian:recordtype:datatype:2685b10f-5739-4461-ba3a-caac3c8e6eb0",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        }
+      ],
+      "calls": [
+        "AIA_ClassificationModel_GetAlertingTestInstanceCount",
+        "AIA_Classification_GetLatestModelVersion",
+        "AIA_Classification_GetTestInstanceCount",
+        "AIA_DefaultModel",
+        "AIA_GetLLMName",
+        "AIA_QR_getClassificationModelVersion",
+        "AIA_Test_GetLatestClassificationModel",
+        "AIA_UTIL_Filter",
+        "AIA_UTIL_LoadBrandingMap",
+        "AIA_UTIL_displayAlertBanners",
+        "Display message for Run Test Cases",
+        "Label for Cancel",
+        "Label for Run Test Cases",
+        "Model Version",
+        "Run",
+        "Select Model Version",
+        "Version {modelVersion} ({status}, LLM: {llmName})",
+        "{count} test cases are unreconciled"
+      ],
+      "called_by": [
+        "AIA Classification Run All Test Instance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_42488",
+      "name": "AIA_UTIL_displayAlertBanners",
+      "type": "Interface",
+      "description": "Interface to display Alert Banners",
+      "parameters": [
+        {
+          "name": "alertBannerIcon",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "alertIconColor",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "alertMessage",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "bannerRecordAction",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "alertMessageColor",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "bannerStyle",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 6
+        },
+        {
+          "name": "padding",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 7
+        },
+        {
+          "name": "alertMessageShowWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": "Determines whether the text for the alertMessage rule input displays. Default true",
+          "display_order": 8
+        },
+        {
+          "name": "marginBelow",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 9
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 10
+        }
+      ],
+      "calls": [
+        "AIA_UTIL_LoadBrandingMap"
+      ],
+      "called_by": [
+        "AIA_ClassificationModelVersion_RecordAction_RunAllTestInstances"
+      ]
+    },
+    {
+      "uuid": "0006ecd6-9d5e-8000-04ca-7f0000014e7a",
+      "name": "AIA Classification Run All Test Instance",
+      "type": "Process Model",
+      "description": "Test an classification model version against test suite cases",
+      "calls": [
+        "AIA_ClassificationModelVersion_RecordAction_RunAllTestInstances",
+        "AIA_Classification_GetTestInstances"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "70246883-afd2-4189-baf8-afe9b5e3dbea",
+      "name": "Display message for Run Test Cases",
+      "type": "Translation String",
+      "description": "Display message for Run Test Cases",
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModelVersion_RecordAction_RunAllTestInstances"
+      ]
+    },
+    {
+      "uuid": "df61ccad-fe9a-4d7a-ba9a-d89b08f3467a",
+      "name": "Label for Cancel",
+      "type": "Translation String",
+      "description": "Label for Cancel",
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModelVersion_RecordAction_RunAllTestInstances"
+      ]
+    },
+    {
+      "uuid": "9276facb-ba17-4058-b318-3c13a9a4a28c",
+      "name": "Label for Run Test Cases",
+      "type": "Translation String",
+      "description": "Label for Run Test Cases",
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModelVersion_RecordAction_RunAllTestInstances"
+      ]
+    },
+    {
+      "uuid": "35008bac-bfbd-4de6-837f-81ea140246a1",
+      "name": "Model Version",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModelVersion_RecordAction_RunAllTestInstances"
+      ]
+    },
+    {
+      "uuid": "e018f5d0-8c82-4a3e-8409-354cd81c1024",
+      "name": "Run",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModelVersion_RecordAction_RunAllTestInstances"
+      ]
+    },
+    {
+      "uuid": "1e2fcded-fb80-4fbf-b0c8-4ea520a14009",
+      "name": "Run All Tests",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": []
+    },
+    {
+      "uuid": "bb74eba2-b337-4c94-a68c-8c693ad0ff37",
+      "name": "Run all test instances for a model version. This will not create a entry in test",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": []
+    },
+    {
+      "uuid": "0dcdedef-2127-408e-94bd-a86b26de660f",
+      "name": "Select Model Version",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModelVersion_RecordAction_RunAllTestInstances"
+      ]
+    },
+    {
+      "uuid": "e545b547-89da-4d8d-ae1b-6a9484e5a972",
+      "name": "Version {modelVersion} ({status}, LLM: {llmName})",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModelVersion_RecordAction_RunAllTestInstances"
+      ]
+    },
+    {
+      "uuid": "8f27ed46-5a56-472a-8039-03c55aff11f2",
+      "name": "{count} test cases are unreconciled",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModelVersion_RecordAction_RunAllTestInstances"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_31211",
+  "name": "AIA_ClassificationModelVersion_Sub_ValidateOptions",
+  "type": "Expression Rule",
+  "description": "Expression rule to Validation Options",
+  "sail_code": "{\n  #\"SYSTEM_SYSRULES_validationMessage\"(\n    message: #\"urn:appian:translation-string:v1:e9a14a0d-d1e3-45d3-9a85-a43fa926658b\",\n    showWhen: and(\n      ri!currentTab <> 1,\n      a!isNullOrEmpty(ri!classificationModelVersionOption)\n    ),\n    validateAfter: \"SUBMIT\"\n  ),\n  #\"SYSTEM_SYSRULES_validationMessage\"(\n    message: #\"urn:appian:translation-string:v1:30265955-e557-4203-a92c-67f183d6692f\",\n    showWhen: and(\n      ri!currentTab <> 1,\n      a!isNotNullOrEmpty(ri!classificationModelVersionOption),\n      a!isNotNullOrEmpty(\n        wherecontains(\n          tostring(null()),\n          touniformstring(\n            ri!classificationModelVersionOption[recordType!AIA Classification Model Version Category.name]\n          )\n        )\n      )\n    ),\n    validateAfter: \"SUBMIT\"\n  ),\n  #\"SYSTEM_SYSRULES_validationMessage\"(\n    message: #\"urn:appian:translation-string:v1:67a1a8cf-38f8-4abc-9042-e267ae96de2f\"(\n      #\"urn:appian:translation-variable:v1:21783aae-4fb7-496d-bd7e-e2ddbe1a76ea\": 255\n    ),\n    showWhen: and(\n      ri!currentTab <> 1,\n      a!isNotNullOrEmpty(ri!classificationModelVersionOption),\n      length(\n        where(\n          #\"SYSTEM_SYSRULES_forEach\"(\n            items: ri!classificationModelVersionOption[recordType!AIA Classification Model Version Category.name],\n            expression: len(fv!item) > 255\n          )\n        )\n      ) > 0\n    ),\n    validateAfter: \"SUBMIT\"\n  ),\n  #\"SYSTEM_SYSRULES_validationMessage\"(\n    message: #\"urn:appian:translation-string:v1:110fc375-c8f8-4f1a-8181-a05284ba2907\"(\n      #\"urn:appian:translation-variable:v1:33839d1f-4a77-417e-9879-97c4fd32fa46\": 255\n    ),\n    showWhen: and(\n      ri!currentTab <> 1,\n      a!isNotNullOrEmpty(ri!classificationModelVersionOption),\n      length(\n        where(\n          #\"SYSTEM_SYSRULES_forEach\"(\n            items: ri!classificationModelVersionOption[recordType!AIA Classification Model Version Category.description],\n            expression: len(fv!item) > 255\n          )\n        )\n      ) > 0\n    ),\n    validateAfter: \"SUBMIT\"\n  ),\n  #\"SYSTEM_SYSRULES_validationMessage\"(\n    message: #\"urn:appian:translation-string:v1:c5fc9d76-f1a7-44f6-82d0-926be392b4a2\",\n    validateAfter: \"SUBMIT\",\n    showWhen: and(\n      ri!currentTab <> 1,\n      a!isNotNullOrEmpty(ri!classificationModelVersionOption),\n      length(ri!classificationModelVersionOption[recordType!AIA Classification Model Version Category.name]) <> length(\n        union(\n          ri!classificationModelVersionOption[recordType!AIA Classification Model Version Category.name],\n          ri!classificationModelVersionOption[recordType!AIA Classification Model Version Category.name]\n        )\n      )\n    )\n  )\n}",
+  "calls": [
+    {
+      "name": "Label for At least one category is required",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Label for Required values missing for categories",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Category name can't have more than {charCount} characters",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Category description can't have more than {charCount} characters",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Validation message for adding duplicate Categories to a Classification Model Ver",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AIA_ClassificationModelVersion_RecordAction_CreateUpdateVersion",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

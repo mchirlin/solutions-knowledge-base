@@ -1,0 +1,15 @@
+{
+  "uuid": "_a-0000ecdf-301c-8000-9c47-011c48011c48_170837",
+  "name": "AIA_Extraction_ProcessRawTextLine",
+  "type": "Expression Rule",
+  "description": "Process line",
+  "sail_code": "if(\n  tointeger(ri!newLine.pageNumber) = tointeger(ri!processed.pageNumber),\n  a!map(\n    pageNumber: ri!newLine.pageNumber,\n    text: ri!processed.text & char(10) & ri!newLine.text\n  ),\n  a!map(\n    pageNumber: ri!newLine.pageNumber,\n    text: ri!processed.text & char(10) & \n    if(\n      tointeger(ri!newLine.pageNumber <> 1),\n      \"</div>\" & char(10),\n      \"\"\n    ) & \"<div pageNumber=\"\"\" & ri!newLine.pageNumber + ri!pageOffset & \"\"\">\" & char(10) & \n    ri!newLine.text\n  )\n)",
+  "calls": [],
+  "called_by": [
+    {
+      "name": "AIA_Extraction_ProcessRawText",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

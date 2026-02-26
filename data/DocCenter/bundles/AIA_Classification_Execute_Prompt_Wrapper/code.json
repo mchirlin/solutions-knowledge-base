@@ -1,0 +1,102 @@
+{
+  "_metadata": {
+    "bundle_id": "AIA_Classification_Execute_Prompt_Wrapper"
+  },
+  "objects": {
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_182518": {
+      "name": "AIA_IsDocumentExtension",
+      "type": "Expression Rule",
+      "sail_code": "and(\n  a!isNotNullOrEmpty(ri!document),\n  contains(\n    lower(ri!extensions),\n    lower(document(\n      ri!document,\n      \"extension\"\n    ))\n  )\n)"
+    },
+    "_a-0000ed69-99d8-8000-9ba6-011c48011c48_55136": {
+      "name": "AIA_Extraction_UseBoundingBoxes",
+      "type": "Expression Rule",
+      "sail_code": "a!defaultValue(\n  ri!ExtractionInstance[recordType!AIA Extraction Instance.modelVersion.extractionModel.useBoundingBoxes],\n  cons!AIA_BOOL_CAPTURE_BOUNDING_BOXES\n)"
+    },
+    "_a-0000ee86-b6b0-8000-9ba7-011c48011c48_47424": {
+      "name": "AIA_ClassificationInput",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  rule!AIA_Classification_ShouldRunText(\n    classificationInstance: ri!classificationInstance,\n    document: ri!document\n  ),\n  a!map(\n    input: a!defaultValue(\n      ri!classificationInstance[recordType!AIA Classification Instance.inputText],\n      \"###documentContent###\"\n    ),\n    parameters: if(\n      a!isNullOrEmpty(ri!document),\n      null,\n      {\n        a!map(\n          pattern: \"###documentContent###\",\n          replacement: todocument(ri!document)\n        )\n      }\n    )\n  ),\n  a!map(\n    document: ri!document\n  )\n)"
+    },
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_74772": {
+      "name": "AIA_Classification_CreateJsonSchema",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  ri!classificationModelVersion[recordType!AIA Classification Model Version.allowMultipleOutputs],\n  prettyprintjson(\n    #\"SYSTEM_SYSRULES_toJson_v1\"(\n      a!map(\n        '$schema': \"http://json-schema.org/draft-07/schema#\",\n        title: ri!classificationModelVersion[recordType!AIA Classification Model Version.model.name],\n        description: #\"urn:appian:translation-string:v1:58aec15d-cdba-4adb-9aba-2475e8a9523c\",\n        type: \"array\",\n        items: a!map(\n          type: \"object\",\n          properties: a!map(\n            classification: a!map(\n              type: \"string\",\n              description: #\"urn:appian:translation-string:v1:7f421f3e-967b-4309-a582-4a40aec5cf18\",\n              enum: #\"SYSTEM_SYSRULES_forEach\"(\n                items: ri!classificationModelVersion[recordType!AIA Classification Model Version.categories],\n                expression: fv!item[recordType!AIA Classification Model Version Category.name]\n              )\n            ),\n            reasoning: a!map(\n              type: \"string\",\n              decription: #\"urn:appian:translation-string:v1:001a68cc-3234-43d7-8d13-4dac7de9ca3e\",\n              maxLength: 1000,\n              pattern: \"^[^\"\"]*$\"\n            ),\n            splitType: a!map(\n              type: \"string\",\n              description: #\"urn:appian:translation-string:v1:09dcbdf9-7533-4bfd-a63d-f2f571696750\",\n              enum: {\n                cons!AIA_TXT_CLASSIFICATION_SPLIT_TYPE_PAGE_RANGE\n              }\n            ),\n            startPageNumber: a!map(\n              type: \"integer\",\n              description: #\"urn:appian:translation-string:v1:8280c3e1-570e-42af-b1d1-bb776792d5c5\",\n              minimum: 1,\n              maximum: if(\n                a!isNullOrEmpty(ri!classificationInstance),\n                \"(\" & #\"urn:appian:translation-string:v1:6d8a5456-ac6e-4338-8420-a799da77a229\" & \")\",\n                if(\n                  ri!classificationModelVersion[recordType!AIA Classification Model Version.useVision] = true,\n                  tointeger(min(ri!classificationInstance[recordType!AIA Classification Instance.pageCount], cons!AIA_VISION_PAGE_MAX)),\n                  tointeger(min(ri!classificationInstance[recordType!AIA Classification Instance.pageCount], cons!AIA_CLASSIFICATION_MAX_PAGE_COUNT))\n                )\n              )\n            ),\n            endPageNumber: a!map(\n              type: \"integer\",\n              description: #\"urn:appian:translation-string:v1:b88828e9-6256-4176-9309-4a8a7505547e\",\n              minimum: 1,\n              maximum: if(\n                a!isNullOrEmpty(ri!classificationInstance),\n                \"(\" & #\"urn:appian:translation-string:v1:6d8a5456-ac6e-4338-8420-a799da77a229\" & \")\",\n                if(\n                  ri!classificationModelVersion[recordType!AIA Classification Model Version.useVision] = true,\n                  tointeger(min(ri!classificationInstance[recordType!AIA Classification Instance.pageCount], cons!AIA_VISION_PAGE_MAX)),\n                  tointeger(min(ri!classificationInstance[recordType!AIA Classification Instance.pageCount], cons!AIA_CLASSIFICATION_MAX_PAGE_COUNT))\n                )\n              )\n            )\n          ),\n          required: {\n            \"classification\",\n            \"splitType\",\n            \"reasoning\"\n          }\n        )\n      )\n    )\n  ),\n  prettyprintjson(\n    #\"SYSTEM_SYSRULES_toJson_v1\"(\n      a!map(\n        '$schema': \"http://json-schema.org/draft-07/schema#\",\n        title: ri!classificationModelVersion[recordType!AIA Classification Model Version.model.name],\n        description: #\"urn:appian:translation-string:v1:3f4f4b97-b69c-4eef-bef2-96da5cec37aa\",\n        type: \"object\",\n        properties: a!map(\n          classification: a!map(\n            type: \"string\",\n            description: #\"urn:appian:translation-string:v1:7f421f3e-967b-4309-a582-4a40aec5cf18\",\n            enum: #\"SYSTEM_SYSRULES_forEach\"(\n              items: ri!classificationModelVersion[recordType!AIA Classification Model Version.categories],\n              expression: fv!item[recordType!AIA Classification Model Version Category.name]\n            )\n          ),\n          reasoning: a!map(\n            type: \"string\",\n            decription: #\"urn:appian:translation-string:v1:001a68cc-3234-43d7-8d13-4dac7de9ca3e\",\n            maxLength: 1000,\n            pattern: \"^[^\"\"]*$\"\n          )\n        ),\n        required: {\n          \"classification\",\n          \"reasoning\"\n        }\n      )\n    )\n  )\n)"
+    },
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_85019": {
+      "name": "AIA_IsExtractionInstance",
+      "type": "Expression Rule",
+      "sail_code": "runtimetypeof(\n  ri!Instance\n) = typeof(\n  recordType!AIA Extraction Instance()\n)"
+    },
+    "_a-0000ee86-b6b0-8000-9ba7-011c48011c48_47348": {
+      "name": "AIA_Classification_ShouldRunText",
+      "type": "Expression Rule",
+      "sail_code": "or(\n  and(\n    a!isNullOrEmpty(ri!document),\n    a!isNotNullOrEmpty(ri!ClassificationInstance[recordType!AIA Classification Instance.inputText])\n  ),\n  rule!AIA_IsDocumentExtension(\n    document: ri!document,\n    extensions: cons!AIA_TEXT_BASED_EXTENSIONS\n  ) \n)"
+    },
+    "_a-0000ed96-b933-8000-9c8f-011c48011c48_921741": {
+      "name": "AIA_DecideSkillToRun",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  runtimetypeof(ri!Instance) = typeof(recordType!AIA Extraction Instance()),\n  a!match(\n    value: ri!Instance,\n    whenTrue: rule!AIA_Extraction_ShouldRunText(ExtractionInstance: ri!Instance),\n    then: cons!AIA_INPUT_TYPE_TEXT,\n    default: cons!AIA_INPUT_TYPE_DOC\n  ),\n  if(\n    runtimetypeof(ri!Instance) = typeof(recordType!AIA Classification Instance()),\n    a!match(\n      value: ri!Instance,\n      whenTrue: rule!AIA_Classification_ShouldRunText(\n        ClassificationInstance: ri!Instance,\n        document: a!defaultValue(ri!document, ri!Instance[recordType!AIA Classification Instance.documentId])\n      ),\n      then: cons!AIA_INPUT_TYPE_TEXT,\n      default: cons!AIA_INPUT_TYPE_DOC\n    ),\n    null\n  )\n)"
+    },
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_90047": {
+      "name": "AIA_CreateValidationErrorMessage",
+      "type": "Expression Rule",
+      "sail_code": "#\"SYSTEM_SYSRULES_toJson_v1\"(\n  a!map(\n    type: ri!type,\n    error: ri!error\n  )\n)"
+    },
+    "_a-0000ec6d-e6ba-8000-9bf2-011c48011c48_133191": {
+      "name": "AIA_Classification_GeneratePrompt",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!options: ri!modelVersion[recordType!AIA Classification Model Version.categories],\n\"<Role>\n\" &\na!defaultValue(\n  ri!modelVersion[recordType!AIA Classification Model Version.role],\n  rule!AIA_Classification_DefaultPromptRole(\n    classificationModelVersion: ri!modelVersion\n  )\n) & \n\"\n</Role>\n\n<Options> \nBelow are the options you must decide between\n\n\" &\njoinarray(\n  reject(\n    fn!isnull,\n    #\"SYSTEM_SYSRULES_forEach\"(\n      items: local!options,\n      expression: rule!AIA_Classification_GenerateOption(\n        option: fv!item\n      )\n    ),\n  ),\n  char(10)\n) & \"\n</Options>\n\n<Instructions>\n\" & rule!AIA_Classification_DefaultPromptInstructions(\n  classificationModelVersion: ri!modelVersion,\n  classificationInstance: ri!classificationInstance\n) & \nif(\n  a!isNullOrEmpty(ri!modelVersion[recordType!AIA Classification Model Version.instructions]),\n  \"\",\n  \" \" & ri!modelVersion[recordType!AIA Classification Model Version.instructions]\n) &\n\"\n</Instructions>\"\n)"
+    },
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76725": {
+      "name": "AIA_CreateMaxPageValidation",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!feature: displayvalue(\n    ri!feature,\n    rule!AIA_ENUM_Features().id,\n    rule!AIA_ENUM_Features(),\n    null\n  ),\n  rule!AIA_CreateValidation(\n    instance: ri!Instance,\n    typeId: cons!AIA_VALIDATION_TYPE_ID_EXECUTION,\n    message: rule!AIA_CreateValidationErrorMessage(\n      type: #\"urn:appian:translation-string:v1:25266106-b29b-4b80-9261-5c5b2e4b0aa3\",\n      error: #\"urn:appian:translation-string:v1:73bdf5e0-f073-4e93-aa40-bdbfabbff2d3\"(\n        #\"urn:appian:translation-variable:v1:aac5d80e-8573-4620-81a7-245a7684ce13\": local!feature.label,\n        #\"urn:appian:translation-variable:v1:881cf1e3-d211-453b-b21c-24f0ad928cd1\": a!defaultValue(\n          ri!maxPages,\n          local!feature.maxPages\n        )\n      )\n    ),\n    severity: local!feature.severity\n  )\n)"
+    },
+    "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40839": {
+      "name": "AIA_Test_GetLatestExtractionInstance",
+      "type": "Expression Rule",
+      "sail_code": "rule!AIA_Extraction_GetInstanceById(\n  identifier: #\"SYSTEM_SYSRULES_queryRecordType_v3\"(\n    recordType: recordType!AIA Extraction Instance,\n    pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n      startIndex: 1,\n      batchSize: 1,\n      sort: {\n        #\"SYSTEM_SYSRULES_sortInfo\"(\n          field: recordType!AIA Extraction Instance.id\n        )\n      }\n    )\n  ).data[recordType!AIA Extraction Instance.id],\n  additionalFields: {\n    recordType!AIA Extraction Instance.instanceUuid,\n    recordType!AIA Extraction Instance.modelVersion.versionId,\n    recordType!AIA Extraction Instance.modelVersion.modelId,\n    recordType!AIA Extraction Instance.modelVersion.uuid,\n    recordType!AIA Extraction Instance.modelVersion.extractionModel.key,\n    recordType!AIA Extraction Instance.documentFolderId,\n    recordType!AIA Extraction Instance.fieldCount,\n    recordType!AIA Extraction Instance.sections,\n    recordType!AIA Extraction Instance.boundingBoxes,\n    recordType!AIA Extraction Instance.responseDocumentId,\n    recordType!AIA Extraction Instance.sourceDocumentId\n  }\n)"
+    },
+    "_a-0000ec6d-e6ba-8000-9bf2-011c48011c48_133211": {
+      "name": "AIA_Classification_GenerateOption",
+      "type": "Expression Rule",
+      "sail_code": "\"  - '\" & ri!option[recordType!AIA Classification Model Version Category.name] & \"'\" & \nif(\n  a!isNotNullOrEmpty(ri!option[recordType!AIA Classification Model Version Category.description]),\n  \"(description: \" & ri!option[recordType!AIA Classification Model Version Category.description] & \")\",\n  null\n)"
+    },
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76731": {
+      "name": "AIA_ENUM_Features",
+      "type": "Expression Rule",
+      "sail_code": "{\n  a!map(\n    id: cons!AIA_FEATURE_VISION,\n    label: #\"urn:appian:translation-string:v1:6e2f4447-827f-48a4-bb10-10b6c2a028b8\",\n    maxPages: cons!AIA_VISION_PAGE_MAX,\n    severity: cons!AIA_SEVERITY_HIGH\n  ),\n  a!map(\n    id: cons!AIA_FEATURE_ANALYZE_EXPENSE,\n    label: #\"urn:appian:translation-string:v1:4b200656-fadb-4ecc-98d6-fa93e9152840\",\n    maxPages: cons!AIA_ADVANCED_IDP_PAGE_MAX,\n    severity: cons!AIA_SEVERITY_HIGH\n  ),\n  a!map(\n    id: cons!AIA_FEATURE_AI_REVIEW,\n    label: #\"urn:appian:translation-string:v1:a67c9f85-f682-4191-bed6-c4912e7d88b4\",\n    severity: cons!AIA_SEVERITY_MEDIUM\n  ),\n  a!map(\n    id: cons!AIA_FEATURE_SEARCH_QUERY,\n    label: #\"urn:appian:translation-string:v1:7d663cf5-06ab-4445-979d-17074d9928f9\",\n    maxPages: cons!AIA_ADVANCED_IDP_PAGE_MAX,\n    severity: cons!AIA_SEVERITY_HIGH\n  ),\n  a!map(\n    id: cons!AIA_FEATURE_CLASSIFICATION,\n    label: #\"urn:appian:translation-string:v1:f04e5814-41aa-4705-bb0e-968fe8fc8ec5\",\n    maxPages: cons!AIA_CLASSIFICATION_MAX_PAGE_COUNT,\n    severity: cons!AIA_SEVERITY_HIGH\n  ),\n  a!map(\n    id: cons!AIA_FEATURE_AI_VALIDATION_RULE,\n    label: #\"urn:appian:translation-string:v1:8375b3de-d2a7-415d-983d-71e16d015d7e\",\n    severity: cons!AIA_SEVERITY_MEDIUM\n  )\n}"
+    },
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76653": {
+      "name": "AIA_CreateValidation",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!isExtraction: rule!AIA_IsExtractionInstance(\n    instance: ri!Instance\n  ),\n  recordType!AIA Instance Validation Error(\n    recordType!AIA Instance Validation Error.instanceId: a!defaultValue(\n      ri!instanceId,\n      if(\n        local!isExtraction,\n        ri!Instance[recordType!AIA Extraction Instance.id],\n        ri!Instance[recordType!AIA Classification Instance.id]\n      )\n    ),\n    recordType!AIA Instance Validation Error.instanceType: a!defaultValue(\n      ri!instanceType,\n      if(\n        local!isExtraction,\n        cons!AIA_MODEL_TYPE_VALUES[1],\n        cons!AIA_MODEL_TYPE_VALUES[2]\n      )\n    ),\n    recordType!AIA Instance Validation Error.typeId: ri!typeId,\n    recordType!AIA Instance Validation Error.message: ri!message,\n    recordType!AIA Instance Validation Error.severity: ri!severity\n  )\n)"
+    },
+    "0002edd9-e567-8000-ff78-7f0000014e7a": {
+      "name": "AIA Classification Execute Prompt Wrapper",
+      "type": "Process Model",
+      "sail_code": "// Output: ?\npv!ClassificationInstance[recordType!AIA Classification Instance.documentId]\n\n// Input: ?\nrule!AIA_CreateMaxPageValidation(\n  Instance: pv!ClassificationInstance,\n  feature: if(\n    pv!ClassificationInstance[recordType!AIA Classification Instance.modelVersion.useVision],\n    cons!AIA_FEATURE_VISION,\n    cons!AIA_FEATURE_CLASSIFICATION\n  )\n)\n\n// Input: ?\n=\"document\"\n\n// Input: ?\n=pv!ClassificationInstance[recordType!AIA Classification Instance.documentId]\n\n// Input: ?\n=if( pv!ClassificationInstance[recordType!AIA Classification Instance.modelVersion.useVision], cons!AIA_VISION_PAGE_MAX, cons!AIA_CLASSIFICATION_MAX_PAGE_COUNT)\n\n// Output: ?\nAC!NewDocumentCreated\n\n// Input: ?\nrule!AIA_ClassificationInput(\n  classificationInstance: pv!ClassificationInstance,\n  document: pv!document\n)\n\n// Input: ?\nrule!AIA_DecideSkillToRun(\n  Instance: pv!ClassificationInstance,\n  document: pv!document\n)\n\n// Input: ?\n=pv!ClassificationInstance[recordType!AIA Classification Instance.id]\n\n// Input: ?\ncons!AIA_MODEL_TYPE_VALUES[2]\n\n// Input: ?\n=pv!ClassificationInstance[recordType!AIA Classification Instance.modelVersion.llm]\n\n// Input: ?\nif(\n  pv!ClassificationInstance[recordType!AIA Classification Instance.modelVersion.useVision],\n  cons!AIA_PROMPT_OPERATION_MODE_MULTIMODAL,\n  cons!AIA_PROMPT_OPERATION_MODE_TEXT\n)\n\n// Input: ?\n=#\"urn:appian:translation-string:v1:f04e5814-41aa-4705-bb0e-968fe8fc8ec5\"\n\n// Input: ?\nrule!AIA_Classification_GeneratePrompt(\n  modelVersion: pv!ClassificationInstance[recordType!AIA Classification Instance.modelVersion],\n  classificationInstance: pv!ClassificationInstance\n)\n\n// Output: ?\nrule!AIA_Classification_AddTokens(\n  ClassificationInstance: pv!ClassificationInstance,\n  inputTokens: ac!ProcessInfo.pv.inputTokens,\n  outputTokens: ac!ProcessInfo.pv.outputTokens\n)\n\n// Output: ?\nac!ProcessInfo.pv.responseJson"
+    },
+    "_a-0000ec6d-e6ba-8000-9bf2-011c48011c48_133224": {
+      "name": "AIA_Classification_DefaultPromptInstructions",
+      "type": "Expression Rule",
+      "sail_code": "concat(\n  if(\n    ri!classificationModelVersion[recordType!AIA Classification Model Version.allowMultipleOutputs],\n    joinarray(\n      {\n        \"- \" & #\"urn:appian:translation-string:v1:8c738865-2ca1-4d0c-9aa7-e1ac78627dfc\",\n        \"- \" & #\"urn:appian:translation-string:v1:b1bef8af-3786-42df-9f68-b46f65685034\",\n        /*Include hyphen to indicate a listed instruction for the JSON schema*/\n        \"- \"\n      },\n      char(10)\n    ),\n    {}\n  ),\n  concat(\n    #\"urn:appian:translation-string:v1:bab90002-1421-4dd4-9186-d14145be0f2e\",\n    \"\n\n```json\" & char(10) & rule!AIA_Classification_CreateJsonSchema(\n  classificationModelVersion: ri!classificationModelVersion,\n  classificationInstance: ri!classificationInstance\n)\n  ) & char(10) & \"```\"\n)\n\n"
+    },
+    "_a-0000ec6d-e6ba-8000-9bf2-011c48011c48_133198": {
+      "name": "AIA_Classification_DefaultPromptRole",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  ri!classificationModelVersion[recordType!AIA Classification Model Version.allowMultipleOutputs],\n  #\"urn:appian:translation-string:v1:40e477af-18d9-4faf-a600-cb0c9f4b3c9a\",\n  #\"urn:appian:translation-string:v1:5a484d1c-ec8a-4465-aaa7-83a37866c4bd\"\n)"
+    },
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_78040": {
+      "name": "AIA_Classification_AddTokens",
+      "type": "Expression Rule",
+      "sail_code": "#\"urn:appian:function:v1:a:update\"(\n  #\"urn:appian:function:v1:a:update\"(\n    ri!ClassificationInstance,\n    recordType!AIA Classification Instance.inputTokens,\n    a!defaultValue(\n      ri!ClassificationInstance[recordType!AIA Classification Instance.inputTokens],\n      0\n    ) + ri!inputTokens\n  ),\n  recordType!AIA Classification Instance.outputTokens,\n  a!defaultValue(\n    ri!ClassificationInstance[recordType!AIA Classification Instance.outputTokens],\n    0\n  ) + ri!outputTokens\n)"
+    },
+    "_a-0000ed69-99d8-8000-9ba6-011c48011c48_55310": {
+      "name": "AIA_Extraction_ShouldRunText",
+      "type": "Expression Rule",
+      "sail_code": "or(\n  and(\n    a!isNullOrEmpty(ri!ExtractionInstance[recordType!AIA Extraction Instance.documentId]),\n    a!isNotNullOrEmpty(ri!ExtractionInstance[recordType!AIA Extraction Instance.inputText])\n  ),\n  rule!AIA_Extraction_UseBoundingBoxes(\n    ExtractionInstance: ri!ExtractionInstance\n  ),\n  toboolean(ri!ExtractionInstance[recordType!AIA Extraction Instance.modelVersion.extractionModel.useAdvancedLayout]),\n  rule!AIA_IsDocumentExtension(\n    document: ri!ExtractionInstance[recordType!AIA Extraction Instance.documentId],\n    extensions: cons!AIA_TEXT_BASED_EXTENSIONS\n  ) \n)"
+    }
+  }
+}

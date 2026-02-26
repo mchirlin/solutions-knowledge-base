@@ -1,0 +1,202 @@
+{
+  "_metadata": {
+    "bundle_type": "page",
+    "root_name": "AIA Process Model",
+    "parent_name": null,
+    "total_objects": 11
+  },
+  "entry_point": {
+    "record_type": "AIA Process Model",
+    "views": [
+      {
+        "view_type": "DETAIL",
+        "view_name": "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "url_stub": "summary"
+      },
+      {
+        "view_type": "LIST",
+        "view_name": "List View",
+        "url_stub": null
+      }
+    ]
+  },
+  "flow": null,
+  "objects": [
+    {
+      "uuid": "_a-0000ec40-0355-8000-9be4-011c48011c48_70311",
+      "name": "AIA_MODEL_TYPE_VALUES",
+      "type": "Constant",
+      "description": "(1) extraction, (2) classification",
+      "value": [
+        "extraction",
+        "classification"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_ProcessModelStepCards"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec1e-9975-8000-9bd6-011c48011c48_1376783",
+      "name": "AIA_WARN_COLOR",
+      "type": "Constant",
+      "description": "#FF9900",
+      "value": "#FF9900",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_PercentageColor"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec1e-9975-8000-9bd6-011c48011c48_1375434",
+      "name": "AIA_DisplayPercentage",
+      "type": "Expression Rule",
+      "description": "Display a decimal as a percentage",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ModelAccuracyKpi"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec1e-9975-8000-9bd6-011c48011c48_1376722",
+      "name": "AIA_PercentageColor",
+      "type": "Expression Rule",
+      "description": "Display a percentage as a background color or text color",
+      "parameters": [],
+      "calls": [
+        "AIA_WARN_COLOR"
+      ],
+      "called_by": [
+        "AIA_ModelAccuracyKpi"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40839",
+      "name": "AIA_Test_GetLatestExtractionInstance",
+      "type": "Expression Rule",
+      "description": "Get the latest extraction instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ModelAccuracyKpi"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_34420",
+      "name": "AIA_UTIL_displayUserFullName",
+      "type": "Expression Rule",
+      "description": "Interface to display User Full Name",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ProcessModelSummary"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec36-59aa-8000-9be0-011c48011c48_53588",
+      "name": "AIA_ModelAccuracyKpi",
+      "type": "Interface",
+      "description": "Model accuracy kpi",
+      "parameters": [
+        {
+          "name": "record",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        }
+      ],
+      "calls": [
+        "AIA_DisplayPercentage",
+        "AIA_PercentageColor",
+        "AIA_Test_GetLatestExtractionInstance"
+      ],
+      "called_by": [
+        "AIA_ProcessModelStepCards"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec40-0355-8000-9be4-011c48011c48_70598",
+      "name": "AIA_ProcessModelStepCards",
+      "type": "Interface",
+      "description": "KPI cards from process model steps",
+      "parameters": [
+        {
+          "name": "record",
+          "type": "urn:com:appian:recordtype:datatype:6f5ae17d-4094-406a-b16c-81e67f9498f2",
+          "raw_type": "urn:com:appian:recordtype:datatype:6f5ae17d-4094-406a-b16c-81e67f9498f2",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        }
+      ],
+      "calls": [
+        "AIA_MODEL_TYPE_VALUES",
+        "AIA_ModelAccuracyKpi"
+      ],
+      "called_by": [
+        "AIA_ProcessModelSummary"
+      ]
+    },
+    {
+      "uuid": "063137b5-587a-44c8-8099-d20489ca5df5",
+      "name": "AIA_ProcessModelSummary",
+      "type": "Interface",
+      "description": "The interface used for your record view",
+      "parameters": [
+        {
+          "name": "record",
+          "type": "urn:com:appian:recordtype:datatype:6f5ae17d-4094-406a-b16c-81e67f9498f2",
+          "raw_type": "urn:com:appian:recordtype:datatype:6f5ae17d-4094-406a-b16c-81e67f9498f2",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        }
+      ],
+      "calls": [
+        "AIA_ProcessModelStepCards",
+        "AIA_UTIL_displayUserFullName",
+        "Label for Process Model Details"
+      ],
+      "called_by": [
+        "AIA Process Model"
+      ]
+    },
+    {
+      "uuid": "6f5ae17d-4094-406a-b16c-81e67f9498f2",
+      "name": "AIA Process Model",
+      "type": "Record Type",
+      "description": "A model of a process that may involve multiple AI steps, e.g. classification and multiple extractions",
+      "actions": [
+        "newProcessModel",
+        "deleteProcessModel",
+        "updateProcessModel"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AIA_ProcessModelSummary"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "97426cb9-3c71-4f38-a2c0-a1bba89570ca",
+      "name": "Label for Process Model Details",
+      "type": "Translation String",
+      "description": "Label for Process Model Details",
+      "calls": [],
+      "called_by": [
+        "AIA_ProcessModelSummary"
+      ]
+    }
+  ]
+}

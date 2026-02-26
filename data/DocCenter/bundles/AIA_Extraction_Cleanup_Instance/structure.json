@@ -1,0 +1,157 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AIA Extraction Cleanup Instance",
+    "parent_name": null,
+    "total_objects": 5
+  },
+  "entry_point": {
+    "complexity_score": 17.0,
+    "total_nodes": 9,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Extraction Cleanup Instance",
+      "complexity_score": 17.0,
+      "total_nodes": 9,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Get Sections"
+          ]
+        },
+        {
+          "name": "End Event",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "AND",
+          "type": "AND_GATEWAY",
+          "next": [
+            "Has Sections?",
+            "Has Bounding Boxes?"
+          ]
+        },
+        {
+          "name": "End Event",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Has Sections?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Delete Sections",
+            "End Event"
+          ]
+        },
+        {
+          "name": "Delete Sections",
+          "type": "Delete Records",
+          "next": [
+            "End Event"
+          ]
+        },
+        {
+          "name": "Delete Bounding Boxes",
+          "type": "Delete Records",
+          "next": [
+            "End Event"
+          ]
+        },
+        {
+          "name": "Has Bounding Boxes?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Event",
+            "Delete Bounding Boxes"
+          ]
+        },
+        {
+          "name": "Get Sections",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "AND"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_173918",
+      "name": "AIA_FLAG_DELETE_BOUNDING_BOXES",
+      "type": "Constant",
+      "description": "Should bounding boxes be deleted",
+      "value": "true",
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "AIA Extraction Cleanup Instance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_158800",
+      "name": "AIA_FLAG_DELETE_SECTIONS",
+      "type": "Constant",
+      "description": "Whether or not to delete sections and docs",
+      "value": "true",
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "AIA Extraction Cleanup Instance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_158769",
+      "name": "AIA_Extraction_GetBoundingBoxesForExtraction",
+      "type": "Expression Rule",
+      "description": "Get bounding boxes for extraction",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Extraction Cleanup Instance"
+      ]
+    },
+    {
+      "uuid": "0002edfe-76c5-8000-0076-7f0000014e7a",
+      "name": "AIA Extraction Cleanup Instance",
+      "type": "Process Model",
+      "description": "Clean up documents and rows that are only needed during processing",
+      "calls": [
+        "AIA Extraction Instance",
+        "AIA_Extraction_GetBoundingBoxesForExtraction",
+        "AIA_FLAG_DELETE_BOUNDING_BOXES",
+        "AIA_FLAG_DELETE_SECTIONS"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "64322398-e457-4695-87d5-09794164cf77",
+      "name": "AIA Extraction Instance",
+      "type": "Record Type",
+      "description": "Record to hold the AI Extraction scores and confidence threshold for each instance",
+      "actions": [
+        "reconcileField",
+        "reconcileUsingTestCase",
+        "runValidations",
+        "addRemoveTestCase",
+        "deleteExtractionInstance",
+        "deleteInstanceAndSkipConfirmation",
+        "updateAssociatedTestSuites"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "#\"urn:appian:translation-string:v1:ab6ce936-2015-4e58-a2d1-a10bcd2372e4\"",
+        "=#\"urn:appian:translation-string:v1:fe8f8d91-a84f-4494-9270-4959354698ce\"",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "AIA Extraction Cleanup Instance"
+      ]
+    }
+  ]
+}

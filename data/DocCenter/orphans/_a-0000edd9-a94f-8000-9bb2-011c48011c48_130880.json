@@ -1,0 +1,25 @@
+{
+  "uuid": "_a-0000edd9-a94f-8000-9bb2-011c48011c48_130880",
+  "name": "AIA_Prompt_GetSeriesDataForTokenTrendUseage",
+  "type": "Expression Rule",
+  "description": "Expression rule to return series data for Token Trend Useage ",
+  "sail_code": "a!localVariables(\n  /*Input Date to be calculated*/\n  local!inputDate: if(\n    a!isNullOrEmpty(ri!startDate),\n    today(),\n    ri!startDate\n  ),\n  local!staticDates: {\n    startDate: rule!AIA_UTIL_convertDateToDateTime(\n      dateValue: today() - 1,\n      isStartOfDay: true()\n    ),\n    endDate: rule!AIA_UTIL_convertDateToDateTime(dateValue: today(), isStartOfDay: false())\n  },\n  /*Number of Weeks based on Dropdown Choice*/\n  local!numWeeks: choose(\n    wherecontains(\n      ri!intervalTextValue,\n      {\n        #\"urn:appian:translation-string:v1:74a2a818-84a0-43c9-ae15-58edc9824c8d\"(\n          #\"urn:appian:translation-variable:v1:426f489f-72ed-4a46-9227-3d761bca9382\": 30\n        ),\n        #\"urn:appian:translation-string:v1:74a2a818-84a0-43c9-ae15-58edc9824c8d\"(\n          #\"urn:appian:translation-variable:v1:426f489f-72ed-4a46-9227-3d761bca9382\": 60\n        ),\n        #\"urn:appian:translation-string:v1:74a2a818-84a0-43c9-ae15-58edc9824c8d\"(\n          #\"urn:appian:translation-variable:v1:426f489f-72ed-4a46-9227-3d761bca9382\": 90\n        ),\n        #\"urn:appian:translation-string:v1:f5eca8bb-66c4-4925-9a10-c2a74b4a1227\"\n      }\n    ),\n    4,\n    8,\n    12,\n    0\n  ),\n  /* For weekly intervals (Last 30/60/90 days) */\n  local!weeklyGroups: if(\n    ri!intervalTextValue = #\"urn:appian:translation-string:v1:f5eca8bb-66c4-4925-9a10-c2a74b4a1227\",\n    {},\n    append(\n      #\"SYSTEM_SYSRULES_forEach\"(\n        items: enumerate(local!numWeeks),\n        expression: a!localVariables(\n          local!startDate: rule!AIA_UTIL_convertDateToDateTime(\n            dateValue: today() - 29,\n            isStartOfDay: true()\n          ) + (7 * fv!item),\n          local!endDate: rule!AIA_UTIL_convertDateToDateTime(\n            dateValue: today() - 29,\n            isStartOfDay: false()\n          ) + (7 * fv!item + 6),\n          {\n            label: concat(\n              text(local!startDate, \"m/dd\"),\n              \" to \",\n              text(local!endDate, \"m/dd\")\n            ),\n            startDate: local!startDate,\n            endDate: local!endDate\n          }\n        )\n      ),\n      {\n        label: concat(\n          text(local!staticDates.startDate, \"m/dd\"),\n          \" to \",\n          text(local!staticDates.endDate, \"m/dd\")\n        ),\n        startDate: local!staticDates.startDate,\n        endDate: local!staticDates.endDate\n      }\n    )\n  ),\n  /* For Year to Date - return monthly intervals */\n  local!monthlyGroups: if(\n    ri!intervalTextValue = #\"urn:appian:translation-string:v1:f5eca8bb-66c4-4925-9a10-c2a74b4a1227\",\n    #\"SYSTEM_SYSRULES_forEach\"(\n      items: enumerate(month(local!inputDate)),\n      expression: {\n        label: text(\n          date(year(local!inputDate), fv!item + 1, 1),\n          \"MMM\"\n        ),\n        startDate: date(year(local!inputDate), fv!item + 1, 1),\n        endDate: eomonth(\n          date(year(local!inputDate), fv!item + 1, 1),\n          0\n        )\n      }\n    ),\n    {}\n  ),\n  /*Final Output*/\n  if(\n    ri!intervalTextValue = #\"urn:appian:translation-string:v1:f5eca8bb-66c4-4925-9a10-c2a74b4a1227\",\n    local!monthlyGroups,\n    local!weeklyGroups\n  )\n)",
+  "calls": [
+    {
+      "name": "AIA_UTIL_convertDateToDateTime",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Last {number} days",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Label for Year to Date",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

@@ -1,0 +1,15 @@
+{
+  "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_91792",
+  "name": "SHRD_DatePresetMonthToDate",
+  "type": "Expression Rule",
+  "description": "Date preset, month to date",
+  "sail_code": "if(\n  ri!isDate,\n  {\n    eomonth(today(), - 1 - ri!monthsAgo) + 1,\n    if(\n      ri!monthsAgo = 0,\n      today(),\n      edate(today(), - ri!monthsAgo)\n    )\n  },\n  if(\n    ri!monthsAgo = 0,\n    {\n      rule!SHRD_CalculateUserDatetime(gmtDatetime: eomonth(today(), - 1) + 2),\n      now()\n    },\n    {\n      rule!SHRD_CalculateUserDatetime(\n        gmtDatetime: eomonth(today(), - 1 - ri!monthsAgo) + 2\n      ),\n      if(\n        isleapyear(year(now())),\n        now() - 366,\n        now() - 365\n      )\n    }\n  )\n)",
+  "calls": [
+    {
+      "name": "SHRD_CalculateUserDatetime",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

@@ -1,0 +1,572 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "AIA Extraction Model - #\"urn:appian:translation-string:v1:90eda86e-7c63-4761-9a46-214dfa85e4a2\"",
+    "parent_name": "AIA Extraction Model",
+    "total_objects": 31
+  },
+  "entry_point": {
+    "action_type": "RECORD_ACTION",
+    "record_type": "AIA Extraction Model",
+    "target_process": "AIA_ExtractionModel_UpdateDetails",
+    "form_interface": "AIA_ExtractionModel_RecordAction_UpdateDetails",
+    "expressions": {
+      "TITLE": "#\"urn:appian:translation-string:v1:90eda86e-7c63-4761-9a46-214dfa85e4a2\"",
+      "DESCRIPTION": null,
+      "VISIBILITY": null,
+      "CONTEXT": "{\n  cancel: null, /* Boolean */\n  extractionModel: rv!record /* AIA Extraction Model */\n}"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA_ExtractionModel_UpdateDetails",
+      "complexity_score": 6.0,
+      "total_nodes": 4,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "is Cancelled?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Write Extraction Model",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "is Cancelled?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Write Extraction Model",
+            "End Node"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_94194",
+      "name": "AIA_Extraction_GetModelByKey",
+      "type": "Expression Rule",
+      "description": "Get extraction model by key",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Extraction Model Version",
+        "AIA_ExtractionModel_Sub_ModelDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_80190",
+      "name": "AIA_Test_GetLatestExtractionModel",
+      "type": "Expression Rule",
+      "description": "Get the latest extraction model",
+      "parameters": [],
+      "calls": [
+        "AIA Extraction Model Version"
+      ],
+      "called_by": [
+        "AIA_Extraction_Sub_ModelAdvancedSettings"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_12129",
+      "name": "AIA_UTIL_LoadBrandingMap",
+      "type": "Expression Rule",
+      "description": "Returns branding data for AI Analytics in the type List of Map",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ExtractionModel_Sub_ModelDetails",
+        "AIA_Extraction_Sub_ModelAdvancedSettings",
+        "AIA_Template_ToggleField"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_76923",
+      "name": "SHRD_ReformatLabelAsKey",
+      "type": "Expression Rule",
+      "description": "Reformat a label as a key",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ExtractionModel_Sub_ModelDetails"
+      ]
+    },
+    {
+      "uuid": "16fbbd81-808b-4034-9c28-8a7f0c99da0f",
+      "name": "AIA_ExtractionModel_RecordAction_UpdateDetails",
+      "type": "Interface",
+      "description": "Form interface for creating or updating Extraction Models as an action",
+      "parameters": [
+        {
+          "name": "extractionModel",
+          "type": "urn:com:appian:recordtype:datatype:1d688c85-2aff-47a5-84a7-b5c4ccf02a4d",
+          "raw_type": "urn:com:appian:recordtype:datatype:1d688c85-2aff-47a5-84a7-b5c4ccf02a4d",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "cancel",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AIA_ExtractionModel_Sub_ModelDetails",
+        "Label for Cancel",
+        "Label for Update",
+        "Update Details"
+      ],
+      "called_by": [
+        "AIA_ExtractionModel_UpdateDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_101277",
+      "name": "AIA_ExtractionModel_Sub_ModelDetails",
+      "type": "Interface",
+      "description": "Contents of create/update form",
+      "parameters": [
+        {
+          "name": "extractionModel",
+          "type": "urn:com:appian:recordtype:datatype:1d688c85-2aff-47a5-84a7-b5c4ccf02a4d",
+          "raw_type": "urn:com:appian:recordtype:datatype:1d688c85-2aff-47a5-84a7-b5c4ccf02a4d",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "isUpdate",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AIA_Extraction_GetModelByKey",
+        "AIA_Extraction_Sub_ModelAdvancedSettings",
+        "AIA_UTIL_LoadBrandingMap",
+        "Description Label",
+        "Displays the document above the fields. Better for reconciling large tables",
+        "Displays the document next to the fields. Better for reconciling fields.",
+        "Field Label",
+        "Grid column name",
+        "Label for Side by Side",
+        "Label for Stacked",
+        "Model key must be unique",
+        "SHRD_ReformatLabelAsKey",
+        "What layout orientation do you want the reconciliation screen to be?"
+      ],
+      "called_by": [
+        "AIA_ExtractionModel_RecordAction_UpdateDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_54910",
+      "name": "AIA_Extraction_Sub_ModelAdvancedSettings",
+      "type": "Interface",
+      "description": "Advanced settings for an extraction model",
+      "parameters": [
+        {
+          "name": "extractionModel",
+          "type": "urn:com:appian:recordtype:datatype:1d688c85-2aff-47a5-84a7-b5c4ccf02a4d",
+          "raw_type": "urn:com:appian:recordtype:datatype:1d688c85-2aff-47a5-84a7-b5c4ccf02a4d",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map?list",
+          "required": false,
+          "default_value": null,
+          "description": "Initialize AIA_UTIL_LoadBrandingMap",
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AIA_Template_ToggleField",
+        "AIA_Test_GetLatestExtractionModel",
+        "AIA_UTIL_LoadBrandingMap",
+        "Additional Options",
+        "Auto Document Rotation",
+        "Bounding Boxes",
+        "If needed, automatically rotate the document to its proper orientation to help i",
+        "Label for checkbox",
+        "Will display bounding boxes on the reconciliation screen for extracted values.",
+        "display message for advanced layout"
+      ],
+      "called_by": [
+        "AIA_ExtractionModel_Sub_ModelDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_73130",
+      "name": "AIA_Template_ToggleField",
+      "type": "Interface",
+      "description": "Rich text toggle field with a side-by-side layout",
+      "parameters": [
+        {
+          "name": "field",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map?list",
+          "required": false,
+          "default_value": null,
+          "description": "Initialize AIA_UTIL_LoadBrandingMap",
+          "display_order": 1
+        },
+        {
+          "name": "record",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "description",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "defaultValue",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "saveInto",
+          "type": "http://www.appian.com/ae/types/2009:Save?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Save?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 6
+        },
+        {
+          "name": "value",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 7
+        }
+      ],
+      "calls": [
+        "AIA_UTIL_LoadBrandingMap",
+        "Bounding Boxes",
+        "Deselect {caption}",
+        "Select {caption}",
+        "Will display bounding boxes on the reconciliation screen for extracted values."
+      ],
+      "called_by": [
+        "AIA_Extraction_Sub_ModelAdvancedSettings"
+      ]
+    },
+    {
+      "uuid": "0002ed58-1f10-8000-fa9b-7f0000014e7a",
+      "name": "AIA_ExtractionModel_UpdateDetails",
+      "type": "Process Model",
+      "description": "Model to update the extraction model details",
+      "calls": [
+        "AIA_ExtractionModel_RecordAction_UpdateDetails"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "f00f33ce-439e-4c81-9931-a244a643c0e8",
+      "name": "AIA Extraction Model Version",
+      "type": "Record Type",
+      "description": "Version of an extraction model",
+      "actions": [
+        "newExtractionModelVersion",
+        "extractDocument",
+        "runAllTestInstances",
+        "updateExtractionModelVersion",
+        "restoreVersion",
+        "deleteExtractionModelVersion",
+        "addValidationRule",
+        "configureAiReviewer",
+        "setupConfidence",
+        "setupSampling",
+        "updateExtractionModelVersionDescription"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "#\"urn:appian:translation-string:v1:396bc6fa-092f-484e-948a-21d48eea366e\"",
+        "#\"urn:appian:translation-string:v1:d1e3249f-29f4-42cc-b418-60fab040208e\"",
+        "=#\"urn:appian:translation-string:v1:912bea31-a37e-46c0-aa12-1cef41bc4b6b\"",
+        "#\"urn:appian:translation-string:v1:ab6ce936-2015-4e58-a2d1-a10bcd2372e4\"",
+        "#\"urn:appian:translation-string:v1:44e82afe-99e6-475f-aeaf-1b26e1b047a6\"",
+        "List View"
+      ],
+      "calls": [
+        "AIA_Extraction_GetModelByKey"
+      ],
+      "called_by": [
+        "AIA_Test_GetLatestExtractionModel"
+      ]
+    },
+    {
+      "uuid": "56a1dc4a-e4aa-4411-90bb-4bb18e200214",
+      "name": "Additional Options",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_Sub_ModelAdvancedSettings"
+      ]
+    },
+    {
+      "uuid": "47f91894-b6c5-4818-b270-90f6a09d41af",
+      "name": "Auto Document Rotation",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_Sub_ModelAdvancedSettings"
+      ]
+    },
+    {
+      "uuid": "b4c5b2fa-2efa-4c02-8bc4-4483abf45026",
+      "name": "Bounding Boxes",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_Sub_ModelAdvancedSettings",
+        "AIA_Template_ToggleField"
+      ]
+    },
+    {
+      "uuid": "be96096c-d32a-4708-a91d-b5dda4f2f30c",
+      "name": "Description Label",
+      "type": "Translation String",
+      "description": "Description Label",
+      "calls": [],
+      "called_by": [
+        "AIA_ExtractionModel_Sub_ModelDetails"
+      ]
+    },
+    {
+      "uuid": "2bcaa33e-f7f3-49e1-a731-448d50b81aa5",
+      "name": "Deselect {caption}",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Template_ToggleField"
+      ]
+    },
+    {
+      "uuid": "7a5a383a-0bd0-4503-98b8-b263f7a2bb2c",
+      "name": "Displays the document above the fields. Better for reconciling large tables",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ExtractionModel_Sub_ModelDetails"
+      ]
+    },
+    {
+      "uuid": "59929c27-c2a9-49e2-ad19-43e9e119884b",
+      "name": "Displays the document next to the fields. Better for reconciling fields.",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ExtractionModel_Sub_ModelDetails"
+      ]
+    },
+    {
+      "uuid": "1d2ee947-3116-4cca-8a1f-26fe5bcc2914",
+      "name": "Field Label",
+      "type": "Translation String",
+      "description": "Field Label",
+      "calls": [],
+      "called_by": [
+        "AIA_ExtractionModel_Sub_ModelDetails"
+      ]
+    },
+    {
+      "uuid": "2b3a2e79-0b85-4b52-bbf6-b2e8d08f1447",
+      "name": "Grid column name",
+      "type": "Translation String",
+      "description": "Grid column name",
+      "calls": [],
+      "called_by": [
+        "AIA_ExtractionModel_Sub_ModelDetails"
+      ]
+    },
+    {
+      "uuid": "7b4e785f-673f-41af-bfc6-481d55aca6b0",
+      "name": "If needed, automatically rotate the document to its proper orientation to help i",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_Sub_ModelAdvancedSettings"
+      ]
+    },
+    {
+      "uuid": "df61ccad-fe9a-4d7a-ba9a-d89b08f3467a",
+      "name": "Label for Cancel",
+      "type": "Translation String",
+      "description": "Label for Cancel",
+      "calls": [],
+      "called_by": [
+        "AIA_ExtractionModel_RecordAction_UpdateDetails"
+      ]
+    },
+    {
+      "uuid": "c45e9f8d-6be6-4710-a893-3cf449fae2b7",
+      "name": "Label for Side by Side",
+      "type": "Translation String",
+      "description": "Label for Side by Side",
+      "calls": [],
+      "called_by": [
+        "AIA_ExtractionModel_Sub_ModelDetails"
+      ]
+    },
+    {
+      "uuid": "9afcefcd-9325-4efd-a63b-ce3a70e42cce",
+      "name": "Label for Stacked",
+      "type": "Translation String",
+      "description": "Label for Stacked",
+      "calls": [],
+      "called_by": [
+        "AIA_ExtractionModel_Sub_ModelDetails"
+      ]
+    },
+    {
+      "uuid": "25a51cae-0560-410b-9b56-ba2b024e6364",
+      "name": "Label for Update",
+      "type": "Translation String",
+      "description": "Label for Update",
+      "calls": [],
+      "called_by": [
+        "AIA_ExtractionModel_RecordAction_UpdateDetails"
+      ]
+    },
+    {
+      "uuid": "66cb074d-ca1b-43ae-ad1c-6ca5f789bf69",
+      "name": "Label for checkbox",
+      "type": "Translation String",
+      "description": "Label for checkbox",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_Sub_ModelAdvancedSettings"
+      ]
+    },
+    {
+      "uuid": "01646892-24f8-4fc4-9743-02e148f59881",
+      "name": "Model key must be unique",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ExtractionModel_Sub_ModelDetails"
+      ]
+    },
+    {
+      "uuid": "5d5ccfce-4251-4290-af1d-2bca780b08dd",
+      "name": "Select {caption}",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Template_ToggleField"
+      ]
+    },
+    {
+      "uuid": "90eda86e-7c63-4761-9a46-214dfa85e4a2",
+      "name": "Update Details",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ExtractionModel_RecordAction_UpdateDetails"
+      ]
+    },
+    {
+      "uuid": "15a9a086-e855-4486-a118-3a89c2f5a3aa",
+      "name": "What layout orientation do you want the reconciliation screen to be?",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ExtractionModel_Sub_ModelDetails"
+      ]
+    },
+    {
+      "uuid": "f1335769-cd4c-4332-916a-bebc374a7f3d",
+      "name": "Will display bounding boxes on the reconciliation screen for extracted values.",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_Sub_ModelAdvancedSettings",
+        "AIA_Template_ToggleField"
+      ]
+    },
+    {
+      "uuid": "02f80e7c-5a8b-4757-8f52-4d2999483723",
+      "name": "display message for advanced layout",
+      "type": "Translation String",
+      "description": "display message for advanced layout",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_Sub_ModelAdvancedSettings"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,167 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "AIA Process Model - updateProcessModel",
+    "parent_name": "AIA Process Model",
+    "total_objects": 5
+  },
+  "entry_point": {
+    "action_type": "RECORD_ACTION",
+    "record_type": "AIA Process Model",
+    "target_process": "AIA Create Or Update Process Model",
+    "form_interface": "AIA_CreateOrUpdateProcessModel",
+    "expressions": {
+      "TITLE": null,
+      "DESCRIPTION": "Action to update a Process Model",
+      "VISIBILITY": null,
+      "CONTEXT": "{\n  record: rv!record,\n  cancel: false(),\n  isUpdate: true()\n}"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Create Or Update Process Model",
+      "complexity_score": 8.0,
+      "total_nodes": 5,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Cancel?"
+          ]
+        },
+        {
+          "name": "Cancel?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node",
+            "Delete Records"
+          ]
+        },
+        {
+          "name": "Delete Records",
+          "type": "Delete Records",
+          "next": [
+            "Write Records"
+          ]
+        },
+        {
+          "name": "Write Records",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ec40-0355-8000-9be4-011c48011c48_70305",
+      "name": "AIA_MODEL_TYPE_LABELS",
+      "type": "Constant",
+      "description": "(1) Extraction, (2) Classification",
+      "value": [
+        "Extraction",
+        "Classification"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_CreateOrUpdateProcessModel"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec40-0355-8000-9be4-011c48011c48_70311",
+      "name": "AIA_MODEL_TYPE_VALUES",
+      "type": "Constant",
+      "description": "(1) extraction, (2) classification",
+      "value": [
+        "extraction",
+        "classification"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_CreateOrUpdateProcessModel"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec40-0355-8000-9be4-011c48011c48_65141",
+      "name": "SHRD_MovePositionInArray",
+      "type": "Expression Rule",
+      "description": "Move position in array",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_CreateOrUpdateProcessModel"
+      ]
+    },
+    {
+      "uuid": "86eaf788-14a7-4450-a515-3f5f707e993f",
+      "name": "AIA_CreateOrUpdateProcessModel",
+      "type": "Interface",
+      "description": "Form interface for creating or updating Process Models as an action",
+      "parameters": [
+        {
+          "name": "record",
+          "type": "urn:com:appian:recordtype:datatype:6f5ae17d-4094-406a-b16c-81e67f9498f2",
+          "raw_type": "urn:com:appian:recordtype:datatype:6f5ae17d-4094-406a-b16c-81e67f9498f2",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "deletedStepsRecords",
+          "type": "urn:com:appian:recordtype:datatype:826361a6-7eec-4d74-8766-180152539c51?list",
+          "raw_type": "urn:com:appian:recordtype:datatype:826361a6-7eec-4d74-8766-180152539c51?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "cancel",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "isUpdate",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": "Tracks whether this form is being used to create a new record or update an existing one",
+          "display_order": 3
+        }
+      ],
+      "calls": [
+        "AIA_MODEL_TYPE_LABELS",
+        "AIA_MODEL_TYPE_VALUES",
+        "SHRD_MovePositionInArray"
+      ],
+      "called_by": [
+        "AIA Create Or Update Process Model"
+      ]
+    },
+    {
+      "uuid": "7f9e302e-c75b-4726-bdc6-3f89ed413523",
+      "name": "AIA Create Or Update Process Model",
+      "type": "Process Model",
+      "description": "Create or Update a Process Model",
+      "calls": [
+        "AIA_CreateOrUpdateProcessModel"
+      ],
+      "called_by": []
+    }
+  ]
+}

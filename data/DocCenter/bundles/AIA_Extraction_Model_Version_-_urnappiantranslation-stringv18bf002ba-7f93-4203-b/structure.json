@@ -1,0 +1,103 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "AIA Extraction Model Version - #\"urn:appian:translation-string:v1:8bf002ba-7f93-4203-bcca-713abe25f9db\"",
+    "parent_name": "AIA Extraction Model Version",
+    "total_objects": 5
+  },
+  "entry_point": {
+    "action_type": "RECORD_ACTION",
+    "record_type": "AIA Extraction Model Version",
+    "target_process": "AIA_ExtractionModelVersion_RecordAction_ValidationRules_CreateUpdate",
+    "form_interface": "AIA_ExtractionModelVersion_RecordAction_ValidationRules_CreateUpdate",
+    "expressions": {
+      "TITLE": "#\"urn:appian:translation-string:v1:8bf002ba-7f93-4203-bcca-713abe25f9db\"",
+      "DESCRIPTION": null,
+      "VISIBILITY": "=and(\n  or(\n    rv!record[recordType!AIA Extraction Model Version.status] = cons!AIA_MODEL_VERSION_STATUS_PUBLISHED,\n    rv!record[recordType!AIA Extraction Model Version.status] = cons!AIA_MODEL_VERSION_STATUS_DRAFT\n  ),\n  #\"urn:appian:function:v1:a:isusermemberofgroup?okey=a!isUserMemberOfGroup\"(username: loggedInUser(), groups: cons!AIA_GRP_ADMIN)\n)",
+      "CONTEXT": "{\n  extractionModelVersion: rv!record,\n  isUpdate: false,\n  cancel: false\n}"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA_ExtractionModelVersion_RecordAction_ValidationRules_CreateUpdate",
+      "complexity_score": 6.0,
+      "total_nodes": 4,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Cancel"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Write Records",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Cancel",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Write Records",
+            "End Node"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000eb87-8639-8000-9bb1-011c48011c48_15114",
+      "name": "AIA_GRP_ADMIN",
+      "type": "Constant",
+      "description": "Admin group",
+      "value": "AIA Administrators",
+      "value_type": "http://www.appian.com/ae/types/2009:Group",
+      "calls": [],
+      "called_by": []
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_97844",
+      "name": "AIA_MODEL_VERSION_STATUS_DRAFT",
+      "type": "Constant",
+      "description": "Draft",
+      "value": "Draft",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": []
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_97714",
+      "name": "AIA_MODEL_VERSION_STATUS_PUBLISHED",
+      "type": "Constant",
+      "description": "Published",
+      "value": "Published",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": []
+    },
+    {
+      "uuid": "0004edab-0b81-8000-fe5f-7f0000014e7a",
+      "name": "AIA_ExtractionModelVersion_RecordAction_ValidationRules_CreateUpdate",
+      "type": "Process Model",
+      "description": "Add new validation to extraction model version",
+      "calls": [],
+      "called_by": []
+    },
+    {
+      "uuid": "8bf002ba-7f93-4203-bcca-713abe25f9db",
+      "name": "Label for Create Validation Rule",
+      "type": "Translation String",
+      "description": "Label for Create Validation Rule",
+      "calls": [],
+      "called_by": []
+    }
+  ]
+}

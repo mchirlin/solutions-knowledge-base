@@ -1,0 +1,56 @@
+{
+  "uuid": "_a-0000eea0-7c7f-8000-9bce-011c48011c48_123840",
+  "name": "AIA_LowConfidenceDisplayMessage",
+  "type": "Expression Rule",
+  "description": "Display message for low confidence",
+  "sail_code": "a!localVariables(\n  local!validationMap: #\"SYSTEM_SYSRULES_fromJson_v1\"(\n    ri!Validation[recordType!AIA Instance Validation Error.message]\n  ),\n  local!tableFieldsTotalCount: if(\n    a!isNotNullOrEmpty(local!validationMap.fields),\n    #\"SYSTEM_SYSRULES_queryRecordType_v3\"(\n      recordType: recordType!AIA Extraction Instance Field,\n      filters: #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n        operator: \"AND\",\n        filters: {\n          #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: recordType!AIA Extraction Instance Field.id,\n            operator: \"in\",\n            value: tointeger(local!validationMap.fields.fieldId)\n          ),\n          #\"SYSTEM_SYSRULES_queryFilter\"(\n            field: recordType!AIA Extraction Instance Field.modelVersionField.type,\n            operator: \"=\",\n            value: cons!AIA_EXTRACTION_FIELD_TYPE_TABLE\n          )\n        }\n      ),\n      pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(startIndex: 1, batchSize: 0),\n      fetchTotalCount: true\n    ).totalCount,\n    0\n  ),\n  local!nonTableFieldsTotalCount: length(a!flatten(local!validationMap.fields)) - local!tableFieldsTotalCount,\n  concat(\n    if(\n      /*Just standard fields and no tables are below confidence*/\n      local!tableFieldsTotalCount = 0,\n      rule!AIA_FieldsPluralization(\n        fieldCount: local!nonTableFieldsTotalCount,\n        includeVerb: true\n      ),\n      /*Just tables and no standard fields are below confidence*/\n      if(\n        local!nonTableFieldsTotalCount = 0,\n        if(\n          local!tableFieldsTotalCount = 1,\n          #\"urn:appian:translation-string:v1:3002437c-5c08-479a-bcae-09a7527b7c9a\"(#\"urn:appian:translation-variable:v1:09330cab-96b1-4486-83c8-5d734d45e0d0\": local!tableFieldsTotalCount) & \" \" & #\"urn:appian:translation-string:v1:5345174e-686d-4f11-9ced-b3db371becc2\",\n          #\"urn:appian:translation-string:v1:b7a3d364-d884-4091-aa6c-084ec95ca419\"(#\"urn:appian:translation-variable:v1:ff0ea7cd-ef3c-4480-8e2c-1cba7eedc30e\": local!tableFieldsTotalCount) & \" \" & #\"urn:appian:translation-string:v1:1aa3aa35-0c49-4c9e-87da-40a4e1341611\",\n        ),\n        /*Both tables and standard fields are below confidence*/\n        concat(\n          rule!AIA_FieldsPluralization(\n            fieldCount: local!nonTableFieldsTotalCount,\n            includeVerb: false\n          ),\n          \" \" & #\"urn:appian:translation-string:v1:5b8e421a-77cf-42df-87f5-46128c62530c\" & \" \",\n          if(\n            local!tableFieldsTotalCount = 1,\n            #\"urn:appian:translation-string:v1:3002437c-5c08-479a-bcae-09a7527b7c9a\"(#\"urn:appian:translation-variable:v1:09330cab-96b1-4486-83c8-5d734d45e0d0\": local!tableFieldsTotalCount),\n            #\"urn:appian:translation-string:v1:b7a3d364-d884-4091-aa6c-084ec95ca419\"(#\"urn:appian:translation-variable:v1:ff0ea7cd-ef3c-4480-8e2c-1cba7eedc30e\": local!tableFieldsTotalCount),\n          ),\n          \" \" & #\"urn:appian:translation-string:v1:1aa3aa35-0c49-4c9e-87da-40a4e1341611\"\n        )\n      )\n    ),\n    \" \" & #\"urn:appian:translation-string:v1:548d3943-723d-4ed4-83ec-05e6b1566f5b\"\n  )\n)",
+  "calls": [
+    {
+      "name": "AIA_FieldsPluralization",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_EXTRACTION_FIELD_TYPE_TABLE",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "Tables in an extraction model (when only 1)",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "is",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Tables in an extraction model (when more than 1)",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "are",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Label for and",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "below the confidence threshold",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AIA_LowConfidenceDisplaySummary",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

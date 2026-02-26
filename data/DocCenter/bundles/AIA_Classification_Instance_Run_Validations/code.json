@@ -1,0 +1,217 @@
+{
+  "_metadata": {
+    "bundle_id": "AIA_Classification_Instance_Run_Validations"
+  },
+  "objects": {
+    "_a-0000ec36-59aa-8000-9be0-011c48011c48_53548": {
+      "name": "AIA_Classification_GetInstanceById",
+      "type": "Expression Rule",
+      "sail_code": "#\"SYSTEM_SYSRULES_queryRecordByIdentifier\"(\n  recordType: recordType!AIA Classification Instance,\n  identifier: ri!identifier,\n  relatedRecordData: {\n    ri!relatedRecordData,\n    #\"SYSTEM_SYSRULES_relatedRecordData\"(\n      relationship: recordType!AIA Classification Instance.modelVersion,\n      sort: #\"SYSTEM_SYSRULES_sortInfo\"(\n        field: recordType!AIA Classification Model Version Category.sortOrder,\n        ascending: true\n      )\n    )\n  },\n  fields: {\n    recordType!AIA Classification Instance.outcomes,\n    recordType!AIA Classification Instance.modelVersion.model.modelId,\n    recordType!AIA Classification Instance.modelVersion.model.uuid,\n    recordType!AIA Classification Instance.modelVersion,\n    recordType!AIA Classification Instance.modelVersion,\n    a!defaultValue(ri!additionalFields, {})\n  }\n)"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92467": {
+      "name": "AIA_MTR_ClassificationInstanceClassifiedWithErrors",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000eec9-5676-8000-9c92-011c48011c48_179359": {
+      "name": "AIA_MTR_ConfidenceThresholdDisabled",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000eeca-c121-8000-9cab-011c48011c48_182002": {
+      "name": "AIA_MTR_ClassificationModelVersionRestore",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_180853": {
+      "name": "AIA_MTR_ExtractionInstanceCreated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ef46-744c-8000-9fed-011c48011c48_483991": {
+      "name": "AIA_MTR_ModelTestSuiteUpdated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92592": {
+      "name": "AIA_MTR_ExtractionInstanceValidationIgnore",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ef46-744c-8000-9fed-011c48011c48_483964": {
+      "name": "AIA_MTR_ModelTestRunInitiated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92585": {
+      "name": "AIA_MTR_ExtractionInstanceValidationAccept",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92578": {
+      "name": "AIA_MTR_ExtractionModelVersionAiReview",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92488": {
+      "name": "AIA_MTR_ExtractionInstanceError",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee35-0ca2-8000-9ba6-011c48011c48_13646": {
+      "name": "AIA_LogMetric",
+      "type": "Expression Rule",
+      "sail_code": "a!match(\n  value: ri!name,\n  /* Classification Model Created */\n  equals: cons!AIA_MTR_CLASSIFICATION_MODEL_CREATED,\n  then: rule!AIA_MTR_ClassificationModelCreated(),\n  /* Classification Instance Created */\n  equals: cons!AIA_MTR_CLASSIFICATION_INSTANCE_CREATED,\n  then: rule!AIA_MTR_ClassificationInstanceCreated(),\n  /* Classification Instance Reconciled */\n  equals: cons!AIA_MTR_CLASSIFICATION_INSTANCE_RECONCILED,\n  then: rule!AIA_MTR_ClassificationInstanceReconciled(),\n  /* Classification Instance with Validation Errors */\n  equals: cons!AIA_MTR_INSTANCE_STATUS_CLASSIFIED_WITH_ERRORS,\n  then: rule!AIA_MTR_ClassificationInstanceClassifiedWithErrors(),\n  /* Classification Instance with Critical Error */\n  equals: cons!AIA_MTR_INSTANCE_STATUS_CLASSIFICATION_CRITICAL_ERROR,\n  then: rule!AIA_MTR_ClassificationInstanceError(),\n  \n  /* Extraction Model Created */\n  equals: cons!AIA_MTR_EXTRACTION_MODEL_CREATED,\n  then: rule!AIA_MTR_ExtractionModelCreated(),\n  /* Extraction Instance Created */\n  equals: cons!AIA_MTR_EXTRACTION_INSTANCE_CREATED,\n  then: rule!AIA_MTR_ExtractionInstanceCreated(),\n  /* Extraction Instance Reconciled */\n  equals: cons!AIA_MTR_EXTRACTION_INSTANCE_RECONCILED,\n  then: rule!AIA_MTR_ExtractionInstanceReconciled(),\n  /* Extraction Instance with Validation Errors */\n  equals: cons!AIA_MTR_INSTANCE_STATUS_EXTRACTED_WITH_ERRORS,\n  then: rule!AIA_MTR_ExtractionInstanceExtractedWithErrors(),\n  /* Extraction Instance with Critical Error */\n  equals: cons!AIA_MTR_INSTANCE_STATUS_EXTRACTION_CRITICAL_ERROR,\n  then: rule!AIA_MTR_ExtractionInstanceError(),\n  \n  /* Triggered when AI review raises an error (field level) */\n  equals: cons!AIA_MTR_AI_REVIEW_FIELD,\n  then: rule!AIA_MTR_ExtractionInstanceFieldAiReview(),\n  /* Triggered when AI review raises an error (instance level, this instance has 1 or more errors raised by AI review) */\n  equals: cons!AIA_MTR_AI_REVIEW_INSTANCE,\n  then: rule!AIA_MTR_ExtractionInstanceAiReview(),\n  /* Triggered when model is created with AI review turned on OR AI review is turned on for a model */\n  equals: cons!AIA_MTR_AI_REVIEW_MODEL_VERSION,\n  then: rule!AIA_MTR_ExtractionModelVersionAiReview(),\n  /* Triggered when user clicks accept */\n  equals: cons!AIA_MTR_AI_REVIEW_ACCEPT,\n  then: rule!AIA_MTR_ExtractionInstanceValidationAccept(),\n  /* Triggered when user clicks ignored */\n  equals: cons!AIA_MTR_AI_REVIEW_IGNORE,\n  then: rule!AIA_MTR_ExtractionInstanceValidationIgnore(),\n  /*triggered when spot check ocnfigured*/\n  equals: cons!AIA_MTR_SPOT_CHECK_MODEL_VERSION,\n  then: rule!AIA_MTR_ModelVersionConfigureSampling(),\n  /* Triggered when a model validation rule of type AI validation creates a validation instance */\n  equals: cons!AIA_MTR_AI_VALIDATION_RULE_OCCURANCE,\n  then: rule!AIA_MTR_InstanceValidationAiRuleOccurance(),\n  /*Confidence Threshold Enabled*/\n  equals: cons!AIA_MTR_CONFIDENCE_THRESHOLD_ENABLED,\n  then: rule!AIA_MTR_ConfidenceThresholdEnabled(),\n  /*Confidence Threshold Disabled*/\n  equals: cons!AIA_MTR_CONFIDENCE_THRESHOLD_DISABLED,\n  then: rule!AIA_MTR_ConfidenceThresholdDisabled(),\n  /*Extraction Model Version Restored*/\n  equals: cons!AIA_MTR_EXTRACTION_MODEL_VERSION_RESTORE,\n  then: rule!AIA_MTR_ExtractionModelVersionRestore(),\n  /*Classification Model Version Restored*/\n  equals: cons!AIA_MTR_CLASSIFICATION_MODEL_VERSION_RESTORE,\n  then: rule!AIA_MTR_ClassificationModelVersionRestore(),\n  /*Model Test Suite Created*/\n  equals: cons!AIA_MTR_MODEL_TEST_SUITE_CREATED,\n  then: rule!AIA_MTR_ModelTestSuiteCreated(),\n  /*Model Test Suite Updated*/\n  equals: cons!AIA_MTR_MODEL_TEST_SUITE_UPDATED,\n  then: rule!AIA_MTR_ModelTestSuiteUpdated(),\n  /*Model Test Run Initiated*/\n  equals: cons!AIA_MTR_MODEL_TEST_RUN_INITIATED,\n  then: rule!AIA_MTR_ModelTestRunInitiated(),\n  /*Classification Model Version Created with Multiple Outputs*/\n  equals: cons!AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_MODEL_VERSION_CREATED,\n  then: rule!AIA_MTR_MultipleOutputsClassificationModelVersionCreated(),\n  /*Classification Instance Created for a Model Version that Allows Multiple Outputs*/\n  equals: cons!AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_INSTANCE_CREATED,\n  then: rule!AIA_MTR_MultipleOutputsClassificationInstanceCreated(),\n  /*Classification Instance Reconciled for a Model Version that Allows Multiple Outputs*/\n  equals: cons!AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_INSTANCE_RECONCILED,\n  then: rule!AIA_MTR_MultipleOutputsClassificationInstanceReconciled(),\n  default: null\n)"
+    },
+    "_a-0000eeb2-df20-8000-9bfe-011c48011c48_154565": {
+      "name": "AIA_MTR_InstanceValidationAiRuleOccurance",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_180846": {
+      "name": "AIA_MTR_ClassificationModelCreated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_180860": {
+      "name": "AIA_MTR_ClassificationInstanceCreated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_85019": {
+      "name": "AIA_IsExtractionInstance",
+      "type": "Expression Rule",
+      "sail_code": "runtimetypeof(\n  ri!Instance\n) = typeof(\n  recordType!AIA Extraction Instance()\n)"
+    },
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_83881": {
+      "name": "AIA_HasCriticalErrors",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!relationship: if(\n    rule!AIA_IsExtractionInstance(Instance: ri!Instance),\n    recordType!AIA Extraction Instance.validations,\n    recordType!AIA Classification Instance.validations\n  ),\n  local!criticalErrors: rule!AIA_UTIL_Filter(\n    records: a!defaultValue(ri!Validations, ri!Instance[local!relationship]),\n    field: recordType!AIA Instance Validation Error.severity,\n    value: cons!AIA_SEVERITY_CRITICAL,\n    filterType: \"FILTER\"\n  ),\n  and(\n    a!isNotNullOrEmpty(\n      local!criticalErrors\n    ),\n    length(\n      local!criticalErrors\n    ) > 0\n  )\n)"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_180834": {
+      "name": "AIA_MTR_ExtractionModelCreated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "0011ee76-6a4b-8000-fc37-7f0000014e7a": {
+      "name": "AIA Classification Instance Run Validations",
+      "type": "Process Model",
+      "sail_code": "// Output: ?\na!defaultValue(\n  pv!ClassificationInstance,\n  rule!AIA_Classification_GetInstanceByIdForValidations(\n    instanceId: pv!instanceId\n  )\n)\n\n// Output: ?\nrule!AIA_GetValidationsForInstance(\n  Instance: pv!ClassificationInstance\n)\n\n// Input: ?\n={rule!AIA_SetValidationErrorSummary(\n  Instance: pv!ClassificationInstance,\n  Validations: pv!Validations\n)}\n\n// Input: ?\n={recordType!AIA Classification Instance}\n\n// Output: ?\nAC!RecordsUpdated"
+    },
+    "_a-0000ef55-14e0-8000-a041-011c48011c48_505631": {
+      "name": "AIA_MTR_MultipleOutputsClassificationInstanceCreated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000eec9-5676-8000-9c92-011c48011c48_179352": {
+      "name": "AIA_MTR_ConfidenceThresholdEnabled",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000eea3-15ee-8000-9bd4-011c48011c48_137447": {
+      "name": "AIA_MTR_ModelVersionConfigureSampling",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ed16-a792-8000-9c64-011c48011c48_272710": {
+      "name": "AIA_RULE_ENUM_Severity",
+      "type": "Expression Rule",
+      "sail_code": "{\n  a!map(\n    value: cons!AIA_SEVERITY_CRITICAL,\n    label: #\"urn:appian:translation-string:v1:0fdbc5bf-53b5-4561-bfbd-b271cac50c35\",\n    icon: \"fire-alt\",\n    color: \"Red4\"\n  ),\n  a!map(\n    value: cons!AIA_SEVERITY_HIGH,\n    label: #\"urn:appian:translation-string:v1:e0e17633-3db4-46cb-ad07-96b5d97b3e8c\",\n    icon: \"angle-double-up-bold\",\n    color: \"Orange4\"\n  ),\n  a!map(\n    value: cons!AIA_SEVERITY_MEDIUM,\n    label: #\"urn:appian:translation-string:v1:1c3e003d-2666-41cd-844f-3278b6e69a82\",\n    icon: \"circle-o\",\n    color: \"Yellow4\"\n  ),\n  a!map(\n    value: cons!AIA_SEVERITY_LOW,\n    label: #\"urn:appian:translation-string:v1:2b0d9f01-f232-478f-bd9c-89f7158ed854\",\n    icon: \"angle-double-down\",\n    color: \"Green4\"\n  )\n}"
+    },
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_85540": {
+      "name": "AIA_SetValidationErrorSummary",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!fields: if(\n    rule!AIA_IsExtractionInstance(Instance: ri!Instance),\n    a!map(\n      statusId: recordType!AIA Extraction Instance.statusId,\n      validationErrors: recordType!AIA Extraction Instance.validationErrors,\n      isSpotCheckRequired: recordType!AIA Extraction Instance.isSamplingRequired,\n      wasStp: recordType!AIA Extraction Instance.wasStp,\n      completeStatus: cons!AIA_INSTANCE_STATUS_EXTRACTED,\n      warnStatus: cons!AIA_INSTANCE_STATUS_EXTRACTED_WITH_ERRORS,\n      warnMetric: cons!AIA_MTR_INSTANCE_STATUS_EXTRACTED_WITH_ERRORS,\n      errorStatus: cons!AIA_INSTANCE_STATUS_INSTANCE_ERROR,\n      errorMetric: cons!AIA_MTR_INSTANCE_STATUS_EXTRACTION_CRITICAL_ERROR,\n      useSampling: recordType!AIA Extraction Instance.modelVersion.useSampling,\n      samplingRate: recordType!AIA Extraction Instance.modelVersion.samplingRate\n    ),\n    a!map(\n      statusId: recordType!AIA Classification Instance.statusId,\n      validationErrors: recordType!AIA Classification Instance.validationErrors,\n      isSpotCheckRequired: recordType!AIA Classification Instance.isSamplingRequired,\n      wasStp: recordType!AIA Classification Instance.wasStp,\n      completeStatus: cons!AIA_INSTANCE_STATUS_CLASSIFIED,\n      warnStatus: cons!AIA_INSTANCE_STATUS_CLASSIFIED_WITH_ERRORS,\n      warnMetric: cons!AIA_MTR_INSTANCE_STATUS_CLASSIFIED_WITH_ERRORS,\n      errorStatus: cons!AIA_INSTANCE_STATUS_INSTANCE_ERROR,\n      errorMetric: cons!AIA_MTR_INSTANCE_STATUS_CLASSIFICATION_CRITICAL_ERROR,\n      useSampling: recordType!AIA Classification Instance.modelVersion.useSampling,\n      samplingRate: recordType!AIA Classification Instance.modelVersion.samplingRate\n    )\n  ),\n  local!statusUpdated: if(\n    ri!isReconciliation,\n    ri!Instance[local!fields.statusId],\n    a!match(\n      value: ri!Instance[local!fields.statusId],\n      /* If critical errors, set to 'Instance Error' */\n      whenTrue: rule!AIA_HasCriticalErrors(Instance: ri!Instance, Validations: ri!Validations),\n      then: a!localVariables(\n        local!metric: rule!AIA_LogMetric(\n          name: local!fields.errorMetric\n        ),\n        local!fields.errorStatus\n      ),\n      /* If not reconciled and has errors set to 'Extracted/Classified with Errors' */\n      whenTrue: and(\n        not(contains(\n          cons!AIA_INSTANCE_STATUS_RECONCILED_ALL,\n          tointeger(ri!Instance[local!fields.statusId])\n        )),\n        length(ri!Validations) > 0\n      ),\n      then:  a!localVariables(\n        local!metric: rule!AIA_LogMetric(\n          name: local!fields.warnMetric\n        ),\n        local!fields.warnStatus\n      ),\n      /* Leave as is */\n      default: ri!Instance[local!fields.statusId]\n    )\n  ),\n  #\"urn:appian:function:v1:a:update\"(\n    ri!Instance,\n    {\n      local!fields.statusId,\n      local!fields.validationErrors,\n      local!fields.isSpotCheckRequired,\n      local!fields.wasStp\n    },\n    {\n      /*statusId*/\n      local!statusUpdated,\n      /*validationErrors*/\n      rule!AIA_ToJson(\n        reduce(\n          #\"urn:appian:function:v1:a:update\",\n          a!map(),\n          merge(\n            a!flatten(\n              {\n                touniformstring(\n                  rule!AIA_RULE_ENUM_Severity().value\n                ),\n                \"total\"\n              }\n            ),\n            a!flatten(\n              {\n                #\"SYSTEM_SYSRULES_forEach\"(\n                  rule!AIA_RULE_ENUM_Severity().value,\n                  length(\n                    wherecontains(\n                      tointeger(\n                        fv!item\n                      ),\n                      tointeger(\n                        ri!Validations[recordType!AIA Instance Validation Error.severity]\n                      )\n                    )\n                  )\n                ),\n                length(\n                  ri!Validations\n                )\n              }\n            )\n          )\n        )\n      ),\n      /*isSpotCheckRequired*/\n      a!match(\n        value: local!statusUpdated,\n        /*manually reconcilid status is shared between both model types so just use constant here*/\n        equals: cons!AIA_INSTANCE_STATUS_RECONCILED_MANUALLY,\n        then: false(),\n        /*alwasy remove flag on reconciliation*/\n        whenTrue: ri!isReconciliation,\n        then: false(),\n        /*if completed with no errors and sampling configured, flag based on rate percentage*/\n        whenTrue: and(\n          fv!value = local!fields.completeStatus,\n          toboolean(ri!Instance[local!fields.useSampling]) = true,\n          a!isNotNullOrEmpty(ri!Instance[local!fields.samplingRate])\n        ),\n        then: rule!AIA_RandomBoolean(percentTrue: ri!Instance[local!fields.samplingRate]),\n        default: ri!Instance[local!fields.isSpotCheckRequired]\n      ),\n      /*wasStp - must set post validations to see if any errors arose after inital extraction*/\n      a!match(\n        value: local!statusUpdated,\n        /*if instance is in pure complete status, set wasSTP to true for future tracking*/\n        equals: local!fields.completeStatus,\n        then: true(),\n        /*else leave alone, never want to flip this back to false*/\n        default: ri!Instance[local!fields.wasStp]\n      )\n    }\n  )\n)"
+    },
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_84705": {
+      "name": "AIA_Extraction_InstanceUuid",
+      "type": "Expression Rule",
+      "sail_code": "a!defaultValue(\n  ri!ExtractionInstance[recordType!AIA Extraction Instance.instanceUuid],\n  cons!AIA_MODEL_TYPE_VALUES[1] & \"-\" & ri!ExtractionInstance[recordType!AIA Extraction Instance.id]\n)"
+    },
+    "_a-0000eeca-c121-8000-9cab-011c48011c48_181995": {
+      "name": "AIA_MTR_ExtractionModelVersionRestore",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000eea3-15ee-8000-9bd4-011c48011c48_138569": {
+      "name": "AIA_RandomBoolean",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!probability: ri!percentTrue / 100,\n  rand() < local!probability\n)"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_180874": {
+      "name": "AIA_MTR_ClassificationInstanceReconciled",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_180867": {
+      "name": "AIA_MTR_ExtractionInstanceReconciled",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92474": {
+      "name": "AIA_MTR_ClassificationInstanceError",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40839": {
+      "name": "AIA_Test_GetLatestExtractionInstance",
+      "type": "Expression Rule",
+      "sail_code": "rule!AIA_Extraction_GetInstanceById(\n  identifier: #\"SYSTEM_SYSRULES_queryRecordType_v3\"(\n    recordType: recordType!AIA Extraction Instance,\n    pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n      startIndex: 1,\n      batchSize: 1,\n      sort: {\n        #\"SYSTEM_SYSRULES_sortInfo\"(\n          field: recordType!AIA Extraction Instance.id\n        )\n      }\n    )\n  ).data[recordType!AIA Extraction Instance.id],\n  additionalFields: {\n    recordType!AIA Extraction Instance.instanceUuid,\n    recordType!AIA Extraction Instance.modelVersion.versionId,\n    recordType!AIA Extraction Instance.modelVersion.modelId,\n    recordType!AIA Extraction Instance.modelVersion.uuid,\n    recordType!AIA Extraction Instance.modelVersion.extractionModel.key,\n    recordType!AIA Extraction Instance.documentFolderId,\n    recordType!AIA Extraction Instance.fieldCount,\n    recordType!AIA Extraction Instance.sections,\n    recordType!AIA Extraction Instance.boundingBoxes,\n    recordType!AIA Extraction Instance.responseDocumentId,\n    recordType!AIA Extraction Instance.sourceDocumentId\n  }\n)"
+    },
+    "_a-0000ed16-a792-8000-9c64-011c48011c48_269084": {
+      "name": "AIA_GetValidationsForInstance",
+      "type": "Expression Rule",
+      "sail_code": "#\"SYSTEM_SYSRULES_queryRecordType_v3\"(\n  recordType: recordType!AIA Instance Validation Error,\n  fields: {\n    recordType!AIA Instance Validation Error.typeId,\n    recordType!AIA Instance Validation Error.errorType.name,\n    recordType!AIA Instance Validation Error.modelVersionValidation.validations,\n    recordType!AIA Instance Validation Error.instanceField.modelVersionField.label,\n    recordType!AIA Instance Validation Error.instanceField.modelVersionField.key,\n    recordType!AIA Instance Validation Error.severity,\n    recordType!AIA Instance Validation Error.message,\n    recordType!AIA Instance Validation Error.messageDocId,\n    recordType!AIA Instance Validation Error.isAccepted,\n    recordType!AIA Instance Validation Error.isIgnored\n  },\n  filters: #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n    operator: \"AND\",\n    filters: {\n      #\"SYSTEM_SYSRULES_queryFilter\"(\n        field: recordType!AIA Instance Validation Error.instanceUuid,\n        operator: \"=\",\n        value: if(\n          rule!AIA_IsExtractionInstance(instance: ri!Instance),\n          rule!AIA_Extraction_InstanceUuid(\n            ExtractionInstance: ri!Instance\n          ),\n          rule!AIA_Classification_InstanceUuid(\n            ClassificationInstance: ri!Instance\n          )\n        )\n      )\n    }\n  ),\n  pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n    startIndex: 1,\n    batchSize: 1000,\n    sort: #\"SYSTEM_SYSRULES_sortInfo\"(\n      field: recordType!AIA Instance Validation Error.severity,\n      ascending: false\n    )\n  )\n).data"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92481": {
+      "name": "AIA_MTR_ExtractionInstanceExtractedWithErrors",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_85519": {
+      "name": "AIA_Classification_GetInstanceByIdForValidations",
+      "type": "Expression Rule",
+      "sail_code": "rule!AIA_Classification_GetInstanceById(\n  identifier: ri!instanceId,\n  additionalFields: {\n    recordType!AIA Classification Instance.modelVersion.useSampling,\n    recordType!AIA Classification Instance.modelVersion.samplingRate\n  }\n)"
+    },
+    "_a-0000ed16-a792-8000-9c64-011c48011c48_274759": {
+      "name": "AIA_ToJson",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  a!isNullOrEmpty(ri!data),\n  \"null\",\n  #\"SYSTEM_SYSRULES_toJson_v1\"(ri!data)\n)"
+    },
+    "_a-0000ed46-3c8c-8000-9bac-011c48011c48_26889": {
+      "name": "AIA_UTIL_Filter",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!fieldValuePairs: a!defaultValue(\n    ri!fieldValuePairs,\n    #\"SYSTEM_SYSRULES_forEach\"(\n      items: a!flatten(ri!field),\n      expression: a!map(\n        field: fv!item,\n        value: if(\n          fv!itemCount = 1,\n          ri!value,\n          index(a!flatten(ri!value), fv!index, null)\n        )\n      )\n    )\n  ),\n  local!matchIndices: if(\n    a!isNullOrEmpty(a!flatten(ri!records)),\n    tointeger({}),\n    reduce(\n      rule!AIA_UTIL_Filter_Reducer(\n        previousIndices: _,\n        records: a!flatten(ri!records),\n        fieldValuePair: _\n      ),\n      enumerate(count(a!flatten(ri!records))) + 1,\n      local!fieldValuePairs\n    )\n  ),\n  local!rejectIndices: difference(\n    if(\n      a!isNullOrEmpty(ri!records),\n      tointeger({}),\n      enumerate(count(a!flatten(ri!records))) + 1\n    ),\n    local!matchIndices\n  ),\n  local!matches: cast(\n    runtimetypeof(ri!records),\n    index(ri!records, local!matchIndices, {})\n  ),\n  local!rejects: cast(\n    runtimetypeof(ri!records),\n    index(ri!records, local!rejectIndices, {})\n  ),\n  a!match(\n    value: a!defaultValue(ri!filterType, \"FILTER\"),\n    equals: \"FILTER\",\n    then: local!matches,\n    equals: \"REJECT\",\n    then: local!rejects,\n    equals: \"FIRST_MATCH\",\n    then: index(local!matches, 1, null),\n    equals: \"FIRST_REJECT\",\n    then: index(local!rejects, 1, null),\n    equals: \"MATCH_COUNT\",\n    then: count(local!matchIndices),\n    equals: \"REJECT_COUNT\",\n    then: count(local!rejectIndices),\n    equals: \"MATCH_INDICES\",\n    then: local!matchIndices,\n    equals: \"REJECT_INDICES\",\n    then: local!rejectIndices,\n    equals: \"FULL_RESULT\",\n    then: a!map(\n      matches: local!matches,\n      rejects: local!rejects,\n      firstMatch: index(local!matches, 1, null),\n      firstReject: index(local!rejects, 1, null),\n      matchCount: count(local!matchIndices),\n      rejectCount: count(local!rejectIndices),\n      matchIndices: local!matchIndices,\n      rejectIndices: local!rejectIndices\n    ),\n    default: fn!error(\n      \"Invalid filterType, must be one of: FILTER, REJECT, FIRST_MATCH, FIRST_REJECT, MATCH_COUNT, REJECT_COUNT, MATCH_INDICES, REJECT_INDICES, FULL_RESULT\"\n    )\n  )\n)"
+    },
+    "_a-0000ef55-14e0-8000-a041-011c48011c48_505670": {
+      "name": "AIA_MTR_MultipleOutputsClassificationInstanceReconciled",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ef55-14e0-8000-a041-011c48011c48_505575": {
+      "name": "AIA_MTR_MultipleOutputsClassificationModelVersionCreated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_85064": {
+      "name": "AIA_Classification_InstanceUuid",
+      "type": "Expression Rule",
+      "sail_code": "a!defaultValue(\n  ri!ClassificationInstance[recordType!AIA Classification Instance.instanceUuid],\n  cons!AIA_MODEL_TYPE_VALUES[2] & \"-\" & ri!ClassificationInstance[recordType!AIA Classification Instance.id]\n)"
+    },
+    "_a-0000ef46-744c-8000-9fed-011c48011c48_483943": {
+      "name": "AIA_MTR_ModelTestSuiteCreated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92571": {
+      "name": "AIA_MTR_ExtractionInstanceAiReview",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92564": {
+      "name": "AIA_MTR_ExtractionInstanceFieldAiReview",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    }
+  }
+}

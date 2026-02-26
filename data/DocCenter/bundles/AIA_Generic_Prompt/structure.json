@@ -1,0 +1,645 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AIA Generic Prompt",
+    "parent_name": null,
+    "total_objects": 37
+  },
+  "entry_point": {
+    "complexity_score": 41.0,
+    "total_nodes": 18,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Generic Prompt",
+      "complexity_score": 41.0,
+      "total_nodes": 18,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "LLM Still Valid?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Route",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Error Occurred?"
+          ]
+        },
+        {
+          "name": "Which model?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Text Input",
+            "Doc Input",
+            "Doc Multimodal"
+          ]
+        },
+        {
+          "name": "Join",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Which model?"
+          ]
+        },
+        {
+          "name": "Wait for (30 * retry count) seconds",
+          "type": "Timer/Rule/Receive Message",
+          "next": [
+            "Join"
+          ]
+        },
+        {
+          "name": "Increment Retry",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Wait for (30 * retry count) seconds"
+          ]
+        },
+        {
+          "name": "Error Occurred?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node (No Error)",
+            "Execution Error (Node Error)",
+            "Fix Json",
+            "Increment Retry (Retryable)"
+          ]
+        },
+        {
+          "name": "Update LLM to Default",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Join"
+          ]
+        },
+        {
+          "name": "LLM Still Valid?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Join",
+            "Add LLM Instance Validation"
+          ]
+        },
+        {
+          "name": "Error Occurred?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Invalid Response Error",
+            "Execution Error",
+            "End Node"
+          ]
+        },
+        {
+          "name": "Execution Error",
+          "type": "Start Process",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Invalid Response Error",
+          "type": "Start Process",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Text Input",
+          "type": "Execute Generative AI Skill",
+          "next": [
+            "Route"
+          ]
+        },
+        {
+          "name": "Doc Input",
+          "type": "Execute Generative AI Skill",
+          "next": [
+            "Route"
+          ]
+        },
+        {
+          "name": "Doc Multimodal",
+          "type": "Execute Generative AI Skill",
+          "next": [
+            "Route"
+          ]
+        },
+        {
+          "name": "Fix Json",
+          "type": "Execute Generative AI Skill",
+          "next": [
+            "Error Occurred?"
+          ]
+        },
+        {
+          "name": "Add LLM Instance Validation",
+          "type": "Start Process",
+          "next": [
+            "Update LLM to Default"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000eeee-1c1d-8000-9d66-011c48011c48_213890",
+      "name": "AIA_FIX_JSON_ERROR_MESSAGE_NO_RECOGNIZABLE_JSON",
+      "type": "Constant",
+      "description": "message LLM is instructred to return if string passed to fixJson contains no json",
+      "value": "No recognizable JSON structure found in input.",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_FixJsonPrompt",
+        "AIA_wasFixJsonOutputInvalid"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_86517",
+      "name": "AIA_GEN_AI_SEVERITY",
+      "type": "Constant",
+      "description": "High",
+      "value": "3",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_CreateGenAiValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_32228",
+      "name": "AIA_INPUT_TYPE_DOC",
+      "type": "Constant",
+      "description": "doc",
+      "value": "doc",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA Generic Prompt"
+      ]
+    },
+    {
+      "uuid": "_a-0000eed9-05f0-8000-9d10-011c48011c48_196354",
+      "name": "AIA_MAX_RETRIES",
+      "type": "Constant",
+      "description": "3",
+      "value": "3",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA Generic Prompt"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecfc-48c9-8000-9c55-011c48011c48_234906",
+      "name": "AIA_MODEL_HAIKU_3",
+      "type": "Constant",
+      "description": "appian/anthropic.claude-3-haiku-20240307-v1:0",
+      "value": "appian/anthropic.claude-3-haiku-20240307-v1:0",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_LlmVersions",
+        "AIA_GenericPromptRuntimeModel_Multimodal"
+      ]
+    },
+    {
+      "uuid": "_a-0000eec9-c580-8000-9cb5-011c48011c48_20563012",
+      "name": "AIA_MODEL_HAIKU_4_5",
+      "type": "Constant",
+      "description": "appian/anthropic.claude-haiku-4-5-20251001-v1:0",
+      "value": "appian/anthropic.claude-haiku-4-5-20251001-v1:0",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_DefaultModel",
+        "AIA_ENUM_LlmVersions",
+        "AIA_GenericPromptRuntimeModel_Multimodal"
+      ]
+    },
+    {
+      "uuid": "_a-0001eed2-6cf8-8000-9cf8-011c48011c48_189647",
+      "name": "AIA_MODEL_HAIKU_4_5_MULTIMODAL",
+      "type": "Constant",
+      "description": "appian/anthropic.claude-haiku-4-5-20251001-v1:0|MULTIMODAL",
+      "value": "appian/anthropic.claude-haiku-4-5-20251001-v1:0|MULTIMODAL",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_LlmVersions"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecfc-48c9-8000-9c55-011c48011c48_234918",
+      "name": "AIA_MODEL_SONNET_3",
+      "type": "Constant",
+      "description": "appian/anthropic.claude-3-sonnet-20240229-v1:0",
+      "value": "appian/anthropic.claude-3-sonnet-20240229-v1:0",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_LlmVersions"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecfc-48c9-8000-9c55-011c48011c48_234925",
+      "name": "AIA_MODEL_SONNET_3_5",
+      "type": "Constant",
+      "description": "appian/anthropic.claude-3-5-sonnet-20240620-v1:0",
+      "value": "appian/anthropic.claude-3-5-sonnet-20240620-v1:0",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_LlmVersions"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee66-4fc0-8000-9baa-011c48011c48_69027",
+      "name": "AIA_MODEL_SONNET_3_5_MULTIMODAL",
+      "type": "Constant",
+      "description": "appian/anthropic.claude-3-5-sonnet-20240620-v1:0|MULTIMODAL",
+      "value": "appian/anthropic.claude-3-5-sonnet-20240620-v1:0|MULTIMODAL",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_LlmVersions"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3e-060c-8000-9bb8-011c48011c48_189326",
+      "name": "AIA_MODEL_SONNET_3_7",
+      "type": "Constant",
+      "description": "appian/anthropic.claude-3-7-sonnet-20250219-v1:0",
+      "value": "appian/anthropic.claude-3-7-sonnet-20250219-v1:0",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_LlmVersions"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee9c-6257-8000-9bbe-011c48011c48_119144",
+      "name": "AIA_MODEL_SONNET_3_7_MULTIMODAL",
+      "type": "Constant",
+      "description": "appian/anthropic.claude-3-7-sonnet-20250219-v1:0|MULTIMODAL",
+      "value": "appian/anthropic.claude-3-7-sonnet-20250219-v1:0|MULTIMODAL",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_LlmVersions"
+      ]
+    },
+    {
+      "uuid": "_a-0001eed2-6cf8-8000-9cf8-011c48011c48_189635",
+      "name": "AIA_MODEL_SONNET_4_5",
+      "type": "Constant",
+      "description": "appian/anthropic.claude-sonnet-4-5-20250929-v1:0",
+      "value": "appian/anthropic.claude-sonnet-4-5-20250929-v1:0",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_LlmVersions"
+      ]
+    },
+    {
+      "uuid": "_a-0001eed2-6cf8-8000-9cf8-011c48011c48_189641",
+      "name": "AIA_MODEL_SONNET_4_5_MULTIMODAL",
+      "type": "Constant",
+      "description": "appian/anthropic.claude-sonnet-4-5-20250929-v1:0|MULTIMODAL",
+      "value": "appian/anthropic.claude-sonnet-4-5-20250929-v1:0|MULTIMODAL",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_LlmVersions"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec40-0355-8000-9be4-011c48011c48_70311",
+      "name": "AIA_MODEL_TYPE_VALUES",
+      "type": "Constant",
+      "description": "(1) extraction, (2) classification",
+      "value": [
+        "extraction",
+        "classification"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_CreateValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecfc-48c9-8000-9c55-011c48011c48_237587",
+      "name": "AIA_PROMPT_OPERATION_MODE_MULTIMODAL",
+      "type": "Constant",
+      "description": "MULTIMODAL",
+      "value": "MULTIMODAL",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA Generic Prompt"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76684",
+      "name": "AIA_SEVERITY_LOW",
+      "type": "Constant",
+      "description": "1",
+      "value": "1",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA Generic Prompt"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee66-4fc0-8000-9baa-011c48011c48_72159",
+      "name": "AIA_VALIDATION_TYPE_ID_EXECUTION",
+      "type": "Constant",
+      "description": "4",
+      "value": "4",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA Generic Prompt",
+        "AIA_CreateGenAiValidation",
+        "AIA_CreateValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_86498",
+      "name": "AIA_CreateGenAiValidation",
+      "type": "Expression Rule",
+      "description": "Create a gen ai validation",
+      "parameters": [],
+      "calls": [
+        "AIA_CreateValidation",
+        "AIA_CreateValidationErrorMessage",
+        "AIA_GEN_AI_SEVERITY",
+        "AIA_VALIDATION_TYPE_ID_EXECUTION",
+        "Generative AI"
+      ],
+      "called_by": [
+        "AIA Generic Prompt"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76653",
+      "name": "AIA_CreateValidation",
+      "type": "Expression Rule",
+      "description": "Create a validation error for instance",
+      "parameters": [],
+      "calls": [
+        "AIA_IsExtractionInstance",
+        "AIA_MODEL_TYPE_VALUES",
+        "AIA_Test_GetLatestExtractionInstance",
+        "AIA_VALIDATION_TYPE_ID_EXECUTION"
+      ],
+      "called_by": [
+        "AIA Generic Prompt",
+        "AIA_CreateGenAiValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_90047",
+      "name": "AIA_CreateValidationErrorMessage",
+      "type": "Expression Rule",
+      "description": "Create validation error message",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Generic Prompt",
+        "AIA_CreateGenAiValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000eed9-05f0-8000-9d10-011c48011c48_194872",
+      "name": "AIA_DefaultModel",
+      "type": "Expression Rule",
+      "description": "Default model for AIA",
+      "parameters": [],
+      "calls": [
+        "AIA_MODEL_HAIKU_4_5"
+      ],
+      "called_by": [
+        "AIA Generic Prompt",
+        "AIA_GenericPromptRuntimeModel_Multimodal"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecfc-48c9-8000-9c55-011c48011c48_234937",
+      "name": "AIA_ENUM_LlmVersions",
+      "type": "Expression Rule",
+      "description": "Model versions",
+      "parameters": [],
+      "calls": [
+        "AIA_MODEL_HAIKU_3",
+        "AIA_MODEL_HAIKU_4_5",
+        "AIA_MODEL_HAIKU_4_5_MULTIMODAL",
+        "AIA_MODEL_SONNET_3",
+        "AIA_MODEL_SONNET_3_5",
+        "AIA_MODEL_SONNET_3_5_MULTIMODAL",
+        "AIA_MODEL_SONNET_3_7",
+        "AIA_MODEL_SONNET_3_7_MULTIMODAL",
+        "AIA_MODEL_SONNET_4_5",
+        "AIA_MODEL_SONNET_4_5_MULTIMODAL"
+      ],
+      "called_by": [
+        "AIA Generic Prompt",
+        "AIA_GetLLMName"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40909",
+      "name": "AIA_ExtractJson",
+      "type": "Expression Rule",
+      "description": "Extract json from prompt builder reponse",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Generic Prompt",
+        "AIA_wasFixJsonOutputInvalid"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeee-1c1d-8000-9d66-011c48011c48_213884",
+      "name": "AIA_FixJsonPrompt",
+      "type": "Expression Rule",
+      "description": null,
+      "parameters": [],
+      "calls": [
+        "AIA_FIX_JSON_ERROR_MESSAGE_NO_RECOGNIZABLE_JSON"
+      ],
+      "called_by": [
+        "AIA Generic Prompt"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeeb-a4e0-8000-9d56-011c48011c48_208493",
+      "name": "AIA_GenericPromptRuntimeModel_Multimodal",
+      "type": "Expression Rule",
+      "description": "returns selected llm or default when running generic multimodal prompt node. Accounts for additional logic to filter out models that don't support multimodal",
+      "parameters": [],
+      "calls": [
+        "AIA_DefaultModel",
+        "AIA_MODEL_HAIKU_3",
+        "AIA_MODEL_HAIKU_4_5"
+      ],
+      "called_by": [
+        "AIA Generic Prompt"
+      ]
+    },
+    {
+      "uuid": "_a-0000eed9-05f0-8000-9d10-011c48011c48_195035",
+      "name": "AIA_GetLLMName",
+      "type": "Expression Rule",
+      "description": "Get name from model id",
+      "parameters": [],
+      "calls": [
+        "AIA_ENUM_LlmVersions"
+      ],
+      "called_by": [
+        "AIA Generic Prompt"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_85019",
+      "name": "AIA_IsExtractionInstance",
+      "type": "Expression Rule",
+      "description": "Returns true if the instance is an extraction instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_CreateValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000eed9-05f0-8000-9d10-011c48011c48_196107",
+      "name": "AIA_IsRetryable",
+      "type": "Expression Rule",
+      "description": "Is the error retryable?",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Generic Prompt"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_32234",
+      "name": "AIA_ProcessInputMap",
+      "type": "Expression Rule",
+      "description": "Process an input map for a generic prompt builder",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Generic Prompt"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40839",
+      "name": "AIA_Test_GetLatestExtractionInstance",
+      "type": "Expression Rule",
+      "description": "Get the latest extraction instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_CreateValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeee-1c1d-8000-9d66-011c48011c48_213902",
+      "name": "AIA_wasFixJsonOutputInvalid",
+      "type": "Expression Rule",
+      "description": "returns true if input string contians no json or contains error message from AIA_fixJSon",
+      "parameters": [],
+      "calls": [
+        "AIA_ExtractJson",
+        "AIA_FIX_JSON_ERROR_MESSAGE_NO_RECOGNIZABLE_JSON"
+      ],
+      "called_by": [
+        "AIA Generic Prompt"
+      ]
+    },
+    {
+      "uuid": "0002ecfc-ece4-8000-0953-7f0000014e7a",
+      "name": "AIA Generic Prompt",
+      "type": "Process Model",
+      "description": "Run a generic prompt",
+      "calls": [
+        "AIA_CreateGenAiValidation",
+        "AIA_CreateValidation",
+        "AIA_CreateValidationErrorMessage",
+        "AIA_DefaultModel",
+        "AIA_ENUM_LlmVersions",
+        "AIA_ExtractJson",
+        "AIA_FixJsonPrompt",
+        "AIA_GenericPromptRuntimeModel_Multimodal",
+        "AIA_GetLLMName",
+        "AIA_INPUT_TYPE_DOC",
+        "AIA_IsRetryable",
+        "AIA_MAX_RETRIES",
+        "AIA_PROMPT_OPERATION_MODE_MULTIMODAL",
+        "AIA_ProcessInputMap",
+        "AIA_SEVERITY_LOW",
+        "AIA_VALIDATION_TYPE_ID_EXECUTION",
+        "AIA_wasFixJsonOutputInvalid",
+        "Generative AI",
+        "Invalid JSON Response",
+        "The selected LLM wasn't available for this model version and instance. This inst",
+        "Validation message when selected LLM of a model version is no longer valid on th"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "0a45afc5-af72-4009-8441-7caf2ce7509d",
+      "name": "Generative AI",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA Generic Prompt",
+        "AIA_CreateGenAiValidation"
+      ]
+    },
+    {
+      "uuid": "c51ac64b-a256-4c45-824c-8f9fb23e245f",
+      "name": "Invalid JSON Response",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA Generic Prompt"
+      ]
+    },
+    {
+      "uuid": "360d343f-29ab-46f3-a879-1bbd51e6ee09",
+      "name": "The selected LLM wasn't available for this model version and instance. This inst",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA Generic Prompt"
+      ]
+    },
+    {
+      "uuid": "acadd74a-c657-4799-9307-d65ce10ab779",
+      "name": "Validation message when selected LLM of a model version is no longer valid on th",
+      "type": "Translation String",
+      "description": "Validation message when selected LLM of a model version is no longer valid on the site.",
+      "calls": [],
+      "called_by": [
+        "AIA Generic Prompt"
+      ]
+    }
+  ]
+}

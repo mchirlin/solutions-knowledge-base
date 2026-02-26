@@ -1,0 +1,26 @@
+{
+  "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_66975",
+  "name": "AIA_ClassificationModelVersion_ValidatePrompt",
+  "type": "Expression Rule",
+  "description": "Rule to validate prompt in classification model version ",
+  "sail_code": "{\n  #\"SYSTEM_SYSRULES_validationMessage\"(\n    message: #\"urn:appian:translation-string:v1:94d89206-519b-4a12-9e0b-fda9f735ed1b\"(\n      #\"urn:appian:translation-variable:v1:50c6ba57-12fe-40c9-8a4f-a8348cc8bb65\": 4000\n    ),\n    showWhen: and(\n      ri!currentTab <> 2,\n      a!isNotNullOrEmpty(\n        ri!classificationModelVersion[recordType!AIA Classification Model Version.instructions]\n      ),\n      len(\n        ri!classificationModelVersion[recordType!AIA Classification Model Version.instructions]\n      ) > 4000\n    ),\n    validateAfter: \"SUBMIT\"\n  ),\n  #\"SYSTEM_SYSRULES_validationMessage\"(\n    message: #\"urn:appian:translation-string:v1:5a61b838-fc01-49cd-84e0-7e1ef4f63ca6\"(\n      #\"urn:appian:translation-variable:v1:3c2f5b88-8850-4b92-b670-9541f72b3827\": 4000\n    ),\n    showWhen: and(\n      ri!currentTab <> 2,\n      a!isNotNullOrEmpty(\n        ri!classificationModelVersion[recordType!AIA Classification Model Version.role]\n      ),\n      len(\n        ri!classificationModelVersion[recordType!AIA Classification Model Version.role]\n      ) > 4000\n    ),\n    validateAfter: \"SUBMIT\"\n  )\n}",
+  "calls": [
+    {
+      "name": "Additional Instruction can't have more than {charCount} characters in prompt sec",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Role can't have more than {charCount} characters in prompt section",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AIA_ClassificationModelVersion_RecordAction_CreateUpdateVersion",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

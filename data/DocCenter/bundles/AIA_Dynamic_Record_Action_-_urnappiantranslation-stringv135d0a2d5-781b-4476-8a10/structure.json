@@ -1,0 +1,94 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "AIA Dynamic Record Action - =#\"urn:appian:translation-string:v1:35d0a2d5-781b-4476-8a10-f46852f9fc49\"",
+    "parent_name": "AIA Dynamic Record Action",
+    "total_objects": 3
+  },
+  "entry_point": {
+    "action_type": "RECORD_ACTION",
+    "record_type": "AIA Dynamic Record Action",
+    "target_process": "AIA Set as Test Cases",
+    "form_interface": null,
+    "expressions": {
+      "TITLE": "=#\"urn:appian:translation-string:v1:35d0a2d5-781b-4476-8a10-f46852f9fc49\"",
+      "DESCRIPTION": null,
+      "VISIBILITY": "=true()",
+      "CONTEXT": "a!localVariables(\n  local!map: #\"SYSTEM_SYSRULES_fromJson_v1\"(rv!identifier),\n  {\n    ExtractionInstances: if(\n      local!map.type = cons!AIA_MODEL_TYPE_VALUES[1],\n      #\"SYSTEM_SYSRULES_forEach\"(\n        local!map.ids,\n        recordType!AIA Extraction Instance(\n          recordType!AIA Extraction Instance.id: fv!item,\n          recordType!AIA Extraction Instance.testInstance: true\n        )\n      ),\n      null\n    ),\n    ClassificationInstances: if(\n      local!map.type = cons!AIA_MODEL_TYPE_VALUES[2],\n      #\"SYSTEM_SYSRULES_forEach\"(\n        local!map.ids,\n        recordType!AIA Classification Instance(\n          recordType!AIA Classification Instance.id: fv!item,\n          recordType!AIA Classification Instance.testInstance: true\n        )\n      ),\n      null\n    )\n  }\n)"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Set as Test Cases",
+      "complexity_score": 9.0,
+      "total_nodes": 5,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Decision?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Update Extraction Test Cases",
+          "type": "Start Process",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Update Classification Test Cases",
+          "type": "Start Process",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Decision?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Update Extraction Test Cases",
+            "End Node",
+            "Update Classification Test Cases"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ec40-0355-8000-9be4-011c48011c48_70311",
+      "name": "AIA_MODEL_TYPE_VALUES",
+      "type": "Constant",
+      "description": "(1) extraction, (2) classification",
+      "value": [
+        "extraction",
+        "classification"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": []
+    },
+    {
+      "uuid": "0004ee7c-fc86-8000-fc7f-7f0000014e7a",
+      "name": "AIA Set as Test Cases",
+      "type": "Process Model",
+      "description": "Update multiple instances as test cases",
+      "calls": [],
+      "called_by": []
+    },
+    {
+      "uuid": "35d0a2d5-781b-4476-8a10-f46852f9fc49",
+      "name": "Set as Test Cases",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": []
+    }
+  ]
+}

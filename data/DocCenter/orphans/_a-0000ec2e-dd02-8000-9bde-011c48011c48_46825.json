@@ -1,0 +1,9 @@
+{
+  "uuid": "_a-0000ec2e-dd02-8000-9bde-011c48011c48_46825",
+  "name": "AIA_SectionSuggest",
+  "type": "Expression Rule",
+  "description": "Suggest a section",
+  "sail_code": "if(\n  len(ri!input) < 3,\n  null,\n  a!localVariables(\n    local!result: reject(\n      fn!isnull,\n      #\"SYSTEM_SYSRULES_forEach\"(\n        ri!sections,\n        if(\n          find(lower(ri!input), lower(fv!item)) > 0,\n          fv!item,\n          null\n        )\n      )\n    ),\n    if(\n      and(\n        a!isNotNullOrEmpty(ri!sections),\n        length(ri!sections) > 0\n      ),\n      a!localVariables(\n        local!exactMatch: contains(touniformstring(local!result), ri!input),\n        #\"SYSTEM_SYSRULES_dataSubset\"(\n          startIndex: 1,\n          batchSize: 100,\n          data: if(\n            local!exactMatch,\n            ri!input,\n            append(\n              local!result,\n              ri!input & \" (NEW)\"\n            )\n          ),\n          identifiers: if(\n            local!exactMatch,\n            ri!input,\n            append(\n              local!result,\n              ri!input\n            )\n          )\n        )\n      ),\n      #\"SYSTEM_SYSRULES_dataSubset\"(\n        startIndex: 1,\n        batchSize: 1,\n        data: ri!input & \" (NEW)\",\n        identifiers: ri!input\n      )\n    )\n  )\n)",
+  "calls": [],
+  "called_by": []
+}

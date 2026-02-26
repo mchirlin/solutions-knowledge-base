@@ -1,0 +1,30 @@
+{
+  "uuid": "_a-0000ec9e-8ba1-8000-9c08-011c48011c48_146464",
+  "name": "AIA_Extraction_ProcessImportFile",
+  "type": "Expression Rule",
+  "description": "Process import file",
+  "sail_code": "a!localVariables(\n  local!fileContent: rule!SHRD_ReadDocumentContent(\n    document: ri!importFile\n  ),\n  local!parsed: #\"SYSTEM_SYSRULES_fromJson_v1\"(local!fileContent),\n  local!existingModel: rule!AIA_Extraction_GetModelByKey(key: local!parsed.model.key)[1],\n  local!modelExists: a!isNotNullOrEmpty(local!existingModel),\n  if(\n    local!modelExists,\n    /* Potentially a new version */\n    a!localVariables(\n      local!existingVersion: rule!AIA_Extraction_GetModelVersionByKeyAndVersion(\n        key: local!parsed.model.key,\n        versionId: local!parsed.version.versionId\n      )[1],\n      local!versionExists: a!isNotNullOrEmpty(local!existingVersion),\n      if(\n        local!versionExists,\n        local!existingModel,\n        a!localVariables(\n          local!procVersion: rule!SHRD_Merge(\n            object: local!parsed.version,\n            source: a!map(\n              modelVersionId: null,\n              extractionModel: null,\n              modelId: null,\n              fields: #\"SYSTEM_SYSRULES_forEach\"(\n                local!parsed.version.fields,\n                rule!SHRD_Merge(\n                  object: fv!item,\n                  source: a!map(\n                    fieldId: null,\n                    parentFieldId: null,\n                    modelVersionId: null,\n                    columns: #\"SYSTEM_SYSRULES_forEach\"(\n                      fv!item.columns,\n                      rule!SHRD_Merge(\n                        object: fv!item,\n                        source: a!map(fieldId: null, parentFieldId: null)\n                      )\n                    )\n                  )\n                )\n              ),\n              examples: #\"SYSTEM_SYSRULES_forEach\"(\n                local!parsed.version.examples,\n                rule!GIF_Merge(\n                  object: fv!item,\n                  source: a!map(id: null, modelVersionId: null)\n                )\n              )\n            )\n          ),\n          local!persistModel: #\"urn:appian:function:v1:a:update\"(\n            local!existingModel,\n            recordType!AIA Extraction Model.versions,\n            cast(\n              recordType!AIA Extraction Model Version,\n              local!procVersion\n            )\n          ),\n          cast(\n            recordType!AIA Extraction Model,\n            local!persistModel\n          )\n        )\n      )\n    ),\n    /* New Model */\n    a!localVariables(\n      local!procModel: rule!SHRD_Merge(\n        object: local!parsed.model,\n        source: a!map(modelId: null)\n      ),\n      local!procVersion: rule!SHRD_Merge(\n        object: local!parsed.version,\n        source: a!map(\n          modelVersionId: null,\n          extractionModel: null,\n          modelId: null,\n          fields: #\"SYSTEM_SYSRULES_forEach\"(\n            local!parsed.version.fields,\n            rule!SHRD_Merge(\n              object: fv!item,\n              source: a!map(\n                fieldId: null,\n                parentFieldId: null,\n                modelVersionId: null,\n                columns: #\"SYSTEM_SYSRULES_forEach\"(\n                  fv!item.columns,\n                  rule!SHRD_Merge(\n                    object: fv!item,\n                    source: a!map(fieldId: null, parentFieldId: null)\n                  )\n                )\n              )\n            )\n          ),\n          examples: #\"SYSTEM_SYSRULES_forEach\"(\n            local!parsed.version.examples,\n            rule!GIF_Merge(\n              object: fv!item,\n              source: a!map(id: null, modelVersionId: null)\n            )\n          )\n        )\n      ),\n      local!persistModel: #\"urn:appian:function:v1:a:update\"(\n        local!procModel,\n        \"versions\",\n        local!procVersion\n      ),\n      cast(\n        recordType!AIA Extraction Model,\n        local!persistModel\n      )\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "SHRD_ReadDocumentContent",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_Extraction_GetModelByKey",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_Extraction_GetModelVersionByKeyAndVersion",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "SHRD_Merge",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

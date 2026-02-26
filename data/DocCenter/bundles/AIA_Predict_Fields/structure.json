@@ -1,0 +1,189 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AIA Predict Fields",
+    "parent_name": null,
+    "total_objects": 11
+  },
+  "entry_point": {
+    "complexity_score": 3.0,
+    "total_nodes": 3,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Predict Fields",
+      "complexity_score": 3.0,
+      "total_nodes": 3,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Execute Generative AI Skill"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Execute Generative AI Skill",
+          "type": "internal3.rs2_ai_skill_generative_ai",
+          "next": [
+            "End Node"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ec2e-dd02-8000-9bde-011c48011c48_50410",
+      "name": "AIA_EXAMPLE_DOC_EXTRACTION_PDF",
+      "type": "Constant",
+      "description": "Example doc for extraction",
+      "value": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40815",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "SHRD_ReadDocumentContent"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf8-2887-8000-9c52-011c48011c48_223572",
+      "name": "AIA_EXTRACTION_EXAMPLE_DOC_TYPES",
+      "type": "Constant",
+      "description": "(1) Text, (2) Pdf, (3) Excel",
+      "value": [
+        "Text",
+        "Pdf",
+        "Excel"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_GetPredictionInput"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf8-2887-8000-9c52-011c48011c48_222911",
+      "name": "AIA_EXTRACT_FIELD_FROM_DOCUMENT_INSTRUCTIONS",
+      "type": "Constant",
+      "description": "Instructions to extract fields from a doc",
+      "value": "Above is a sample doc, please read the document and extract out data elements that should be extracted from this type of document.",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_PredictionPrompt"
+      ]
+    },
+    {
+      "uuid": "_a-0000eed1-1d21-8000-9cef-011c48011c48_187601",
+      "name": "AIA_TEXT_BASED_EXTENSIONS",
+      "type": "Constant",
+      "description": "csv, xml",
+      "value": [
+        "csv",
+        "xml"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_GetDocumentText"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_159825",
+      "name": "AIA_DocIsPdf",
+      "type": "Expression Rule",
+      "description": "Returns true if doc is a pdf",
+      "parameters": [],
+      "calls": [
+        "AIA_IsDocumentExtension"
+      ],
+      "called_by": [
+        "AIA_GetDocumentText"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3e-060c-8000-9bb8-011c48011c48_204292",
+      "name": "AIA_Extraction_GetPredictionInput",
+      "type": "Expression Rule",
+      "description": "Get input for a field prediction",
+      "parameters": [],
+      "calls": [
+        "AIA_EXTRACTION_EXAMPLE_DOC_TYPES",
+        "AIA_GetDocumentText",
+        "SHRD_ReadDocumentContent"
+      ],
+      "called_by": [
+        "AIA_Extraction_PredictionPrompt"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf8-2887-8000-9c52-011c48011c48_222377",
+      "name": "AIA_Extraction_PredictionPrompt",
+      "type": "Expression Rule",
+      "description": "Create prediction prompt",
+      "parameters": [],
+      "calls": [
+        "AIA_EXTRACT_FIELD_FROM_DOCUMENT_INSTRUCTIONS",
+        "AIA_Extraction_GetPredictionInput"
+      ],
+      "called_by": [
+        "AIA Predict Fields"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee52-8983-8000-9ba6-011c48011c48_27862",
+      "name": "AIA_GetDocumentText",
+      "type": "Expression Rule",
+      "description": "Get text from document",
+      "parameters": [],
+      "calls": [
+        "AIA_DocIsPdf",
+        "AIA_IsDocumentExtension",
+        "AIA_TEXT_BASED_EXTENSIONS"
+      ],
+      "called_by": [
+        "AIA_Extraction_GetPredictionInput"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_182518",
+      "name": "AIA_IsDocumentExtension",
+      "type": "Expression Rule",
+      "description": "Is the document of one of the following extensions",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_DocIsPdf",
+        "AIA_GetDocumentText"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3e-060c-8000-9bb8-011c48011c48_203441",
+      "name": "SHRD_ReadDocumentContent",
+      "type": "Expression Rule",
+      "description": "Read content from text document",
+      "parameters": [],
+      "calls": [
+        "AIA_EXAMPLE_DOC_EXTRACTION_PDF"
+      ],
+      "called_by": [
+        "AIA_Extraction_GetPredictionInput"
+      ]
+    },
+    {
+      "uuid": "0004ec4b-aea1-8000-ff1b-7f0000014e7a",
+      "name": "AIA Predict Fields",
+      "type": "Process Model",
+      "description": "Try to generate options based on a json payload",
+      "calls": [
+        "AIA_Extraction_PredictionPrompt"
+      ],
+      "called_by": []
+    }
+  ]
+}

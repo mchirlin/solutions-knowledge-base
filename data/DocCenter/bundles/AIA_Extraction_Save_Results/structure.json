@@ -1,0 +1,739 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AIA Extraction Save Results",
+    "parent_name": null,
+    "total_objects": 49
+  },
+  "entry_point": {
+    "complexity_score": 15.0,
+    "total_nodes": 8,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Extraction Save Results",
+      "complexity_score": 15.0,
+      "total_nodes": 8,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Write Instance"
+          ]
+        },
+        {
+          "name": "Delete Records",
+          "type": "Delete Records",
+          "next": [
+            "Use Validations?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Any Rows Deleted?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Delete Records",
+            "Use Validations?"
+          ]
+        },
+        {
+          "name": "Cleanup Instance Processing Docs",
+          "type": "Start Process",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Use Validations?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Cleanup Instance Processing Docs",
+            "Run Validations"
+          ]
+        },
+        {
+          "name": "Write Instance",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Any Rows Deleted?"
+          ]
+        },
+        {
+          "name": "Run Validations",
+          "type": "Start Process",
+          "next": [
+            "Cleanup Instance Processing Docs"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ec60-a08d-8000-9bee-011c48011c48_121650",
+      "name": "AIA_EML_PAGE_CHAR_COUNT",
+      "type": "Constant",
+      "description": "5000",
+      "value": "5000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_GetDocumentMetadata"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2e-dd02-8000-9bde-011c48011c48_50410",
+      "name": "AIA_EXAMPLE_DOC_EXTRACTION_PDF",
+      "type": "Constant",
+      "description": "Example doc for extraction",
+      "value": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40815",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "SHRD_ReadDocumentContent"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2e-dd02-8000-9bde-011c48011c48_46896",
+      "name": "AIA_EXTRACTION_FIELD_TYPES",
+      "type": "Constant",
+      "description": "(1) Text, (2) Integer, (3) Decimal, (4) Date, (5) Datetime, (6) Boolean, (7) Table, (8) Paragraph",
+      "value": [
+        "Text",
+        "Integer",
+        "Decimal",
+        "Date",
+        "Datetime",
+        "Boolean",
+        "Table",
+        "Paragraph"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_FormatValueForDatabase",
+        "AIA_TypeHelper"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec40-0355-8000-9be4-011c48011c48_73273",
+      "name": "AIA_EXTRACTION_FIELD_TYPE_TABLE",
+      "type": "Constant",
+      "description": "Table",
+      "value": "Table",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_Extract_ExtractFieldsFromJsonResponse",
+        "AIA_FormatValuesForDatabase"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb8-d1aa-8000-9c16-011c48011c48_157386",
+      "name": "AIA_EXTRACTION_INSTANCE_EVENT_TYPES",
+      "type": "Constant",
+      "description": "(1) Created Extraction Instance, (2) Updated Extraction Instance, (3) Commented, (4) Extraction Started, (5) Extraction Completed, (6) Reconcile Started, (7) Reconcile Completed",
+      "value": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Integer?list",
+      "calls": [],
+      "called_by": [
+        "AIA Extraction Save Results"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec9e-8ba1-8000-9c08-011c48011c48_146690",
+      "name": "AIA_FIELD_RESULT_FALSE_NEGATIVE",
+      "type": "Constant",
+      "description": "FN",
+      "value": "FN",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_PostProcess"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec9e-8ba1-8000-9c08-011c48011c48_146684",
+      "name": "AIA_FIELD_RESULT_FALSE_POSITIVE",
+      "type": "Constant",
+      "description": "FP",
+      "value": "FP",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_PostProcess"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec9e-8ba1-8000-9c08-011c48011c48_146678",
+      "name": "AIA_FIELD_RESULT_TRUE_NEGATIVE",
+      "type": "Constant",
+      "description": "TN",
+      "value": "TN",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_PostProcess"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec9e-8ba1-8000-9c08-011c48011c48_146672",
+      "name": "AIA_FIELD_RESULT_TRUE_POSITIVE",
+      "type": "Constant",
+      "description": "TP",
+      "value": "TP",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_PostProcess"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb4-d4ac-8000-9bae-011c48011c48_115730",
+      "name": "AIA_INSTANCE_STATUS_EXTRACTED",
+      "type": "Constant",
+      "description": "Contains ref id for status extracted",
+      "value": "2",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_CreateUpdateInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec9d-8afb-8000-9c07-011c48011c48_146171",
+      "name": "AIA_INSTANCE_STATUS_INITIATED",
+      "type": "Constant",
+      "description": "Instance status ref id for Initiated",
+      "value": "1",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_CreateUpdateInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000edd9-a94f-8000-9bb2-011c48011c48_144286",
+      "name": "AIA_INSTANCE_STATUS_RECONCILED_ALL",
+      "type": "Constant",
+      "description": "Contains ref id for status reconciled manually & automatically",
+      "value": [
+        "4",
+        "6"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Integer?list",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_PostProcess"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb4-d4ac-8000-9bae-011c48011c48_115723",
+      "name": "AIA_INSTANCE_STATUS_RECONCILED_AUTOMATICALLY",
+      "type": "Constant",
+      "description": "Contains ref id for status reconciled automatically",
+      "value": "6",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_CreateUpdateInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb4-d4ac-8000-9bae-011c48011c48_111914",
+      "name": "AIA_INSTANCE_STATUS_RECONCILED_MANUALLY",
+      "type": "Constant",
+      "description": "Contains ref id for status reconciled manually",
+      "value": "4",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_CreateUpdateInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_76638",
+      "name": "AIA_ROW_DELETED",
+      "type": "Constant",
+      "description": "Deleted",
+      "value": "Deleted",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_GetDeletedRows"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec3a-5c87-8000-9be2-011c48011c48_62121",
+      "name": "AIA_ROW_OVERRIDDEN",
+      "type": "Constant",
+      "description": "Overridden",
+      "value": "Overridden",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_GetDeletedRows"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec3a-5c87-8000-9be2-011c48011c48_62268",
+      "name": "AIA_ROW_REMOVED",
+      "type": "Constant",
+      "description": "Removed",
+      "value": "Removed",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_GetDeletedRows"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3d-1f5c-8000-9ba4-011c48011c48_14385",
+      "name": "AIA_ConvertDateToIso",
+      "type": "Expression Rule",
+      "description": "Convert date to iso string",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_FormatValueForDatabase"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3d-1f5c-8000-9ba4-011c48011c48_14361",
+      "name": "AIA_ConvertIsoToDate",
+      "type": "Expression Rule",
+      "description": "Convert iso date/time string to date/time",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_TypeHelper"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40909",
+      "name": "AIA_ExtractJson",
+      "type": "Expression Rule",
+      "description": "Extract json from prompt builder reponse",
+      "parameters": [],
+      "calls": [
+        "SHRD_IsList"
+      ],
+      "called_by": [
+        "AIA_Extract_ExtractFieldsFromJsonResponse",
+        "AIA_Extraction_GetConfidenceForIds",
+        "AIA_FormatValuesForDatabase"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40903",
+      "name": "AIA_Extract_ExtractFieldsFromJsonResponse",
+      "type": "Expression Rule",
+      "description": "Extract fields from json response",
+      "parameters": [],
+      "calls": [
+        "AIA_EXTRACTION_FIELD_TYPE_TABLE",
+        "AIA_ExtractJson",
+        "AIA_Extraction_GetConfidenceForIds",
+        "AIA_Extraction_GetFieldsForModelVersionId",
+        "AIA_Extraction_KeepXSpans",
+        "AIA_FormatValuesForDatabase",
+        "AIA_IsObject",
+        "AIA_Test_GetLatestExtractionInstance",
+        "SHRD_ReadDocumentContent"
+      ],
+      "called_by": [
+        "AIA_Extraction_CreateUpdateInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec60-a08d-8000-9bee-011c48011c48_124687",
+      "name": "AIA_Extraction_CreateUpdateInstance",
+      "type": "Expression Rule",
+      "description": "Create or update instance",
+      "parameters": [],
+      "calls": [
+        "AIA_Extract_ExtractFieldsFromJsonResponse",
+        "AIA_GetPageCount",
+        "AIA_INSTANCE_STATUS_EXTRACTED",
+        "AIA_INSTANCE_STATUS_INITIATED",
+        "AIA_INSTANCE_STATUS_RECONCILED_AUTOMATICALLY",
+        "AIA_INSTANCE_STATUS_RECONCILED_MANUALLY",
+        "AIA_PLG_WriteFile",
+        "AIA_UTIL_SetRecordFields"
+      ],
+      "called_by": [
+        "AIA Extraction Save Results"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee94-7472-8000-9bb4-011c48011c48_112828",
+      "name": "AIA_Extraction_GetConfidenceForIds",
+      "type": "Expression Rule",
+      "description": "Get confidence value for spanids",
+      "parameters": [],
+      "calls": [
+        "AIA_ExtractJson",
+        "AIA_PLG_QueryFile",
+        "AIA_Test_GetLatestExtractionInstanceWithFields"
+      ],
+      "called_by": [
+        "AIA_Extract_ExtractFieldsFromJsonResponse"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec1e-9975-8000-9bd6-011c48011c48_1381838",
+      "name": "AIA_Extraction_GetFieldsForModelVersionId",
+      "type": "Expression Rule",
+      "description": "Returns fields for model version id",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extract_ExtractFieldsFromJsonResponse"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_43077",
+      "name": "AIA_Extraction_GetInstanceById",
+      "type": "Expression Rule",
+      "description": "Get extraction instance and all relationships by id",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Test_GetLatestExtractionInstance",
+        "AIA_Test_GetLatestExtractionInstanceWithFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3e-060c-8000-9bb8-011c48011c48_197494",
+      "name": "AIA_Extraction_KeepXSpans",
+      "type": "Expression Rule",
+      "description": "Keep X spans",
+      "parameters": [],
+      "calls": [
+        "SHRD_ArrayKeepXEntries"
+      ],
+      "called_by": [
+        "AIA_Extract_ExtractFieldsFromJsonResponse"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec9e-8ba1-8000-9c08-011c48011c48_146666",
+      "name": "AIA_Extraction_PostProcess",
+      "type": "Expression Rule",
+      "description": "Process fields to set values like response type (TP, TN, FP, FN)",
+      "parameters": [],
+      "calls": [
+        "AIA_FIELD_RESULT_FALSE_NEGATIVE",
+        "AIA_FIELD_RESULT_FALSE_POSITIVE",
+        "AIA_FIELD_RESULT_TRUE_NEGATIVE",
+        "AIA_FIELD_RESULT_TRUE_POSITIVE",
+        "AIA_INSTANCE_STATUS_RECONCILED_ALL"
+      ],
+      "called_by": [
+        "AIA Extraction Save Results"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3d-1f5c-8000-9ba4-011c48011c48_14175",
+      "name": "AIA_FormatValueForDatabase",
+      "type": "Expression Rule",
+      "description": "Format a single value for database",
+      "parameters": [],
+      "calls": [
+        "AIA_ConvertDateToIso",
+        "AIA_EXTRACTION_FIELD_TYPES",
+        "AIA_TypeHelper"
+      ],
+      "called_by": [
+        "AIA_FormatValuesForDatabase"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3d-1f5c-8000-9ba4-011c48011c48_14149",
+      "name": "AIA_FormatValuesForDatabase",
+      "type": "Expression Rule",
+      "description": "Format values for persistence to database",
+      "parameters": [],
+      "calls": [
+        "AIA_EXTRACTION_FIELD_TYPE_TABLE",
+        "AIA_ExtractJson",
+        "AIA_FormatValueForDatabase",
+        "AIA_IsObject",
+        "AIA_ToJson",
+        "SHRD_IsList",
+        "SHRD_Merge"
+      ],
+      "called_by": [
+        "AIA_Extract_ExtractFieldsFromJsonResponse"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_77108",
+      "name": "AIA_GetDeletedRows",
+      "type": "Expression Rule",
+      "description": "Returns the rows in the Extraction Instance that has a override value of DELETED",
+      "parameters": [],
+      "calls": [
+        "AIA_ROW_DELETED",
+        "AIA_ROW_OVERRIDDEN",
+        "AIA_ROW_REMOVED"
+      ],
+      "called_by": [
+        "AIA Extraction Save Results"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee52-8983-8000-9ba6-011c48011c48_27887",
+      "name": "AIA_GetDocumentMetadata",
+      "type": "Expression Rule",
+      "description": "Get document metadata",
+      "parameters": [],
+      "calls": [
+        "AIA_EML_PAGE_CHAR_COUNT"
+      ],
+      "called_by": [
+        "AIA_GetPageCount"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_82400",
+      "name": "AIA_GetPageCount",
+      "type": "Expression Rule",
+      "description": "Get page count for document",
+      "parameters": [],
+      "calls": [
+        "AIA_GetDocumentMetadata"
+      ],
+      "called_by": [
+        "AIA_Extraction_CreateUpdateInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec8b-a448-8000-9ba4-011c48011c48_12288",
+      "name": "AIA_IsObject",
+      "type": "Expression Rule",
+      "description": "Is value an object?",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extract_ExtractFieldsFromJsonResponse",
+        "AIA_FormatValuesForDatabase"
+      ]
+    },
+    {
+      "uuid": "_a-0000eea0-7c7f-8000-9bce-011c48011c48_123615",
+      "name": "AIA_PLG_QueryFile",
+      "type": "Expression Rule",
+      "description": "Wrapper for `queryFile` plugin function",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_GetConfidenceForIds"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_184766",
+      "name": "AIA_PLG_WriteFile",
+      "type": "Expression Rule",
+      "description": "Wrapper for `writeFile` plugin function",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_CreateUpdateInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40839",
+      "name": "AIA_Test_GetLatestExtractionInstance",
+      "type": "Expression Rule",
+      "description": "Get the latest extraction instance",
+      "parameters": [],
+      "calls": [
+        "AIA_Extraction_GetInstanceById"
+      ],
+      "called_by": [
+        "AIA_Extract_ExtractFieldsFromJsonResponse"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_199422",
+      "name": "AIA_Test_GetLatestExtractionInstanceWithFields",
+      "type": "Expression Rule",
+      "description": "Get the latest extraction instance with fields",
+      "parameters": [],
+      "calls": [
+        "AIA_Extraction_GetInstanceById"
+      ],
+      "called_by": [
+        "AIA_Extraction_GetConfidenceForIds"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed16-a792-8000-9c64-011c48011c48_274759",
+      "name": "AIA_ToJson",
+      "type": "Expression Rule",
+      "description": "To json with error handling",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_FormatValuesForDatabase"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_77894",
+      "name": "AIA_TypeHelper",
+      "type": "Expression Rule",
+      "description": "Try to help convert types",
+      "parameters": [],
+      "calls": [
+        "AIA_ConvertIsoToDate",
+        "AIA_EXTRACTION_FIELD_TYPES"
+      ],
+      "called_by": [
+        "AIA_FormatValueForDatabase"
+      ]
+    },
+    {
+      "uuid": "_a-0000eea3-15ee-8000-9bd4-011c48011c48_138762",
+      "name": "AIA_UTIL_SetRecordFields",
+      "type": "Expression Rule",
+      "description": "Runs a bulk update on a record object, setting new values for its fields",
+      "parameters": [],
+      "calls": [
+        "AIA_UTIL_isBlank",
+        "AIA_UTIL_rejectNullValuesFromArray"
+      ],
+      "called_by": [
+        "AIA_Extraction_CreateUpdateInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb0-f009-8000-9ba8-011c48011c48_97164",
+      "name": "AIA_UTIL_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_UTIL_SetRecordFields",
+        "AIA_UTIL_rejectNullValuesFromArray"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb0-f009-8000-9ba8-011c48011c48_97176",
+      "name": "AIA_UTIL_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AIA_UTIL_isBlank"
+      ],
+      "called_by": [
+        "AIA_UTIL_SetRecordFields"
+      ]
+    },
+    {
+      "uuid": "_a-0001ee05-5006-8000-9ba7-011c48011c48_15621",
+      "name": "SHRD_ArrayKeepXEntries",
+      "type": "Expression Rule",
+      "description": "Keep X entries of an array",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_KeepXSpans"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed16-a792-8000-9c64-011c48011c48_273379",
+      "name": "SHRD_IsList",
+      "type": "Expression Rule",
+      "description": "Is the type a list?",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ExtractJson",
+        "AIA_FormatValuesForDatabase"
+      ]
+    },
+    {
+      "uuid": "_a-0000e79d-2c73-8000-97b9-01ef9001ef90_71617",
+      "name": "SHRD_Merge",
+      "type": "Expression Rule",
+      "description": "Merges multiple source into object",
+      "parameters": [],
+      "calls": [
+        "SHRD_MergeInner"
+      ],
+      "called_by": [
+        "AIA_FormatValuesForDatabase"
+      ]
+    },
+    {
+      "uuid": "_a-0000e79d-2c73-8000-97b9-01ef9001ef90_77953",
+      "name": "SHRD_MergeInner",
+      "type": "Expression Rule",
+      "description": "Wrapped by SHRD_Merge rule",
+      "parameters": [],
+      "calls": [
+        "SHRD_Update"
+      ],
+      "called_by": [
+        "SHRD_Merge",
+        "SHRD_Update"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3e-060c-8000-9bb8-011c48011c48_203441",
+      "name": "SHRD_ReadDocumentContent",
+      "type": "Expression Rule",
+      "description": "Read content from text document",
+      "parameters": [],
+      "calls": [
+        "AIA_EXAMPLE_DOC_EXTRACTION_PDF"
+      ],
+      "called_by": [
+        "AIA_Extract_ExtractFieldsFromJsonResponse"
+      ]
+    },
+    {
+      "uuid": "_a-0000e79d-2c73-8000-97b9-01ef9001ef90_71638",
+      "name": "SHRD_Update",
+      "type": "Expression Rule",
+      "description": "Deep update",
+      "parameters": [],
+      "calls": [
+        "SHRD_MergeInner"
+      ],
+      "called_by": [
+        "SHRD_MergeInner"
+      ]
+    },
+    {
+      "uuid": "0010ec2d-6dba-8000-fc80-7f0000014e7a",
+      "name": "AIA Extraction Save Results",
+      "type": "Process Model",
+      "description": "Save AI skill extraction result",
+      "calls": [
+        "AIA_EXTRACTION_INSTANCE_EVENT_TYPES",
+        "AIA_Extraction_CreateUpdateInstance",
+        "AIA_Extraction_PostProcess",
+        "AIA_GetDeletedRows"
+      ],
+      "called_by": []
+    }
+  ]
+}

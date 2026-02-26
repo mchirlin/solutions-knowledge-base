@@ -1,0 +1,1454 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "AIA Extraction Model - #\"urn:appian:translation-string:v1:9fc4cc40-e227-40d0-8636-5b141897e46b\"",
+    "parent_name": "AIA Extraction Model",
+    "total_objects": 98
+  },
+  "entry_point": {
+    "action_type": "RECORD_ACTION",
+    "record_type": "AIA Extraction Model",
+    "target_process": "AIA Model Test Suite Create Or Update",
+    "form_interface": "AIA_ModelTestSuite_RecordAction_CreateOrUpdate",
+    "expressions": {
+      "TITLE": "#\"urn:appian:translation-string:v1:9fc4cc40-e227-40d0-8636-5b141897e46b\"",
+      "DESCRIPTION": null,
+      "VISIBILITY": null,
+      "CONTEXT": "{\n  cancel: null, /* Boolean */\n  modelTestSuite: rule!AIA_ModelTestSuite_Initialize(\n    modelRecord: rv!record\n  )\n}"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Model Test Suite Create Or Update",
+      "complexity_score": 13.0,
+      "total_nodes": 7,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Cancel?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Write Records",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Suite Cases to Delete?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Delete Records (Yes)",
+            "Capture Metrics"
+          ]
+        },
+        {
+          "name": "Delete Records",
+          "type": "Delete Records",
+          "next": [
+            "Capture Metrics"
+          ]
+        },
+        {
+          "name": "Cancel?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node",
+            "Suite Cases to Delete?"
+          ]
+        },
+        {
+          "name": "Capture Metrics",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write Records"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000edd9-a94f-8000-9bb2-011c48011c48_144286",
+      "name": "AIA_INSTANCE_STATUS_RECONCILED_ALL",
+      "type": "Constant",
+      "description": "Contains ref id for status reconciled manually & automatically",
+      "value": [
+        "4",
+        "6"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Integer?list",
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec40-0355-8000-9be4-011c48011c48_70311",
+      "name": "AIA_MODEL_TYPE_VALUES",
+      "type": "Constant",
+      "description": "(1) extraction, (2) classification",
+      "value": [
+        "extraction",
+        "classification"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA Model Test Suite",
+        "AIA_ModelTestSuite_Initialize",
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92546",
+      "name": "AIA_MTR_AI_REVIEW_ACCEPT",
+      "type": "Constant",
+      "description": "Metric triggered when user clicks accepts ai review",
+      "value": "AIA_MTR_AI_REVIEW_ACCEPT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92528",
+      "name": "AIA_MTR_AI_REVIEW_FIELD",
+      "type": "Constant",
+      "description": "Metric triggered when AI reviewer raises an error (field level)",
+      "value": "AIA_MTR_AI_REVIEW_FIELD",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92552",
+      "name": "AIA_MTR_AI_REVIEW_IGNORE",
+      "type": "Constant",
+      "description": "Metric triggered when user clicks ignored",
+      "value": "AIA_MTR_AI_REVIEW_IGNORE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92534",
+      "name": "AIA_MTR_AI_REVIEW_INSTANCE",
+      "type": "Constant",
+      "description": "Metric triggered when AI review raises an error (instance level, this instance has 1 or more errors raised by AI reviewer)",
+      "value": "AIA_MTR_AI_REVIEW_INSTANCE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92540",
+      "name": "AIA_MTR_AI_REVIEW_MODEL_VERSION",
+      "type": "Constant",
+      "description": "Metric triggered when model is created with AI review turned on OR AI review is turned on for a model",
+      "value": "AIA_MTR_AI_REVIEW_MODEL",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeb2-df20-8000-9bfe-011c48011c48_154558",
+      "name": "AIA_MTR_AI_VALIDATION_RULE_OCCURANCE",
+      "type": "Constant",
+      "description": "Metric triggered when AI validation rule raises an error",
+      "value": "AIA_MTR_AI_VALIDATION_RULE_OCCURANCE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee35-0ca2-8000-9ba6-011c48011c48_13671",
+      "name": "AIA_MTR_CLASSIFICATION_INSTANCE_CREATED",
+      "type": "Constant",
+      "description": "Classification instance created metric",
+      "value": "AIA_MTR_CLASSIFICATION_INSTANCE_CREATED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee35-0ca2-8000-9ba6-011c48011c48_13692",
+      "name": "AIA_MTR_CLASSIFICATION_INSTANCE_RECONCILED",
+      "type": "Constant",
+      "description": "Classification instance reconciled metric",
+      "value": "AIA_MTR_CLASSIFICATION_INSTANCE_RECONCILED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee35-0ca2-8000-9ba6-011c48011c48_13652",
+      "name": "AIA_MTR_CLASSIFICATION_MODEL_CREATED",
+      "type": "Constant",
+      "description": "Classification model created metric",
+      "value": "AIA_MTR_CLASSIFICATION_MODEL_CREATED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeca-c121-8000-9cab-011c48011c48_182016",
+      "name": "AIA_MTR_CLASSIFICATION_MODEL_VERSION_RESTORE",
+      "type": "Constant",
+      "description": "Classification model version restored metric",
+      "value": "AIA_MTR_CLASSIFICATION_MODEL_VERSION_RESTORE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000eec9-5676-8000-9c92-011c48011c48_179373",
+      "name": "AIA_MTR_CONFIDENCE_THRESHOLD_DISABLED",
+      "type": "Constant",
+      "description": "Confidence threshold disabled metric",
+      "value": "AIA_MTR_CONFIDENCE_THRESHOLD_DISABLED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000eec9-5676-8000-9c92-011c48011c48_179366",
+      "name": "AIA_MTR_CONFIDENCE_THRESHOLD_ENABLED",
+      "type": "Constant",
+      "description": "Confidence threshold enabled metric",
+      "value": "AIA_MTR_CONFIDENCE_THRESHOLD_ENABLED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee35-0ca2-8000-9ba6-011c48011c48_13678",
+      "name": "AIA_MTR_EXTRACTION_INSTANCE_CREATED",
+      "type": "Constant",
+      "description": "Extraction instance created metric",
+      "value": "AIA_MTR_EXTRACTION_INSTANCE_CREATED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee35-0ca2-8000-9ba6-011c48011c48_13685",
+      "name": "AIA_MTR_EXTRACTION_INSTANCE_RECONCILED",
+      "type": "Constant",
+      "description": "Extraction instance reconciled created metric",
+      "value": "AIA_MTR_EXTRACTION_INSTANCE_RECONCILED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee35-0ca2-8000-9ba6-011c48011c48_13664",
+      "name": "AIA_MTR_EXTRACTION_MODEL_CREATED",
+      "type": "Constant",
+      "description": "Extraction model created metric",
+      "value": "AIA_MTR_EXTRACTION_MODEL_CREATED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeca-c121-8000-9cab-011c48011c48_182009",
+      "name": "AIA_MTR_EXTRACTION_MODEL_VERSION_RESTORE",
+      "type": "Constant",
+      "description": "Extraction model version restored metric",
+      "value": "AIA_MTR_EXTRACTION_MODEL_VERSION_RESTORE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92447",
+      "name": "AIA_MTR_INSTANCE_STATUS_CLASSIFICATION_CRITICAL_ERROR",
+      "type": "Constant",
+      "description": "Classification instance with critical error",
+      "value": "AIA_MTR_INSTANCE_STATUS_CLASSIFICATION_CRITICAL_ERROR",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92433",
+      "name": "AIA_MTR_INSTANCE_STATUS_CLASSIFIED_WITH_ERRORS",
+      "type": "Constant",
+      "description": "Classification instance completed with errors",
+      "value": "AIA_MTR_INSTANCE_STATUS_CLASSIFIED_WITH_ERRORS",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92426",
+      "name": "AIA_MTR_INSTANCE_STATUS_EXTRACTED_WITH_ERRORS",
+      "type": "Constant",
+      "description": "Extraction instance completed with errors",
+      "value": "AIA_MTR_INSTANCE_STATUS_EXTRACTED_WITH_ERRORS",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92440",
+      "name": "AIA_MTR_INSTANCE_STATUS_EXTRACTION_CRITICAL_ERROR",
+      "type": "Constant",
+      "description": "Extraction instance with critical error",
+      "value": "AIA_MTR_INSTANCE_STATUS_EXTRACTION_CRITICAL_ERROR",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef46-744c-8000-9fed-011c48011c48_483957",
+      "name": "AIA_MTR_MODEL_TEST_RUN_INITIATED",
+      "type": "Constant",
+      "description": "test run initiated metric",
+      "value": "AIA_MTR_MODEL_TEST_RUN_INITIATED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef46-744c-8000-9fed-011c48011c48_483950",
+      "name": "AIA_MTR_MODEL_TEST_SUITE_CREATED",
+      "type": "Constant",
+      "description": "test suite created metric",
+      "value": "AIA_MTR_MODEL_TEST_SUITE_CREATED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA Model Test Suite Create Or Update",
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef46-744c-8000-9fed-011c48011c48_483998",
+      "name": "AIA_MTR_MODEL_TEST_SUITE_UPDATED",
+      "type": "Constant",
+      "description": "test suite updated metric",
+      "value": "AIA_MTR_MODEL_TEST_SUITE_UPDATED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA Model Test Suite Create Or Update",
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef55-14e0-8000-a041-011c48011c48_505638",
+      "name": "AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_INSTANCE_CREATED",
+      "type": "Constant",
+      "description": "Constant pointing to the metric for a classification instance created on a model version that allows multiple outputs",
+      "value": "AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_INSTANCE_CREATED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef55-14e0-8000-a041-011c48011c48_505663",
+      "name": "AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_INSTANCE_RECONCILED",
+      "type": "Constant",
+      "description": "Constant pointing to the metric for a classification instance created on a model version that allows multiple outputs",
+      "value": "AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_INSTANCE_RECONCILED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef55-14e0-8000-a041-011c48011c48_505582",
+      "name": "AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_MODEL_VERSION_CREATED",
+      "type": "Constant",
+      "description": "Constant pointing to the metric for a classification model version created that allows multiple outputs",
+      "value": "AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_MODEL_VERSION_CREATED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000eea3-15ee-8000-9bd4-011c48011c48_137351",
+      "name": "AIA_MTR_SPOT_CHECK_MODEL_VERSION",
+      "type": "Constant",
+      "description": "Metric triggered when model is created with spot checking turned on OR spot checking is turned on for a model",
+      "value": "AIA_MTR_SPOT_CHECK_MODEL_VERSION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_50791",
+      "name": "SHRD_DOT_SEPARATOR",
+      "type": "Constant",
+      "description": "\" • \"",
+      "value": " • ",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec67-5f00-8000-9bf0-011c48011c48_125328",
+      "name": "AIA_FormatDocument",
+      "type": "Expression Rule",
+      "description": "Format document",
+      "parameters": [],
+      "calls": [
+        "AIA_Test_GetLatestClassificationInstance",
+        "AIA_Test_GetLatestExtractionInstance",
+        "Invalid Document"
+      ],
+      "called_by": [
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef3f-2bc1-8000-9f8b-011c48011c48_452655",
+      "name": "AIA_IsClassificationInstance",
+      "type": "Expression Rule",
+      "description": "Returns true if the instance is a classification instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTestSuiteCase_InitializeSuiteForMultipleInstances"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_85019",
+      "name": "AIA_IsExtractionInstance",
+      "type": "Expression Rule",
+      "description": "Returns true if the instance is an extraction instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTestSuiteCase_InitializeSuiteForMultipleInstances"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee35-0ca2-8000-9ba6-011c48011c48_13646",
+      "name": "AIA_LogMetric",
+      "type": "Expression Rule",
+      "description": "Log metric",
+      "parameters": [],
+      "calls": [
+        "AIA_MTR_AI_REVIEW_ACCEPT",
+        "AIA_MTR_AI_REVIEW_FIELD",
+        "AIA_MTR_AI_REVIEW_IGNORE",
+        "AIA_MTR_AI_REVIEW_INSTANCE",
+        "AIA_MTR_AI_REVIEW_MODEL_VERSION",
+        "AIA_MTR_AI_VALIDATION_RULE_OCCURANCE",
+        "AIA_MTR_CLASSIFICATION_INSTANCE_CREATED",
+        "AIA_MTR_CLASSIFICATION_INSTANCE_RECONCILED",
+        "AIA_MTR_CLASSIFICATION_MODEL_CREATED",
+        "AIA_MTR_CLASSIFICATION_MODEL_VERSION_RESTORE",
+        "AIA_MTR_CONFIDENCE_THRESHOLD_DISABLED",
+        "AIA_MTR_CONFIDENCE_THRESHOLD_ENABLED",
+        "AIA_MTR_ClassificationInstanceClassifiedWithErrors",
+        "AIA_MTR_ClassificationInstanceCreated",
+        "AIA_MTR_ClassificationInstanceError",
+        "AIA_MTR_ClassificationInstanceReconciled",
+        "AIA_MTR_ClassificationModelCreated",
+        "AIA_MTR_ClassificationModelVersionRestore",
+        "AIA_MTR_ConfidenceThresholdDisabled",
+        "AIA_MTR_ConfidenceThresholdEnabled",
+        "AIA_MTR_EXTRACTION_INSTANCE_CREATED",
+        "AIA_MTR_EXTRACTION_INSTANCE_RECONCILED",
+        "AIA_MTR_EXTRACTION_MODEL_CREATED",
+        "AIA_MTR_EXTRACTION_MODEL_VERSION_RESTORE",
+        "AIA_MTR_ExtractionInstanceAiReview",
+        "AIA_MTR_ExtractionInstanceCreated",
+        "AIA_MTR_ExtractionInstanceError",
+        "AIA_MTR_ExtractionInstanceExtractedWithErrors",
+        "AIA_MTR_ExtractionInstanceFieldAiReview",
+        "AIA_MTR_ExtractionInstanceReconciled",
+        "AIA_MTR_ExtractionInstanceValidationAccept",
+        "AIA_MTR_ExtractionInstanceValidationIgnore",
+        "AIA_MTR_ExtractionModelCreated",
+        "AIA_MTR_ExtractionModelVersionAiReview",
+        "AIA_MTR_ExtractionModelVersionRestore",
+        "AIA_MTR_INSTANCE_STATUS_CLASSIFICATION_CRITICAL_ERROR",
+        "AIA_MTR_INSTANCE_STATUS_CLASSIFIED_WITH_ERRORS",
+        "AIA_MTR_INSTANCE_STATUS_EXTRACTED_WITH_ERRORS",
+        "AIA_MTR_INSTANCE_STATUS_EXTRACTION_CRITICAL_ERROR",
+        "AIA_MTR_InstanceValidationAiRuleOccurance",
+        "AIA_MTR_MODEL_TEST_RUN_INITIATED",
+        "AIA_MTR_MODEL_TEST_SUITE_CREATED",
+        "AIA_MTR_MODEL_TEST_SUITE_UPDATED",
+        "AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_INSTANCE_CREATED",
+        "AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_INSTANCE_RECONCILED",
+        "AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_MODEL_VERSION_CREATED",
+        "AIA_MTR_ModelTestRunInitiated",
+        "AIA_MTR_ModelTestSuiteCreated",
+        "AIA_MTR_ModelTestSuiteUpdated",
+        "AIA_MTR_ModelVersionConfigureSampling",
+        "AIA_MTR_MultipleOutputsClassificationInstanceCreated",
+        "AIA_MTR_MultipleOutputsClassificationInstanceReconciled",
+        "AIA_MTR_MultipleOutputsClassificationModelVersionCreated",
+        "AIA_MTR_SPOT_CHECK_MODEL_VERSION"
+      ],
+      "called_by": [
+        "AIA Model Test Suite Create Or Update"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92467",
+      "name": "AIA_MTR_ClassificationInstanceClassifiedWithErrors",
+      "type": "Expression Rule",
+      "description": "Metric rule called when classification instance has validation errors",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_180860",
+      "name": "AIA_MTR_ClassificationInstanceCreated",
+      "type": "Expression Rule",
+      "description": "Metric rule called when classification instance is created",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92474",
+      "name": "AIA_MTR_ClassificationInstanceError",
+      "type": "Expression Rule",
+      "description": "Metric rule called when classification instance has critical error",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_180874",
+      "name": "AIA_MTR_ClassificationInstanceReconciled",
+      "type": "Expression Rule",
+      "description": "Metric rule called when classification instance is reconciled",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_180846",
+      "name": "AIA_MTR_ClassificationModelCreated",
+      "type": "Expression Rule",
+      "description": "Metric rule called when classification model is created",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeca-c121-8000-9cab-011c48011c48_182002",
+      "name": "AIA_MTR_ClassificationModelVersionRestore",
+      "type": "Expression Rule",
+      "description": "Metric rule called when a previous version of a classification model is restored",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000eec9-5676-8000-9c92-011c48011c48_179359",
+      "name": "AIA_MTR_ConfidenceThresholdDisabled",
+      "type": "Expression Rule",
+      "description": "Metric rule called when confidence threshold is disabled on an extraction model",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000eec9-5676-8000-9c92-011c48011c48_179352",
+      "name": "AIA_MTR_ConfidenceThresholdEnabled",
+      "type": "Expression Rule",
+      "description": "Metric rule called when confidence threshold is enabled on an extraction model",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92571",
+      "name": "AIA_MTR_ExtractionInstanceAiReview",
+      "type": "Expression Rule",
+      "description": "Triggered when AI review raises an error (instance level, this instance has 1 or more errors raised by AI review)",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_180853",
+      "name": "AIA_MTR_ExtractionInstanceCreated",
+      "type": "Expression Rule",
+      "description": "Metric rule called when extraction instance is created",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92488",
+      "name": "AIA_MTR_ExtractionInstanceError",
+      "type": "Expression Rule",
+      "description": "Metric rule called when extraction instance has critical error",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92481",
+      "name": "AIA_MTR_ExtractionInstanceExtractedWithErrors",
+      "type": "Expression Rule",
+      "description": "Metric rule called when extraction instance has validation errors",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92564",
+      "name": "AIA_MTR_ExtractionInstanceFieldAiReview",
+      "type": "Expression Rule",
+      "description": "Triggered when AI review raises an error (field level)",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_180867",
+      "name": "AIA_MTR_ExtractionInstanceReconciled",
+      "type": "Expression Rule",
+      "description": "Metric rule called when extraction instance is reconciled",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92585",
+      "name": "AIA_MTR_ExtractionInstanceValidationAccept",
+      "type": "Expression Rule",
+      "description": "Triggered when user clicks accept",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92592",
+      "name": "AIA_MTR_ExtractionInstanceValidationIgnore",
+      "type": "Expression Rule",
+      "description": "Triggered when user clicks ignored",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_180834",
+      "name": "AIA_MTR_ExtractionModelCreated",
+      "type": "Expression Rule",
+      "description": "Metric rule called when extraction model is created",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92578",
+      "name": "AIA_MTR_ExtractionModelVersionAiReview",
+      "type": "Expression Rule",
+      "description": "Triggered when model is created with AI review turned on OR AI review is turned on for a model",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeca-c121-8000-9cab-011c48011c48_181995",
+      "name": "AIA_MTR_ExtractionModelVersionRestore",
+      "type": "Expression Rule",
+      "description": "Metric rule called when a previous version of an extraction model is restored",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeb2-df20-8000-9bfe-011c48011c48_154565",
+      "name": "AIA_MTR_InstanceValidationAiRuleOccurance",
+      "type": "Expression Rule",
+      "description": "Triggered when a model validation rule of type AI validation creates a validation instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef46-744c-8000-9fed-011c48011c48_483964",
+      "name": "AIA_MTR_ModelTestRunInitiated",
+      "type": "Expression Rule",
+      "description": "Metric rule called when Test Run is initiated",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef46-744c-8000-9fed-011c48011c48_483943",
+      "name": "AIA_MTR_ModelTestSuiteCreated",
+      "type": "Expression Rule",
+      "description": "Metric rule called when Test Suite is created",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef46-744c-8000-9fed-011c48011c48_483991",
+      "name": "AIA_MTR_ModelTestSuiteUpdated",
+      "type": "Expression Rule",
+      "description": "Metric rule called when Test Suite is updated",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000eea3-15ee-8000-9bd4-011c48011c48_137447",
+      "name": "AIA_MTR_ModelVersionConfigureSampling",
+      "type": "Expression Rule",
+      "description": "Triggered when model is created with spot check turned on OR spot check is turned on for a model",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef55-14e0-8000-a041-011c48011c48_505631",
+      "name": "AIA_MTR_MultipleOutputsClassificationInstanceCreated",
+      "type": "Expression Rule",
+      "description": "Metric rule called when a Classification Instance is created on a model version that allows multiple outputs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef55-14e0-8000-a041-011c48011c48_505670",
+      "name": "AIA_MTR_MultipleOutputsClassificationInstanceReconciled",
+      "type": "Expression Rule",
+      "description": "Metric rule called when a Classification Instance is reconciled for a model version that allows multiple outputs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef55-14e0-8000-a041-011c48011c48_505575",
+      "name": "AIA_MTR_MultipleOutputsClassificationModelVersionCreated",
+      "type": "Expression Rule",
+      "description": "Metric rule called when Classification Model Version is created that allows multiple outputs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef3f-2bc1-8000-9f8b-011c48011c48_452609",
+      "name": "AIA_ModelTestSuiteCase_InitializeSuiteForMultipleInstances",
+      "type": "Expression Rule",
+      "description": "Creates a list of AIA Model Test Suite Case based on baselineInstanceUuids and suiteId.Used to add multiple test instances to a single suites",
+      "parameters": [],
+      "calls": [
+        "AIA_IsClassificationInstance",
+        "AIA_IsExtractionInstance",
+        "AIA_UTIL_Filter",
+        "AIA_UTIL_SetRecordFields"
+      ],
+      "called_by": [
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000eead-6b09-8000-9bee-011c48011c48_148646",
+      "name": "AIA_ModelTestSuite_Initialize",
+      "type": "Expression Rule",
+      "description": "creates a new record instance of AIA Model Test Suite",
+      "parameters": [],
+      "calls": [
+        "AIA_MODEL_TYPE_VALUES"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "_a-0000ec36-59aa-8000-9be0-011c48011c48_52454",
+      "name": "AIA_Test_GetLatestClassificationInstance",
+      "type": "Expression Rule",
+      "description": "Get the latest classification instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_FormatDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40839",
+      "name": "AIA_Test_GetLatestExtractionInstance",
+      "type": "Expression Rule",
+      "description": "Get the latest extraction instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_FormatDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef3f-2bc1-8000-9f8b-011c48011c48_451741",
+      "name": "AIA_Test_GetLatestModelTestSuite",
+      "type": "Expression Rule",
+      "description": null,
+      "parameters": [],
+      "calls": [
+        "AIA Model Test Suite",
+        "SHRD_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_26889",
+      "name": "AIA_UTIL_Filter",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTestSuiteCase_InitializeSuiteForMultipleInstances",
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_12129",
+      "name": "AIA_UTIL_LoadBrandingMap",
+      "type": "Expression Rule",
+      "description": "Returns branding data for AI Analytics in the type List of Map",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate",
+        "SHRD_UTIL_HeaderField"
+      ]
+    },
+    {
+      "uuid": "_a-0000eea3-15ee-8000-9bd4-011c48011c48_138762",
+      "name": "AIA_UTIL_SetRecordFields",
+      "type": "Expression Rule",
+      "description": "Runs a bulk update on a record object, setting new values for its fields",
+      "parameters": [],
+      "calls": [
+        "AIA_UTIL_isBlank",
+        "AIA_UTIL_rejectNullValuesFromArray"
+      ],
+      "called_by": [
+        "AIA_ModelTestSuiteCase_InitializeSuiteForMultipleInstances",
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_34388",
+      "name": "AIA_UTIL_displayDateTime",
+      "type": "Expression Rule",
+      "description": "Expression rule to Display Date Time in User Friendly Format",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_37482",
+      "name": "AIA_UTIL_displayRequestId",
+      "type": "Expression Rule",
+      "description": "Expression rule to display Request Id",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_34420",
+      "name": "AIA_UTIL_displayUserFullName",
+      "type": "Expression Rule",
+      "description": "Interface to display User Full Name",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb0-f009-8000-9ba8-011c48011c48_97164",
+      "name": "AIA_UTIL_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_UTIL_SetRecordFields",
+        "AIA_UTIL_rejectNullValuesFromArray"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb0-f009-8000-9ba8-011c48011c48_97176",
+      "name": "AIA_UTIL_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AIA_UTIL_isBlank"
+      ],
+      "called_by": [
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate",
+        "AIA_UTIL_SetRecordFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_36163",
+      "name": "SHRD_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "description": "Enhanced wrapper rule around a!queryRecord()",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Test_GetLatestModelTestSuite"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee66-4fc0-8000-9baa-011c48011c48_54294",
+      "name": "SHRD_UTIL_length",
+      "type": "Expression Rule",
+      "description": "null safe length()",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "12ebd02b-4afa-4f62-8acc-b5e60ea24f85",
+      "name": "AIA_ModelTestSuite_RecordAction_CreateOrUpdate",
+      "type": "Interface",
+      "description": "Form interface for creating or updating Model Test Suites as an action",
+      "parameters": [
+        {
+          "name": "modelTestSuite",
+          "type": "urn:com:appian:recordtype:datatype:cfc72308-7728-469d-b7d1-88a289f669d8",
+          "raw_type": "urn:com:appian:recordtype:datatype:cfc72308-7728-469d-b7d1-88a289f669d8",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "cancel",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "modelTestSuiteCasesToDelete",
+          "type": "urn:com:appian:recordtype:datatype:b8fab18e-1807-48e2-b4f1-0b6418ceddb6?list",
+          "raw_type": "urn:com:appian:recordtype:datatype:b8fab18e-1807-48e2-b4f1-0b6418ceddb6?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        }
+      ],
+      "calls": [
+        "AIA_FormatDocument",
+        "AIA_INSTANCE_STATUS_RECONCILED_ALL",
+        "AIA_MODEL_TYPE_VALUES",
+        "AIA_ModelTestSuiteCase_InitializeSuiteForMultipleInstances",
+        "AIA_Test_GetLatestModelTestSuite",
+        "AIA_UTIL_Filter",
+        "AIA_UTIL_LoadBrandingMap",
+        "AIA_UTIL_SetRecordFields",
+        "AIA_UTIL_displayDateTime",
+        "AIA_UTIL_displayRequestId",
+        "AIA_UTIL_displayUserFullName",
+        "AIA_UTIL_rejectNullValuesFromArray",
+        "Alt Text for Grid Labels",
+        "At least 1 test case must be selected.",
+        "Available Test Cases",
+        "Cannot select over 100 test cases in a single suite.",
+        "Description Label",
+        "Instance Grid Column Label",
+        "Label for Cancel",
+        "Label for Initiated",
+        "Label for Outdated",
+        "Label for Save",
+        "Name",
+        "New Test Suite",
+        "Remove Test Case",
+        "SHRD_DOT_SEPARATOR",
+        "SHRD_UTIL_HeaderField",
+        "SHRD_UTIL_length",
+        "Selected Test Cases",
+        "Update Test Suite",
+        "Value Status For Instance Grid",
+        "Version {count}"
+      ],
+      "called_by": [
+        "AIA Model Test Suite Create Or Update"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef32-7e3d-8000-9c5b-011c48011c48_1397663",
+      "name": "SHRD_UTIL_HeaderField",
+      "type": "Interface",
+      "description": "Displays a single item with header",
+      "parameters": [
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "labelSize",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": "(Default SMALL) sectionLayout labelSize. values: \"LARGE_PLUS\", \"LARGE\", \"MEDIUM_PLUS\", \"MEDIUM\", \"SMALL\", \"EXTRA_SMALL\"",
+          "display_order": 1
+        },
+        {
+          "name": "divider",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": "(Default NONE). Allowed: \"NONE\", \"ABOVE\", \"BELOW\"",
+          "display_order": 2
+        },
+        {
+          "name": "rightSideContents",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "description": "A map of all branding configurations (colors, styling, images, etc.) that will be utilized to standardize the UIs across the application.",
+          "display_order": 4
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "marginBelow",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": "(Default LESS)",
+          "display_order": 6
+        },
+        {
+          "name": "marginAbove",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": "(Default NONE)",
+          "display_order": 7
+        },
+        {
+          "name": "labelColor",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": "(default STANDARD)",
+          "display_order": 8
+        },
+        {
+          "name": "secondaryText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 9
+        },
+        {
+          "name": "labelIcon",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 10
+        },
+        {
+          "name": "iconAltText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 11
+        },
+        {
+          "name": "labelHeadingTag",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": "(Default: \"H2\") Valid values: \"H1\", \"H2\", \"H3\", \"H4\", \"H5\", \"H6\".",
+          "display_order": 12
+        }
+      ],
+      "calls": [
+        "AIA_UTIL_LoadBrandingMap"
+      ],
+      "called_by": [
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "d508ce97-de76-4112-aa59-559557255976",
+      "name": "AIA Model Test Suite Create Or Update",
+      "type": "Process Model",
+      "description": "Create or Update a Model Test Suite",
+      "calls": [
+        "AIA_LogMetric",
+        "AIA_MTR_MODEL_TEST_SUITE_CREATED",
+        "AIA_MTR_MODEL_TEST_SUITE_UPDATED",
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ],
+      "called_by": [
+        "AIA Model Test Suite"
+      ]
+    },
+    {
+      "uuid": "cfc72308-7728-469d-b7d1-88a289f669d8",
+      "name": "AIA Model Test Suite",
+      "type": "Record Type",
+      "description": "Collections of test instances per model for testing subsets",
+      "actions": [
+        "deleteModelTestSuite",
+        "updateModelTestSuite",
+        "runTestSuiteExtraction"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AIA Model Test Suite Create Or Update",
+        "AIA_MODEL_TYPE_VALUES",
+        "Update Test Suite"
+      ],
+      "called_by": [
+        "AIA_Test_GetLatestModelTestSuite"
+      ]
+    },
+    {
+      "uuid": "e349de12-26ce-4f07-a2d6-818892336ae7",
+      "name": "Alt Text for Grid Labels",
+      "type": "Translation String",
+      "description": "Alt Text for Grid Labels",
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "bfb5d72b-6617-4661-82ee-0b19b89dbb2f",
+      "name": "At least 1 test case must be selected.",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "f7965b36-e448-43fc-b16a-466d6f2d584e",
+      "name": "Available Test Cases",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "76398188-78a0-437b-a1ce-1fe8ce8458ff",
+      "name": "Cannot select over 100 test cases in a single suite.",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "be96096c-d32a-4708-a91d-b5dda4f2f30c",
+      "name": "Description Label",
+      "type": "Translation String",
+      "description": "Description Label",
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "11c554c3-1e1c-43a1-9ac8-a846f702995f",
+      "name": "Instance Grid Column Label",
+      "type": "Translation String",
+      "description": "Instance Grid Column Label",
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "955ba2b6-66dc-4f51-96ff-bc7facbc8d66",
+      "name": "Invalid Document",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_FormatDocument"
+      ]
+    },
+    {
+      "uuid": "df61ccad-fe9a-4d7a-ba9a-d89b08f3467a",
+      "name": "Label for Cancel",
+      "type": "Translation String",
+      "description": "Label for Cancel",
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "cda32959-933a-49f8-999f-971eeaa0c035",
+      "name": "Label for Initiated",
+      "type": "Translation String",
+      "description": "Label for Initiated",
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "acbac9a0-c26f-4934-afa4-3cb593900c69",
+      "name": "Label for Outdated",
+      "type": "Translation String",
+      "description": "Label for Outdated",
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "4d40defb-10bc-4a8a-bd4e-a7d76f054fdc",
+      "name": "Label for Save",
+      "type": "Translation String",
+      "description": "Label for Save",
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "8dbc4902-d0fb-4a2f-913c-9b26bc6250c0",
+      "name": "Name",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "9fc4cc40-e227-40d0-8636-5b141897e46b",
+      "name": "New Test Suite",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "f19e94dd-200e-4f3f-bb88-736377c41752",
+      "name": "Remove Test Case",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "0b6c396c-0e36-4eb7-8dd9-5ab939fe9e8c",
+      "name": "Selected Test Cases",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "41736883-9a8c-4821-bf82-58c976cfc8d3",
+      "name": "Update Test Suite",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA Model Test Suite",
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "92e80e69-0c96-45e1-bfdc-134c21f5f6d2",
+      "name": "Value Status For Instance Grid",
+      "type": "Translation String",
+      "description": "Value Status For Instance Grid",
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "0dc23859-ec54-488e-8e0e-54f234016331",
+      "name": "Version {count}",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTestSuite_RecordAction_CreateOrUpdate"
+      ]
+    }
+  ]
+}

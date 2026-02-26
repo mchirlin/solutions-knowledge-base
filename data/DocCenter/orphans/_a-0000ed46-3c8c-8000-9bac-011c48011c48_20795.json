@@ -1,0 +1,51 @@
+{
+  "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_20795",
+  "name": "AIA_ExtractionModel_RecordAction_Create_ModelDetails",
+  "type": "Interface",
+  "description": "Interface to enter and update Model Details for Creating New Extraction Model",
+  "sail_code": "{\n  #\"SYSTEM_SYSRULES_cardLayout\"(\n    shape: ri!brandingMap.CardShape,\n    padding: \"STANDARD\",\n    contents: {\n      #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n        items: {\n          #\"SYSTEM_SYSRULES_sideBySideItem\"(\n            width: \"3X\",\n            item: #\"SYSTEM_SYSRULES_textField\"(\n              label: #\"urn:appian:translation-string:v1:1d2ee947-3116-4cca-8a1f-26fe5bcc2914\",\n              labelPosition: \"ABOVE\",\n              value: ri!extractionModel[recordType!AIA Extraction Model.name],\n              saveInto: {\n                a!save(\n                  ri!extractionModel[recordType!AIA Extraction Model.name],\n                  if(\n                    a!isNullOrEmpty(save!value),\n                    save!value,\n                    trim(save!value)\n                  )\n                ),\n                a!save(\n                  ri!extractionModel[recordType!AIA Extraction Model.key],\n                  rule!SHRD_ReformatLabelAsKey(\n                    label: ri!extractionModel[recordType!AIA Extraction Model.name]\n                  )\n                )\n              },\n              characterLimit: 100,\n              required: true,\n              showCharacterCount: false,\n              validations: if(\n                a!isNotNullOrEmpty(\n                  rule!AIA_Extraction_GetModelByKey(\n                    key: ri!ExtractionModel[recordType!AIA Extraction Model.key]\n                  )\n                ),\n                \"Model key must be unique\",\n                null\n              ),\n\n            ),\n\n          ),\n          #\"SYSTEM_SYSRULES_sideBySideItem\"(\n            width: \"1X\",\n            item: #\"SYSTEM_SYSRULES_textField\"(\n              label: #\"urn:appian:translation-string:v1:2b3a2e79-0b85-4b52-bbf6-b2e8d08f1447\",\n              readOnly: true,\n              value: if(\n                a!isNotNullOrEmpty(\n                  ri!ExtractionModel[recordType!AIA Extraction Model.key]\n                ),\n                ri!ExtractionModel[recordType!AIA Extraction Model.key],\n                \"-\"\n              )\n            )\n          )\n        }\n      ),\n      #\"SYSTEM_SYSRULES_paragraphField\"(\n        height: \"SHORT\",\n        label: #\"urn:appian:translation-string:v1:be96096c-d32a-4708-a91d-b5dda4f2f30c\",\n        labelPosition: \"ABOVE\",\n        value: ri!extractionModel[recordType!AIA Extraction Model.description],\n        saveInto: ri!extractionModel[recordType!AIA Extraction Model.description],\n        characterLimit: 255,\n        required: false,\n        showCharacterCount: false\n      )\n    },\n    showBorder: ri!brandingMap.CardShowBorder,\n    style: ri!brandingMap.AppianBackground,\n    marginBelow: \"STANDARD\"\n  ),\n  rule!AIA_Extraction_Sub_ModelAdvancedSettings(\n    extractionModel: ri!extractionModel,\n    brandingMap: ri!brandingMap\n  )\n}",
+  "calls": [
+    {
+      "name": "SHRD_ReformatLabelAsKey",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_Extraction_GetModelByKey",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_Extraction_Sub_ModelAdvancedSettings",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Field Label",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Grid column name",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Description Label",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_UTIL_LoadBrandingMap",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AIA_ExtractionModel_RecordAction_Create",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

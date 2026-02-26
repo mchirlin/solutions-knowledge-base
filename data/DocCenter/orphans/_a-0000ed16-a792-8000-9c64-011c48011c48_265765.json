@@ -1,0 +1,15 @@
+{
+  "uuid": "_a-0000ed16-a792-8000-9c64-011c48011c48_265765",
+  "name": "AIA_RULE_NormalizeStringHelperRegex",
+  "type": "Expression Rule",
+  "description": "Normalize string regex",
+  "sail_code": "a!map(\n  text: \n  /*First we verify if the abbreviation has an end point because this can cause errors so we need to take \ntwo cases when it has the point at the end and when not*/\n  if(\n    regexmatch(\n      pattern: \"\\.\\s*$\",\n      searchString:ri!abb\n    ),\n    regexreplaceall(\n      concat(\n        \"\\b\",\n        regexreplaceall(\n          pattern:\"\\.\\s*$\",\n          searchString: ri!abb,\n          replacementString: \"\"\n        ),\n        \"\\.(?!\\w)\"\n      ),\n      ri!data.text,\n      ri!data.key\n\n    ),\n\n    regexreplaceall(\n      concat(\n        \"\\b\",\n        ri!abb,\n        \"\\b(?!\\.)\"\n      ),\n      ri!data.text,\n      ri!data.key\n    )\n  ),\n  key: ri!data.key\n),",
+  "calls": [],
+  "called_by": [
+    {
+      "name": "AIA_RULE_NormalizeStringHelper",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

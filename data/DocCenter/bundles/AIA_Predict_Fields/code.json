@@ -1,0 +1,42 @@
+{
+  "_metadata": {
+    "bundle_id": "AIA_Predict_Fields"
+  },
+  "objects": {
+    "_a-0000ee3e-060c-8000-9bb8-011c48011c48_204292": {
+      "name": "AIA_Extraction_GetPredictionInput",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!documentExcelMetadata: if(\n    ri!generateFieldData.selectedDocumentType = cons!AIA_EXTRACTION_EXAMPLE_DOC_TYPES[3],\n    try(\n      readexcelsheetpaging(\n        ri!generateFieldData.uploadedDocument,\n        a!defaultValue(ri!generateFieldData.sheetNumber, 0),\n        #\"SYSTEM_SYSRULES_pagingInfo\"(\n          1,\n          a!defaultValue(ri!generateFieldData.numRows, 100)\n        ),\n        a!defaultValue(ri!generateFieldData.numColumns, 25),\n        null,\n        false\n      ).data,\n      null()\n    ),\n    {}\n  ),\n  local!documentContentMetaData: if(\n    ri!generateFieldData.selectedDocumentType = cons!AIA_EXTRACTION_EXAMPLE_DOC_TYPES[1],\n    try(\n      rule!SHRD_ReadDocumentContent(\n        document: ri!generateFieldData.uploadedDocument\n      ),\n      null()\n    ),\n    {}\n  ),\n  local!documentFileMetaData:if(\n    and(\n      ri!generateFieldData.selectedDocumentType = cons!AIA_EXTRACTION_EXAMPLE_DOC_TYPES[1],\n      a!isNullOrEmpty(local!documentContentMetaData)\n    ),\n    try(\n      rule!SHRD_ReadDocumentContent(\n        document: ri!generateFieldData.uploadedDocument\n      ),\n      null()\n    ),\n    {}\n  ),\n  a!match(\n    value: ri!generateFieldData.selectedDocumentType,\n    equals: cons!AIA_EXTRACTION_EXAMPLE_DOC_TYPES[1],\n    then: if(\n      a!isNullOrEmpty(local!documentContentMetaData),\n      local!documentFileMetaData,\n      local!documentContentMetaData\n    ),\n    equals: cons!AIA_EXTRACTION_EXAMPLE_DOC_TYPES[2],\n    then: try(\n      rule!AIA_GetDocumentText(\n        document: ri!generateFieldData.uploadedDocument,\n        startPage: 1,\n        endPage: 20\n      ),\n      null()\n    ),\n    equals: cons!AIA_EXTRACTION_EXAMPLE_DOC_TYPES[3],\n    then: if(\n      a!isNullOrEmpty(local!documentExcelMetadata),\n      {},\n      #\"SYSTEM_SYSRULES_toJson_v1\"(local!documentExcelMetadata)\n    ),\n    default: null\n  )\n)"
+    },
+    "_a-0000ee52-8983-8000-9ba6-011c48011c48_27862": {
+      "name": "AIA_GetDocumentText",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  rule!AIA_DocIsPdf(\n    document: ri!document\n  ),\n  a!localVariables(\n    local!result: trim(getpdftext(\n      ri!document,\n      a!defaultValue(ri!startPage, 1),\n      a!defaultValue(ri!endPage, null)\n    )),\n    if(\n      a!isNullOrEmpty(stripwith(local!result, char(10))),\n      null,\n      local!result\n    )\n  ),\n  if(\n    rule!AIA_IsDocumentExtension(\n      document: ri!document,\n      extensions: cons!AIA_TEXT_BASED_EXTENSIONS\n    ),\n    readdocumentcontent(\n      txtDocument: ri!document\n    ),\n    null\n  )\n)"
+    },
+    "_a-0000ecf8-2887-8000-9c52-011c48011c48_222377": {
+      "name": "AIA_Extraction_PredictionPrompt",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  a!isNotNullOrEmpty(ri!generateFieldData.uploadedDocument),\n  \"<document>\" & char(10) &\n  rule!AIA_Extraction_GetPredictionInput(\n    generateFieldData: ri!generateFieldData\n  ) & \"</document>\" & \n  char(10) & char(10) & \n  a!defaultValue(ri!generateFieldData.describeFieldDescription, cons!AIA_EXTRACT_FIELD_FROM_DOCUMENT_INSTRUCTIONS),\n  ri!generateFieldData.describeFieldDescription\n)"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_182518": {
+      "name": "AIA_IsDocumentExtension",
+      "type": "Expression Rule",
+      "sail_code": "and(\n  a!isNotNullOrEmpty(ri!document),\n  contains(\n    lower(ri!extensions),\n    lower(document(\n      ri!document,\n      \"extension\"\n    ))\n  )\n)"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_159825": {
+      "name": "AIA_DocIsPdf",
+      "type": "Expression Rule",
+      "sail_code": "rule!AIA_IsDocumentExtension(\n  document: ri!document,\n  extensions: {\"pdf\"}\n)"
+    },
+    "0004ec4b-aea1-8000-ff1b-7f0000014e7a": {
+      "name": "AIA Predict Fields",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n=rule!AIA_Extraction_PredictionPrompt( generateFieldData: pv!generateFieldData)\n\n// Output: ?\nAC!Response"
+    },
+    "_a-0000ee3e-060c-8000-9bb8-011c48011c48_203441": {
+      "name": "SHRD_ReadDocumentContent",
+      "type": "Expression Rule",
+      "sail_code": "/*readdocumentcontent(ri!document)*/\n\nqueryfile(\n  ri!document,\n  \"TEXT\",\n  now()\n).result"
+    }
+  }
+}

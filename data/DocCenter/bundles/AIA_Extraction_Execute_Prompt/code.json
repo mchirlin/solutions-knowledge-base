@@ -1,0 +1,32 @@
+{
+  "_metadata": {
+    "bundle_id": "AIA_Extraction_Execute_Prompt"
+  },
+  "objects": {
+    "_a-0000e79d-2c73-8000-97b9-01ef9001ef90_77953": {
+      "name": "SHRD_MergeInner",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!sourceKeys: a!refreshVariable(\n    refreshAlways: true,\n    value: a!keys(ri!source)\n  ),\n  reduce(\n    rule!SHRD_Update(data: _, index: _, value: _),\n    ri!object, \n    merge(\n      local!sourceKeys,\n      apply(\n        fn!index(ri!source, _),\n        local!sourceKeys,\n      )\n    )\n  )\n)"
+    },
+    "_a-0000e79d-2c73-8000-97b9-01ef9001ef90_71638": {
+      "name": "SHRD_Update",
+      "type": "Expression Rule",
+      "sail_code": "/* If the data[index] is a dictionary and so is the value, then recurse */\n/* Else overwrite */\n\nif(\n  and(\n    runtimetypeof(ri!data[ri!index]) = 'type!{http://www.appian.com/ae/types/2009}Dictionary',\n    runtimetypeof(ri!value) = 'type!{http://www.appian.com/ae/types/2009}Dictionary'\n  ),\n  a!localVariables(\n    local!mergedValue: a!refreshVariable(\n      refreshAlways: true,\n      value: rule!SHRD_MergeInner(\n        object: ri!data[ri!index],\n        source: ri!value\n      )\n    ),\n    #\"urn:appian:function:v1:a:update\"(\n      ri!data,\n      ri!index,\n      local!mergedValue\n    )\n  ),\n  if(\n    and(\n      runtimetypeof(ri!data[ri!index]) = 'type!{http://www.appian.com/ae/types/2009}Dictionary?list',\n      runtimetypeof(ri!value) = 'type!{http://www.appian.com/ae/types/2009}Dictionary?list',\n      length(a!flatten(ri!data[ri!index])) = length(a!flatten(ri!value))\n    ),\n    a!localVariables(\n      local!mergedValue: a!refreshVariable(\n        refreshAlways: true,\n        value: apply(\n          rule!SHRD_MergeInner(\n            object: _,\n            source: _\n          ),\n          merge(\n            a!flatten(ri!data[ri!index]),\n            ri!value  \n          )\n        )\n      ),\n      #\"urn:appian:function:v1:a:update\"(\n        ri!data,\n        ri!index,\n        local!mergedValue\n      )\n    ),\n    #\"urn:appian:function:v1:a:update\"(\n      ri!data,\n      ri!index,\n      if(\n        isnull(ri!value),\n        cast('type!{http://www.appian.com/ae/types/2009}Dictionary?list', null),\n        ri!value\n      )\n    )\n  )\n)"
+    },
+    "_a-0000e79d-2c73-8000-97b9-01ef9001ef90_71617": {
+      "name": "SHRD_Merge",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  a!isNullOrEmpty(ri!object),\n  ri!source,\n  if(\n    a!isNullOrEmpty(ri!source),\n    null,\n    rule!SHRD_MergeInner(\n      object: if(a!isNullOrEmpty(ri!object ), null, #\"SYSTEM_SYSRULES_fromJson_v1\"(#\"SYSTEM_SYSRULES_toJson_v1\"(ri!object))),\n      source: if(a!isNullOrEmpty(ri!source), null, #\"SYSTEM_SYSRULES_fromJson_v1\"(#\"SYSTEM_SYSRULES_toJson_v1\"(ri!source)))\n    )\n  )\n)"
+    },
+    "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40909": {
+      "name": "AIA_ExtractJson",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!firstTry: rule!AIA_ExtractJsonInner(\n    json: ri!json\n  ),\n  local!result: if(\n    a!isNotNullOrEmpty(local!firstTry),\n    local!firstTry,\n    a!localVariables(\n      local!secondTry: rule!AIA_ExtractJsonInner(\n        json: index(split(ri!json, \"Appian's private AI\"), 1, null),\n      ),\n      if(\n        a!isNotNullOrEmpty(local!secondTry),\n        local!secondTry,\n        a!localVariables(\n          local!thirdTry: rule!AIA_ExtractJsonInner(\n            json: index(split(ri!json, \"Appian's private AI\"), 2, null),\n          ),\n          if(\n            a!isNotNullOrEmpty(local!thirdTry),\n            local!thirdTry,\n            a!localVariables(\n              local!forthTry: rule!AIA_ExtractJsonInner(\n                json: index(split(ri!json, \"<output>\"), 1, null),\n              ),\n              if(\n                a!isNotNullOrEmpty(local!forthTry),\n                local!forthTry,\n                a!localVariables(\n                  local!fifthTry: rule!AIA_ExtractJsonInner(\n                    json: index(split(ri!json, \"</entities>\"), 1, null),\n                  ),\n                  local!fifthTry\n                )\n              )\n            )\n          )\n        )\n      )\n    )\n  ),\n  local!finalResult: if(\n    a!isNullOrEmpty(local!result),\n    null,\n    if(\n      a!defaultValue(ri!returnList, true),\n      local!result,\n      if(\n        rule!SHRD_IsList(local!result),\n        null,\n        local!result\n      )\n    )\n  ),\n  /* Handle scenario where the result comes back as properties of a $schema */\n  if(\n    or(\n      a!defaultValue(ri!returnList, true),\n      a!isNullOrEmpty(local!finalResult),\n      not(contains(\n        a!keys(local!finalResult),\n        \"$schema\"\n      ))\n    ),\n    local!finalResult,\n    local!finalResult.properties\n  )\n)"
+    },
+    "0002eca7-a6fd-8000-0346-7f0000014e7a": {
+      "name": "AIA Extraction Execute Prompt",
+      "type": "Process Model",
+      "sail_code": "// Output: ?\n=if(\n  pv!sectionIndex = 0,\n  1,\n  pv!sectionIndex\n)\n\n// Output: ?\npv!sectionIndex + 1\n\n// Output: ?\nif(\n  a!isNotNullOrEmpty(rule!AIA_ExtractJson(json: pv!responseJson)),\n  rule!SHRD_Merge(\n    object: pv!combinedResponse,\n    source: rule!AIA_ExtractJson(json: pv!responseJson)\n  ),\n  pv!combinedResponse\n)\n\n// Input: ?\n=pv!ExtractionInstance\n\n// Input: ?\n=pv!ExtractionInstance[recordType!AIA Extraction Instance.sections][pv!sectionIndex]\n\n// Output: ?\nac!ProcessInfo.pv.ExtractionInstance\n\n// Output: ?\nac!ProcessInfo.pv.responseJson\n\n// Output: ?\n#\"SYSTEM_SYSRULES_toJson_v1\"(\n  if(\n    a!isNotNullOrEmpty(\n      rule!AIA_ExtractJson(json: pv!responseJson)\n    ),\n    rule!SHRD_Merge(\n      object: pv!combinedResponse,\n      source: rule!AIA_ExtractJson(json: pv!responseJson)\n    ),\n    pv!combinedResponse\n  )\n)\n\n// Output: ?\nreject(\n  fn!isnull,\n  #\"SYSTEM_SYSRULES_forEach\"(\n    pv!ExtractionInstance[recordType!AIA Extraction Instance.sections],\n    if(\n      or(\n        a!isNullOrEmpty(fv!item[recordType!AIA Extraction Instance Section.batchId]),\n        fv!item[recordType!AIA Extraction Instance Section.batchId] = 1\n      ),\n      fv!item,\n      null\n    )\n  )\n)\n\n// Input: ?\n=pv!ExtractionInstance\n\n// Input: ?\n=pv!uniqueSections[pv!sectionIndex]\n\n// Output: ?\nac!ProcessInfo.pv.responseJson\n\n// Output: ?\nac!ProcessInfo.pv.ExtractionInstance"
+    }
+  }
+}

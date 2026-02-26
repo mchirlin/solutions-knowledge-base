@@ -1,0 +1,15 @@
+{
+  "uuid": "_a-0000ed1d-549f-8000-9c66-011c48011c48_283263",
+  "name": "AIA_RULE_Operation_RequiredFields",
+  "type": "Expression Rule",
+  "description": "Expression rule that checks all required fields",
+  "sail_code": "a!localVariables(\n  local!requiredFields: index(\n    ri!parameters.modelVersionFields,\n    where(ri!parameters.modelVersionFields[recordType!AIA Extraction Model Version Field.required])\n  ),\n  local!missingFields: reject(\n    fn!isnull,\n    #\"SYSTEM_SYSRULES_forEach\"(\n      local!requiredFields,\n      if(\n        a!isNullOrEmpty(index(ri!parameters.instanceMap, fv!item[recordType!AIA Extraction Model Version Field.key], null)),\n        fv!item[recordType!AIA Extraction Model Version Field.label],\n        null\n      )\n    )\n  ),\n  local!missingColumns: reject(\n    fn!isnull,\n    a!flatten(#\"SYSTEM_SYSRULES_forEach\"(\n      ri!parameters.modelVersionFields,\n      a!localVariables(\n        local!field: fv!item,\n        #\"SYSTEM_SYSRULES_forEach\"(\n          fv!item[recordType!AIA Extraction Model Version Field.columns],\n          if(\n            or(\n              not(a!defaultValue(fv!item[recordType!AIA Extraction Model Version Field.required], false)),\n              /* Check all values are present */\n              all(\n                a!isNotNullOrEmpty,\n                ri!parameters.instanceMap[local!field[recordType!AIA Extraction Model Version Field.key]][fv!item[recordType!AIA Extraction Model Version Field.key]]\n              )\n            ),\n            null,\n            local!field[recordType!AIA Extraction Model Version Field.label] & \" - \" & fv!item[recordType!AIA Extraction Model Version Field.label]\n          )\n        )\n      )\n    ))\n  ),\n  local!missingValues: union(\n    touniformstring(local!missingFields),\n    touniformstring(local!missingColumns)\n  ),\n  a!map(\n    result: a!isNullOrEmpty(local!missingValues),\n    message: \"The following required fields are missing: \" & local!missingValues,\n    severity: cons!AIA_SEVERITY_HIGH\n  )\n)",
+  "calls": [
+    {
+      "name": "AIA_SEVERITY_HIGH",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

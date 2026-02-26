@@ -1,0 +1,71 @@
+{
+  "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_31203",
+  "name": "AIA_ClassificationModelVersion_Sub_ConfigureOptions",
+  "type": "Interface",
+  "description": "Interface to Configure Sections for Classification Model Version",
+  "sail_code": "{\n  #\"SYSTEM_SYSRULES_gridLayout\"(\n    labelPosition: \"COLLAPSED\",\n    headerCells: {\n      #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(),\n      #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(\n        label: #\"urn:appian:translation-string:v1:dca3f237-770e-4f9e-834f-23edfbf0ab8a\"\n      ),\n      #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"(\n        label: #\"urn:appian:translation-string:v1:be96096c-d32a-4708-a91d-b5dda4f2f30c\"\n      ),\n      #\"SYSTEM_SYSRULES_gridLayoutHeaderCell\"()\n    },\n    columnConfigs: {\n      #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(width: \"ICON_PLUS\"),\n      #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(width: \"DISTRIBUTE\", weight: \"1X\"),\n      #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(width: \"DISTRIBUTE\", weight: \"2X\"),\n      #\"SYSTEM_SYSRULES_gridLayoutColumnConfig\"(width: \"ICON\")\n    },\n    rows: #\"SYSTEM_SYSRULES_forEach\"(\n      items: ri!classficationModelVersion[recordType!AIA Classification Model Version.categories],\n      expression: #\"SYSTEM_SYSRULES_gridRowLayout\"(\n        id: fv!index,\n        contents: {\n          #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n            align: \"CENTER\",\n            value: #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n              text: fv!item[recordType!AIA Classification Model Version Category.sortOrder],\n              color: ri!brandingMap.Gray4\n            )\n          ),\n          #\"SYSTEM_SYSRULES_textField\"(\n            validationGroup: \"Options\",\n            characterLimit: 255,\n            showCharacterCount: false(),\n            value: fv!item[recordType!AIA Classification Model Version Category.name],\n            saveInto: fv!item[recordType!AIA Classification Model Version Category.name],\n            required: true,\n            disabled: and(\n              ri!classficationModelVersion[recordType!AIA Classification Model Version.allowMultipleOutputs] = true,\n              fv!isLast\n            )\n          ),\n          #\"SYSTEM_SYSRULES_textField\"(\n            validationGroup: \"Options\",\n            characterLimit: 255,\n            showCharacterCount: false(),\n            value: fv!item[recordType!AIA Classification Model Version Category.description],\n            saveInto: fv!item[recordType!AIA Classification Model Version Category.description],\n            required: false,\n            disabled: and(\n              ri!classficationModelVersion[recordType!AIA Classification Model Version.allowMultipleOutputs] = true,\n              fv!isLast\n            )\n          ),\n          #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n            value: #\"SYSTEM_SYSRULES_richTextIcon\"(\n              showWhen: or(\n                ri!classficationModelVersion[recordType!AIA Classification Model Version.allowMultipleOutputs] = false,\n                not(fv!isLast)\n              ),\n              icon: \"REMOVE\",\n              altText: #\"urn:appian:translation-string:v1:7192e3af-2e63-4513-b758-f62dfa7376c9\",\n              color: ri!brandingMap.Gray4,\n              link: #\"SYSTEM_SYSRULES_dynamicLink\"(\n                value: fv!index,\n                saveInto: {\n                  a!save(\n                    ri!deletedOptionsRecord,\n                    fn!if(\n                      a!isNotNullOrEmpty(\n                        ri!classficationModelVersion[recordType!AIA Classification Model Version.categories][save!value][recordType!AIA Classification Model Version Category.id]\n                      ),\n                      append(\n                        ri!deletedOptionsRecord,\n                        ri!classficationModelVersion[recordType!AIA Classification Model Version.categories][save!value]\n                      ),\n                      ri!deletedOptionsRecord\n                    )\n                  ),\n                  a!save(\n                    ri!classficationModelVersion[recordType!AIA Classification Model Version.categories],\n                    remove(\n                      ri!classficationModelVersion[recordType!AIA Classification Model Version.categories],\n                      save!value\n                    )\n                  ),\n                  /*Update all categories' sortOrder beyond fv!index*/\n                  a!save(\n                    ri!classficationModelVersion[recordType!AIA Classification Model Version.categories.sortOrder],\n                    #\"SYSTEM_SYSRULES_forEach\"(\n                      items: ri!classficationModelVersion[recordType!AIA Classification Model Version.categories],\n                      expression: if(\n                        fv!index < save!value,\n                        fv!item[recordType!AIA Classification Model Version Category.sortOrder],\n                        fv!item[recordType!AIA Classification Model Version Category.sortOrder] - 1\n                      )\n                    )\n                  )\n                }\n              ),\n              linkStyle: \"STANDALONE\",\n              caption: #\"urn:appian:translation-string:v1:4bf796aa-4f01-4b79-8732-330cf92a416f\"\n            )\n          )\n        },\n\n      )\n    ),\n    validations: {\n      #\"SYSTEM_SYSRULES_validationMessage\"(\n        message: #\"urn:appian:translation-string:v1:e9a14a0d-d1e3-45d3-9a85-a43fa926658b\",\n        validateAfter: \"SUBMIT\",\n        showWhen: a!isNullOrEmpty(\n          ri!classficationModelVersion[recordType!AIA Classification Model Version.categories]\n        )\n      ),\n      #\"SYSTEM_SYSRULES_validationMessage\"(\n        message: #\"urn:appian:translation-string:v1:c5fc9d76-f1a7-44f6-82d0-926be392b4a2\",\n        validateAfter: \"SUBMIT\",\n        showWhen: and(\n          a!isNotNullOrEmpty(ri!classficationModelVersion[recordType!AIA Classification Model Version.categories]),\n          length(ri!classficationModelVersion[recordType!AIA Classification Model Version.categories.name]) <> length(\n            union(\n              ri!classficationModelVersion[recordType!AIA Classification Model Version.categories.name],\n              ri!classficationModelVersion[recordType!AIA Classification Model Version.categories.name]\n            )\n          )\n        )\n      )\n    },\n    addRowLink: #\"SYSTEM_SYSRULES_dynamicLink\"(\n      label: #\"urn:appian:translation-string:v1:4e35790c-2ee5-48ef-8102-fad181caa931\",\n      saveInto: {\n        /*If the model version allows multiple outputs, then the \"Other\" category should always be last in the array.*/\n        /*In this case, we need to move the \"Other\" category to be last in the array, update its sortOrder, and append a new category to the list*/\n        if(\n          ri!classficationModelVersion[recordType!AIA Classification Model Version.allowMultipleOutputs] = true,\n          {\n            a!save(\n              ri!classficationModelVersion[recordType!AIA Classification Model Version.categories],\n              #\"urn:appian:function:v1:a:update\"(\n                data: ri!classficationModelVersion[recordType!AIA Classification Model Version.categories],\n                index: {\n                  length(ri!classficationModelVersion[recordType!AIA Classification Model Version.categories]),\n                  length(ri!classficationModelVersion[recordType!AIA Classification Model Version.categories]) + 1\n                },\n                value: {\n                  rule!AIA_ClassificationModelVersionCategory_Initialize(\n                    sortOrder: length(ri!classficationModelVersion[recordType!AIA Classification Model Version.categories])\n                  ),\n                  #\"urn:appian:function:v1:a:update\"(\n                    data: ri!classficationModelVersion[recordType!AIA Classification Model Version.categories][length(ri!classficationModelVersion[recordType!AIA Classification Model Version.categories])],\n                    index: recordType!AIA Classification Model Version Category.sortOrder,\n                    value: length(ri!classficationModelVersion[recordType!AIA Classification Model Version.categories]) + 1\n                  )\n                }\n              )\n            )\n          },\n          /*If the model version does not allow for multiple outputs, then just append a new category to the end of the list*/\n          {\n            a!save(\n              ri!classficationModelVersion[recordType!AIA Classification Model Version.categories],\n              append(\n                ri!classficationModelVersion[recordType!AIA Classification Model Version.categories],\n                rule!AIA_ClassificationModelVersionCategory_Initialize(\n                  sortOrder: length(ri!classficationModelVersion[recordType!AIA Classification Model Version.categories]) + 1\n                )\n              )\n            )\n          }\n        ),\n      }\n    ),\n    shadeAlternateRows: false(),\n    spacing: \"STANDARD\",\n    borderStyle: \"LIGHT\"\n  )\n}",
+  "calls": [
+    {
+      "name": "AIA_ClassificationModelVersionCategory_Initialize",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Label for Category",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Description Label",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Remove Row",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Label for Remove Category",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Label for At least one category is required",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Validation message for adding duplicate Categories to a Classification Model Ver",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Label for Add Category",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_ClassificationModel_RecordAction_Create_Initialize",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_UTIL_LoadBrandingMap",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AIA_ClassificationModel_RecordAction_Create",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_ClassificationModelVersion_RecordAction_CreateUpdateVersion",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

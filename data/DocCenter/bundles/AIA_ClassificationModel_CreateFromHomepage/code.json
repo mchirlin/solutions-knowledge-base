@@ -1,0 +1,182 @@
+{
+  "_metadata": {
+    "bundle_id": "AIA_ClassificationModel_CreateFromHomepage"
+  },
+  "objects": {
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92467": {
+      "name": "AIA_MTR_ClassificationInstanceClassifiedWithErrors",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000eec9-5676-8000-9c92-011c48011c48_179359": {
+      "name": "AIA_MTR_ConfidenceThresholdDisabled",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ec5c-9eda-8000-9bec-011c48011c48_119454": {
+      "name": "AIA_Classification_GetModelByKey",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  a!isNullOrEmpty(ri!key),\n  null,\n  #\"SYSTEM_SYSRULES_queryRecordType_v1\"(\n    recordType: recordType!AIA Classification Model,\n    filters: #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!AIA Classification Model.key,\n      operator: \"includes\",\n      value: ri!key\n    ),\n    pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n      1,\n      1\n    )\n  ).data\n)"
+    },
+    "_a-0000ec44-cb49-8000-9be6-011c48011c48_76923": {
+      "name": "SHRD_ReformatLabelAsKey",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!clean: cleanwith(ri!label, \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 \"),\n  local!words: split(local!clean, \" \"),\n  local!proper: joinarray(\n    #\"SYSTEM_SYSRULES_forEach\"(\n      items: local!words,\n      expression: if(\n        fv!isFirst,\n        lower(fv!item),\n        proper(fv!item)\n      )\n    ),\n    \"\"\n  ),\n  local!proper\n)"
+    },
+    "_a-0000eeb2-df20-8000-9bfe-011c48011c48_154565": {
+      "name": "AIA_MTR_InstanceValidationAiRuleOccurance",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_180846": {
+      "name": "AIA_MTR_ClassificationModelCreated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000eeca-c121-8000-9cab-011c48011c48_182002": {
+      "name": "AIA_MTR_ClassificationModelVersionRestore",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_180860": {
+      "name": "AIA_MTR_ClassificationInstanceCreated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_180853": {
+      "name": "AIA_MTR_ExtractionInstanceCreated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "175eb5f4-927c-4e50-8ed6-e198a14a7e70": {
+      "name": "AIA Update Classification Model",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n=pv!classificationModel\n\n// Input: ?\n=recordType!AIA Classification Model\n\n// Output: ?\nAC!RecordsUpdated\n\n// Input: ?\na!flatten(\n  #\"SYSTEM_SYSRULES_forEach\"(\n    pv!classificationModel[recordType!AIA Classification Model.modelVersions],\n    #\"urn:appian:function:v1:a:update\"(\n      fv!item,\n      recordType!AIA Model Version Example.modelVersionId,\n      pv!classificationModel[recordType!AIA Classification Model.modelVersions.modelVersionId]\n    )\n  )\n)\n\n// Input: ?\n=recordType!AIA Model Version Example"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_180874": {
+      "name": "AIA_MTR_ClassificationInstanceReconciled",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ef46-744c-8000-9fed-011c48011c48_483991": {
+      "name": "AIA_MTR_ModelTestSuiteUpdated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ef55-14e0-8000-a041-011c48011c48_505670": {
+      "name": "AIA_MTR_MultipleOutputsClassificationInstanceReconciled",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "63865ec9-036c-4a78-95da-14724bbd5a71": {
+      "name": "AIA_ClassificationModel_RecordAction_UpdateModel",
+      "type": "Interface",
+      "sail_code": "#\"SYSTEM_SYSRULES_formLayout_v1\"(\n  label: #\"urn:appian:translation-string:v1:90eda86e-7c63-4761-9a46-214dfa85e4a2\",\n  contents: {\n    #\"SYSTEM_SYSRULES_columnsLayout\"(\n      columns: {\n        #\"SYSTEM_SYSRULES_columnLayout\"(\n          width: \"WIDE\",\n          contents: rule!AIA_ClassificationModel_Sub_ModelDetails(\n            isUpdate: true(),\n            classificationModel: ri!classificationModel\n          )\n\n        ),\n        #\"SYSTEM_SYSRULES_columnLayout\"()\n      },\n\n    )\n  },\n  buttons: #\"SYSTEM_SYSRULES_ButtonLayout\"(\n    primaryButtons: {\n      #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n        label: #\"urn:appian:translation-string:v1:25a51cae-0560-410b-9b56-ba2b024e6364\",\n        submit: true,\n        style: \"SOLID\",\n        validate: true,\n        saveInto: {\n          a!save(\n            ri!classificationModel[recordType!AIA Classification Model.modifiedOn],\n            now()\n          ),\n          a!save(\n            ri!classificationModel[recordType!AIA Classification Model.modifiedBy],\n            loggedInUser()\n          )\n        }\n      )\n    },\n    secondaryButtons: {\n      #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n        label: #\"urn:appian:translation-string:v1:df61ccad-fe9a-4d7a-ba9a-d89b08f3467a\",\n        value: true,\n        saveInto: ri!cancel,\n        submit: true,\n        style: \"OUTLINE\",\n        validate: false\n      )\n    }\n  )\n)"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_180834": {
+      "name": "AIA_MTR_ExtractionModelCreated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92592": {
+      "name": "AIA_MTR_ExtractionInstanceValidationIgnore",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ef55-14e0-8000-a041-011c48011c48_505575": {
+      "name": "AIA_MTR_MultipleOutputsClassificationModelVersionCreated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ef46-744c-8000-9fed-011c48011c48_483964": {
+      "name": "AIA_MTR_ModelTestRunInitiated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ef46-744c-8000-9fed-011c48011c48_483943": {
+      "name": "AIA_MTR_ModelTestSuiteCreated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92585": {
+      "name": "AIA_MTR_ExtractionInstanceValidationAccept",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_180867": {
+      "name": "AIA_MTR_ExtractionInstanceReconciled",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92474": {
+      "name": "AIA_MTR_ClassificationInstanceError",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "0002ed75-547f-8000-fc6a-7f0000014e7a": {
+      "name": "AIA_ClassificationModel_RecordAction_Create",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n=classificationModel\n\n// Input: ?\n=a!flatten( { rule!AIA_LogMetric( name: cons!AIA_MTR_CLASSIFICATION_MODEL_CREATED ), if( pv!classificationModel[recordType!AIA Classification Model.modelVersions][1][recordType!AIA Classification Model Version.allowMultipleOutputs], rule!AIA_LogMetric( name: cons!AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_MODEL_VERSION_CREATED ), {} ) })"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92571": {
+      "name": "AIA_MTR_ExtractionInstanceAiReview",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92578": {
+      "name": "AIA_MTR_ExtractionModelVersionAiReview",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ef55-14e0-8000-a041-011c48011c48_505631": {
+      "name": "AIA_MTR_MultipleOutputsClassificationInstanceCreated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000eec9-5676-8000-9c92-011c48011c48_179352": {
+      "name": "AIA_MTR_ConfidenceThresholdEnabled",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92488": {
+      "name": "AIA_MTR_ExtractionInstanceError",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000eea3-15ee-8000-9bd4-011c48011c48_137447": {
+      "name": "AIA_MTR_ModelVersionConfigureSampling",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92481": {
+      "name": "AIA_MTR_ExtractionInstanceExtractedWithErrors",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ed69-99d8-8000-9ba6-011c48011c48_32586": {
+      "name": "AIA_ClassificationModel_Sub_ModelDetails",
+      "type": "Interface",
+      "sail_code": "a!localVariables(\n  local!classificationKey: rule!AIA_Classification_GetModelByKey(\n    key: ri!classificationModel[recordType!AIA Classification Model.key]\n  ),\n  local!keyBeforeUpdate: a!refreshVariable(\n    value: ri!classificationModel[recordType!AIA Classification Model.key],\n    refreshOnReferencedVarChange: false()\n  ),\n  {\n    #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n      items: {\n        #\"SYSTEM_SYSRULES_sideBySideItem\"(\n          width: \"3X\",\n          item: #\"SYSTEM_SYSRULES_textField\"(\n            label: #\"urn:appian:translation-string:v1:1d2ee947-3116-4cca-8a1f-26fe5bcc2914\",\n            labelPosition: \"ABOVE\",\n            value: ri!classificationModel[recordType!AIA Classification Model.name],\n            saveInto: {\n              a!save(\n                ri!classificationModel[recordType!AIA Classification Model.name],\n                if(\n                  a!isNullOrEmpty(save!value),\n                  save!value,\n                  trim(save!value)\n                )\n              ),\n              if(\n                a!defaultValue(ri!isUpdate, false),\n                {},\n                a!save(\n                  ri!classificationModel[recordType!AIA Classification Model.key],\n                  rule!SHRD_ReformatLabelAsKey(\n                    label: ri!classificationModel[recordType!AIA Classification Model.name]\n                  )\n                )\n              )\n            },\n            validations: if(\n              and(\n                ri!isUpdate,\n                local!keyBeforeUpdate = ri!classificationModel[recordType!AIA Classification Model.key]\n              ),\n              null,\n              if(\n                a!isNotNullOrEmpty(local!classificationKey),\n                \"Model key must be unique\",\n                null\n              )\n            ),\n            characterLimit: 100,\n            required: true,\n            showCharacterCount: false\n          ),\n\n        ),\n        #\"SYSTEM_SYSRULES_sideBySideItem\"(\n          width: \"1X\",\n          item: #\"SYSTEM_SYSRULES_textField\"(\n            label: #\"urn:appian:translation-string:v1:2b3a2e79-0b85-4b52-bbf6-b2e8d08f1447\",\n            readOnly: true,\n            value: if(\n              a!isNotNullOrEmpty(\n                ri!classificationModel[recordType!AIA Classification Model.key]\n              ),\n              ri!classificationModel[recordType!AIA Classification Model.key],\n              \"-\"\n            ),\n\n          ),\n\n        )\n      }\n    ),\n    #\"SYSTEM_SYSRULES_paragraphField\"(\n      label: #\"urn:appian:translation-string:v1:be96096c-d32a-4708-a91d-b5dda4f2f30c\",\n      labelPosition: \"ABOVE\",\n      value: ri!classificationModel[recordType!AIA Classification Model.description],\n      saveInto: ri!classificationModel[recordType!AIA Classification Model.description],\n      characterLimit: 255,\n      height: \"SHORT\",\n      required: false,\n      showCharacterCount: false\n    )\n  }\n)"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92564": {
+      "name": "AIA_MTR_ExtractionInstanceFieldAiReview",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "0006ed8f-3f6a-8000-fdc1-7f0000014e7a": {
+      "name": "AIA_ClassificationModel_CreateFromHomepage",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n=classificationModel"
+    },
+    "_a-0000eeca-c121-8000-9cab-011c48011c48_181995": {
+      "name": "AIA_MTR_ExtractionModelVersionRestore",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee35-0ca2-8000-9ba6-011c48011c48_13646": {
+      "name": "AIA_LogMetric",
+      "type": "Expression Rule",
+      "sail_code": "a!match(\n  value: ri!name,\n  /* Classification Model Created */\n  equals: cons!AIA_MTR_CLASSIFICATION_MODEL_CREATED,\n  then: rule!AIA_MTR_ClassificationModelCreated(),\n  /* Classification Instance Created */\n  equals: cons!AIA_MTR_CLASSIFICATION_INSTANCE_CREATED,\n  then: rule!AIA_MTR_ClassificationInstanceCreated(),\n  /* Classification Instance Reconciled */\n  equals: cons!AIA_MTR_CLASSIFICATION_INSTANCE_RECONCILED,\n  then: rule!AIA_MTR_ClassificationInstanceReconciled(),\n  /* Classification Instance with Validation Errors */\n  equals: cons!AIA_MTR_INSTANCE_STATUS_CLASSIFIED_WITH_ERRORS,\n  then: rule!AIA_MTR_ClassificationInstanceClassifiedWithErrors(),\n  /* Classification Instance with Critical Error */\n  equals: cons!AIA_MTR_INSTANCE_STATUS_CLASSIFICATION_CRITICAL_ERROR,\n  then: rule!AIA_MTR_ClassificationInstanceError(),\n  \n  /* Extraction Model Created */\n  equals: cons!AIA_MTR_EXTRACTION_MODEL_CREATED,\n  then: rule!AIA_MTR_ExtractionModelCreated(),\n  /* Extraction Instance Created */\n  equals: cons!AIA_MTR_EXTRACTION_INSTANCE_CREATED,\n  then: rule!AIA_MTR_ExtractionInstanceCreated(),\n  /* Extraction Instance Reconciled */\n  equals: cons!AIA_MTR_EXTRACTION_INSTANCE_RECONCILED,\n  then: rule!AIA_MTR_ExtractionInstanceReconciled(),\n  /* Extraction Instance with Validation Errors */\n  equals: cons!AIA_MTR_INSTANCE_STATUS_EXTRACTED_WITH_ERRORS,\n  then: rule!AIA_MTR_ExtractionInstanceExtractedWithErrors(),\n  /* Extraction Instance with Critical Error */\n  equals: cons!AIA_MTR_INSTANCE_STATUS_EXTRACTION_CRITICAL_ERROR,\n  then: rule!AIA_MTR_ExtractionInstanceError(),\n  \n  /* Triggered when AI review raises an error (field level) */\n  equals: cons!AIA_MTR_AI_REVIEW_FIELD,\n  then: rule!AIA_MTR_ExtractionInstanceFieldAiReview(),\n  /* Triggered when AI review raises an error (instance level, this instance has 1 or more errors raised by AI review) */\n  equals: cons!AIA_MTR_AI_REVIEW_INSTANCE,\n  then: rule!AIA_MTR_ExtractionInstanceAiReview(),\n  /* Triggered when model is created with AI review turned on OR AI review is turned on for a model */\n  equals: cons!AIA_MTR_AI_REVIEW_MODEL_VERSION,\n  then: rule!AIA_MTR_ExtractionModelVersionAiReview(),\n  /* Triggered when user clicks accept */\n  equals: cons!AIA_MTR_AI_REVIEW_ACCEPT,\n  then: rule!AIA_MTR_ExtractionInstanceValidationAccept(),\n  /* Triggered when user clicks ignored */\n  equals: cons!AIA_MTR_AI_REVIEW_IGNORE,\n  then: rule!AIA_MTR_ExtractionInstanceValidationIgnore(),\n  /*triggered when spot check ocnfigured*/\n  equals: cons!AIA_MTR_SPOT_CHECK_MODEL_VERSION,\n  then: rule!AIA_MTR_ModelVersionConfigureSampling(),\n  /* Triggered when a model validation rule of type AI validation creates a validation instance */\n  equals: cons!AIA_MTR_AI_VALIDATION_RULE_OCCURANCE,\n  then: rule!AIA_MTR_InstanceValidationAiRuleOccurance(),\n  /*Confidence Threshold Enabled*/\n  equals: cons!AIA_MTR_CONFIDENCE_THRESHOLD_ENABLED,\n  then: rule!AIA_MTR_ConfidenceThresholdEnabled(),\n  /*Confidence Threshold Disabled*/\n  equals: cons!AIA_MTR_CONFIDENCE_THRESHOLD_DISABLED,\n  then: rule!AIA_MTR_ConfidenceThresholdDisabled(),\n  /*Extraction Model Version Restored*/\n  equals: cons!AIA_MTR_EXTRACTION_MODEL_VERSION_RESTORE,\n  then: rule!AIA_MTR_ExtractionModelVersionRestore(),\n  /*Classification Model Version Restored*/\n  equals: cons!AIA_MTR_CLASSIFICATION_MODEL_VERSION_RESTORE,\n  then: rule!AIA_MTR_ClassificationModelVersionRestore(),\n  /*Model Test Suite Created*/\n  equals: cons!AIA_MTR_MODEL_TEST_SUITE_CREATED,\n  then: rule!AIA_MTR_ModelTestSuiteCreated(),\n  /*Model Test Suite Updated*/\n  equals: cons!AIA_MTR_MODEL_TEST_SUITE_UPDATED,\n  then: rule!AIA_MTR_ModelTestSuiteUpdated(),\n  /*Model Test Run Initiated*/\n  equals: cons!AIA_MTR_MODEL_TEST_RUN_INITIATED,\n  then: rule!AIA_MTR_ModelTestRunInitiated(),\n  /*Classification Model Version Created with Multiple Outputs*/\n  equals: cons!AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_MODEL_VERSION_CREATED,\n  then: rule!AIA_MTR_MultipleOutputsClassificationModelVersionCreated(),\n  /*Classification Instance Created for a Model Version that Allows Multiple Outputs*/\n  equals: cons!AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_INSTANCE_CREATED,\n  then: rule!AIA_MTR_MultipleOutputsClassificationInstanceCreated(),\n  /*Classification Instance Reconciled for a Model Version that Allows Multiple Outputs*/\n  equals: cons!AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_INSTANCE_RECONCILED,\n  then: rule!AIA_MTR_MultipleOutputsClassificationInstanceReconciled(),\n  default: null\n)"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_78192",
+  "name": "DEPRECATED_RunTestCaseRecordActionSecurity",
+  "type": "Expression Rule",
+  "description": "Display or Hide run test case record action",
+  "sail_code": "a!localVariables(\n  local!classificationModelVersion: with(\n    local!modelVersionId: rule!AIA_Classification_GetLatestModelVersionIdByKey(modelId: ri!modelId),\n    if(\n      a!isNullOrEmpty(local!modelVersionId),\n      null,\n      #\"SYSTEM_SYSRULES_queryRecordByIdentifier\"(\n        recordType: recordType!AIA Classification Model Version,\n        fields: {recordType!AIA Classification Model Version.versionId,recordType!AIA Classification Model Version.modelId,recordType!AIA Classification Model Version.status,recordType!AIA Classification Model Version.uuid},\n        identifier: local!modelVersionId\n      )\n    )\n  ),\n  local!testInstances: #\"SYSTEM_SYSRULES_queryRecordType_v1\"(\n    recordType: recordType!AIA Classification Instance,\n    filters: #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n      operator: \"AND\",\n      filters: {\n        #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: recordType!AIA Classification Instance.modelVersion.versionId,\n          operator: \"<=\",\n          value: local!classificationModelVersion[recordType!AIA Classification Model Version.versionId]\n        ),\n        #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: recordType!AIA Classification Instance.modelVersion.modelId,\n          operator: \"=\",\n          value: local!classificationModelVersion[recordType!AIA Classification Model Version.modelId]\n        ),\n        #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: recordType!AIA Classification Instance.testInstance,\n          operator: \"=\",\n          value: true\n        )\n      },\n      ignoreFiltersWithEmptyValues: false\n    ),\n    pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(startIndex: 1, batchSize: 1)\n  ).totalCount,\n  and(\n    local!classificationModelVersion[recordType!AIA Classification Model Version.status] = cons!AIA_MODEL_VERSION_STATUS_PUBLISHED,\n    a!isNotNullOrEmpty(\n      local!classificationModelVersion[recordType!AIA Classification Model Version.uuid]\n    ),\n    local!testInstances > 0\n  )\n)",
+  "calls": [
+    {
+      "name": "AIA_Classification_GetLatestModelVersionIdByKey",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_MODEL_VERSION_STATUS_PUBLISHED",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": []
+}

@@ -1,0 +1,405 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AIA Extract TOC Sections",
+    "parent_name": null,
+    "total_objects": 21
+  },
+  "entry_point": {
+    "complexity_score": 23.0,
+    "total_nodes": 12,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Extract TOC Sections",
+      "complexity_score": 23.0,
+      "total_nodes": 12,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Text Layer?"
+          ]
+        },
+        {
+          "name": "End Event",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Advanced IDP Tools",
+          "type": "internal3.rs2_ai_skill_advanced_idp_tools2",
+          "next": [
+            "Process Raw Text"
+          ]
+        },
+        {
+          "name": "Process Raw Text",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Extract from Table of Contents"
+          ]
+        },
+        {
+          "name": "Normalize Page Numbers",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "TOC Sections"
+          ]
+        },
+        {
+          "name": "Parse Results",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Text Layer?"
+          ]
+        },
+        {
+          "name": "Get PDF Text",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Extract from Table of Contents"
+          ]
+        },
+        {
+          "name": "Text Layer?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Get PDF Text (Yes)",
+            "Extract PDF Pages"
+          ]
+        },
+        {
+          "name": "Text Layer?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Normalize Page Numbers",
+            "TOC Sections"
+          ]
+        },
+        {
+          "name": "TOC Sections",
+          "type": "pdftools.ExtractPDFPageSets",
+          "next": [
+            "End Event"
+          ]
+        },
+        {
+          "name": "Extract PDF Pages",
+          "type": "pdftools.ExtractPDFPagesPauseOnError",
+          "next": [
+            "Advanced IDP Tools"
+          ]
+        },
+        {
+          "name": "Extract from Table of Contents",
+          "type": "Start Process",
+          "next": [
+            "Parse Results"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ec60-a08d-8000-9bee-011c48011c48_121650",
+      "name": "AIA_EML_PAGE_CHAR_COUNT",
+      "type": "Constant",
+      "description": "5000",
+      "value": "5000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_GetDocumentMetadata"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec40-0355-8000-9be4-011c48011c48_70311",
+      "name": "AIA_MODEL_TYPE_VALUES",
+      "type": "Constant",
+      "description": "(1) extraction, (2) classification",
+      "value": [
+        "extraction",
+        "classification"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA Extract TOC Sections"
+      ]
+    },
+    {
+      "uuid": "_a-0000ece6-6a5d-8000-9c49-011c48011c48_175464",
+      "name": "AIA_SECTION_RULE_TYPES",
+      "type": "Constant",
+      "description": "(1) TABLE_OF_CONTENTS, (2) PAGE_RANGE, (3) END_OF_DOC, (4) NO_SECTION_RULE, (5) FIND_ON_PAGE Match",
+      "value": [
+        "TABLE_OF_CONTENTS",
+        "PAGE_RANGE",
+        "END_OF_DOC",
+        "NO_SECTION_RULE",
+        "FIND_ON_PAGE"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA Extract TOC Sections"
+      ]
+    },
+    {
+      "uuid": "_a-0000ece6-6a5d-8000-9c49-011c48011c48_177452",
+      "name": "AIA_TABLE_OF_CONTENTS_PAGES",
+      "type": "Constant",
+      "description": "25 - Max number of pages in a table of contents",
+      "value": "25",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA Extract TOC Sections",
+        "AIA_Extraction_NormalizePageNumber",
+        "AIA_IsTOCTextPresent"
+      ]
+    },
+    {
+      "uuid": "_a-0000eed1-1d21-8000-9cef-011c48011c48_187601",
+      "name": "AIA_TEXT_BASED_EXTENSIONS",
+      "type": "Constant",
+      "description": "csv, xml",
+      "value": [
+        "csv",
+        "xml"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_GetDocumentText"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_159825",
+      "name": "AIA_DocIsPdf",
+      "type": "Expression Rule",
+      "description": "Returns true if doc is a pdf",
+      "parameters": [],
+      "calls": [
+        "AIA_IsDocumentExtension"
+      ],
+      "called_by": [
+        "AIA_GetDocumentText"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40909",
+      "name": "AIA_ExtractJson",
+      "type": "Expression Rule",
+      "description": "Extract json from prompt builder reponse",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_ProcessTocSectionResponse"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_176683",
+      "name": "AIA_Extraction_AddTokens",
+      "type": "Expression Rule",
+      "description": "Add tokens to extraction instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Extract TOC Sections"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3e-060c-8000-9bb8-011c48011c48_200645",
+      "name": "AIA_Extraction_GetTocRange",
+      "type": "Expression Rule",
+      "description": "Get page range for table of contents",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Extract TOC Sections"
+      ]
+    },
+    {
+      "uuid": "_a-0000ece6-6a5d-8000-9c49-011c48011c48_178444",
+      "name": "AIA_Extraction_NormalizePageNumber",
+      "type": "Expression Rule",
+      "description": "Normalize page numbers from table of contents",
+      "parameters": [],
+      "calls": [
+        "AIA_IsTOCTextPresent",
+        "AIA_TABLE_OF_CONTENTS_PAGES"
+      ],
+      "called_by": [
+        "AIA Extract TOC Sections"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_83660",
+      "name": "AIA_Extraction_ProcessTocSectionResponse",
+      "type": "Expression Rule",
+      "description": "Process table of contents response",
+      "parameters": [],
+      "calls": [
+        "AIA_ExtractJson",
+        "AIA_GetPageCount"
+      ],
+      "called_by": [
+        "AIA Extract TOC Sections"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_32305",
+      "name": "AIA_Extraction_TableOfContentsInput",
+      "type": "Expression Rule",
+      "description": "Table of contents input",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Extract TOC Sections"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecdf-301c-8000-9c47-011c48011c48_170675",
+      "name": "AIA_Extraction_TableOfContentsPrompt",
+      "type": "Expression Rule",
+      "description": "Prompt to find section information",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Extract TOC Sections"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee52-8983-8000-9ba6-011c48011c48_27887",
+      "name": "AIA_GetDocumentMetadata",
+      "type": "Expression Rule",
+      "description": "Get document metadata",
+      "parameters": [],
+      "calls": [
+        "AIA_EML_PAGE_CHAR_COUNT"
+      ],
+      "called_by": [
+        "AIA_GetPageCount"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee52-8983-8000-9ba6-011c48011c48_27862",
+      "name": "AIA_GetDocumentText",
+      "type": "Expression Rule",
+      "description": "Get text from document",
+      "parameters": [],
+      "calls": [
+        "AIA_DocIsPdf",
+        "AIA_IsDocumentExtension",
+        "AIA_TEXT_BASED_EXTENSIONS"
+      ],
+      "called_by": [
+        "AIA Extract TOC Sections",
+        "AIA_IsTOCTextPresent"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_82400",
+      "name": "AIA_GetPageCount",
+      "type": "Expression Rule",
+      "description": "Get page count for document",
+      "parameters": [],
+      "calls": [
+        "AIA_GetDocumentMetadata"
+      ],
+      "called_by": [
+        "AIA Extract TOC Sections",
+        "AIA_Extraction_ProcessTocSectionResponse",
+        "AIA_IsTOCTextPresent"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_182518",
+      "name": "AIA_IsDocumentExtension",
+      "type": "Expression Rule",
+      "description": "Is the document of one of the following extensions",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_DocIsPdf",
+        "AIA_GetDocumentText"
+      ]
+    },
+    {
+      "uuid": "_a-0000ece6-6a5d-8000-9c49-011c48011c48_178450",
+      "name": "AIA_IsTOCTextPresent",
+      "type": "Expression Rule",
+      "description": "Is text present on this page range",
+      "parameters": [],
+      "calls": [
+        "AIA_GetDocumentText",
+        "AIA_GetPageCount",
+        "AIA_TABLE_OF_CONTENTS_PAGES"
+      ],
+      "called_by": [
+        "AIA_Extraction_NormalizePageNumber"
+      ]
+    },
+    {
+      "uuid": "000fece9-c4e4-8000-05a7-7f0000014e7a",
+      "name": "AIA Extract TOC Sections",
+      "type": "Process Model",
+      "description": "Find sections in document",
+      "calls": [
+        "AIA Extraction Instance",
+        "AIA_Extraction_AddTokens",
+        "AIA_Extraction_GetTocRange",
+        "AIA_Extraction_NormalizePageNumber",
+        "AIA_Extraction_ProcessTocSectionResponse",
+        "AIA_Extraction_TableOfContentsInput",
+        "AIA_Extraction_TableOfContentsPrompt",
+        "AIA_GetDocumentText",
+        "AIA_GetPageCount",
+        "AIA_MODEL_TYPE_VALUES",
+        "AIA_SECTION_RULE_TYPES",
+        "AIA_TABLE_OF_CONTENTS_PAGES",
+        "Process Table of Contents"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "64322398-e457-4695-87d5-09794164cf77",
+      "name": "AIA Extraction Instance",
+      "type": "Record Type",
+      "description": "Record to hold the AI Extraction scores and confidence threshold for each instance",
+      "actions": [
+        "reconcileField",
+        "reconcileUsingTestCase",
+        "runValidations",
+        "addRemoveTestCase",
+        "deleteExtractionInstance",
+        "deleteInstanceAndSkipConfirmation",
+        "updateAssociatedTestSuites"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "#\"urn:appian:translation-string:v1:ab6ce936-2015-4e58-a2d1-a10bcd2372e4\"",
+        "=#\"urn:appian:translation-string:v1:fe8f8d91-a84f-4494-9270-4959354698ce\"",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "AIA Extract TOC Sections"
+      ]
+    },
+    {
+      "uuid": "50193b4f-cc79-403e-8ebc-227279993d0d",
+      "name": "Process Table of Contents",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA Extract TOC Sections"
+      ]
+    }
+  ]
+}

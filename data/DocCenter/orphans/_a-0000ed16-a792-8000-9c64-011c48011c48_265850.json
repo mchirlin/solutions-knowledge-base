@@ -1,0 +1,46 @@
+{
+  "uuid": "_a-0000ed16-a792-8000-9c64-011c48011c48_265850",
+  "name": "AIA_RULE_DynamicBooleanOperation",
+  "type": "Expression Rule",
+  "description": "Dynamic operation",
+  "sail_code": "a!localVariables(\n  local!valueOne: a!defaultValue(\n    value: ri!valueOne,\n    default: ri!data[ri!parameters.fieldOne],\n    default: ri!parameters.valueOne,\n    default: ri!data[ri!parameters.field],\n    default: ri!parameters.value,\n    default: {}\n  ),\n  local!valueTwo: a!defaultValue(\n    value: ri!valueTwo,\n    default: ri!data[ri!parameters.fieldTwo],\n    default: ri!parameters.valueTwo,\n    default: ri!parameters.value,\n    default: {}\n  ),\n  /*local!valueOne: rule!AIA_RULE_SortArray(*/\n    /*array: {*/\n      /*local!defaultValueOne*/\n    /*}*/\n  /*),*/\n  /*local!valueTwo: rule!AIA_RULE_SortArray(*/\n    /*array: {*/\n      /*local!defaultValueTwo*/\n    /*}*/\n  /*),*/\n  local!stringValueOne: rule!AIA_RULE_NormalizeValue(value: local!valueOne),\n  local!stringValueTwo: rule!AIA_RULE_NormalizeValue(value: local!valueTwo),\n  local!operator: a!defaultValue(\n    value: ri!operator,\n    default: ri!parameters.operator\n  ),\n  local!operation: a!match(\n    value: lower(local!operator),\n    /*Not Null*/\n    equals: \"not null\",\n    then: a!isNotNullOrEmpty(local!valueOne),\n    /*Is Null*/\n    equals: \"is null\",\n    then: a!isNullOrEmpty(local!valueOne),\n    /*And*/\n    equals: \"and\",\n    then: all(\n      rule!AIA_RULE_DynamicBooleanOperation,\n      local!valueOne,\n      ri!data\n    ),\n    /*Or*/\n    equals: \"or\",\n    then: any(\n      rule!AIA_RULE_DynamicBooleanOperation,\n      local!valueOne,\n      ri!data\n    ),\n    /*Return false when either value is not populated*/\n    whenTrue: and(\n      a!isNullOrEmpty(local!valueOne),\n      a!isNullOrEmpty(local!valueTwo)\n    ),\n    then: null,\n    /*Equals*/\n    equals: \"=\",\n    then: local!stringValueOne = local!stringValueTwo,\n    /*Is different than*/\n    equals: \"<>\",\n    then: local!stringValueOne <> local!stringValueTwo,\n    /*Greater than*/\n    equals: \">\",\n    then: todecimal(local!valueOne) > todecimal(local!valueTwo),\n    /*Less than*/\n    equals: \"<\",\n    then: todecimal(local!valueOne) < todecimal(local!valueTwo),\n    /*Greater or equals than*/\n    equals: \">=\",\n    then: todecimal(local!valueOne) >= todecimal(local!valueTwo),\n    /*Less or equals than*/\n    equals: \"<=\",\n    then: todecimal(local!valueOne) <= todecimal(local!valueTwo),\n    /*Between*/\n    equals: \"between\",\n    then: and(\n      todecimal(local!valueOne) >= todecimal(local!valueTwo)[1],\n      todecimal(local!valueOne) <= todecimal(local!valueTwo)[2]\n    ),\n    /*Not Between*/\n    equals: \"not between\",\n    then: or(\n      todecimal(local!valueOne) <= todecimal(local!valueTwo)[1],\n      todecimal(local!valueOne) >= todecimal(local!valueTwo)[2]\n    ),\n    /*In*/\n    equals: \"in\",\n    then: contains(\n      touniformstring(local!stringValueTwo),\n      touniformstring(local!stringValueOne)\n    ),\n    /*Not In*/\n    equals: \"not in\",\n    then: not(\n      contains(\n        touniformstring(local!stringValueTwo),\n        touniformstring(local!stringValueOne)\n      )\n    ),\n    /*Contains*/\n    equals: \"contains\",\n    then: contains(\n      local!stringValueOne,\n      local!stringValueTwo\n    ),\n    /*Not Contains*/\n    equals: \"not contains\",\n    then: not(\n      contains(\n        local!stringValueOne,\n        local!stringValueTwo\n      )\n    ),\n    /*Starts with*/\n    equals: \"starts with\",\n    then: and(\n      a!isNotNullOrEmpty(local!stringValueOne),\n      a!isNotNullOrEmpty(local!stringValueTwo),\n      left(\n        local!stringValueOne,\n        len(local!stringValueTwo)\n      ) = upper(local!stringValueTwo)\n    ),\n    /*Not starts with*/\n    equals: \"not starts with\",\n    then: and(\n      a!isNotNullOrEmpty(local!stringValueOne),\n      a!isNotNullOrEmpty(local!stringValueTwo),\n      left(\n        local!stringValueOne,\n        len(local!stringValueTwo)\n      ) <> local!stringValueTwo\n    ),\n    /*Ends with*/\n    equals: \"ends with\",\n    then: and(\n      a!isNotNullOrEmpty(local!stringValueOne),\n      a!isNotNullOrEmpty(local!stringValueTwo),\n      right(\n        local!stringValueOne,\n        len(local!stringValueTwo)\n      ) = local!stringValueTwo\n    ),\n    /*Not ends with*/\n    equals: \"not ends with\",\n    then: and(\n      a!isNotNullOrEmpty(local!stringValueOne),\n      a!isNotNullOrEmpty(local!stringValueTwo),\n      right(\n        local!stringValueOne,\n        len(local!stringValueTwo)\n      ) <> local!stringValueTwo\n    ),\n    /*Includes*/\n    equals: \"includes\",\n    then: and(\n      and(\n        a!isNotNullOrEmpty(local!stringValueOne),\n        a!isNotNullOrEmpty(local!stringValueTwo)\n      ),\n      find(\n        local!stringValueTwo,\n        local!stringValueOne\n      ) > 0\n    ),\n    /*Not includes*/\n    equals: \"not includes\",\n    then: and(\n      and(\n        a!isNotNullOrEmpty(local!stringValueOne),\n        a!isNotNullOrEmpty(local!stringValueTwo)\n      ),\n      find(\n        local!stringValueTwo,\n        local!stringValueOne\n      ) = 0\n    ),\n    /*Matches*/\n    equals: \"matches\",\n    then: and(\n      and(\n        a!isNotNullOrEmpty(local!stringValueOne),\n        a!isNotNullOrEmpty(local!stringValueTwo)\n      ),\n      try(\n        regexmatch(\n          local!stringValueTwo,\n          local!stringValueOne\n        ),\n        false\n      )\n    ),\n    /*Not Matches*/\n    equals: \"not matches\",\n    then: and(\n      and(\n        a!isNotNullOrEmpty(local!stringValueOne),\n        a!isNotNullOrEmpty(local!stringValueTwo)\n      ),\n      try(\n        not(\n          regexmatch(\n            local!stringValueTwo,\n            local!stringValueOne\n          )\n        ),\n        false\n      )\n    ),\n    default: null\n  ),\n  if(\n    a!isNotNullOrEmpty(local!operation),\n    and(local!operation),\n    local!operation\n  )\n)",
+  "calls": [
+    {
+      "name": "AIA_RULE_SortArray",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_RULE_NormalizeValue",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_RULE_ENUM_Aliases",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AIA_RULE_DynamicComponents",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_RULE_Operation_ExamineField",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_RULE_Operation_CompareExpressions",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_RULE_Operation_CompareTwoValues",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

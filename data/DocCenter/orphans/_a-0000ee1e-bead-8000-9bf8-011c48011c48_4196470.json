@@ -1,0 +1,15 @@
+{
+  "uuid": "_a-0000ee1e-bead-8000-9bf8-011c48011c48_4196470",
+  "name": "AIA_ExtractJsonInner",
+  "type": "Expression Rule",
+  "description": "Inner functionality for extract json",
+  "sail_code": "a!localVariables(\n  local!outputTag: fn!find(\"<output>\", ri!json),\n  local!removeOutput: if(\n    local!outputTag = 0,\n    ri!json,\n    right(ri!json, len(ri!json) - (local!outputTag + 7))\n  ),\n  local!firstBrace: find(\"{\", local!removeOutput),\n  local!firstSquare: find(\"[\", local!removeOutput),\n  local!allEndBraces: regexsearch(\"\\}\", local!removeOutput, \"gms\"),\n  local!allEndSquares: regexsearch(\"\\]\", local!removeOutput, \"gms\"),\n  local!lastBrace: tointeger(if(\n    a!isNotNullOrEmpty(local!allEndBraces),\n    index(\n      local!allEndBraces,\n      length(local!allEndBraces)\n    ).startPosition,\n    0\n  )),\n  local!lastSquare: tointeger(if(\n    a!isNotNullOrEmpty(local!allEndSquares),\n    index(\n      local!allEndSquares,\n      length(local!allEndSquares)\n    ).startPosition,\n    0\n  )),\n  local!removePrefix: if(\n    or(\n      local!firstBrace = 1,\n      local!firstSquare = 1\n    ),\n    local!removeOutput,\n    right(\n      local!removeOutput,\n      len(local!removeOutput) - if(\n        and(\n          local!firstBrace > local!firstSquare,\n          local!firstSquare <> 0\n        ),\n        local!firstSquare,\n        local!firstBrace\n      ) + 1\n    )\n  ),\n  local!removeSuffix: if(\n    or(\n      local!firstBrace = len(local!removePrefix),\n      local!firstSquare = len(local!removePrefix)\n    ),\n    local!removePrefix,\n    left(\n      local!removePrefix,\n      if(\n        local!lastBrace > local!lastSquare,\n        local!lastBrace - local!firstBrace,\n        local!lastSquare - local!firstSquare\n      ) + 2\n    )\n  ),\n  local!finalFromJsonCheck: try(\n    #\"SYSTEM_SYSRULES_fromJson_v1\"(local!removeSuffix),\n    try(\n      #\"SYSTEM_SYSRULES_fromJson_v1\"(fixjson(local!removeSuffix)),\n      null\n    )\n  ),\n  local!verifyHasKeysIfNotList: try(\n    if(\n      count(a!keys(local!finalFromJsonCheck)) = 0,\n      null,\n      local!finalFromJsonCheck\n    ),\n    local!finalFromJsonCheck\n  ),\n  local!verifyHasKeysIfNotList\n)",
+  "calls": [],
+  "called_by": [
+    {
+      "name": "AIA_ExtractJson",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

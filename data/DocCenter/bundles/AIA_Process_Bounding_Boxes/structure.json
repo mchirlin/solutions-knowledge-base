@@ -1,0 +1,613 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AIA Process Bounding Boxes",
+    "parent_name": null,
+    "total_objects": 35
+  },
+  "entry_point": {
+    "complexity_score": 31.0,
+    "total_nodes": 15,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Process Bounding Boxes",
+      "complexity_score": 31.0,
+      "total_nodes": 15,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Page Count?"
+          ]
+        },
+        {
+          "name": "Page Count?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Which Advanced IDP? (<=20)",
+            "Calculate batches"
+          ]
+        },
+        {
+          "name": "End Event",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Which Advanced IDP?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Advanced IDP Tools - Text Only (Text Only)",
+            "Advanced IDP Tools - All (Text and Layout)"
+          ]
+        },
+        {
+          "name": "Calculate batches",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Split Docs"
+          ]
+        },
+        {
+          "name": "Increase Index",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Split Docs"
+          ]
+        },
+        {
+          "name": "Advanced IDP Tools - Text Only",
+          "type": "internal3.rs2_ai_skill_advanced_idp_tools2",
+          "next": [
+            "Error?"
+          ]
+        },
+        {
+          "name": "Advanced IDP Tools - All",
+          "type": "internal3.rs2_ai_skill_advanced_idp_tools2",
+          "next": [
+            "Error?"
+          ]
+        },
+        {
+          "name": "Write Records",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Set Has Bounding boxes"
+          ]
+        },
+        {
+          "name": "Done?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Increase Index",
+            "Set Has Bounding boxes"
+          ]
+        },
+        {
+          "name": "Error?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Write Records",
+            "Add Error"
+          ]
+        },
+        {
+          "name": "Add Error",
+          "type": "Start Process",
+          "next": [
+            "End Event"
+          ]
+        },
+        {
+          "name": "Set Has Bounding boxes",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Event"
+          ]
+        },
+        {
+          "name": "Split Docs",
+          "type": "pdftools.ExtractPDFPageSets",
+          "next": [
+            "AIA Process Bounding Boxes"
+          ]
+        },
+        {
+          "name": "AIA Process Bounding Boxes",
+          "type": "Start Process",
+          "next": [
+            "Done?"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ed14-ef3e-8000-9c03-011c48011c48_132145",
+      "name": "AIA_BOOL_CAPTURE_BOUNDING_BOXES",
+      "type": "Constant",
+      "description": "A boolean constant to control whether spanIds / bounding boxes are captured in the AIDP output and the dynamic GenAI prompt input. If disabled, AIDP will still run but bounding boxes and span ids will be blank. Value: True.",
+      "value": "true",
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_UseBoundingBoxes"
+      ]
+    },
+    {
+      "uuid": "_a-0000edd9-a94f-8000-9bb2-011c48011c48_154027",
+      "name": "AIA_CONCURRENT_NUM_ADVANCED_IDP",
+      "type": "Constant",
+      "description": "Number of concurrent advanced idps to call",
+      "value": "10",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_CalculateAdvancedIdpBatch",
+        "AIA_CalculateAdvancedIdpBatches"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec60-a08d-8000-9bee-011c48011c48_121650",
+      "name": "AIA_EML_PAGE_CHAR_COUNT",
+      "type": "Constant",
+      "description": "5000",
+      "value": "5000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_GetDocumentMetadata"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeb6-7f67-8000-9c09-011c48011c48_161334",
+      "name": "AIA_FOLDER_CLEANUP_DOCS",
+      "type": "Constant",
+      "description": "Cleanup docs folder",
+      "value": "_a-0000eeb6-7f67-8000-9c09-011c48011c48_161300",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationFolder",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_ProcessTextractOutput"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec40-0355-8000-9be4-011c48011c48_70311",
+      "name": "AIA_MODEL_TYPE_VALUES",
+      "type": "Constant",
+      "description": "(1) extraction, (2) classification",
+      "value": [
+        "extraction",
+        "classification"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA Process Bounding Boxes",
+        "AIA_CreateValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecbc-e686-8000-9c18-011c48011c48_158101",
+      "name": "AIA_PAGE_BATCH_SIZE_ADVANCED_IDP",
+      "type": "Constant",
+      "description": "20",
+      "value": "20",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA Process Bounding Boxes",
+        "AIA_CalculateAdvancedIdpBatch",
+        "AIA_CalculateAdvancedIdpBatches",
+        "AIA_Extraction_ProcessTextractOutput"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeb8-377a-8000-9c16-011c48011c48_167261",
+      "name": "AIA_PM_FOR_EACH_LOOP",
+      "type": "Constant",
+      "description": "Value: AIA For Each (Loop) process model",
+      "value": "AIA For Each (Loop)",
+      "value_type": "http://www.appian.com/ae/types/2009:ProcessModel",
+      "calls": [],
+      "called_by": [
+        "AIA_UTIL_ProcessModelForEach"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeb8-377a-8000-9c16-011c48011c48_167268",
+      "name": "AIA_PM_FOR_EACH_MNI",
+      "type": "Constant",
+      "description": "Value: AIA For Each (MNI) process model",
+      "value": "AIA For Each (MNI)",
+      "value_type": "http://www.appian.com/ae/types/2009:ProcessModel",
+      "calls": [],
+      "called_by": [
+        "AIA_UTIL_ProcessModelForEach"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeb8-377a-8000-9c16-011c48011c48_167585",
+      "name": "AIA_PM_PROCESS_BOUNDING_BOXES",
+      "type": "Constant",
+      "description": "Process model - Process bounding boxes ",
+      "value": "AIA Process Bounding Boxes",
+      "value_type": "http://www.appian.com/ae/types/2009:ProcessModel",
+      "calls": [],
+      "called_by": [
+        "AIA Process Bounding Boxes"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76666",
+      "name": "AIA_SEVERITY_CRITICAL",
+      "type": "Constant",
+      "description": "4",
+      "value": "4",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_CreateAdvancedIdpValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed0f-f9fb-8000-9c62-011c48011c48_262740",
+      "name": "AIA_TEXTRACT_BLOCK_LINE",
+      "type": "Constant",
+      "description": "line",
+      "value": "line",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_ProcessTextractOutput"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed0f-f9fb-8000-9c62-011c48011c48_262746",
+      "name": "AIA_TEXTRACT_BLOCK_WORD",
+      "type": "Constant",
+      "description": "word",
+      "value": "word",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_ProcessTextractOutput"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee66-4fc0-8000-9baa-011c48011c48_72159",
+      "name": "AIA_VALIDATION_TYPE_ID_EXECUTION",
+      "type": "Constant",
+      "description": "4",
+      "value": "4",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_CreateAdvancedIdpValidation",
+        "AIA_CreateValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000edd9-a94f-8000-9bb2-011c48011c48_154001",
+      "name": "AIA_CalculateAdvancedIdpBatch",
+      "type": "Expression Rule",
+      "description": "Calculate number per batch",
+      "parameters": [],
+      "calls": [
+        "AIA_CONCURRENT_NUM_ADVANCED_IDP",
+        "AIA_CalculateAdvancedIdpBatches",
+        "AIA_PAGE_BATCH_SIZE_ADVANCED_IDP"
+      ],
+      "called_by": [
+        "AIA Process Bounding Boxes"
+      ]
+    },
+    {
+      "uuid": "_a-0000edd9-a94f-8000-9bb2-011c48011c48_153929",
+      "name": "AIA_CalculateAdvancedIdpBatches",
+      "type": "Expression Rule",
+      "description": "Calculate batches for advanced idp",
+      "parameters": [],
+      "calls": [
+        "AIA_CONCURRENT_NUM_ADVANCED_IDP",
+        "AIA_GetPageCount",
+        "AIA_PAGE_BATCH_SIZE_ADVANCED_IDP"
+      ],
+      "called_by": [
+        "AIA Process Bounding Boxes",
+        "AIA_CalculateAdvancedIdpBatch"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_89906",
+      "name": "AIA_CreateAdvancedIdpValidation",
+      "type": "Expression Rule",
+      "description": "Create an advanced idp validation",
+      "parameters": [],
+      "calls": [
+        "AIA_CreateValidation",
+        "AIA_CreateValidationErrorMessage",
+        "AIA_SEVERITY_CRITICAL",
+        "AIA_VALIDATION_TYPE_ID_EXECUTION",
+        "Advanced IDP"
+      ],
+      "called_by": [
+        "AIA Process Bounding Boxes"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76653",
+      "name": "AIA_CreateValidation",
+      "type": "Expression Rule",
+      "description": "Create a validation error for instance",
+      "parameters": [],
+      "calls": [
+        "AIA_IsExtractionInstance",
+        "AIA_MODEL_TYPE_VALUES",
+        "AIA_Test_GetLatestExtractionInstance",
+        "AIA_VALIDATION_TYPE_ID_EXECUTION"
+      ],
+      "called_by": [
+        "AIA_CreateAdvancedIdpValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_90047",
+      "name": "AIA_CreateValidationErrorMessage",
+      "type": "Expression Rule",
+      "description": "Create validation error message",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_CreateAdvancedIdpValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb8-d1aa-8000-9c16-011c48011c48_155723",
+      "name": "AIA_Extraction_GenerateUuid",
+      "type": "Expression Rule",
+      "description": "Generate a span id",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_ProcessTextractOutput"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb8-d1aa-8000-9c16-011c48011c48_155954",
+      "name": "AIA_Extraction_GetRowKeys",
+      "type": "Expression Rule",
+      "description": "Get the keys from a row and sort",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_MatchTextractOutput",
+        "AIA_Extraction_ProcessTextractOutput",
+        "AIA_Extraction_ProcessTextractTable"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed21-75ea-8000-9c68-011c48011c48_299614",
+      "name": "AIA_Extraction_MatchTextractOutput",
+      "type": "Expression Rule",
+      "description": "An expression rule to match raw text output from Textract with other Textract outputs",
+      "parameters": [],
+      "calls": [
+        "AIA_Extraction_GetRowKeys",
+        "AIA_Extraction_MatchTextractOutputSingle"
+      ],
+      "called_by": [
+        "AIA_Extraction_ProcessTextractOutput"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed21-75ea-8000-9c68-011c48011c48_299602",
+      "name": "AIA_Extraction_MatchTextractOutputSingle",
+      "type": "Expression Rule",
+      "description": "An expression rule used to match an item to a list of Textract outputs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_MatchTextractOutput",
+        "AIA_Extraction_ProcessTextractOutput"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec94-6ee6-8000-9ba9-011c48011c48_39426",
+      "name": "AIA_Extraction_ProcessTextractOutput",
+      "type": "Expression Rule",
+      "description": "Process a document into a list of lines with tags",
+      "parameters": [],
+      "calls": [
+        "AIA_Extraction_GenerateUuid",
+        "AIA_Extraction_GetRowKeys",
+        "AIA_Extraction_MatchTextractOutput",
+        "AIA_Extraction_MatchTextractOutputSingle",
+        "AIA_Extraction_ProcessTextractTable",
+        "AIA_Extraction_UseBoundingBoxes",
+        "AIA_FOLDER_CLEANUP_DOCS",
+        "AIA_PAGE_BATCH_SIZE_ADVANCED_IDP",
+        "AIA_PLG_WriteFile",
+        "AIA_TEXTRACT_BLOCK_LINE",
+        "AIA_TEXTRACT_BLOCK_WORD",
+        "AIA_Test_GetLatestExtractionInstance"
+      ],
+      "called_by": [
+        "AIA Process Bounding Boxes"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb2-34d9-8000-9c14-011c48011c48_155512",
+      "name": "AIA_Extraction_ProcessTextractTable",
+      "type": "Expression Rule",
+      "description": "An expression rule used to print out results from the AIDP tables output in an HTML-style format",
+      "parameters": [],
+      "calls": [
+        "AIA_Extraction_GetRowKeys"
+      ],
+      "called_by": [
+        "AIA_Extraction_ProcessTextractOutput"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_55136",
+      "name": "AIA_Extraction_UseBoundingBoxes",
+      "type": "Expression Rule",
+      "description": "Expression to determine whether an extraction instance should use bounding boxes",
+      "parameters": [],
+      "calls": [
+        "AIA_BOOL_CAPTURE_BOUNDING_BOXES"
+      ],
+      "called_by": [
+        "AIA Process Bounding Boxes",
+        "AIA_Extraction_ProcessTextractOutput"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee52-8983-8000-9ba6-011c48011c48_27887",
+      "name": "AIA_GetDocumentMetadata",
+      "type": "Expression Rule",
+      "description": "Get document metadata",
+      "parameters": [],
+      "calls": [
+        "AIA_EML_PAGE_CHAR_COUNT"
+      ],
+      "called_by": [
+        "AIA_GetPageCount"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_82400",
+      "name": "AIA_GetPageCount",
+      "type": "Expression Rule",
+      "description": "Get page count for document",
+      "parameters": [],
+      "calls": [
+        "AIA_GetDocumentMetadata"
+      ],
+      "called_by": [
+        "AIA Process Bounding Boxes",
+        "AIA_CalculateAdvancedIdpBatches"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_85019",
+      "name": "AIA_IsExtractionInstance",
+      "type": "Expression Rule",
+      "description": "Returns true if the instance is an extraction instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_CreateValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeb3-c7af-8000-9c01-011c48011c48_157749",
+      "name": "AIA_PLG_IsAutoscaleEnabled",
+      "type": "Expression Rule",
+      "description": "Returns true if the environment has autoscale enabled",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_UTIL_ProcessModelForEach"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_184766",
+      "name": "AIA_PLG_WriteFile",
+      "type": "Expression Rule",
+      "description": "Wrapper for `writeFile` plugin function",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_ProcessTextractOutput"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40839",
+      "name": "AIA_Test_GetLatestExtractionInstance",
+      "type": "Expression Rule",
+      "description": "Get the latest extraction instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_CreateValidation",
+        "AIA_Extraction_ProcessTextractOutput"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeb8-377a-8000-9c16-011c48011c48_167255",
+      "name": "AIA_UTIL_ProcessModelForEach",
+      "type": "Expression Rule",
+      "description": "Determines the process model to run forEach regarding autoscale vs k",
+      "parameters": [],
+      "calls": [
+        "AIA_PLG_IsAutoscaleEnabled",
+        "AIA_PM_FOR_EACH_LOOP",
+        "AIA_PM_FOR_EACH_MNI"
+      ],
+      "called_by": [
+        "AIA Process Bounding Boxes"
+      ]
+    },
+    {
+      "uuid": "0006eceb-0045-8000-05d5-7f0000014e7a",
+      "name": "AIA Process Bounding Boxes",
+      "type": "Process Model",
+      "description": "Root process bounding boxes",
+      "calls": [
+        "AIA Extraction Instance",
+        "AIA_CalculateAdvancedIdpBatch",
+        "AIA_CalculateAdvancedIdpBatches",
+        "AIA_CreateAdvancedIdpValidation",
+        "AIA_Extraction_ProcessTextractOutput",
+        "AIA_Extraction_UseBoundingBoxes",
+        "AIA_GetPageCount",
+        "AIA_MODEL_TYPE_VALUES",
+        "AIA_PAGE_BATCH_SIZE_ADVANCED_IDP",
+        "AIA_PM_PROCESS_BOUNDING_BOXES",
+        "AIA_UTIL_ProcessModelForEach"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "64322398-e457-4695-87d5-09794164cf77",
+      "name": "AIA Extraction Instance",
+      "type": "Record Type",
+      "description": "Record to hold the AI Extraction scores and confidence threshold for each instance",
+      "actions": [
+        "reconcileField",
+        "reconcileUsingTestCase",
+        "runValidations",
+        "addRemoveTestCase",
+        "deleteExtractionInstance",
+        "deleteInstanceAndSkipConfirmation",
+        "updateAssociatedTestSuites"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "#\"urn:appian:translation-string:v1:ab6ce936-2015-4e58-a2d1-a10bcd2372e4\"",
+        "=#\"urn:appian:translation-string:v1:fe8f8d91-a84f-4494-9270-4959354698ce\"",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "AIA Process Bounding Boxes"
+      ]
+    },
+    {
+      "uuid": "ff252c53-64e4-4a99-8d23-8bc72a94e3fc",
+      "name": "Advanced IDP",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_CreateAdvancedIdpValidation"
+      ]
+    }
+  ]
+}

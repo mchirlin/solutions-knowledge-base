@@ -1,0 +1,283 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AIA Find Sections",
+    "parent_name": null,
+    "total_objects": 13
+  },
+  "entry_point": {
+    "complexity_score": 24.0,
+    "total_nodes": 11,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Find Sections",
+      "complexity_score": 24.0,
+      "total_nodes": 11,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Get Model Version"
+          ]
+        },
+        {
+          "name": "End Event",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Get Model Version",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Organize Sections"
+          ]
+        },
+        {
+          "name": "No Section Fields",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Add to List"
+          ]
+        },
+        {
+          "name": "Organize Sections",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Section Types"
+          ]
+        },
+        {
+          "name": "Add to List",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Event"
+          ]
+        },
+        {
+          "name": "Section Types",
+          "type": "OR_GATEWAY",
+          "next": [
+            "End Event",
+            "No Section Fields (Fields without section)",
+            "AIA Extract TOC Sections",
+            "AIA Extract Find Text Sections",
+            "Page Range Sections",
+            "End of Doc Sections"
+          ]
+        },
+        {
+          "name": "AIA Extract TOC Sections",
+          "type": "Start Process",
+          "next": [
+            "Add to List"
+          ]
+        },
+        {
+          "name": "AIA Extract Find Text Sections",
+          "type": "Start Process",
+          "next": [
+            "Add to List"
+          ]
+        },
+        {
+          "name": "Page Range Sections",
+          "type": "pdftools.ExtractPDFPageSets",
+          "next": [
+            "Add to List"
+          ]
+        },
+        {
+          "name": "End of Doc Sections",
+          "type": "pdftools.ExtractPDFPageSets",
+          "next": [
+            "Add to List"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ec60-a08d-8000-9bee-011c48011c48_121650",
+      "name": "AIA_EML_PAGE_CHAR_COUNT",
+      "type": "Constant",
+      "description": "5000",
+      "value": "5000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_GetDocumentMetadata"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_42675",
+      "name": "AIA_EXTRACTION_TYPES",
+      "type": "Constant",
+      "description": "(1) Generative AI, (2) Trained Model, (3) Rule, (4) Calculated, (5) Analyze Expense, (6) Regex, (7) Query, (8) XPath",
+      "value": [
+        "Generative AI",
+        "Trained Model",
+        "Rule",
+        "Calculated",
+        "Analyze Expense",
+        "Regex",
+        "Query",
+        "XPath"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_FilterSections"
+      ]
+    },
+    {
+      "uuid": "_a-0000ece6-6a5d-8000-9c49-011c48011c48_175464",
+      "name": "AIA_SECTION_RULE_TYPES",
+      "type": "Constant",
+      "description": "(1) TABLE_OF_CONTENTS, (2) PAGE_RANGE, (3) END_OF_DOC, (4) NO_SECTION_RULE, (5) FIND_ON_PAGE Match",
+      "value": [
+        "TABLE_OF_CONTENTS",
+        "PAGE_RANGE",
+        "END_OF_DOC",
+        "NO_SECTION_RULE",
+        "FIND_ON_PAGE"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA Find Sections",
+        "AIA_Extraction_FilterSections"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_203145",
+      "name": "AIA_EXTRACTION_MODEL_VERSION_FIELDS",
+      "type": "Expression Rule",
+      "description": "List of extraction model fields",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_GetModelVersionById"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40909",
+      "name": "AIA_ExtractJson",
+      "type": "Expression Rule",
+      "description": "Extract json from prompt builder reponse",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_FilterSections"
+      ]
+    },
+    {
+      "uuid": "_a-0000ece6-6a5d-8000-9c49-011c48011c48_175458",
+      "name": "AIA_Extraction_FilterSections",
+      "type": "Expression Rule",
+      "description": "Filter sections into groups by type",
+      "parameters": [],
+      "calls": [
+        "AIA_EXTRACTION_TYPES",
+        "AIA_ExtractJson",
+        "AIA_SECTION_RULE_TYPES",
+        "AIA_Test_GetLatestExtractionModelVersion"
+      ],
+      "called_by": [
+        "AIA Find Sections"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec5c-9eda-8000-9bec-011c48011c48_117023",
+      "name": "AIA_Extraction_GetModelVersionById",
+      "type": "Expression Rule",
+      "description": "Get model version by id",
+      "parameters": [],
+      "calls": [
+        "AIA_EXTRACTION_MODEL_VERSION_FIELDS"
+      ],
+      "called_by": [
+        "AIA Find Sections",
+        "AIA_Test_GetLatestExtractionModelVersion"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3e-060c-8000-9bb8-011c48011c48_200505",
+      "name": "AIA_Extraction_GetPageRange",
+      "type": "Expression Rule",
+      "description": "Get page range for document",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Find Sections"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecea-6c5f-8000-9c4b-011c48011c48_186476",
+      "name": "AIA_Extraction_HasSectionRule",
+      "type": "Expression Rule",
+      "description": "Does this list have a section rule of this type",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Find Sections"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee52-8983-8000-9ba6-011c48011c48_27887",
+      "name": "AIA_GetDocumentMetadata",
+      "type": "Expression Rule",
+      "description": "Get document metadata",
+      "parameters": [],
+      "calls": [
+        "AIA_EML_PAGE_CHAR_COUNT"
+      ],
+      "called_by": [
+        "AIA_GetPageCount"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_82400",
+      "name": "AIA_GetPageCount",
+      "type": "Expression Rule",
+      "description": "Get page count for document",
+      "parameters": [],
+      "calls": [
+        "AIA_GetDocumentMetadata"
+      ],
+      "called_by": [
+        "AIA Find Sections"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec36-59aa-8000-9be0-011c48011c48_53600",
+      "name": "AIA_Test_GetLatestExtractionModelVersion",
+      "type": "Expression Rule",
+      "description": "Get the latest extraction model version",
+      "parameters": [],
+      "calls": [
+        "AIA_Extraction_GetModelVersionById"
+      ],
+      "called_by": [
+        "AIA_Extraction_FilterSections"
+      ]
+    },
+    {
+      "uuid": "000dece1-b0c3-8000-0545-7f0000014e7a",
+      "name": "AIA Find Sections",
+      "type": "Process Model",
+      "description": "Find sections in document",
+      "calls": [
+        "AIA_Extraction_FilterSections",
+        "AIA_Extraction_GetModelVersionById",
+        "AIA_Extraction_GetPageRange",
+        "AIA_Extraction_HasSectionRule",
+        "AIA_GetPageCount",
+        "AIA_SECTION_RULE_TYPES"
+      ],
+      "called_by": []
+    }
+  ]
+}

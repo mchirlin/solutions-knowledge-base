@@ -1,0 +1,601 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "AIA Classification Model - #\"urn:appian:translation-string:v1:44c52f1e-e1ad-44a2-b5a3-6301dd664f16\"",
+    "parent_name": "AIA Classification Model",
+    "total_objects": 37
+  },
+  "entry_point": {
+    "action_type": "RECORD_ACTION",
+    "record_type": "AIA Classification Model",
+    "target_process": "AIA Model Trigger Create Or Update",
+    "form_interface": "AIA_ModelTrigger_RecordAction_CreateOrUpdate",
+    "expressions": {
+      "TITLE": "#\"urn:appian:translation-string:v1:44c52f1e-e1ad-44a2-b5a3-6301dd664f16\"",
+      "DESCRIPTION": null,
+      "VISIBILITY": "/*Hide create once triggers = number of avaialbe types as all new triggers will hit validation error at that point*/\nand(\n  rule!SHRD_UTIL_length(rv!record[recordType!AIA Classification Model.modelTriggers]) < rule!AIA_QR_getRefTriggerType(returnType: \"TOTAL_COUNT\"),\n  #\"urn:appian:function:v1:a:isusermemberofgroup?okey=a!isUserMemberOfGroup\"(username: loggedInUser(), groups: cons!AIA_GRP_ADMIN)\n)",
+      "CONTEXT": "{\n  cancel: null, /* Boolean */\n  modelTrigger: rule!AIA_ModelTrigger_Initialize(\n    modelRecord: rv!record\n  )\n}"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Model Trigger Create Or Update",
+      "complexity_score": 6.0,
+      "total_nodes": 4,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Cancel?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Cancel?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node",
+            "Write Records"
+          ]
+        },
+        {
+          "name": "Write Records",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000eb87-8639-8000-9bb1-011c48011c48_15114",
+      "name": "AIA_GRP_ADMIN",
+      "type": "Constant",
+      "description": "Admin group",
+      "value": "AIA Administrators",
+      "value_type": "http://www.appian.com/ae/types/2009:Group",
+      "calls": [],
+      "called_by": []
+    },
+    {
+      "uuid": "_a-0000ec5c-9eda-8000-9bec-011c48011c48_111761",
+      "name": "AIA_GRP_USERS",
+      "type": "Constant",
+      "description": "AIA Users",
+      "value": "AIA Operations",
+      "value_type": "http://www.appian.com/ae/types/2009:Group",
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTrigger_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec40-0355-8000-9be4-011c48011c48_70305",
+      "name": "AIA_MODEL_TYPE_LABELS",
+      "type": "Constant",
+      "description": "(1) Extraction, (2) Classification",
+      "value": [
+        "Extraction",
+        "Classification"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTrigger_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec40-0355-8000-9be4-011c48011c48_70311",
+      "name": "AIA_MODEL_TYPE_VALUES",
+      "type": "Constant",
+      "description": "(1) extraction, (2) classification",
+      "value": [
+        "extraction",
+        "classification"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTrigger_Initialize",
+        "AIA_ModelTrigger_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_31709",
+      "name": "AIA_REF_TRIGGER_TYPE_ID_RECONCILE",
+      "type": "Constant",
+      "description": "1 - Reconciliation",
+      "value": "1",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTrigger_Initialize"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_87189",
+      "name": "SHRD_REPORT_ALL_PM",
+      "type": "Constant",
+      "description": "All process model report",
+      "value": "_a-0000ec44-cb49-8000-9be6-011c48011c48_87170",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "SHRD_ProcessModelPicker",
+        "SHRD_SuggestMatch"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_36203",
+      "name": "AIA_ModelTrigger_Initialize",
+      "type": "Expression Rule",
+      "description": "creates a new record instance of AIA Model Trigger",
+      "parameters": [],
+      "calls": [
+        "AIA_MODEL_TYPE_VALUES",
+        "AIA_REF_TRIGGER_TYPE_ID_RECONCILE"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_36272",
+      "name": "AIA_QR_getModelTrigger",
+      "type": "Expression Rule",
+      "description": "Query record for model triggers",
+      "parameters": [],
+      "calls": [
+        "SHRD_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "AIA_ModelTrigger_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_36074",
+      "name": "AIA_QR_getRefTriggerType",
+      "type": "Expression Rule",
+      "description": "Query record for REF Trigger Type",
+      "parameters": [],
+      "calls": [
+        "SHRD_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "AIA_ModelTrigger_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_12129",
+      "name": "AIA_UTIL_LoadBrandingMap",
+      "type": "Expression Rule",
+      "description": "Returns branding data for AI Analytics in the type List of Map",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTrigger_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_87177",
+      "name": "SHRD_SuggestMatch",
+      "type": "Expression Rule",
+      "description": "Suggest matches",
+      "parameters": [],
+      "calls": [
+        "SHRD_REPORT_ALL_PM"
+      ],
+      "called_by": [
+        "SHRD_ProcessModelPicker"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_36163",
+      "name": "SHRD_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "description": "Enhanced wrapper rule around a!queryRecord()",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_QR_getModelTrigger",
+        "AIA_QR_getRefTriggerType"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee66-4fc0-8000-9baa-011c48011c48_54294",
+      "name": "SHRD_UTIL_length",
+      "type": "Expression Rule",
+      "description": "null safe length()",
+      "parameters": [],
+      "calls": [],
+      "called_by": []
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_36062",
+      "name": "AIA_ModelTrigger_RecordAction_CreateOrUpdate",
+      "type": "Interface",
+      "description": "Create or update a single instance of AIA_ModelTrigger. Always pass in with relevant model relationship set",
+      "parameters": [
+        {
+          "name": "modelTrigger",
+          "type": "urn:com:appian:recordtype:datatype:20c282f9-a7c8-4146-a217-f5cb2f5cf25f",
+          "raw_type": "urn:com:appian:recordtype:datatype:20c282f9-a7c8-4146-a217-f5cb2f5cf25f",
+          "required": false,
+          "default_value": null,
+          "description": "modelTrigger with classificationModel or extractionModel relationship defined",
+          "display_order": 0
+        },
+        {
+          "name": "cancel",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "A trigger already exists on this model with this type. Edit the existing trigger",
+        "AIA {modelType} Instance",
+        "AIA_GRP_USERS",
+        "AIA_MODEL_TYPE_LABELS",
+        "AIA_MODEL_TYPE_VALUES",
+        "AIA_QR_getModelTrigger",
+        "AIA_QR_getRefTriggerType",
+        "AIA_Template_InfoCardWithRichTextList",
+        "AIA_UTIL_LoadBrandingMap",
+        "Account for re-runs or updated runs",
+        "Add Trigger",
+        "Asynchronously",
+        "Create Model Trigger",
+        "Grid column name",
+        "Have \"View\" permissions for \"{groupName}\"",
+        "Have a single parameterised process variable named \"{pvName}\" with \"{recordName}",
+        "Run this process model",
+        "SHRD_ProcessModelPicker",
+        "Select a {label}",
+        "Synchronously",
+        "The triggered process model must",
+        "Trigger the process to run",
+        "Update Model Trigger",
+        "Update Trigger",
+        "What process do you want to start when an activity completes?",
+        "When this activity is complete",
+        "You can only create one trigger per model. If you need to trigger more than one "
+      ],
+      "called_by": [
+        "AIA Model Trigger Create Or Update"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee66-4fc0-8000-9baa-011c48011c48_57807",
+      "name": "AIA_Template_InfoCardWithRichTextList",
+      "type": "Interface",
+      "description": "Template for info card with rich text",
+      "parameters": [
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "headerText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "listTextItems",
+          "type": "http://www.appian.com/ae/types/2009:Text?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Text?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "footerText",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        }
+      ],
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTrigger_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_87164",
+      "name": "SHRD_ProcessModelPicker",
+      "type": "Interface",
+      "description": "Picker for process models",
+      "parameters": [
+        {
+          "name": "saves",
+          "type": "http://www.appian.com/ae/types/2009:Save?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Save?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "value",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": "Interger if using pm!id as value, text if using uuid",
+          "display_order": 1
+        },
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "useUuidForValue",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": "(default false) )when true, uses process model uuid for value and saveValue instead of pm!id",
+          "display_order": 3
+        },
+        {
+          "name": "required",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        }
+      ],
+      "calls": [
+        "SHRD_REPORT_ALL_PM",
+        "SHRD_SuggestMatch"
+      ],
+      "called_by": [
+        "AIA_ModelTrigger_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "0002ee64-e4eb-8000-fb1e-7f0000014e7a",
+      "name": "AIA Model Trigger Create Or Update",
+      "type": "Process Model",
+      "description": "Record action to create or update AIA Model Trigger",
+      "calls": [
+        "AIA_ModelTrigger_RecordAction_CreateOrUpdate"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "a38c1ee7-beea-410f-9789-c99731123449",
+      "name": "A trigger already exists on this model with this type. Edit the existing trigger",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTrigger_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "b6eb134e-61bf-4024-874d-f7e286013b6d",
+      "name": "AIA {modelType} Instance",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTrigger_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "8db7f737-f675-43de-95f0-7eddfbd6f7c6",
+      "name": "Account for re-runs or updated runs",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTrigger_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "b61e2603-a11d-45c5-9b89-95158ac9a1c1",
+      "name": "Add Trigger",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTrigger_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "968686e1-ab6e-42c3-aefb-986eb82ec4ad",
+      "name": "Asynchronously",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTrigger_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "912020bc-b3f2-401b-b365-52417b8bc3cc",
+      "name": "Create Model Trigger",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTrigger_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "44c52f1e-e1ad-44a2-b5a3-6301dd664f16",
+      "name": "Create Trigger",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": []
+    },
+    {
+      "uuid": "1d00013c-bedd-4682-be09-780cbfe87825",
+      "name": "Grid column name",
+      "type": "Translation String",
+      "description": "Grid column name",
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTrigger_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "0a0ab791-d5c1-4d98-b111-32d57ced8d77",
+      "name": "Have \"View\" permissions for \"{groupName}\"",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTrigger_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "6d364bbb-88d5-4358-acbc-19a8f991d6af",
+      "name": "Have a single parameterised process variable named \"{pvName}\" with \"{recordName}",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTrigger_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "5034fe0f-fbf1-4045-8659-10c830bb142b",
+      "name": "Run this process model",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTrigger_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "f744141b-3e47-4992-827f-1758bb3ff64f",
+      "name": "Select a {label}",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTrigger_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "264fd99c-7718-430c-a100-a1462914c8de",
+      "name": "Synchronously",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTrigger_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "234beecc-b00b-4265-9795-1a669109b046",
+      "name": "The triggered process model must",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTrigger_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "3860df5e-20fc-49bc-a809-db53fedd6ccc",
+      "name": "Trigger the process to run",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTrigger_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "dabdea32-f7dd-4525-98f8-a20ab1d8eedf",
+      "name": "Update Model Trigger",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTrigger_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "2e45a48f-e61c-4a91-97c0-a88282c0e76e",
+      "name": "Update Trigger",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTrigger_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "47c9430e-6a66-47d3-b66d-bf477432ffa9",
+      "name": "What process do you want to start when an activity completes?",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTrigger_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "2cf30bde-4b68-45dd-92fa-e881483f8e35",
+      "name": "When this activity is complete",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTrigger_RecordAction_CreateOrUpdate"
+      ]
+    },
+    {
+      "uuid": "b2af609b-e137-4e7e-ad01-8548395a3227",
+      "name": "You can only create one trigger per model. If you need to trigger more than one ",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTrigger_RecordAction_CreateOrUpdate"
+      ]
+    }
+  ]
+}

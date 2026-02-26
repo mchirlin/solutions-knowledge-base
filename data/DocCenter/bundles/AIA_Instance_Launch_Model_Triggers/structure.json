@@ -1,0 +1,307 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AIA Instance Launch Model Triggers",
+    "parent_name": null,
+    "total_objects": 14
+  },
+  "entry_point": {
+    "complexity_score": 11.0,
+    "total_nodes": 6,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Instance Launch Model Triggers",
+      "complexity_score": 11.0,
+      "total_nodes": 6,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Get Trigger"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "XOR",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node (No Trigger)",
+            "Synchronous Trigger",
+            "Asynchronous Trigger"
+          ]
+        },
+        {
+          "name": "Synchronous Trigger",
+          "type": "Start Process",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Asynchronous Trigger",
+          "type": "Start Process",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Get Trigger",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "XOR"
+          ]
+        }
+      ]
+    },
+    "subprocesses": [
+      {
+        "name": "AIA Extraction Run Model Version",
+        "complexity_score": 15.0,
+        "total_nodes": 8,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Initiate Extraction"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Extraction - Advanced IDP",
+            "type": "Start Process",
+            "next": [
+              "Post Process"
+            ]
+          },
+          {
+            "name": "Extraction - Standard",
+            "type": "Start Process",
+            "next": [
+              "Post Process"
+            ]
+          },
+          {
+            "name": "Post Process",
+            "type": "Start Process",
+            "next": [
+              "Save Extraction"
+            ]
+          },
+          {
+            "name": "Save Extraction",
+            "type": "Start Process",
+            "next": [
+              "End Node"
+            ]
+          },
+          {
+            "name": "Document Type",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Extraction - Advanced IDP",
+              "Extraction - Standard",
+              "Save Extraction (Has Critical Validation Error)"
+            ]
+          },
+          {
+            "name": "Initiate Extraction",
+            "type": "Start Process",
+            "next": [
+              "Document Type"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000eca0-2a2c-8000-9c0a-011c48011c48_149548",
+      "name": "AIA_ADVANCED_IDP_ENABLED",
+      "type": "Constant",
+      "description": "Is Advanced IDP enabled on the site",
+      "value": "true",
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_ShouldRunAdvancedIdp"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee52-8983-8000-9ba6-011c48011c48_27516",
+      "name": "AIA_AI_SUPPORTED_DOC_TYPES",
+      "type": "Constant",
+      "description": "AI supported document types",
+      "value": [
+        "pdf",
+        "png",
+        "jpeg",
+        "jpg",
+        "tiff"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_ShouldRunAdvancedIdp"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76666",
+      "name": "AIA_SEVERITY_CRITICAL",
+      "type": "Constant",
+      "description": "4",
+      "value": "4",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_HasCriticalErrors"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_55250",
+      "name": "AIA_Extraction_ShouldRunAdvancedIdp",
+      "type": "Expression Rule",
+      "description": "Used in the main model to determine whether to run advanced idp",
+      "parameters": [],
+      "calls": [
+        "AIA_ADVANCED_IDP_ENABLED",
+        "AIA_AI_SUPPORTED_DOC_TYPES",
+        "AIA_IsDocumentExtension"
+      ],
+      "called_by": [
+        "AIA Extraction Run Model Version"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_83881",
+      "name": "AIA_HasCriticalErrors",
+      "type": "Expression Rule",
+      "description": "Does an instance have critical errors",
+      "parameters": [],
+      "calls": [
+        "AIA_IsExtractionInstance",
+        "AIA_SEVERITY_CRITICAL",
+        "AIA_UTIL_Filter"
+      ],
+      "called_by": [
+        "AIA Extraction Run Model Version"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_182518",
+      "name": "AIA_IsDocumentExtension",
+      "type": "Expression Rule",
+      "description": "Is the document of one of the following extensions",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_ShouldRunAdvancedIdp"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_85019",
+      "name": "AIA_IsExtractionInstance",
+      "type": "Expression Rule",
+      "description": "Returns true if the instance is an extraction instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_HasCriticalErrors"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_36272",
+      "name": "AIA_QR_getModelTrigger",
+      "type": "Expression Rule",
+      "description": "Query record for model triggers",
+      "parameters": [],
+      "calls": [
+        "SHRD_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "AIA Instance Launch Model Triggers"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_26889",
+      "name": "AIA_UTIL_Filter",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_HasCriticalErrors"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_87243",
+      "name": "SHRD_ConvertProcessModelId",
+      "type": "Expression Rule",
+      "description": "Convert process model ids",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "SHRD_UTIL_getPmIdFromProcessModelUuid"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_36163",
+      "name": "SHRD_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "description": "Enhanced wrapper rule around a!queryRecord()",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_QR_getModelTrigger"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_37527",
+      "name": "SHRD_UTIL_getPmIdFromProcessModelUuid",
+      "type": "Expression Rule",
+      "description": "returns environment specific pm!id given a pm!uuid. Used to launch processes dynamically across environments",
+      "parameters": [],
+      "calls": [
+        "AIA Extraction Run Model Version",
+        "SHRD_ConvertProcessModelId"
+      ],
+      "called_by": [
+        "AIA Instance Launch Model Triggers"
+      ]
+    },
+    {
+      "uuid": "dad961d1-ef89-4f6b-9fcc-384ab2e78755",
+      "name": "AIA Extraction Run Model Version",
+      "type": "Process Model",
+      "description": "Parent process to run an extraction model version",
+      "calls": [
+        "AIA_Extraction_ShouldRunAdvancedIdp",
+        "AIA_HasCriticalErrors"
+      ],
+      "called_by": [
+        "SHRD_UTIL_getPmIdFromProcessModelUuid"
+      ]
+    },
+    {
+      "uuid": "0002ee65-70dc-8000-fb24-7f0000014e7a",
+      "name": "AIA Instance Launch Model Triggers",
+      "type": "Process Model",
+      "description": "Launches modelTriggers for an instance given triggerType",
+      "calls": [
+        "AIA_QR_getModelTrigger",
+        "SHRD_UTIL_getPmIdFromProcessModelUuid"
+      ],
+      "called_by": []
+    }
+  ]
+}

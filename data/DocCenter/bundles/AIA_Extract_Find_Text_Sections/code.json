@@ -1,0 +1,47 @@
+{
+  "_metadata": {
+    "bundle_id": "AIA_Extract_Find_Text_Sections"
+  },
+  "objects": {
+    "_a-0000ee52-8983-8000-9ba6-011c48011c48_27862": {
+      "name": "AIA_GetDocumentText",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  rule!AIA_DocIsPdf(\n    document: ri!document\n  ),\n  a!localVariables(\n    local!result: trim(getpdftext(\n      ri!document,\n      a!defaultValue(ri!startPage, 1),\n      a!defaultValue(ri!endPage, null)\n    )),\n    if(\n      a!isNullOrEmpty(stripwith(local!result, char(10))),\n      null,\n      local!result\n    )\n  ),\n  if(\n    rule!AIA_IsDocumentExtension(\n      document: ri!document,\n      extensions: cons!AIA_TEXT_BASED_EXTENSIONS\n    ),\n    readdocumentcontent(\n      txtDocument: ri!document\n    ),\n    null\n  )\n)"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_182518": {
+      "name": "AIA_IsDocumentExtension",
+      "type": "Expression Rule",
+      "sail_code": "and(\n  a!isNotNullOrEmpty(ri!document),\n  contains(\n    lower(ri!extensions),\n    lower(document(\n      ri!document,\n      \"extension\"\n    ))\n  )\n)"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_159825": {
+      "name": "AIA_DocIsPdf",
+      "type": "Expression Rule",
+      "sail_code": "rule!AIA_IsDocumentExtension(\n  document: ri!document,\n  extensions: {\"pdf\"}\n)"
+    },
+    "_a-0000ee52-8983-8000-9ba6-011c48011c48_27997": {
+      "name": "AIA_FindTextInDocument",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  rule!AIA_DocIsPdf(\n    document: ri!document\n  ),\n  index(\n    findpageswithtext(\n      ri!document,\n      ri!text\n    ),\n    1,\n    null\n  ),\n  null\n)"
+    },
+    "_a-0000ec44-cb49-8000-9be6-011c48011c48_82400": {
+      "name": "AIA_GetPageCount",
+      "type": "Expression Rule",
+      "sail_code": "rule!AIA_GetDocumentMetadata(\n  document: ri!document\n).pageCount"
+    },
+    "_a-0000ed57-e2bf-8000-9c54-011c48011c48_15219482": {
+      "name": "AIA_Extraction_FindPageRange",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!numPages: rule!AIA_GetPageCount(\n    document: ri!document\n  ),\n  local!startPage: rule!AIA_FindTextInDocument(\n    document: ri!document,\n    text: ri!sectionMap.startText\n  ),\n  local!endPageResults: rule!AIA_FindTextInDocument(\n    document: ri!document,\n    text: ri!sectionMap.endText\n  ),\n  local!endPageRejectedResults: reject(\n    fn!isnull,\n    #\"SYSTEM_SYSRULES_forEach\"(\n      local!endPageResults,\n      if(fv!item <= local!startPage, null, fv!item)\n    )\n  ),\n  local!endPage: index(local!endPageRejectedResults, 1, null),\n  #\"urn:appian:function:v1:a:update\"(\n    ri!sectionMap,\n    { \"startPage\", \"endPage\" },\n    { a!defaultValue(local!startPage, 1),  a!defaultValue(local!endPage, local!numPages) }\n  )\n)"
+    },
+    "000ced82-ea1f-8000-55ae-7f0000014e7a": {
+      "name": "AIA Extract Find Text Sections",
+      "type": "Process Model",
+      "sail_code": "// Output: ?\n#\"SYSTEM_SYSRULES_forEach\"(\n  pv!sectionsMap[cons!AIA_SECTION_RULE_TYPES[5]],\n  rule!AIA_Extraction_FindPageRange(\n    document: pv!ExtractionInstance[recordType!AIA Extraction Instance.documentId],\n    sectionMap: fv!item.rule\n  )\n)\n\n// Input: ?\n=#\"SYSTEM_SYSRULES_forEach\"( pv!sectionsMap[cons!AIA_SECTION_RULE_TYPES[5]], rule!AIA_Extraction_FindPageRange( document: pv!ExtractionInstance[recordType!AIA Extraction Instance.documentId], sectionMap: fv!item.rule ))\n\n// Output: ?\n#\"SYSTEM_SYSRULES_forEach\"(\n  ac!findTextSections,\n  recordType!AIA Extraction Instance Section(\n    recordType!AIA Extraction Instance Section.instanceId: pv!ExtractionInstance[recordType!AIA Extraction Instance.id],\n    recordType!AIA Extraction Instance Section.sectionId: pv!sectionsMap[cons!AIA_SECTION_RULE_TYPES[5]][fv!index].section[recordType!AIA Extraction Model Version Section.id],\n    recordType!AIA Extraction Instance Section.startPage: fv!item.startPage,\n    recordType!AIA Extraction Instance Section.endPage: fv!item.endPage,\n    recordType!AIA Extraction Instance Section.documentId: pv!ExtractionInstance[recordType!AIA Extraction Instance.documentId]\n  )\n)\n\n// Input: ?\n=#\"SYSTEM_SYSRULES_forEach\"( pv!findTextSections, document( pv!ExtractionInstance[recordType!AIA Extraction Instance.documentId], \"name\" ) & \"_\" & pv!findTextSections[fv!index].startText & \"_\" & pv!findTextSections[fv!index].startPage & \"-\" & pv!findTextSections[fv!index].endPage)\n\n// Input: ?\n=pv!ExtractionInstance[recordType!AIA Extraction Instance.documentId]\n\n// Input: ?\n=pv!findTextSections.startPage\n\n// Input: ?\n=pv!findTextSections.endPage\n\n// Output: ?\n#\"SYSTEM_SYSRULES_forEach\"(\n  ac!NewDocumentsCreated,\n  recordType!AIA Extraction Instance Section(\n    recordType!AIA Extraction Instance Section.instanceId: pv!ExtractionInstance[recordType!AIA Extraction Instance.id],\n    recordType!AIA Extraction Instance Section.sectionId: pv!sectionsMap[cons!AIA_SECTION_RULE_TYPES[5]][fv!index].section[recordType!AIA Extraction Model Version Section.id],\n    recordType!AIA Extraction Instance Section.startPage: pv!findTextSections[fv!index].startPage,\n    recordType!AIA Extraction Instance Section.endPage: pv!findTextSections[fv!index].endPage,\n    recordType!AIA Extraction Instance Section.documentId: fv!item\n  )\n)"
+    },
+    "_a-0000ee52-8983-8000-9ba6-011c48011c48_27887": {
+      "name": "AIA_GetDocumentMetadata",
+      "type": "Expression Rule",
+      "sail_code": "try(\n  a!match(\n    value: lower(document(ri!document, \"extension\")),\n    equals: \"pdf\",\n    then: getpdfmetadata(document: ri!document),\n    equals: \"eml\",\n    then: a!map(\n      pageCount: try(\n        tointeger(\n          len(\n            #\"SYSTEM_SYSRULES_fromJson_v1\"(reademlfile(ri!document)).body\n          ) / cons!AIA_EML_PAGE_CHAR_COUNT\n        ),\n        1\n      )\n    ),\n    default: a!map(pageCount: 1)\n  ),\n  a!map(pageCount: 1)\n)"
+    }
+  }
+}

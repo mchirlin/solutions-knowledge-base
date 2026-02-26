@@ -1,0 +1,133 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "AIA Extraction Instance - if(\n  rv!record[recordType!AIA Extraction Instance.testInstance],\n  #\"urn:appian:translation-string:v1:9ea22784-2d6a-4aaf-87bc-9cae46e740ed\",\n  #\"urn:appian:translation-string:v1:c43ce91b-bcb2-40f7-b945-b009f5b48b26\"\n)",
+    "parent_name": "AIA Extraction Instance",
+    "total_objects": 6
+  },
+  "entry_point": {
+    "action_type": "RECORD_ACTION",
+    "record_type": "AIA Extraction Instance",
+    "target_process": "AIA Extraction Instance Toggle Test Case",
+    "form_interface": null,
+    "expressions": {
+      "TITLE": "if(\n  rv!record[recordType!AIA Extraction Instance.testInstance],\n  #\"urn:appian:translation-string:v1:9ea22784-2d6a-4aaf-87bc-9cae46e740ed\",\n  #\"urn:appian:translation-string:v1:c43ce91b-bcb2-40f7-b945-b009f5b48b26\"\n)",
+      "DESCRIPTION": null,
+      "VISIBILITY": null,
+      "CONTEXT": "{\n  extractionInstance: #\"urn:appian:function:v1:a:update\"(\n    data: rv!record,\n    index: recordType!AIA Extraction Instance.testInstance,\n    value: if(\n      a!isNullOrEmpty(\n        rv!record[recordType!AIA Extraction Instance.testInstance]\n      ),\n      true,\n      not(\n        rv!record[recordType!AIA Extraction Instance.testInstance]\n      )\n    )\n  )/* AIA Extraction Instance */\n\n}"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Extraction Instance Toggle Test Case",
+      "complexity_score": 10.0,
+      "total_nodes": 6,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Write Extraction Instance"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Delete Records",
+          "type": "Delete Records",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Removing Test Case used in Suite?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node (No)",
+            "Delete Records (Yes)"
+          ]
+        },
+        {
+          "name": "Get Test Suite Instances",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Removing Test Case used in Suite?"
+          ]
+        },
+        {
+          "name": "Write Extraction Instance",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Get Test Suite Instances"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_43077",
+      "name": "AIA_Extraction_GetInstanceById",
+      "type": "Expression Rule",
+      "description": "Get extraction instance and all relationships by id",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Extraction Instance Toggle Test Case"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeb3-c7af-8000-9c01-011c48011c48_155121",
+      "name": "AIA_QR_getModelTestSuiteCase",
+      "type": "Expression Rule",
+      "description": "Query record for model test suite case",
+      "parameters": [],
+      "calls": [
+        "SHRD_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "AIA Extraction Instance Toggle Test Case"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_36163",
+      "name": "SHRD_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "description": "Enhanced wrapper rule around a!queryRecord()",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_QR_getModelTestSuiteCase"
+      ]
+    },
+    {
+      "uuid": "0003ecd7-bdda-8000-04ef-7f0000014e7a",
+      "name": "AIA Extraction Instance Toggle Test Case",
+      "type": "Process Model",
+      "description": "Toggle an Extraction Instance being listed as a test case or not a test case",
+      "calls": [
+        "AIA_Extraction_GetInstanceById",
+        "AIA_QR_getModelTestSuiteCase"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "9ea22784-2d6a-4aaf-87bc-9cae46e740ed",
+      "name": "Label for Remove as Test Case",
+      "type": "Translation String",
+      "description": "Label for Remove as Test Case",
+      "calls": [],
+      "called_by": []
+    },
+    {
+      "uuid": "c43ce91b-bcb2-40f7-b945-b009f5b48b26",
+      "name": "Label for Set as Test Case",
+      "type": "Translation String",
+      "description": "Label for Set as Test Case",
+      "calls": [],
+      "called_by": []
+    }
+  ]
+}

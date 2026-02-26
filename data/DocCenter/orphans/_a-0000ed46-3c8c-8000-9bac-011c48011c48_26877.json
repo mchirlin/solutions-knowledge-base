@@ -1,0 +1,15 @@
+{
+  "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_26877",
+  "name": "AIA_UTIL_Filter_Reducer",
+  "type": "Expression Rule",
+  "description": "Do not call this rule directly, it's only used by `AIA_UTIL_Filter`.",
+  "sail_code": "intersection(\n  ri!previousIndices,\n  if(\n    /*Null groups and documents don't filter properly, adding logic to support that*/\n    and(\n      a!isNullOrEmpty(ri!fieldValuePair.value),\n      runtimetypeof(ri!records[ri!fieldValuePair.field]) = 'type!{http://www.appian.com/ae/types/2009}Group?list'\n    ),\n    wherecontains(\n      cast(\n        'type!{http://www.appian.com/ae/types/2009}Group',\n        null\n      ),\n      ri!records[ri!fieldValuePair.field]\n    ),\n    and(\n      a!isNullOrEmpty(ri!fieldValuePair.value),\n      runtimetypeof(ri!records[ri!fieldValuePair.field]) = 'type!{http://www.appian.com/ae/types/2009}Document?list'\n    ),\n    wherecontains(\n      cast(\n        'type!{http://www.appian.com/ae/types/2009}Document',\n        null\n      ),\n      ri!records[ri!fieldValuePair.field]\n    ),\n    /*Standard filter logic*/\n    wherecontains(\n      touniformstring(ri!fieldValuePair.value),\n      touniformstring(ri!records[ri!fieldValuePair.field])\n    )\n  )\n)",
+  "calls": [],
+  "called_by": [
+    {
+      "name": "AIA_UTIL_Filter",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

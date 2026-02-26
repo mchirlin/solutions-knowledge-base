@@ -1,0 +1,235 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AIA AI Validation Rule Test Execution",
+    "parent_name": null,
+    "total_objects": 15
+  },
+  "entry_point": {
+    "complexity_score": 3.0,
+    "total_nodes": 3,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA AI Validation Rule Test Execution",
+      "complexity_score": 3.0,
+      "total_nodes": 3,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Execute Generative AI Skill"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Execute Generative AI Skill",
+          "type": "Execute Generative AI Skill",
+          "next": [
+            "End Node"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000eef3-8520-8000-9d83-011c48011c48_215728",
+      "name": "AIA_FLAG_AI_VALIDATION_RULE_SHOW_FLAG_WHEN",
+      "type": "Constant",
+      "description": "Recommended: False. When True users can instruct AI Validation Rule prompt to flag when conditions are true or false instead of defining conditions that always throw validation when true. This has shown lower accuracy and consistency so is not recommended",
+      "value": "false",
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "AIA_AiValidationRuleLlmInputForTestExecution",
+        "AIA_AiValidationRulePrompt"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec40-0355-8000-9be4-011c48011c48_70311",
+      "name": "AIA_MODEL_TYPE_VALUES",
+      "type": "Constant",
+      "description": "(1) extraction, (2) classification",
+      "value": [
+        "extraction",
+        "classification"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_CalculateAiValidationRuleValidations"
+      ]
+    },
+    {
+      "uuid": "_a-0000eead-6b09-8000-9bee-011c48011c48_149465",
+      "name": "AIA_VALIDATION_TYPE_ID_AI_VALIDATION",
+      "type": "Constant",
+      "description": "6",
+      "value": "6",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_CalculateAiValidationRuleValidations"
+      ]
+    },
+    {
+      "uuid": "_a-0000eec1-04b1-8000-9c49-011c48011c48_172827",
+      "name": "AIA_AiValidationRuleLlmInputForTestExecution",
+      "type": "Expression Rule",
+      "description": "simple text input for test execution of ai validation rule",
+      "parameters": [],
+      "calls": [
+        "AIA_FLAG_AI_VALIDATION_RULE_SHOW_FLAG_WHEN"
+      ],
+      "called_by": [
+        "AIA AI Validation Rule Test Execution"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeb2-df20-8000-9bfe-011c48011c48_154843",
+      "name": "AIA_AiValidationRulePrompt",
+      "type": "Expression Rule",
+      "description": "AI Validation Rule prompt",
+      "parameters": [],
+      "calls": [
+        "AIA_FLAG_AI_VALIDATION_RULE_SHOW_FLAG_WHEN",
+        "AIA_Test_GetLatestExtractionModelVersion"
+      ],
+      "called_by": [
+        "AIA AI Validation Rule Test Execution"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeb2-df20-8000-9bfe-011c48011c48_154851",
+      "name": "AIA_CalculateAiValidationRuleValidations",
+      "type": "Expression Rule",
+      "description": "Generates instance validations using validation rule settings and response json",
+      "parameters": [],
+      "calls": [
+        "AIA_ExtractJson",
+        "AIA_Extraction_GetModelVersionById",
+        "AIA_MODEL_TYPE_VALUES",
+        "AIA_Test_GetLatestExtractionInstanceWithFields",
+        "AIA_ToJson",
+        "AIA_VALIDATION_TYPE_ID_AI_VALIDATION"
+      ],
+      "called_by": [
+        "AIA AI Validation Rule Test Execution"
+      ]
+    },
+    {
+      "uuid": "_a-0000eed9-05f0-8000-9d10-011c48011c48_194872",
+      "name": "AIA_DefaultModel",
+      "type": "Expression Rule",
+      "description": "Default model for AIA",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA AI Validation Rule Test Execution"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_203145",
+      "name": "AIA_EXTRACTION_MODEL_VERSION_FIELDS",
+      "type": "Expression Rule",
+      "description": "List of extraction model fields",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_GetModelVersionById"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40909",
+      "name": "AIA_ExtractJson",
+      "type": "Expression Rule",
+      "description": "Extract json from prompt builder reponse",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_CalculateAiValidationRuleValidations"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_43077",
+      "name": "AIA_Extraction_GetInstanceById",
+      "type": "Expression Rule",
+      "description": "Get extraction instance and all relationships by id",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Test_GetLatestExtractionInstanceWithFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec5c-9eda-8000-9bec-011c48011c48_117023",
+      "name": "AIA_Extraction_GetModelVersionById",
+      "type": "Expression Rule",
+      "description": "Get model version by id",
+      "parameters": [],
+      "calls": [
+        "AIA_EXTRACTION_MODEL_VERSION_FIELDS"
+      ],
+      "called_by": [
+        "AIA_CalculateAiValidationRuleValidations",
+        "AIA_Test_GetLatestExtractionModelVersion"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_199422",
+      "name": "AIA_Test_GetLatestExtractionInstanceWithFields",
+      "type": "Expression Rule",
+      "description": "Get the latest extraction instance with fields",
+      "parameters": [],
+      "calls": [
+        "AIA_Extraction_GetInstanceById"
+      ],
+      "called_by": [
+        "AIA_CalculateAiValidationRuleValidations"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec36-59aa-8000-9be0-011c48011c48_53600",
+      "name": "AIA_Test_GetLatestExtractionModelVersion",
+      "type": "Expression Rule",
+      "description": "Get the latest extraction model version",
+      "parameters": [],
+      "calls": [
+        "AIA_Extraction_GetModelVersionById"
+      ],
+      "called_by": [
+        "AIA_AiValidationRulePrompt"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed16-a792-8000-9c64-011c48011c48_274759",
+      "name": "AIA_ToJson",
+      "type": "Expression Rule",
+      "description": "To json with error handling",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_CalculateAiValidationRuleValidations"
+      ]
+    },
+    {
+      "uuid": "0002eec1-06b9-8000-ff1f-7f0000014e7a",
+      "name": "AIA AI Validation Rule Test Execution",
+      "type": "Process Model",
+      "description": "runs a AI Validation rule with dummy inputs to test",
+      "calls": [
+        "AIA_AiValidationRuleLlmInputForTestExecution",
+        "AIA_AiValidationRulePrompt",
+        "AIA_CalculateAiValidationRuleValidations",
+        "AIA_DefaultModel"
+      ],
+      "called_by": []
+    }
+  ]
+}

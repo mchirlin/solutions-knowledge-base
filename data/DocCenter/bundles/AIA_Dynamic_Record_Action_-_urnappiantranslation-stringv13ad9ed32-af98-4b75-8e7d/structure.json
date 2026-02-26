@@ -1,0 +1,298 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "AIA Dynamic Record Action - #\"urn:appian:translation-string:v1:3ad9ed32-af98-4b75-8e7d-32df3998181f\"",
+    "parent_name": "AIA Dynamic Record Action",
+    "total_objects": 17
+  },
+  "entry_point": {
+    "action_type": "RECORD_ACTION",
+    "record_type": "AIA Dynamic Record Action",
+    "target_process": "AIA Delete Instances",
+    "form_interface": "AIA_Instance_RecordAction_Delete",
+    "expressions": {
+      "TITLE": "#\"urn:appian:translation-string:v1:3ad9ed32-af98-4b75-8e7d-32df3998181f\"",
+      "DESCRIPTION": null,
+      "VISIBILITY": "=#\"urn:appian:function:v1:a:isusermemberofgroup?okey=a!isUserMemberOfGroup\"(\n  username: loggedInUser(),\n  groups: cons!AIA_GRP_ADMIN\n)",
+      "CONTEXT": "a!localVariables(\n  local!map: #\"SYSTEM_SYSRULES_fromJson_v1\"(rv!identifier),\n  {\n    ExtractionInstances: if(\n      local!map.type = cons!AIA_MODEL_TYPE_VALUES[1],\n      rule!AIA_getExtractionInstancesForDeletion(\n        instanceIds: local!map.ids\n      ),\n      null\n    ),\n    ClassificationInstances: if(\n      local!map.type = cons!AIA_MODEL_TYPE_VALUES[2],\n      #\"SYSTEM_SYSRULES_forEach\"(\n        local!map.ids,\n        recordType!AIA Classification Instance(\n          recordType!AIA Classification Instance.id: fv!item\n        )\n      ),\n      null\n    )\n  }\n)"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Delete Instances",
+      "complexity_score": 9.0,
+      "total_nodes": 5,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Cancel?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Delete Extraction Instances",
+          "type": "Start Process",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Cancel?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Delete Extraction Instances",
+            "End Node",
+            "Delete Classification Instances"
+          ]
+        },
+        {
+          "name": "Delete Classification Instances",
+          "type": "Start Process",
+          "next": [
+            "End Node"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000eb87-8639-8000-9bb1-011c48011c48_15114",
+      "name": "AIA_GRP_ADMIN",
+      "type": "Constant",
+      "description": "Admin group",
+      "value": "AIA Administrators",
+      "value_type": "http://www.appian.com/ae/types/2009:Group",
+      "calls": [],
+      "called_by": []
+    },
+    {
+      "uuid": "_a-0000ec40-0355-8000-9be4-011c48011c48_70311",
+      "name": "AIA_MODEL_TYPE_VALUES",
+      "type": "Constant",
+      "description": "(1) extraction, (2) classification",
+      "value": [
+        "extraction",
+        "classification"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": []
+    },
+    {
+      "uuid": "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_203500",
+      "name": "AIA_EXTRACTION_INSTANCE_FIELDS",
+      "type": "Expression Rule",
+      "description": "Instance fields for reconciliation",
+      "parameters": [],
+      "calls": [
+        "AIA Extraction Instance"
+      ],
+      "called_by": [
+        "AIA_getExtractionInstancesGeneric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_12129",
+      "name": "AIA_UTIL_LoadBrandingMap",
+      "type": "Expression Rule",
+      "description": "Returns branding data for AI Analytics in the type List of Map",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Instance_RecordAction_Delete"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3e-060c-8000-9bb8-011c48011c48_201634",
+      "name": "AIA_getExtractionInstancesForDeletion",
+      "type": "Expression Rule",
+      "description": "query extraction instances with correct fields for delete process. Must provide either instance ids, model version ids, or model ids",
+      "parameters": [],
+      "calls": [
+        "AIA_getExtractionInstancesGeneric"
+      ],
+      "called_by": [
+        "AIA Extraction Instance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef4f-92e1-8000-a023-011c48011c48_496115",
+      "name": "AIA_getExtractionInstancesGeneric",
+      "type": "Expression Rule",
+      "description": "query extraction instances. Generally nested within more specific query rule or used for 1 off filter scenerios",
+      "parameters": [],
+      "calls": [
+        "AIA_EXTRACTION_INSTANCE_FIELDS",
+        "SHRD_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "AIA_getExtractionInstancesForDeletion"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_36163",
+      "name": "SHRD_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "description": "Enhanced wrapper rule around a!queryRecord()",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_getExtractionInstancesGeneric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_64115",
+      "name": "AIA_Instance_RecordAction_Delete",
+      "type": "Interface",
+      "description": "Interface for Delete Instance Record Action",
+      "parameters": [
+        {
+          "name": "cancel",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "isMultiple",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AIA_UTIL_LoadBrandingMap",
+        "Are you sure you want to delete these instances?",
+        "Delete Instances",
+        "Label for Are you sure you want to delete this instance?",
+        "Label for Cancel",
+        "Label for Delete",
+        "Label for Delete Instance",
+        "Label for The record data will be permanently deleted"
+      ],
+      "called_by": [
+        "AIA Delete Instances"
+      ]
+    },
+    {
+      "uuid": "0002ee7c-f829-8000-fc77-7f0000014e7a",
+      "name": "AIA Delete Instances",
+      "type": "Process Model",
+      "description": "Delete multiple instances",
+      "calls": [
+        "AIA_Instance_RecordAction_Delete"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "64322398-e457-4695-87d5-09794164cf77",
+      "name": "AIA Extraction Instance",
+      "type": "Record Type",
+      "description": "Record to hold the AI Extraction scores and confidence threshold for each instance",
+      "actions": [
+        "reconcileField",
+        "reconcileUsingTestCase",
+        "runValidations",
+        "addRemoveTestCase",
+        "deleteExtractionInstance",
+        "deleteInstanceAndSkipConfirmation",
+        "updateAssociatedTestSuites"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "#\"urn:appian:translation-string:v1:ab6ce936-2015-4e58-a2d1-a10bcd2372e4\"",
+        "=#\"urn:appian:translation-string:v1:fe8f8d91-a84f-4494-9270-4959354698ce\"",
+        "List View"
+      ],
+      "calls": [
+        "AIA_getExtractionInstancesForDeletion",
+        "Label for Delete Instance"
+      ],
+      "called_by": [
+        "AIA_EXTRACTION_INSTANCE_FIELDS"
+      ]
+    },
+    {
+      "uuid": "6b25f699-24a7-43ec-8e6a-0cda28dfb526",
+      "name": "Are you sure you want to delete these instances?",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Instance_RecordAction_Delete"
+      ]
+    },
+    {
+      "uuid": "3ad9ed32-af98-4b75-8e7d-32df3998181f",
+      "name": "Delete Instances",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Instance_RecordAction_Delete"
+      ]
+    },
+    {
+      "uuid": "5f436bae-76c9-47fb-b0c3-21d86c48d948",
+      "name": "Label for Are you sure you want to delete this instance?",
+      "type": "Translation String",
+      "description": "Label for Are you sure you want to delete this instance?",
+      "calls": [],
+      "called_by": [
+        "AIA_Instance_RecordAction_Delete"
+      ]
+    },
+    {
+      "uuid": "df61ccad-fe9a-4d7a-ba9a-d89b08f3467a",
+      "name": "Label for Cancel",
+      "type": "Translation String",
+      "description": "Label for Cancel",
+      "calls": [],
+      "called_by": [
+        "AIA_Instance_RecordAction_Delete"
+      ]
+    },
+    {
+      "uuid": "81c7b8e7-9c7e-46e7-aac2-ad9c55bfcfb7",
+      "name": "Label for Delete",
+      "type": "Translation String",
+      "description": "Label for Delete",
+      "calls": [],
+      "called_by": [
+        "AIA_Instance_RecordAction_Delete"
+      ]
+    },
+    {
+      "uuid": "6d27fe43-6b34-4c85-b3d4-6810965d1899",
+      "name": "Label for Delete Instance",
+      "type": "Translation String",
+      "description": "Label for Delete Instance",
+      "calls": [],
+      "called_by": [
+        "AIA Extraction Instance",
+        "AIA_Instance_RecordAction_Delete"
+      ]
+    },
+    {
+      "uuid": "fa73b0e7-6024-45f7-898e-1e3cc8aab687",
+      "name": "Label for The record data will be permanently deleted",
+      "type": "Translation String",
+      "description": "Label for The record data will be permanently deleted",
+      "calls": [],
+      "called_by": [
+        "AIA_Instance_RecordAction_Delete"
+      ]
+    }
+  ]
+}

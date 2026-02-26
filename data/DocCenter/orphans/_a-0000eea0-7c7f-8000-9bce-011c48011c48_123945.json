@@ -1,0 +1,25 @@
+{
+  "uuid": "_a-0000eea0-7c7f-8000-9bce-011c48011c48_123945",
+  "name": "AIA_AiReviewDisplayMessage",
+  "type": "Expression Rule",
+  "description": "Display message for ai review",
+  "sail_code": "a!localVariables(\n  local!map: #\"SYSTEM_SYSRULES_fromJson_v1\"(\n    ri!validation[recordType!AIA Instance Validation Error.message]\n  ),\n  {\n    #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n      text: {\n        #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n          text: ri!validation[recordType!AIA Instance Validation Error.instanceField.modelVersionField.label],\n          style: \"STRONG\"\n        ),\n        \": \"\n      },\n      showWhen: a!isNotNullOrEmpty(ri!validation[recordType!AIA Instance Validation Error.instanceField]),\n    ),\n    if(\n      a!isNotNullOrEmpty(\n        ri!validation[recordType!AIA Instance Validation Error.messageDocId]\n      ),\n      #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n        text: #\"urn:appian:translation-string:v1:132556d8-096e-417f-9734-027b321eaf4c\",\n        style: \"STRONG\"\n      ),\n      #\"urn:appian:translation-string:v1:b073dfd2-a6d8-431e-afc0-bde8490ec3b4\" & \" \"\n    ),\n    #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n      style: \"STRONG\",\n      text: rule!AIA_DisplayPossibleArray(\n        value: local!map.suggestedValue\n      ),\n      showWhen: a!isNullOrEmpty(\n        ri!validation[recordType!AIA Instance Validation Error.messageDocId]\n      )\n    ),\n    char(\n      10\n    ),\n    #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n      text: rule!AIA_DisplayPossibleArray(\n        value: local!map.reasoning\n      ),\n      size: \"SMALL\",\n      color: ri!brandingMap.Gray3\n    )\n  }\n)",
+  "calls": [
+    {
+      "name": "AIA_DisplayPossibleArray",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Table mismatch",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AI suggests",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

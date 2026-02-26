@@ -1,0 +1,21 @@
+{
+  "uuid": "_a-0000ed16-a792-8000-9c64-011c48011c48_267451",
+  "name": "AIA_RULE_DynamicOperatorDropdown",
+  "type": "Interface",
+  "description": "Dropdown component to select operators based on a data type (int, decimal, date, etc.)",
+  "sail_code": "a!localVariables(\n  local!operators: if(\n    a!isNullOrEmpty(ri!dataTypeId),\n    rule!AIA_RULE_ENUM_Operators(),\n    reject(\n      fn!isnull,\n      #\"SYSTEM_SYSRULES_forEach\"(\n        rule!AIA_RULE_ENUM_Operators(),\n        if(\n          contains(tointeger(fv!item.validTypes), ri!dataTypeId),\n          fv!item,\n          null\n        )\n      )\n    )\n  ),\n  #\"SYSTEM_SYSRULES_dropdownField_v1\"(\n    label: ri!label,\n    labelPosition: ri!labelPosition,\n    choiceLabels: index(local!operators, \"label\", null),\n    choiceValues: local!operators,\n    instructions: ri!instructions,\n    helpTooltip: ri!helpTooltip,\n    placeholder: \"Select an operator\",\n    value: displayvalue(\n      ri!value,\n      index(local!operators, \"operator\", null),\n      local!operators,\n      null\n    ),\n    saveInto: {\n      a!save(\n        ri!saveInto,\n        save!value.operator\n      )\n    },\n    searchDisplay: ri!searchDisplay,\n    showWhen: ri!showWhen,\n    required: ri!required,\n    requiredMessage: ri!requiredMessage,\n    disabled: ri!disabled,\n    validations: ri!validations,\n    validationGroup: ri!validationGroup,\n    accessibilityText: ri!accessibilityText\n  )\n)",
+  "calls": [
+    {
+      "name": "AIA_RULE_ENUM_Operators",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AIA_RULE_DynamicComponents",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

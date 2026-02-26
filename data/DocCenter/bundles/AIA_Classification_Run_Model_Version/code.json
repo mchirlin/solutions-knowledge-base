@@ -1,0 +1,37 @@
+{
+  "_metadata": {
+    "bundle_id": "AIA_Classification_Run_Model_Version"
+  },
+  "objects": {
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_85019": {
+      "name": "AIA_IsExtractionInstance",
+      "type": "Expression Rule",
+      "sail_code": "runtimetypeof(\n  ri!Instance\n) = typeof(\n  recordType!AIA Extraction Instance()\n)"
+    },
+    "5c825cfa-d291-4cf3-8c6b-4de803ee6781": {
+      "name": "AIA Classification Run Model Version",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n=pv!ClassificationInstance\n\n// Input: ?\n=pv!ClassificationInstance[recordType!AIA Classification Instance.documentId]\n\n// Input: ?\n=pv!modelKey\n\n// Input: ?\n=pv!promptResponse\n\n// Output: ?\nac!ProcessInfo.pv.ClassificationInstance\n\n// Input: ?\n=pv!document\n\n// Input: ?\n=pv!input\n\n// Input: ?\n=pv!isDocumentTestCase\n\n// Input: ?\npv!modelKey\n\n// Input: ?\n=pv!modelVersionId\n\n// Output: ?\nac!ProcessInfo.pv.ClassificationInstance\n\n// Input: ?\n=pv!ClassificationInstance\n\n// Output: ?\nac!ProcessInfo.pv.response\n\n// Output: ?\nac!ProcessInfo.pv.ClassificationInstance"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_182518": {
+      "name": "AIA_IsDocumentExtension",
+      "type": "Expression Rule",
+      "sail_code": "and(\n  a!isNotNullOrEmpty(ri!document),\n  contains(\n    lower(ri!extensions),\n    lower(document(\n      ri!document,\n      \"extension\"\n    ))\n  )\n)"
+    },
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_83881": {
+      "name": "AIA_HasCriticalErrors",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!relationship: if(\n    rule!AIA_IsExtractionInstance(Instance: ri!Instance),\n    recordType!AIA Extraction Instance.validations,\n    recordType!AIA Classification Instance.validations\n  ),\n  local!criticalErrors: rule!AIA_UTIL_Filter(\n    records: a!defaultValue(ri!Validations, ri!Instance[local!relationship]),\n    field: recordType!AIA Instance Validation Error.severity,\n    value: cons!AIA_SEVERITY_CRITICAL,\n    filterType: \"FILTER\"\n  ),\n  and(\n    a!isNotNullOrEmpty(\n      local!criticalErrors\n    ),\n    length(\n      local!criticalErrors\n    ) > 0\n  )\n)"
+    },
+    "_a-0000edd9-a94f-8000-9bb2-011c48011c48_123689": {
+      "name": "AIA_Classification_ShouldRun",
+      "type": "Expression Rule",
+      "sail_code": "and(\n  a!isNotNullOrEmpty(ri!ClassificationInstance[recordType!AIA Classification Instance.documentId]),\n  or(\n    rule!AIA_IsDocumentExtension(\n      document: ri!ClassificationInstance[recordType!AIA Classification Instance.documentId],\n      extensions: {\n        \"pdf\",\n        \"eml\",\n        cons!AIA_TEXT_BASED_EXTENSIONS\n      }\n    )\n  )\n)"
+    },
+    "_a-0000ed46-3c8c-8000-9bac-011c48011c48_26889": {
+      "name": "AIA_UTIL_Filter",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!fieldValuePairs: a!defaultValue(\n    ri!fieldValuePairs,\n    #\"SYSTEM_SYSRULES_forEach\"(\n      items: a!flatten(ri!field),\n      expression: a!map(\n        field: fv!item,\n        value: if(\n          fv!itemCount = 1,\n          ri!value,\n          index(a!flatten(ri!value), fv!index, null)\n        )\n      )\n    )\n  ),\n  local!matchIndices: if(\n    a!isNullOrEmpty(a!flatten(ri!records)),\n    tointeger({}),\n    reduce(\n      rule!AIA_UTIL_Filter_Reducer(\n        previousIndices: _,\n        records: a!flatten(ri!records),\n        fieldValuePair: _\n      ),\n      enumerate(count(a!flatten(ri!records))) + 1,\n      local!fieldValuePairs\n    )\n  ),\n  local!rejectIndices: difference(\n    if(\n      a!isNullOrEmpty(ri!records),\n      tointeger({}),\n      enumerate(count(a!flatten(ri!records))) + 1\n    ),\n    local!matchIndices\n  ),\n  local!matches: cast(\n    runtimetypeof(ri!records),\n    index(ri!records, local!matchIndices, {})\n  ),\n  local!rejects: cast(\n    runtimetypeof(ri!records),\n    index(ri!records, local!rejectIndices, {})\n  ),\n  a!match(\n    value: a!defaultValue(ri!filterType, \"FILTER\"),\n    equals: \"FILTER\",\n    then: local!matches,\n    equals: \"REJECT\",\n    then: local!rejects,\n    equals: \"FIRST_MATCH\",\n    then: index(local!matches, 1, null),\n    equals: \"FIRST_REJECT\",\n    then: index(local!rejects, 1, null),\n    equals: \"MATCH_COUNT\",\n    then: count(local!matchIndices),\n    equals: \"REJECT_COUNT\",\n    then: count(local!rejectIndices),\n    equals: \"MATCH_INDICES\",\n    then: local!matchIndices,\n    equals: \"REJECT_INDICES\",\n    then: local!rejectIndices,\n    equals: \"FULL_RESULT\",\n    then: a!map(\n      matches: local!matches,\n      rejects: local!rejects,\n      firstMatch: index(local!matches, 1, null),\n      firstReject: index(local!rejects, 1, null),\n      matchCount: count(local!matchIndices),\n      rejectCount: count(local!rejectIndices),\n      matchIndices: local!matchIndices,\n      rejectIndices: local!rejectIndices\n    ),\n    default: fn!error(\n      \"Invalid filterType, must be one of: FILTER, REJECT, FIRST_MATCH, FIRST_REJECT, MATCH_COUNT, REJECT_COUNT, MATCH_INDICES, REJECT_INDICES, FULL_RESULT\"\n    )\n  )\n)"
+    }
+  }
+}

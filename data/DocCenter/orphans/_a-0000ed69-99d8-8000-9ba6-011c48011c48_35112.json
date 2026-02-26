@@ -1,0 +1,190 @@
+{
+  "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_35112",
+  "name": "AIA_ClassificationModelVersion_RecordAction_CreateUpdateVersion",
+  "type": "Interface",
+  "description": "Form interface for creating or updating Classification Model Versions as an action",
+  "sail_code": "a!localVariables(\n  /* This is here to force rv!record to pull this field */\n  local!neededFields: {\n    ri!classificationModelVersion[recordType!AIA Classification Model Version.model.key],\n\n  },\n  local!loggedInUser: loggedInUser(),\n  local!brandingMap: rule!AIA_UTIL_LoadBrandingMap(),\n  /*Current Tab Default 1*/\n  local!currentTab: 1,\n  /*Flag Variable to show Generate Field Screen*/\n  local!tabs: a!refreshVariable(\n    value: {\n      /*Fields*/\n      a!map(\n        label: #\"urn:appian:translation-string:v1:1b70fe4e-16c8-4dc8-90c0-094ca2ed8e4d\",\n        count: if(\n          a!isNotNullOrEmpty(\n            ri!classificationModelVersion[recordType!AIA Classification Model Version.categories]\n          ),\n          length(\n            ri!classificationModelVersion[recordType!AIA Classification Model Version.categories]\n          ),\n          \"\"\n        )\n      ),\n      /*Prompts*/\n      a!map(\n        label: #\"urn:appian:translation-string:v1:ab6ce936-2015-4e58-a2d1-a10bcd2372e4\",\n        count: {}/*No Count Needed for Prompts*/\n\n      ),\n      /*Examples*/\n      a!map(\n        label: #\"urn:appian:translation-string:v1:50f1d007-13c9-4e75-b540-e96bc09a3968\",\n        count: if(\n          a!isNotNullOrEmpty(\n            ri!classificationModelVersion[recordType!AIA Classification Model Version.examples]\n          ),\n          length(\n            ri!classificationModelVersion[recordType!AIA Classification Model Version.examples]\n          ),\n          \"\"\n        )\n      )\n    },\n    refreshAlways: true()\n  ),\n  /*Form Validations*/\n  #\"SYSTEM_SYSRULES_formLayout_v1\"(\n    /*Form Header*/\n    label: if(\n      toboolean(ri!isUpdate),\n      #\"urn:appian:translation-string:v1:81da942d-896a-4a5d-952e-3b1f5df2a795\",\n      #\"urn:appian:translation-string:v1:d600c396-4841-4bb0-a652-1704ae5276ef\"\n    ),\n    /*Contents*/\n    contents: {\n      #\"SYSTEM_SYSRULES_columnsLayout\"(\n        columns: {\n          #\"SYSTEM_SYSRULES_columnLayout\"(\n            contents: {\n              #\"SYSTEM_SYSRULES_paragraphField\"(\n                label: #\"urn:appian:translation-string:v1:4ee436fb-4630-4e58-b7ec-57de91253271\",\n                helpTooltip: #\"urn:appian:translation-string:v1:4f7e9a06-667a-4ef0-a0b7-1bfac9720600\",\n                value: ri!classificationModelVersion[recordType!AIA Classification Model Version.updates],\n                saveInto: a!save(\n                  ri!classificationModelVersion[recordType!AIA Classification Model Version.updates],\n                  trim(save!value)\n                ),\n                characterLimit: 4000,\n                height: \"SHORT\"\n              ),\n              rule!AIA_Classification_Sub_ModelAdvancedSettings(\n                ClassificationModelVersion: ri!classificationModelVersion,\n                brandingMap: local!brandingMap\n              ),\n              #\"SYSTEM_SYSRULES_richTextDisplayField\"(),\n              rule!AIA_UTIL_cardAsTabs(\n                tabs: local!tabs,\n                currentTab: local!currentTab,\n                brandingMap: local!brandingMap\n              ),\n              #\"SYSTEM_SYSRULES_cardLayout\"(\n                contents: a!match(\n                  value: local!currentTab,\n                  equals: 1,\n                  /*Options*/\n                  then: {\n                    rule!AIA_ClassificationModelVersion_Sub_AllowMultipleOutputsComponent(\n                      classificationModelVersion: ri!classificationModelVersion,\n                      brandingMap: local!brandingMap,\n                      showWhen: not(ri!isUpdate)\n                    ),\n                    rule!AIA_ClassificationModelVersion_Sub_ConfigureOptions(\n                      classficationModelVersion: ri!classificationModelVersion,\n                      brandingMap: local!brandingMap,\n                      deletedOptionsRecord: ri!deletedOptionsRecords\n                    )\n                  },\n                  equals: 2,\n                  /*Prompts*/\n                  then: rule!AIA_ClassificationModelVersion_Sub_Prompting(\n                    classificationModelVersion: ri!classificationModelVersion,\n                    brandingMap: local!brandingMap\n                  ),\n                  default: rule!AIA_ClassificationModelVersion_Sub_PromptExamples(\n                    deletedExamples: ri!deletedExamples,\n                    brandingMap: local!brandingMap,\n                    classificationModelVersion: ri!classificationModelVersion\n                  )\n                ),\n                style: local!brandingMap.AppianBackground,\n                shape: local!brandingMap.CardShape,\n                padding: \"STANDARD\",\n                showBorder: local!brandingMap.CardShowBorder\n              )\n            },\n            width: if(\n              #\"SYSTEM_SYSRULES_isPageWidth\"({ \"DESKTOP\", \"DESKTOP_WIDE\" }),\n              \"2X\",\n              \"AUTO\"\n            )\n          ),\n          #\"SYSTEM_SYSRULES_columnLayout\"(\n            contents: {\n              #\"SYSTEM_SYSRULES_cardLayout\"(\n                contents: {\n                  #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                    label: #\"urn:appian:translation-string:v1:cb654175-570d-46df-b159-84c82f562773\",\n                    marginBelow: \"LESS\"\n                  ),\n                  /*Model Name*/\n                  #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n                    items: {\n                      #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                        item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                          labelPosition: \"COLLAPSED\",\n                          value: #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                            text: {\n                              #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                                text: #\"urn:appian:translation-string:v1:1d2ee947-3116-4cca-8a1f-26fe5bcc2914\"\n                              )\n                            },\n                            color: local!brandingMap.Gray3\n                          )\n                        )\n                      ),\n                      #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                        item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                          labelPosition: \"COLLAPSED\",\n                          value: {\n                            #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                              text: ri!classificationModelVersion[recordType!AIA Classification Model Version.model.name],\n                              color: local!brandingMap.Gray4\n                            )\n                          }\n                        )\n                      )\n                    },\n                    alignVertical: \"MIDDLE\"\n                  ),\n                  /*Version Id*/\n                  #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n                    items: {\n                      #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                        item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                          labelPosition: \"COLLAPSED\",\n                          value: #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                            text: {\n                              #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                                text: #\"urn:appian:translation-string:v1:e24c2b1c-6da7-420c-8a1d-e1d18899fab5\"\n                              )\n                            },\n                            color: local!brandingMap.Gray3\n                          )\n                        )\n                      ),\n                      #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                        item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                          labelPosition: \"COLLAPSED\",\n                          value: {\n                            #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                              text: ri!classificationModelVersion[recordType!AIA Classification Model Version.versionId],\n                              color: local!brandingMap.Gray4\n                            )\n                          }\n                        )\n                      )\n                    },\n                    alignVertical: \"MIDDLE\"\n                  ),\n                  /*Status*/\n                  #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n                    items: {\n                      #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                        item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                          labelPosition: \"COLLAPSED\",\n                          value: #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                            text: {\n                              #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                                text: #\"urn:appian:translation-string:v1:34413645-ef22-4a94-8709-e4cae57e6a92\"\n                              )\n                            },\n                            color: local!brandingMap.Gray3\n                          )\n                        )\n                      ),\n                      #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                        item: rule!AIA_displayVersionStatus(\n                          versionStatus: ri!classificationModelVersion[recordType!AIA Classification Model Version.status],\n                          brandingMap: local!brandingMap\n                        )\n                      )\n                    },\n                    alignVertical: \"MIDDLE\"\n                  ),\n                  /*Allow Multiple Outputs*/\n                  #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n                    showWhen: ri!isUpdate,\n                    items: {\n                      #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                        item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                          labelPosition: \"COLLAPSED\",\n                          value: #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                            text: {\n                              #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                                text: #\"urn:appian:translation-string:v1:aa3725db-5df9-4b9f-9caa-8e203e558de8\"\n                              )\n                            },\n                            color: local!brandingMap.Gray3\n                          )\n                        )\n                      ),\n                      #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                        item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                          labelPosition: \"COLLAPSED\",\n                          value: {\n                            #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                              text: if(\n                                ri!classificationModelVersion[recordType!AIA Classification Model Version.allowMultipleOutputs] = true,\n                                #\"urn:appian:translation-string:v1:6bd0443a-1d14-4267-99bb-364de260265b\",\n                                #\"urn:appian:translation-string:v1:9483f079-c28d-4a40-bafa-ecc024a55d87\"\n                              ),\n                              color: local!brandingMap.Gray4\n                            )\n                          }\n                        )\n                      )\n                    },\n                    alignVertical: \"MIDDLE\"\n                  )\n                },\n                style: local!brandingMap.AppianBackground,\n                shape: local!brandingMap.CardShape,\n                padding: \"STANDARD\",\n                marginBelow: \"STANDARD\",\n                showBorder: local!brandingMap.CardShowBorder\n              ),\n              #\"SYSTEM_SYSRULES_cardLayout\"(\n                contents: {\n                  #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                    labelPosition: \"COLLAPSED\",\n                    value: {\n                      #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                        text: #\"urn:appian:translation-string:v1:acdd64f3-7e07-478f-afb6-e00ac699adff\",\n                        size: \"STANDARD\",\n                        style: \"STRONG\"\n                      ),\n                      char(10),\n                      #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                        text: rule!AIA_GetLLMName(\n                          llm: a!defaultValue(\n                            ri!classificationModelVersion[recordType!AIA Classification Model Version.llm],\n                            rule!AIA_DefaultModel()\n                          )\n                        )\n                      )\n                    }\n                  ),\n                  #\"SYSTEM_SYSRULES_paragraphField\"(\n                    value: rule!AIA_Classification_GeneratePrompt(\n                      modelVersion: ri!classificationModelVersion\n                    ),\n                    readOnly: true\n                  )\n                },\n                style: local!brandingMap.AppianBackground,\n                shape: local!brandingMap.CardShape,\n                padding: \"STANDARD\",\n                marginBelow: \"STANDARD\",\n                showBorder: local!brandingMap.CardShowBorder\n              )\n            },\n            width: if(\n              #\"SYSTEM_SYSRULES_isPageWidth\"({ \"DESKTOP\", \"DESKTOP_WIDE\" }),\n              \"1X\",\n              \"MEDIUM\"\n            )\n          )\n        }\n      )\n    },\n    /*Buttons*/\n    buttons: #\"SYSTEM_SYSRULES_ButtonLayout\"(\n      primaryButtons: {\n        /*Save*/\n        #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n          label: if(\n            ri!isUpdate,\n            #\"urn:appian:translation-string:v1:25a51cae-0560-410b-9b56-ba2b024e6364\",\n            #\"urn:appian:translation-string:v1:4d40defb-10bc-4a8a-bd4e-a7d76f054fdc\"\n          ),\n          saveInto: {\n            a!save(\n              ri!classificationModelVersion,\n              if(\n                ri!isUpdate,\n                #\"urn:appian:function:v1:a:update\"(\n                  ri!classificationModelVersion,\n                  {\n                    recordType!AIA Classification Model Version.modifiedOn,\n                    recordType!AIA Classification Model Version.modifiedBy\n                  },\n                  { now(), loggedInUser() }\n                ),\n                #\"urn:appian:function:v1:a:update\"(\n                  ri!classificationModelVersion,\n                  {\n                    recordType!AIA Classification Model Version.createdBy,\n                    recordType!AIA Classification Model Version.createdOn,\n                    recordType!AIA Classification Model Version.modifiedOn,\n                    recordType!AIA Classification Model Version.modifiedBy\n                  },\n                  {\n                    loggedInUser(),\n                    now(),\n                    now(),\n                    loggedInUser()\n                  }\n                )\n              )\n            )\n          },\n          submit: true,\n          style: if(\n            ri!classificationModelVersion[recordType!AIA Classification Model Version.status] = cons!AIA_MODEL_VERSION_STATUS_DRAFT,\n            \"OUTLINE\",\n            \"SOLID\"\n          ),\n          validate: true\n        ),\n        /*Save and Publish*/\n        #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n          label: #\"urn:appian:translation-string:v1:9f94e9ef-3f0d-4372-b9ea-cc03293e9c8e\",\n          saveInto: {\n            a!save(\n              ri!classificationModelVersion,\n              if(\n                ri!isUpdate,\n                #\"urn:appian:function:v1:a:update\"(\n                  ri!classificationModelVersion,\n                  {\n                    recordType!AIA Classification Model Version.status,\n                    recordType!AIA Classification Model Version.createdBy,\n                    recordType!AIA Classification Model Version.createdOn\n\n                  },\n                  {\n                    cons!AIA_MODEL_VERSION_STATUS_PUBLISHED,\n                    loggedInUser(),\n                    now()\n                  }\n                ),\n                #\"urn:appian:function:v1:a:update\"(\n                  ri!classificationModelVersion,\n                  {\n                    recordType!AIA Classification Model Version.status,\n                    recordType!AIA Classification Model Version.createdBy,\n                    recordType!AIA Classification Model Version.createdOn,\n                    recordType!AIA Classification Model Version.modifiedOn,\n                    recordType!AIA Classification Model Version.modifiedBy\n                  },\n                  {\n                    cons!AIA_MODEL_VERSION_STATUS_PUBLISHED,\n                    loggedInUser(),\n                    now(),\n                    now(),\n                    loggedInUser()\n                  }\n                )\n              )\n            )\n          },\n          submit: true,\n          style: \"SOLID\",\n          showWhen: ri!classificationModelVersion[recordType!AIA Classification Model Version.status] = cons!AIA_MODEL_VERSION_STATUS_DRAFT,\n          validate: true\n        )\n      },\n      /*Cancel*/\n      secondaryButtons: #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n        label: #\"urn:appian:translation-string:v1:df61ccad-fe9a-4d7a-ba9a-d89b08f3467a\",\n        value: null,\n        saveInto: ri!classificationModelVersion,\n        submit: true,\n        style: \"OUTLINE\",\n        validate: false\n      )\n    ),\n    /*Validations*/\n    validations: {\n      rule!AIA_ClassificationModelVersion_Sub_ValidateOptions(\n        classificationModelVersionOption: ri!classificationModelVersion[recordType!AIA Classification Model Version.categories],\n        currentTab: local!currentTab\n      ),\n      rule!AIA_ClassificationModelVersion_ValidatePrompt(\n        classificationModelVersion: ri!classificationModelVersion,\n        currentTab: local!currentTab\n      ),\n      rule!AIA_ClassificationModelVersion_ValidateExample(\n        classificationModelVersion: ri!classificationModelVersion,\n        currentTab: local!currentTab\n      )\n    },\n    skipAutoFocus: true()\n  )\n)",
+  "calls": [
+    {
+      "name": "AIA_UTIL_LoadBrandingMap",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_Classification_Sub_ModelAdvancedSettings",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_UTIL_cardAsTabs",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_ClassificationModelVersion_Sub_AllowMultipleOutputsComponent",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_ClassificationModelVersion_Sub_ConfigureOptions",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_ClassificationModelVersion_Sub_Prompting",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_ClassificationModelVersion_Sub_PromptExamples",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_displayVersionStatus",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_GetLLMName",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_DefaultModel",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_Classification_GeneratePrompt",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_ClassificationModelVersion_Sub_ValidateOptions",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_ClassificationModelVersion_ValidatePrompt",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_ClassificationModelVersion_ValidateExample",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_MODEL_VERSION_STATUS_DRAFT",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "AIA_MODEL_VERSION_STATUS_PUBLISHED",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "Label for Categories",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Prompt",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Examples",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "label for Update Classification Model Version",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "label for Create Classification Model Version",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Al Model Version Section label",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Label for help tool tip",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Label for Details",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Field Label",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Label for Version Id",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Label for Status",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Output",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Packet Splitting",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Individual Document",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Generated Prompt",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Label for Update",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Label for Save",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Label for Save and Publish",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Label for Cancel",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_Test_GetLatestClassificationModelVersion",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

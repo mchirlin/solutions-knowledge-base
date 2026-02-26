@@ -1,0 +1,37 @@
+{
+  "_metadata": {
+    "bundle_id": "AIA_Rotate_PDF"
+  },
+  "objects": {
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_85019": {
+      "name": "AIA_IsExtractionInstance",
+      "type": "Expression Rule",
+      "sail_code": "runtimetypeof(\n  ri!Instance\n) = typeof(\n  recordType!AIA Extraction Instance()\n)"
+    },
+    "0002ee1f-646f-8000-fac8-7f0000014e7a": {
+      "name": "AIA Rotate PDF",
+      "type": "Process Model",
+      "sail_code": "// Output: ?\nrule!AIA_ExtractJson(\n  json: pv!response\n)\n\n// Input: ?\n=pv!createNewDocument\n\n// Input: ?\n=document(pv!document, \"name\")\n\n// Input: ?\n=pv!folder\n\n// Input: ?\n=if( pv!createNewDocument, null, pv!document)\n\n// Input: ?\n=pv!document\n\n// Input: ?\n= a!match( value: pv!resultMap.pageNumber, equals: 2, then: 90, equals: 3, then: 180, equals: 4, then: 270, default: 0)\n\n// Output: ?\nAC!NewDocumentCreated\n\n// Output: ?\npv!document\n\n// Input: ?\nrule!AIA_CreateValidation(\n  instanceId: pv!instanceId,\n  instanceType: pv!instanceType,\n  typeId: cons!AIA_VALIDATION_TYPE_ID_EXECUTION,\n  message: pv!ErrorMessage,\n  severity: cons!AIA_SEVERITY_MEDIUM\n)\n\n// Input: ?\n=document(pv!document,\"name\")&\"-rotated\"\n\n// Input: ?\n=pv!document\n\n// Output: ?\nAC!NewDocumentCreated\n\n// Input: ?\na!map(document: pv!mergedDoc)\n\n// Input: ?\ncons!AIA_INPUT_TYPE_DOC\n\n// Input: ?\n=pv!instanceId\n\n// Input: ?\n=pv!instanceType\n\n// Input: ?\ncons!AIA_PROMPT_OPERATION_MODE_MULTIMODAL\n\n// Input: ?\n#\"urn:appian:translation-string:v1:f1916761-e2be-4a3f-a72c-5d78f4d7ea3a\"\n\n// Input: ?\nrule!AIA_RotateDetermination_PromptInstructions()\n\n// Output: ?\nac!ProcessInfo.pv.success\n\n// Output: ?\nac!ProcessInfo.pv.errorMessage\n\n// Output: ?\nac!ProcessInfo.pv.responseJson\n\n// Output: ?\nac!ProcessInfo.pv.inputTokens\n\n// Output: ?\nac!ProcessInfo.pv.outputTokens"
+    },
+    "_a-0000eeeb-a4e0-8000-9d56-011c48011c48_210324": {
+      "name": "AIA_RotateDetermination_PromptInstructions",
+      "type": "Expression Rule",
+      "sail_code": "\"\nThere are four pages in here of identical content, only one page is oriented correctly.  Return the page number of the page that is oriented correctly.\n\nOutput in the following format:\n\n{ \n\"\"pageNumber\"\": (type: integer | description: page number with the correct orientation)\n}\n\""
+    },
+    "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40839": {
+      "name": "AIA_Test_GetLatestExtractionInstance",
+      "type": "Expression Rule",
+      "sail_code": "rule!AIA_Extraction_GetInstanceById(\n  identifier: #\"SYSTEM_SYSRULES_queryRecordType_v3\"(\n    recordType: recordType!AIA Extraction Instance,\n    pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n      startIndex: 1,\n      batchSize: 1,\n      sort: {\n        #\"SYSTEM_SYSRULES_sortInfo\"(\n          field: recordType!AIA Extraction Instance.id\n        )\n      }\n    )\n  ).data[recordType!AIA Extraction Instance.id],\n  additionalFields: {\n    recordType!AIA Extraction Instance.instanceUuid,\n    recordType!AIA Extraction Instance.modelVersion.versionId,\n    recordType!AIA Extraction Instance.modelVersion.modelId,\n    recordType!AIA Extraction Instance.modelVersion.uuid,\n    recordType!AIA Extraction Instance.modelVersion.extractionModel.key,\n    recordType!AIA Extraction Instance.documentFolderId,\n    recordType!AIA Extraction Instance.fieldCount,\n    recordType!AIA Extraction Instance.sections,\n    recordType!AIA Extraction Instance.boundingBoxes,\n    recordType!AIA Extraction Instance.responseDocumentId,\n    recordType!AIA Extraction Instance.sourceDocumentId\n  }\n)"
+    },
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76653": {
+      "name": "AIA_CreateValidation",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!isExtraction: rule!AIA_IsExtractionInstance(\n    instance: ri!Instance\n  ),\n  recordType!AIA Instance Validation Error(\n    recordType!AIA Instance Validation Error.instanceId: a!defaultValue(\n      ri!instanceId,\n      if(\n        local!isExtraction,\n        ri!Instance[recordType!AIA Extraction Instance.id],\n        ri!Instance[recordType!AIA Classification Instance.id]\n      )\n    ),\n    recordType!AIA Instance Validation Error.instanceType: a!defaultValue(\n      ri!instanceType,\n      if(\n        local!isExtraction,\n        cons!AIA_MODEL_TYPE_VALUES[1],\n        cons!AIA_MODEL_TYPE_VALUES[2]\n      )\n    ),\n    recordType!AIA Instance Validation Error.typeId: ri!typeId,\n    recordType!AIA Instance Validation Error.message: ri!message,\n    recordType!AIA Instance Validation Error.severity: ri!severity\n  )\n)"
+    },
+    "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40909": {
+      "name": "AIA_ExtractJson",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!firstTry: rule!AIA_ExtractJsonInner(\n    json: ri!json\n  ),\n  local!result: if(\n    a!isNotNullOrEmpty(local!firstTry),\n    local!firstTry,\n    a!localVariables(\n      local!secondTry: rule!AIA_ExtractJsonInner(\n        json: index(split(ri!json, \"Appian's private AI\"), 1, null),\n      ),\n      if(\n        a!isNotNullOrEmpty(local!secondTry),\n        local!secondTry,\n        a!localVariables(\n          local!thirdTry: rule!AIA_ExtractJsonInner(\n            json: index(split(ri!json, \"Appian's private AI\"), 2, null),\n          ),\n          if(\n            a!isNotNullOrEmpty(local!thirdTry),\n            local!thirdTry,\n            a!localVariables(\n              local!forthTry: rule!AIA_ExtractJsonInner(\n                json: index(split(ri!json, \"<output>\"), 1, null),\n              ),\n              if(\n                a!isNotNullOrEmpty(local!forthTry),\n                local!forthTry,\n                a!localVariables(\n                  local!fifthTry: rule!AIA_ExtractJsonInner(\n                    json: index(split(ri!json, \"</entities>\"), 1, null),\n                  ),\n                  local!fifthTry\n                )\n              )\n            )\n          )\n        )\n      )\n    )\n  ),\n  local!finalResult: if(\n    a!isNullOrEmpty(local!result),\n    null,\n    if(\n      a!defaultValue(ri!returnList, true),\n      local!result,\n      if(\n        rule!SHRD_IsList(local!result),\n        null,\n        local!result\n      )\n    )\n  ),\n  /* Handle scenario where the result comes back as properties of a $schema */\n  if(\n    or(\n      a!defaultValue(ri!returnList, true),\n      a!isNullOrEmpty(local!finalResult),\n      not(contains(\n        a!keys(local!finalResult),\n        \"$schema\"\n      ))\n    ),\n    local!finalResult,\n    local!finalResult.properties\n  )\n)"
+    }
+  }
+}

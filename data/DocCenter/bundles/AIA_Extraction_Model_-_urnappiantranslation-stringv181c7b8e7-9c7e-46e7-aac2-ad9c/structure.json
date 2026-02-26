@@ -1,0 +1,164 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "AIA Extraction Model - #\"urn:appian:translation-string:v1:81c7b8e7-9c7e-46e7-aac2-ad9c55bfcfb7\"",
+    "parent_name": "AIA Extraction Model",
+    "total_objects": 7
+  },
+  "entry_point": {
+    "action_type": "RECORD_ACTION",
+    "record_type": "AIA Extraction Model",
+    "target_process": "AIA Delete Extraction Model Version",
+    "form_interface": "AIA_Extraction_DeleteExtractionModelVersion",
+    "expressions": {
+      "TITLE": "#\"urn:appian:translation-string:v1:81c7b8e7-9c7e-46e7-aac2-ad9c55bfcfb7\"",
+      "DESCRIPTION": null,
+      "VISIBILITY": null,
+      "CONTEXT": "a!localVariables(\n  local!extractModelVersion: rule!AIA_GetExtractionModelVersionByModelVersionId(\n    modelVersionId: rv!record[recordType!AIA Extraction Model.versions.modelVersionId][1]\n  ),{\n    record: local!extractModelVersion,\n  cancel: false()\n})"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Delete Extraction Model Version",
+      "complexity_score": 13.0,
+      "total_nodes": 7,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Cancel?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Cancel?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node",
+            "Get All Instances"
+          ]
+        },
+        {
+          "name": "Delete Records",
+          "type": "Delete Records",
+          "next": [
+            "Any?"
+          ]
+        },
+        {
+          "name": "Get All Instances",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Delete Records"
+          ]
+        },
+        {
+          "name": "Any?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Delete Instances",
+            "End Node"
+          ]
+        },
+        {
+          "name": "Delete Instances",
+          "type": "Delete Records",
+          "next": [
+            "End Node"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_34574",
+      "name": "AIA_GetExtractionModelVersionByModelVersionId",
+      "type": "Expression Rule",
+      "description": "Get the extraction model version by Model version Id",
+      "parameters": [],
+      "calls": [],
+      "called_by": []
+    },
+    {
+      "uuid": "2643e371-506a-4ef7-9abf-1ddf2723b40f",
+      "name": "AIA_Extraction_DeleteExtractionModelVersion",
+      "type": "Interface",
+      "description": "Form interface for confirming the deletion of a record",
+      "parameters": [
+        {
+          "name": "cancel",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        }
+      ],
+      "calls": [
+        "Delete Extraction Model Version",
+        "Label for Cancel",
+        "Label for Delete",
+        "Submitting this form will delete your record. The data will no longer exist."
+      ],
+      "called_by": [
+        "AIA Delete Extraction Model Version"
+      ]
+    },
+    {
+      "uuid": "bc705f8f-1ad1-48c7-a3f1-0c79b9dd195f",
+      "name": "AIA Delete Extraction Model Version",
+      "type": "Process Model",
+      "description": "Delete Extraction Model Version",
+      "calls": [
+        "AIA_Extraction_DeleteExtractionModelVersion"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "7c97deb0-2f1e-43f9-a3e7-5d0705f4f58d",
+      "name": "Delete Extraction Model Version",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_DeleteExtractionModelVersion"
+      ]
+    },
+    {
+      "uuid": "df61ccad-fe9a-4d7a-ba9a-d89b08f3467a",
+      "name": "Label for Cancel",
+      "type": "Translation String",
+      "description": "Label for Cancel",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_DeleteExtractionModelVersion"
+      ]
+    },
+    {
+      "uuid": "81c7b8e7-9c7e-46e7-aac2-ad9c55bfcfb7",
+      "name": "Label for Delete",
+      "type": "Translation String",
+      "description": "Label for Delete",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_DeleteExtractionModelVersion"
+      ]
+    },
+    {
+      "uuid": "0c742e30-50bb-4ce7-8a52-69bafa635a89",
+      "name": "Submitting this form will delete your record. The data will no longer exist.",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_DeleteExtractionModelVersion"
+      ]
+    }
+  ]
+}

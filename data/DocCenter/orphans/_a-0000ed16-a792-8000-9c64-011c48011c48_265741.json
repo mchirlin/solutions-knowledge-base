@@ -1,0 +1,26 @@
+{
+  "uuid": "_a-0000ed16-a792-8000-9c64-011c48011c48_265741",
+  "name": "AIA_RULE_NormalizeString",
+  "type": "Expression Rule",
+  "description": "Normalize a string for comparison",
+  "sail_code": "a!localVariables(\n  local!aliases: rule!AIA_RULE_ENUM_Aliases(),\n  local!fix: #\"SYSTEM_SYSRULES_forEach\"(\n    items: local!aliases,\n    expression: a!map(\n      key: upper(\n        fv!item.originalWord\n      ),\n      values: apply(\n        fn!upper,\n        fv!item.aliases\n      )\n    )\n  ),\n  local!normalizeString: {reduce(\n    rule!AIA_RULE_NormalizeStringHelper(text: _, abbreviation: _, ),\n    upper(ri!string),\n    local!fix\n  )},\n  trim(local!normalizeString)\n)",
+  "calls": [
+    {
+      "name": "AIA_RULE_ENUM_Aliases",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_RULE_NormalizeStringHelper",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AIA_RULE_NormalizeValue",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

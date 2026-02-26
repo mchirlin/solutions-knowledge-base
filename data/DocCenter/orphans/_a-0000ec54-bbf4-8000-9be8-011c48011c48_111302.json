@@ -1,0 +1,36 @@
+{
+  "uuid": "_a-0000ec54-bbf4-8000-9be8-011c48011c48_111302",
+  "name": "AIA_Extraction_ReconcileFieldAccuracy",
+  "type": "Interface",
+  "description": "Use this interface to display the accuracy of a model version field",
+  "sail_code": "if(\n  and(\n    a!isNotNullOrEmpty(ri!ModelVersionField),\n    or(\n      ri!showWhen,\n      isnull(ri!showWhen),\n    )\n  ),\n  a!localVariables(\n    local!resultFieldIndex: index(\n      wherecontains(\n        tostring(ri!ModelVersionField[recordType!AIA Extraction Model Version Field.fieldId]),\n        touniformstring(ri!ExtractionInstanceFields[recordType!AIA Extraction Instance Field.modelVersionFieldId])\n      ),\n      1\n    ),\n    #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n      preventWrapping: true,\n      labelPosition: \"COLLAPSED\",\n      value: #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n        text: rule!AIA_DisplayPercentage(\n          value: ri!ExtractionInstanceFields[local!resultFieldIndex][recordType!AIA Extraction Instance Field.modelVersionField.correctFieldPercentage]\n        ),\n        color: rule!AIA_PercentageColor(\n          value: ri!ExtractionInstanceFields[local!resultFieldIndex][recordType!AIA Extraction Instance Field.modelVersionField.correctFieldPercentage],\n          isBackground: false\n        )\n      ),\n    )\n  ),\n  {}\n)",
+  "calls": [
+    {
+      "name": "AIA_DisplayPercentage",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_PercentageColor",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_Extraction_GetLatestFieldsForModelId",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_Test_GetLatestExtractionInstance",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AIA_API_Extraction_ReconcileFieldAccuracy",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

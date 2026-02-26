@@ -1,0 +1,21 @@
+{
+  "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_92616",
+  "name": "AIA_Extraction_CreatePromptName",
+  "type": "Expression Rule",
+  "description": "Create prompt name from Extraction Model",
+  "sail_code": "a!localVariables(\n  local!key: ri!ExtractionModel[recordType!AIA Extraction Model.key],\n  \"AIA_Prompt_\" & upper(local!key[1]) & right(local!key, len(local!key) - 1)\n) & \na!match(\n  value: ri!aiSkillType,\n  equals: cons!AIA_AI_SKILL_TYPES[1],\n  then: \"_doc_extraction\",\n  equals: cons!AIA_AI_SKILL_TYPES[2],\n  then: \"_email_extraction\",\n  equals: cons!AIA_AI_SKILL_TYPES[3],\n  then: \"_\" & fv!value,\n  equals: cons!AIA_AI_SKILL_TYPES[4],\n  then: \"_doc_extraction_multimodal\",\n  default: \"\"\n)",
+  "calls": [
+    {
+      "name": "AIA_AI_SKILL_TYPES",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AIA_CreatePromptName",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

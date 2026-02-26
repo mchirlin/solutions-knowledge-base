@@ -1,0 +1,77 @@
+{
+  "_metadata": {
+    "bundle_id": "AIA_Extract_TOC_Sections"
+  },
+  "objects": {
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_182518": {
+      "name": "AIA_IsDocumentExtension",
+      "type": "Expression Rule",
+      "sail_code": "and(\n  a!isNotNullOrEmpty(ri!document),\n  contains(\n    lower(ri!extensions),\n    lower(document(\n      ri!document,\n      \"extension\"\n    ))\n  )\n)"
+    },
+    "_a-0000ee3e-060c-8000-9bb8-011c48011c48_200645": {
+      "name": "AIA_Extraction_GetTocRange",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!startPage: tointeger(ri!section.startPage) + ri!pageOffset,\n  local!endPage: tointeger(ri!section.endPage) + ri!pageOffset,\n  a!map(\n    startPage: a!match(\n      value: local!startPage,\n      whenTrue: fv!value < 1,\n      then: 1,\n      whenTrue: fv!value > ri!numPages,\n      then: ri!numPages,\n      default: 1\n    ),\n    endPage: a!match(\n      value: local!endPage,\n      whenTrue: fv!value < 1,\n      then: 1,\n      whenTrue: fv!value > ri!numPages,\n      then: ri!numPages,\n      default: ri!numPages\n    )\n  )\n)"
+    },
+    "_a-0000ecdf-301c-8000-9c47-011c48011c48_170675": {
+      "name": "AIA_Extraction_TableOfContentsPrompt",
+      "type": "Expression Rule",
+      "sail_code": "=\"You're an AI assistant specializing in document analysis. Your task is to read the provided document snippet, find its **Table of Contents**, and map out the sections, subsections, and their page numbers.\n\n## Output Format\n\nYour final output must be a single **JSON object** that strictly adheres to the schema below.\n\n```json\n{\n  \"\"$schema\"\": \"\"http://json-schema.org/draft-07/schema#\"\",\n  \"\"type\"\": \"\"object\"\",\n  \"\"properties\"\": {\n    \"\"sections\"\": {\n      \"\"type\"\": \"\"array\"\",\n      \"\"description\"\": \"\"A list of sections found in the document's Table of Contents.\"\",\n      \"\"items\"\": {\n        \"\"type\"\": \"\"object\"\",\n        \"\"properties\"\": {\n          \"\"sectionNumber\"\": {\n            \"\"type\"\": \"\"string\"\",\n            \"\"description\"\": \"\"The identifier or number of the section (e.g., '1.1', 'A').\"\"\n          },\n          \"\"sectionTitle\"\": {\n            \"\"type\"\": \"\"string\"\",\n            \"\"description\"\": \"\"The title or name of the section.\"\"\n          },\n          \"\"startPage\"\": {\n            \"\"type\"\": \"\"integer\"\",\n            \"\"description\"\": \"\"The page number where the section begins.\"\"\n          },\n          \"\"endPage\"\": {\n            \"\"type\"\": \"\"integer\"\",\n            \"\"description\"\": \"\"The page number where the section ends.\"\"\n          }\n        },\n        \"\"required\"\": [\"\"sectionNumber\"\", \"\"sectionTitle\"\", \"\"startPage\"\"]\n      }\n    }\n  },\n  \"\"required\"\": [\"\"sections\"\"]\n}\n\n```\n\n## Instructions\n\n-   Provide your output as a valid JSON object with a single root key called `sections`.\n-   The `startPage` is the page number found at the end of the line for a section title.\n-   The `endPage` is the page number where the section concludes, which is usually the `startPage` of the *next* section minus one. The final section's `endPage` can be estimated or left null if unknown.\n\n\n## Sections to Find\n\nPlease find and return data for the following sections:\n\n\" &  \njoinarray(\n  #\"SYSTEM_SYSRULES_forEach\"(\n    ri!sections,\n    \" - \" & fv!item.rule.name\n  ),\n  char(10)\n)"
+    },
+    "_a-0000ece6-6a5d-8000-9c49-011c48011c48_178444": {
+      "name": "AIA_Extraction_NormalizePageNumber",
+      "type": "Expression Rule",
+      "sail_code": "a!defaultValue(\n  reduce(\n    rule!AIA_IsTOCTextPresent(\n      document: ri!document,\n      map: _,\n      page: _\n    ),\n    a!map(\n      section: ri!sectionMap,\n      found: false\n    ),\n    enumerate(cons!AIA_TABLE_OF_CONTENTS_PAGES) + ri!sectionMap.startPage\n  ).offset,\n  0\n)"
+    },
+    "_a-0000ee5d-151c-8000-9ba8-011c48011c48_32305": {
+      "name": "AIA_Extraction_TableOfContentsInput",
+      "type": "Expression Rule",
+      "sail_code": "a!map(\n  input: \"## Document Snippet\n\n\" & ri!input\n)"
+    },
+    "000fece9-c4e4-8000-05a7-7f0000014e7a": {
+      "name": "AIA Extract TOC Sections",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n=pv!splitDocument\n\n// Output: ?\nAC!Success\n\n// Output: ?\nAC!RawTextResults\n\n// Output: ?\nappian:record-field:v1:64322398-e457-4695-87d5-09794164cf77/df53ae63-a64a-4a79-ad4f-79ca0c54cd84\"]:true\n\n// Output: ?\njoinarray(\n  pv!RawTextResults.text,\n  char(10)\n)\n\n// Output: ?\nrule!AIA_Extraction_NormalizePageNumber(\n  document: pv!ExtractionInstance[recordType!AIA Extraction Instance.documentId],\n  sectionMap: pv!tableOfContentsSections[1]\n)\n\n// Output: ?\nrule!AIA_Extraction_ProcessTocSectionResponse(\n  promptResponse: pv!promptResponse,\n  ExtractionInstance: pv!ExtractionInstance\n)\n\n// Output: ?\nrule!AIA_GetPageCount( document: pv!ExtractionInstance[recordType!AIA Extraction Instance.documentId])\n\n// Output: ?\nrule!AIA_GetDocumentText(\n  document: pv!ExtractionInstance[recordType!AIA Extraction Instance.documentId],\n  startPage: 1,\n  endPage: cons!AIA_TABLE_OF_CONTENTS_PAGES\n)\n\n// Input: ?\n= #\"SYSTEM_SYSRULES_forEach\"( enumerate( length(pv!tableOfContentsSections) ), document( pv!ExtractionInstance[recordType!AIA Extraction Instance.documentId], \"name\" ) & \"_\" & index( pv!tableOfContentsSections[fv!index], \"sectionTitle\", \"\" ) & \"_\" & = rule!AIA_Extraction_GetTocRange( section: pv!tableOfContentsSections[fv!index], numPages: pv!numPages, pageOffset: pv!pageOffset ).startPage & \"-\" & = rule!AIA_Extraction_GetTocRange( section: pv!tableOfContentsSections[fv!index], numPages: pv!numPages, pageOffset: pv!pageOffset ).endPage)\n\n// Input: ?\n=pv!ExtractionInstance[recordType!AIA Extraction Instance.documentId]\n\n// Input: ?\n= #\"SYSTEM_SYSRULES_forEach\"( enumerate( length(pv!tableOfContentsSections) ), rule!AIA_Extraction_GetTocRange( section: pv!tableOfContentsSections[fv!index], numPages: pv!numPages, pageOffset: pv!pageOffset ).startPage)\n\n// Input: ?\n= #\"SYSTEM_SYSRULES_forEach\"( enumerate( length(pv!tableOfContentsSections) ), rule!AIA_Extraction_GetTocRange( section: pv!tableOfContentsSections[fv!index], numPages: pv!numPages, pageOffset: pv!pageOffset ).endPage)\n\n// Output: ?\n#\"SYSTEM_SYSRULES_forEach\"(\n  ac!NewDocumentsCreated,\n  recordType!AIA Extraction Instance Section(\n    recordType!AIA Extraction Instance Section.instanceId: pv!ExtractionInstance[recordType!AIA Extraction Instance.id],\n    recordType!AIA Extraction Instance Section.sectionId: pv!sectionsMap[cons!AIA_SECTION_RULE_TYPES[1]][fv!index].section[recordType!AIA Extraction Model Version Section.id],\n    recordType!AIA Extraction Instance Section.startPage: ac!StartPages[fv!index],\n    recordType!AIA Extraction Instance Section.endPage: ac!EndPages[fv!index],\n    recordType!AIA Extraction Instance Section.documentId: fv!item\n  )\n)\n\n// Input: ?\n= document( pv!ExtractionInstance[recordType!AIA Extraction Instance.documentId], \"name\") & \"_table_of_contents\"\n\n// Input: ?\n=pv!ExtractionInstance[recordType!AIA Extraction Instance.documentId]\n\n// Input: ?\n=cons!AIA_TABLE_OF_CONTENTS_PAGES\n\n// Output: ?\nAC!NewDocumentCreated\n\n// Input: ?\nrule!AIA_Extraction_TableOfContentsInput(\n  input: pv!rawInput,\n)\n\n// Input: ?\n=pv!ExtractionInstance[recordType!AIA Extraction Instance.id]\n\n// Input: ?\ncons!AIA_MODEL_TYPE_VALUES[1]\n\n// Input: ?\n=pv!ExtractionInstance[recordType!AIA Extraction Instance.modelVersion.llm]\n\n// Input: ?\n#\"urn:appian:translation-string:v1:50193b4f-cc79-403e-8ebc-227279993d0d\"\n\n// Input: ?\n= rule!AIA_Extraction_TableOfContentsPrompt(\n  sections: pv!sectionsMap[cons!AIA_SECTION_RULE_TYPES[1]]\n)\n\n// Output: ?\nac!ProcessInfo.pv.responseJson\n\n// Output: ?\nrule!AIA_Extraction_AddTokens(ExtractionInstance: pv!ExtractionInstance, inputTokens: ac!ProcessInfo.pv.inputTokens, outputTokens: ac!ProcessInfo.pv.outputTokens)"
+    },
+    "_a-0000ee52-8983-8000-9ba6-011c48011c48_27887": {
+      "name": "AIA_GetDocumentMetadata",
+      "type": "Expression Rule",
+      "sail_code": "try(\n  a!match(\n    value: lower(document(ri!document, \"extension\")),\n    equals: \"pdf\",\n    then: getpdfmetadata(document: ri!document),\n    equals: \"eml\",\n    then: a!map(\n      pageCount: try(\n        tointeger(\n          len(\n            #\"SYSTEM_SYSRULES_fromJson_v1\"(reademlfile(ri!document)).body\n          ) / cons!AIA_EML_PAGE_CHAR_COUNT\n        ),\n        1\n      )\n    ),\n    default: a!map(pageCount: 1)\n  ),\n  a!map(pageCount: 1)\n)"
+    },
+    "_a-0000ee52-8983-8000-9ba6-011c48011c48_27862": {
+      "name": "AIA_GetDocumentText",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  rule!AIA_DocIsPdf(\n    document: ri!document\n  ),\n  a!localVariables(\n    local!result: trim(getpdftext(\n      ri!document,\n      a!defaultValue(ri!startPage, 1),\n      a!defaultValue(ri!endPage, null)\n    )),\n    if(\n      a!isNullOrEmpty(stripwith(local!result, char(10))),\n      null,\n      local!result\n    )\n  ),\n  if(\n    rule!AIA_IsDocumentExtension(\n      document: ri!document,\n      extensions: cons!AIA_TEXT_BASED_EXTENSIONS\n    ),\n    readdocumentcontent(\n      txtDocument: ri!document\n    ),\n    null\n  )\n)"
+    },
+    "_a-0000ec44-cb49-8000-9be6-011c48011c48_82400": {
+      "name": "AIA_GetPageCount",
+      "type": "Expression Rule",
+      "sail_code": "rule!AIA_GetDocumentMetadata(\n  document: ri!document\n).pageCount"
+    },
+    "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40909": {
+      "name": "AIA_ExtractJson",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!firstTry: rule!AIA_ExtractJsonInner(\n    json: ri!json\n  ),\n  local!result: if(\n    a!isNotNullOrEmpty(local!firstTry),\n    local!firstTry,\n    a!localVariables(\n      local!secondTry: rule!AIA_ExtractJsonInner(\n        json: index(split(ri!json, \"Appian's private AI\"), 1, null),\n      ),\n      if(\n        a!isNotNullOrEmpty(local!secondTry),\n        local!secondTry,\n        a!localVariables(\n          local!thirdTry: rule!AIA_ExtractJsonInner(\n            json: index(split(ri!json, \"Appian's private AI\"), 2, null),\n          ),\n          if(\n            a!isNotNullOrEmpty(local!thirdTry),\n            local!thirdTry,\n            a!localVariables(\n              local!forthTry: rule!AIA_ExtractJsonInner(\n                json: index(split(ri!json, \"<output>\"), 1, null),\n              ),\n              if(\n                a!isNotNullOrEmpty(local!forthTry),\n                local!forthTry,\n                a!localVariables(\n                  local!fifthTry: rule!AIA_ExtractJsonInner(\n                    json: index(split(ri!json, \"</entities>\"), 1, null),\n                  ),\n                  local!fifthTry\n                )\n              )\n            )\n          )\n        )\n      )\n    )\n  ),\n  local!finalResult: if(\n    a!isNullOrEmpty(local!result),\n    null,\n    if(\n      a!defaultValue(ri!returnList, true),\n      local!result,\n      if(\n        rule!SHRD_IsList(local!result),\n        null,\n        local!result\n      )\n    )\n  ),\n  /* Handle scenario where the result comes back as properties of a $schema */\n  if(\n    or(\n      a!defaultValue(ri!returnList, true),\n      a!isNullOrEmpty(local!finalResult),\n      not(contains(\n        a!keys(local!finalResult),\n        \"$schema\"\n      ))\n    ),\n    local!finalResult,\n    local!finalResult.properties\n  )\n)"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_159825": {
+      "name": "AIA_DocIsPdf",
+      "type": "Expression Rule",
+      "sail_code": "rule!AIA_IsDocumentExtension(\n  document: ri!document,\n  extensions: {\"pdf\"}\n)"
+    },
+    "_a-0000ed69-99d8-8000-9ba6-011c48011c48_83660": {
+      "name": "AIA_Extraction_ProcessTocSectionResponse",
+      "type": "Expression Rule",
+      "sail_code": "#\"SYSTEM_SYSRULES_forEach\"(\n  rule!AIA_ExtractJson(\n    json: ri!promptResponse\n  ).sections,\n  if(\n    or(\n      a!isNullOrEmpty(\n        fv!item.startPage\n      ),\n      a!isNullOrEmpty(\n        fv!item.endPage\n      )\n    ),\n    #\"urn:appian:function:v1:a:update\"(\n      fv!item,\n      {\n        \"startPage\",\n        \"endPage\"\n      },\n      {\n        a!defaultValue(\n          fv!item.startPage,\n          1\n        ),\n        a!defaultValue(\n          fv!item.endPage,\n          rule!AIA_GetPageCount(\n            document: ri!ExtractionInstance[recordType!AIA Extraction Instance.documentId]\n          )\n        )\n      }\n    ),\n    fv!item\n  )\n)"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_176683": {
+      "name": "AIA_Extraction_AddTokens",
+      "type": "Expression Rule",
+      "sail_code": "#\"urn:appian:function:v1:a:update\"(\n  data: ri!ExtractionInstance,\n  index: {\n    recordType!AIA Extraction Instance.inputTokens,\n    recordType!AIA Extraction Instance.outputTokens\n  },\n  value: {\n    a!defaultValue(\n      ri!ExtractionInstance[recordType!AIA Extraction Instance.inputTokens],\n      0\n    ) + a!defaultValue(ri!inputTokens, 0),\n    a!defaultValue(\n      ri!ExtractionInstance[recordType!AIA Extraction Instance.outputTokens],\n      0\n    ) + a!defaultValue(ri!outputTokens, 0)\n  }\n)"
+    },
+    "_a-0000ece6-6a5d-8000-9c49-011c48011c48_178450": {
+      "name": "AIA_IsTOCTextPresent",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  or(\n    ri!map.found,\n    ri!page > rule!AIA_GetPageCount(ri!document)\n  ),\n  ri!map,\n  a!localVariables(\n    local!text: rule!AIA_GetDocumentText(\n      document: ri!document, \n      startPage: ri!page,\n      endPage: ri!page\n    ),\n    if(\n      and(\n        find(upper(ri!map.section.sectionNumber), upper(local!text)) > 0,\n        find(upper(ri!map.section.sectionTitle), upper(local!text)) > 0\n      ),\n      a!map(\n        found: if(\n          ri!page < cons!AIA_TABLE_OF_CONTENTS_PAGES,\n          false,\n          true\n        ),\n        section: ri!map.section,\n        offset: ri!page - ri!map.section.startPage\n      ),\n      ri!map\n    )\n  )\n)"
+    }
+  }
+}

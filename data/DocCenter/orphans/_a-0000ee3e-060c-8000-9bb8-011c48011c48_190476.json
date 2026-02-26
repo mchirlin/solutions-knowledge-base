@@ -1,0 +1,21 @@
+{
+  "uuid": "_a-0000ee3e-060c-8000-9bb8-011c48011c48_190476",
+  "name": "AIA_GeneratePromptInputForTestCaseGeneration",
+  "type": "Expression Rule",
+  "description": "Generate input for generative ai skill",
+  "sail_code": "a!localVariables(\n  local!testCasePromptGenerationRule: a!refreshVariable(\n    value: rule!AIA_UTIL_returnRuleOperationById(\n      id: index(ri!extractionModelValidationDataMap,\"ruleOperationId\",null())\n    ).testCasePromptGenerationRule,\n    refreshAlways: true()\n  ),\n  if(\n    a!isNullOrEmpty(local!testCasePromptGenerationRule),\n    \"\",\n    local!testCasePromptGenerationRule(\n      extractionModelValidationDataMap: ri!extractionModelValidationDataMap,\n      testJson: ri!testJson\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AIA_UTIL_returnRuleOperationById",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AIA_ExtractionModelVersion_RecordAction_ValidationRules_CreateUpdate",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "uuid": "_a-0000ec3a-5c87-8000-9be2-011c48011c48_57849",
+  "name": "AIA_GeneratePromptField",
+  "type": "Expression Rule",
+  "description": "Generate a prompt for a field",
+  "sail_code": "a!defaultValue(\n  ri!indent,\n  \"  \"\n) & \"\"\"\" & ri!field[recordType!AIA Extraction Model Version Field.key] & \"\"\" (\" & \n  joinarray(\n    reject(\n      fn!isnull,\n      {\n        if(\n          a!isNotNullOrEmpty(ri!field[recordType!AIA Extraction Model Version Field.description]),\n          #\"urn:appian:translation-string:v1:502a8173-68d0-4d7d-bb0d-0cb2fca4cde9\" & \": \" & ri!field[recordType!AIA Extraction Model Version Field.description],\n          null\n        ),\n        #\"urn:appian:translation-string:v1:8571516a-e3cc-423f-acc4-12e5dee92230\" & \": \" & if(\n          ri!field[recordType!AIA Extraction Model Version Field.isMultiple],\n          #\"urn:appian:translation-string:v1:49a42b2a-8f3e-4af8-8804-625569b5ad88\" & \" \",\n          \"\"\n        ) & a!match(\n          value: ri!field[recordType!AIA Extraction Model Version Field.type],\n          equals: cons!AIA_EXTRACTION_FIELD_TYPES[1],\n          then: #\"urn:appian:translation-string:v1:bea2844e-030e-44a2-83fe-836738b1a5aa\",\n          equals: cons!AIA_EXTRACTION_FIELD_TYPES[2],\n          then: #\"urn:appian:translation-string:v1:475e01b1-3379-4a88-bafa-f241de7feb05\",\n          equals: cons!AIA_EXTRACTION_FIELD_TYPES[3],\n          then: #\"urn:appian:translation-string:v1:cc297dfd-e212-41f7-bcb7-32ade27555f8\",\n          equals: cons!AIA_EXTRACTION_FIELD_TYPES[4],\n          then: #\"urn:appian:translation-string:v1:55709852-93de-4825-8b0c-33ba07807735\",\n          equals: cons!AIA_EXTRACTION_FIELD_TYPES[5],\n          then: #\"urn:appian:translation-string:v1:f957cb3a-f114-4185-94b6-c3ac158a3d7b\",\n          equals: cons!AIA_EXTRACTION_FIELD_TYPES[6],\n          then: #\"urn:appian:translation-string:v1:1eecfa58-5d39-4115-b41d-b53ecea06fcb\",\n          equals: cons!AIA_EXTRACTION_FIELD_TYPES[7],\n          then: #\"urn:appian:translation-string:v1:f484df97-5d0d-4f1b-aa79-197dc50328f9\",\n          equals: cons!AIA_EXTRACTION_FIELD_TYPES[8],\n          then: #\"urn:appian:translation-string:v1:314ffe35-b41f-4635-b992-b9df070bd085\",\n          default: null\n        ),\n        if(\n          a!isNotNullOrEmpty(\n            ri!field[recordType!AIA Extraction Model Version Field.optionRule]\n          ),\n          a!localVariables(\n            local!optionRule: a!refreshVariable(\n              value: getrulereferencebyname(\n                ri!field[recordType!AIA Extraction Model Version Field.optionRule]\n              ),\n              refreshAlways: true\n            ),\n            try(\n              #\"urn:appian:translation-string:v1:0ce43f89-b6a4-469d-9e23-798879bf382b\" & \": \" & tostring(\n                local!optionRule()\n              ),\n              null\n            ),\n\n          ),\n          null\n        )\n      }\n    ),\n    \" | \"\n  ) & \")\",",
+  "calls": [
+    {
+      "name": "AIA_EXTRACTION_FIELD_TYPES",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "description of field being extracted",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "type of field being extracted",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "l",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Type of field being extracted from document: text",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Type of field being extracted from document: integer",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Type of field being extracted from document: decimal",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Type of field being extracted from document: date",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Type of field being extracted from document: date and time",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Type of field being extracted from document: boolean",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Type of field being extracted from document: list of objects",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Type of field being extracted from document: paragraph",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "options for extraction",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

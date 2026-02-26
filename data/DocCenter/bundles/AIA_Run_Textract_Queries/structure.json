@@ -1,0 +1,649 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AIA Run Textract Queries",
+    "parent_name": null,
+    "total_objects": 43
+  },
+  "entry_point": {
+    "complexity_score": 18.0,
+    "total_nodes": 9,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Run Textract Queries",
+      "complexity_score": 18.0,
+      "total_nodes": 9,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Has Doc?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Set doc",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Advanced IDP Tools"
+          ]
+        },
+        {
+          "name": "Has Doc?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node (No)",
+            "Extract PDF Pages (> 20 pages)",
+            "Set doc (Yes)"
+          ]
+        },
+        {
+          "name": "Exceeded Doc Size Warning",
+          "type": "Start Process",
+          "next": [
+            "Advanced IDP Tools"
+          ]
+        },
+        {
+          "name": "Advanced IDP Tools",
+          "type": "internal3.rs2_ai_skill_advanced_idp_tools3",
+          "next": [
+            "Success?"
+          ]
+        },
+        {
+          "name": "Advanced IDP Failed Error",
+          "type": "Start Process",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Extract PDF Pages",
+          "type": "pdftools.ExtractPDFPagesPauseOnError",
+          "next": [
+            "Exceeded Doc Size Warning"
+          ]
+        },
+        {
+          "name": "Success?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Advanced IDP Failed Error",
+            "End Node"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76707",
+      "name": "AIA_ADVANCED_IDP_PAGE_MAX",
+      "type": "Constant",
+      "description": "20",
+      "value": "20",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed14-ef3e-8000-9c03-011c48011c48_132145",
+      "name": "AIA_BOOL_CAPTURE_BOUNDING_BOXES",
+      "type": "Constant",
+      "description": "A boolean constant to control whether spanIds / bounding boxes are captured in the AIDP output and the dynamic GenAI prompt input. If disabled, AIDP will still run but bounding boxes and span ids will be blank. Value: True.",
+      "value": "true",
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_UseBoundingBoxes"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_96669",
+      "name": "AIA_CLASSIFICATION_MAX_PAGE_COUNT",
+      "type": "Constant",
+      "description": "100",
+      "value": "100",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2e-dd02-8000-9bde-011c48011c48_50410",
+      "name": "AIA_EXAMPLE_DOC_EXTRACTION_PDF",
+      "type": "Constant",
+      "description": "Example doc for extraction",
+      "value": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40815",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "SHRD_ReadDocumentContent"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_42675",
+      "name": "AIA_EXTRACTION_TYPES",
+      "type": "Constant",
+      "description": "(1) Generative AI, (2) Trained Model, (3) Rule, (4) Calculated, (5) Analyze Expense, (6) Regex, (7) Query, (8) XPath",
+      "value": [
+        "Generative AI",
+        "Trained Model",
+        "Rule",
+        "Calculated",
+        "Analyze Expense",
+        "Regex",
+        "Query",
+        "XPath"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_GenerateSearchQueries"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76762",
+      "name": "AIA_FEATURE_AI_REVIEW",
+      "type": "Constant",
+      "description": "AI_REVIEW",
+      "value": "AI_REVIEW",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeb2-df20-8000-9bfe-011c48011c48_154530",
+      "name": "AIA_FEATURE_AI_VALIDATION_RULE",
+      "type": "Constant",
+      "description": "AI_VALIDATION_RULE",
+      "value": "AI_VALIDATION_RULE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76750",
+      "name": "AIA_FEATURE_ANALYZE_EXPENSE",
+      "type": "Constant",
+      "description": "ANALYZE_EXPENSE",
+      "value": "ANALYZE_EXPENSE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_96651",
+      "name": "AIA_FEATURE_CLASSIFICATION",
+      "type": "Constant",
+      "description": "AIA_FEATURE_CLASSIFICATION",
+      "value": "AIA_FEATURE_CLASSIFICATION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76768",
+      "name": "AIA_FEATURE_SEARCH_QUERY",
+      "type": "Constant",
+      "description": "SEARCH_QUERY",
+      "value": "SEARCH_QUERY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA Run Textract Queries",
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76744",
+      "name": "AIA_FEATURE_VISION",
+      "type": "Constant",
+      "description": "VISION",
+      "value": "VISION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec40-0355-8000-9be4-011c48011c48_70311",
+      "name": "AIA_MODEL_TYPE_VALUES",
+      "type": "Constant",
+      "description": "(1) extraction, (2) classification",
+      "value": [
+        "extraction",
+        "classification"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA Run Textract Queries",
+        "AIA_CreateValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76666",
+      "name": "AIA_SEVERITY_CRITICAL",
+      "type": "Constant",
+      "description": "4",
+      "value": "4",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_CreateAdvancedIdpValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76672",
+      "name": "AIA_SEVERITY_HIGH",
+      "type": "Constant",
+      "description": "3",
+      "value": "3",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA Run Textract Queries",
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76678",
+      "name": "AIA_SEVERITY_MEDIUM",
+      "type": "Constant",
+      "description": "2",
+      "value": "2",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee66-4fc0-8000-9baa-011c48011c48_72159",
+      "name": "AIA_VALIDATION_TYPE_ID_EXECUTION",
+      "type": "Constant",
+      "description": "4",
+      "value": "4",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_CreateAdvancedIdpValidation",
+        "AIA_CreateMaxPageValidation",
+        "AIA_CreateValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000edd9-a94f-8000-9bb2-011c48011c48_132142",
+      "name": "AIA_VISION_PAGE_MAX",
+      "type": "Constant",
+      "description": "20",
+      "value": "20",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA Run Textract Queries",
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_89906",
+      "name": "AIA_CreateAdvancedIdpValidation",
+      "type": "Expression Rule",
+      "description": "Create an advanced idp validation",
+      "parameters": [],
+      "calls": [
+        "AIA_CreateValidation",
+        "AIA_CreateValidationErrorMessage",
+        "AIA_SEVERITY_CRITICAL",
+        "AIA_VALIDATION_TYPE_ID_EXECUTION",
+        "Advanced IDP"
+      ],
+      "called_by": [
+        "AIA Run Textract Queries"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76725",
+      "name": "AIA_CreateMaxPageValidation",
+      "type": "Expression Rule",
+      "description": "Create max page validation error",
+      "parameters": [],
+      "calls": [
+        "AIA_CreateValidation",
+        "AIA_CreateValidationErrorMessage",
+        "AIA_ENUM_Features",
+        "AIA_VALIDATION_TYPE_ID_EXECUTION",
+        "Document length exceeded max {feature} processing ({maxPages} pages)",
+        "Max Pages Exceeded"
+      ],
+      "called_by": [
+        "AIA Run Textract Queries"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76653",
+      "name": "AIA_CreateValidation",
+      "type": "Expression Rule",
+      "description": "Create a validation error for instance",
+      "parameters": [],
+      "calls": [
+        "AIA_IsExtractionInstance",
+        "AIA_MODEL_TYPE_VALUES",
+        "AIA_Test_GetLatestExtractionInstance",
+        "AIA_VALIDATION_TYPE_ID_EXECUTION"
+      ],
+      "called_by": [
+        "AIA_CreateAdvancedIdpValidation",
+        "AIA_CreateMaxPageValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_90047",
+      "name": "AIA_CreateValidationErrorMessage",
+      "type": "Expression Rule",
+      "description": "Create validation error message",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_CreateAdvancedIdpValidation",
+        "AIA_CreateMaxPageValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_159825",
+      "name": "AIA_DocIsPdf",
+      "type": "Expression Rule",
+      "description": "Returns true if doc is a pdf",
+      "parameters": [],
+      "calls": [
+        "AIA_IsDocumentExtension"
+      ],
+      "called_by": [
+        "AIA Run Textract Queries"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76731",
+      "name": "AIA_ENUM_Features",
+      "type": "Expression Rule",
+      "description": "Enumeration of features with max page lengths",
+      "parameters": [],
+      "calls": [
+        "AI Review",
+        "AI Validation Rule",
+        "AIA_ADVANCED_IDP_PAGE_MAX",
+        "AIA_CLASSIFICATION_MAX_PAGE_COUNT",
+        "AIA_FEATURE_AI_REVIEW",
+        "AIA_FEATURE_AI_VALIDATION_RULE",
+        "AIA_FEATURE_ANALYZE_EXPENSE",
+        "AIA_FEATURE_CLASSIFICATION",
+        "AIA_FEATURE_SEARCH_QUERY",
+        "AIA_FEATURE_VISION",
+        "AIA_SEVERITY_HIGH",
+        "AIA_SEVERITY_MEDIUM",
+        "AIA_VISION_PAGE_MAX",
+        "Analyse Expense",
+        "Navigation Bar Site Classification Page Name",
+        "Search Query",
+        "Visual"
+      ],
+      "called_by": [
+        "AIA_CreateMaxPageValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3e-060c-8000-9bb8-011c48011c48_188365",
+      "name": "AIA_Extraction_GenerateSearchQueries",
+      "type": "Expression Rule",
+      "description": "Generate advanced idp search queries",
+      "parameters": [],
+      "calls": [
+        "AIA_EXTRACTION_TYPES"
+      ],
+      "called_by": [
+        "AIA Run Textract Queries"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecb8-d1aa-8000-9c16-011c48011c48_155723",
+      "name": "AIA_Extraction_GenerateUuid",
+      "type": "Expression Rule",
+      "description": "Generate a span id",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ProcessTextractQueries"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_43077",
+      "name": "AIA_Extraction_GetInstanceById",
+      "type": "Expression Rule",
+      "description": "Get extraction instance and all relationships by id",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Test_GetLatestExtractionInstance",
+        "AIA_Test_GetLatestExtractionInstanceWithFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_55136",
+      "name": "AIA_Extraction_UseBoundingBoxes",
+      "type": "Expression Rule",
+      "description": "Expression to determine whether an extraction instance should use bounding boxes",
+      "parameters": [],
+      "calls": [
+        "AIA_BOOL_CAPTURE_BOUNDING_BOXES"
+      ],
+      "called_by": [
+        "AIA_ProcessTextractQueries"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_182518",
+      "name": "AIA_IsDocumentExtension",
+      "type": "Expression Rule",
+      "description": "Is the document of one of the following extensions",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_DocIsPdf"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_85019",
+      "name": "AIA_IsExtractionInstance",
+      "type": "Expression Rule",
+      "description": "Returns true if the instance is an extraction instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_CreateValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_183240",
+      "name": "AIA_ProcessTextractQueries",
+      "type": "Expression Rule",
+      "description": "Process textract query results",
+      "parameters": [],
+      "calls": [
+        "AIA_Extraction_GenerateUuid",
+        "AIA_Extraction_UseBoundingBoxes",
+        "AIA_Test_GetLatestExtractionInstanceWithFields",
+        "SHRD_ReadDocumentContent"
+      ],
+      "called_by": [
+        "AIA Run Textract Queries"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40839",
+      "name": "AIA_Test_GetLatestExtractionInstance",
+      "type": "Expression Rule",
+      "description": "Get the latest extraction instance",
+      "parameters": [],
+      "calls": [
+        "AIA_Extraction_GetInstanceById"
+      ],
+      "called_by": [
+        "AIA_CreateValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_199422",
+      "name": "AIA_Test_GetLatestExtractionInstanceWithFields",
+      "type": "Expression Rule",
+      "description": "Get the latest extraction instance with fields",
+      "parameters": [],
+      "calls": [
+        "AIA_Extraction_GetInstanceById"
+      ],
+      "called_by": [
+        "AIA_ProcessTextractQueries"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3e-060c-8000-9bb8-011c48011c48_203441",
+      "name": "SHRD_ReadDocumentContent",
+      "type": "Expression Rule",
+      "description": "Read content from text document",
+      "parameters": [],
+      "calls": [
+        "AIA_EXAMPLE_DOC_EXTRACTION_PDF"
+      ],
+      "called_by": [
+        "AIA_ProcessTextractQueries"
+      ]
+    },
+    {
+      "uuid": "0005ee34-9c41-8000-0422-7f0000014e7a",
+      "name": "AIA Run Textract Queries",
+      "type": "Process Model",
+      "description": "Run queries",
+      "calls": [
+        "AIA_CreateAdvancedIdpValidation",
+        "AIA_CreateMaxPageValidation",
+        "AIA_DocIsPdf",
+        "AIA_Extraction_GenerateSearchQueries",
+        "AIA_FEATURE_SEARCH_QUERY",
+        "AIA_MODEL_TYPE_VALUES",
+        "AIA_ProcessTextractQueries",
+        "AIA_SEVERITY_HIGH",
+        "AIA_VISION_PAGE_MAX"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "a67c9f85-f682-4191-bed6-c4912e7d88b4",
+      "name": "AI Review",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "8375b3de-d2a7-415d-983d-71e16d015d7e",
+      "name": "AI Validation Rule",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "ff252c53-64e4-4a99-8d23-8bc72a94e3fc",
+      "name": "Advanced IDP",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_CreateAdvancedIdpValidation"
+      ]
+    },
+    {
+      "uuid": "4b200656-fadb-4ecc-98d6-fa93e9152840",
+      "name": "Analyse Expense",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "73bdf5e0-f073-4e93-aa40-bdbfabbff2d3",
+      "name": "Document length exceeded max {feature} processing ({maxPages} pages)",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_CreateMaxPageValidation"
+      ]
+    },
+    {
+      "uuid": "25266106-b29b-4b80-9261-5c5b2e4b0aa3",
+      "name": "Max Pages Exceeded",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_CreateMaxPageValidation"
+      ]
+    },
+    {
+      "uuid": "f04e5814-41aa-4705-bb0e-968fe8fc8ec5",
+      "name": "Navigation Bar Site Classification Page Name",
+      "type": "Translation String",
+      "description": "Navigation Bar Site Classification Page Name",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "7d663cf5-06ab-4445-979d-17074d9928f9",
+      "name": "Search Query",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "6e2f4447-827f-48a4-bb10-10b6c2a028b8",
+      "name": "Visual",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_Features"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "uuid": "_a-0000ec6d-e6ba-8000-9bf2-011c48011c48_132677",
+  "name": "AIA_Classification_CreatePromptName",
+  "type": "Expression Rule",
+  "description": "Create prompt name from Classification Model",
+  "sail_code": "a!localVariables(\n  local!key: ri!ClassificationModel[recordType!AIA Classification Model.key],\n  \"AIA_Prompt_\" & upper(local!key[1]) & right(local!key, len(local!key) - 1)\n) & \na!match(\n  value: ri!aiSkillType,\n  equals: cons!AIA_AI_SKILL_TYPES[1],\n  then: \"_doc_classification\",\n  equals: cons!AIA_AI_SKILL_TYPES[2],\n  then: \"_email_classification\",\n  equals: cons!AIA_AI_SKILL_TYPES[3],\n  then: \"_text_classification\",\n  equals: cons!AIA_AI_SKILL_TYPES[4],\n  then: \"_doc_classification_multimodal\",\n  default: \"\"\n)",
+  "calls": [
+    {
+      "name": "AIA_AI_SKILL_TYPES",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AIA_CreatePromptName",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "uuid": "_a-0000ed1d-549f-8000-9c66-011c48011c48_280500",
+  "name": "AIA_RULE_Operation_ExpressionRuleConfigDisplay",
+  "type": "Expression Rule",
+  "description": "Display the rule parameters in a pretty print manner.",
+  "sail_code": "if(\n  a!isNullOrEmpty(ri!logicalExpression.rule),\n  null,\n  a!localVariables(\n    local!description: rulebyname(ri!logicalExpression.rule).description,\n    local!brandingMap: rule!AIA_UTIL_LoadBrandingMap(),\n    local!showMore: false(),\n    local!truncateLength: 75,\n    if(\n      ri!isReturnOnlyText = true(),\n      concat(ri!logicalExpression.rule, \" - \", local!description),\n      {\n        #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n          color: local!brandingMap.Gray4,\n          style: \"PLAIN\",\n          text: ri!logicalExpression.rule\n        ),\n        if(\n          a!isNullOrEmpty(local!description),\n          {},\n          if(\n            or(\n              len(local!description) <= local!truncateLength,\n              a!defaultValue(\n                value: ri!showMoreLink,\n                default: true\n              ) <> true()\n            ),\n            #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n              color: local!brandingMap.Gray3,\n              text: \" - \" & local!description\n            ),\n            {\n              \" - \",\n              /*Full Text*/\n              #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                color: local!brandingMap.Gray3,\n                text: local!description,\n                showWhen: local!showMore\n              ),\n              /*Abbreviated Text*/\n              #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                color: local!brandingMap.Gray3,\n                text: left(local!description, local!truncateLength),\n                showWhen: not(local!showMore)\n              ),\n              /*See More Link*/\n              {\n                #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                  color: local!brandingMap.Gray3,\n                  text: \"... \",\n                  showWhen: local!showMore = false\n                ),\n                #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                  text: #\"urn:appian:translation-string:v1:82bb2717-336d-401b-9fac-5bb607526bff\",\n                  style: \"PLAIN\",\n                  link: #\"SYSTEM_SYSRULES_dynamicLink\"(\n                    label: #\"urn:appian:translation-string:v1:82bb2717-336d-401b-9fac-5bb607526bff\",\n                    value: true,\n                    saveInto: local!showMore\n                  ),\n                  linkStyle: \"STANDALONE\",\n                  showWhen: not(local!showMore)\n                )\n              },\n              /*See Less Link*/\n              {\n                #\"SYSTEM_SYSRULES_richTextItem_v1\"(text: \" \", showWhen: local!showMore = true),\n                #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                  text: #\"urn:appian:translation-string:v1:09584167-cb6b-42d9-9b9d-82b5e71b2d69\",\n                  style: \"PLAIN\",\n                  link: #\"SYSTEM_SYSRULES_dynamicLink\"(\n                    label: #\"urn:appian:translation-string:v1:09584167-cb6b-42d9-9b9d-82b5e71b2d69\",\n                    value: false,\n                    saveInto: local!showMore\n                  ),\n                  linkStyle: \"STANDALONE\",\n                  showWhen: local!showMore = true\n                )\n              }\n            }\n          )\n        )\n      }\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AIA_UTIL_LoadBrandingMap",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "show more",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "show less",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

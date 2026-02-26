@@ -1,0 +1,367 @@
+{
+  "_metadata": {
+    "bundle_id": "AIA_Initiate_Extraction"
+  },
+  "objects": {
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92467": {
+      "name": "AIA_MTR_ClassificationInstanceClassifiedWithErrors",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000eec9-5676-8000-9c92-011c48011c48_179359": {
+      "name": "AIA_MTR_ConfidenceThresholdDisabled",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000eeca-c121-8000-9cab-011c48011c48_182002": {
+      "name": "AIA_MTR_ClassificationModelVersionRestore",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_180853": {
+      "name": "AIA_MTR_ExtractionInstanceCreated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ef46-744c-8000-9fed-011c48011c48_483991": {
+      "name": "AIA_MTR_ModelTestSuiteUpdated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92592": {
+      "name": "AIA_MTR_ExtractionInstanceValidationIgnore",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ef46-744c-8000-9fed-011c48011c48_483964": {
+      "name": "AIA_MTR_ModelTestRunInitiated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92585": {
+      "name": "AIA_MTR_ExtractionInstanceValidationAccept",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee52-8983-8000-9ba6-011c48011c48_27887": {
+      "name": "AIA_GetDocumentMetadata",
+      "type": "Expression Rule",
+      "sail_code": "try(\n  a!match(\n    value: lower(document(ri!document, \"extension\")),\n    equals: \"pdf\",\n    then: getpdfmetadata(document: ri!document),\n    equals: \"eml\",\n    then: a!map(\n      pageCount: try(\n        tointeger(\n          len(\n            #\"SYSTEM_SYSRULES_fromJson_v1\"(reademlfile(ri!document)).body\n          ) / cons!AIA_EML_PAGE_CHAR_COUNT\n        ),\n        1\n      )\n    ),\n    default: a!map(pageCount: 1)\n  ),\n  a!map(pageCount: 1)\n)"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92578": {
+      "name": "AIA_MTR_ExtractionModelVersionAiReview",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ec2d-5396-8000-9bdc-011c48011c48_43077": {
+      "name": "AIA_Extraction_GetInstanceById",
+      "type": "Expression Rule",
+      "sail_code": "#\"SYSTEM_SYSRULES_queryRecordByIdentifier\"(\n  recordType: recordType!AIA Extraction Instance,\n  identifier: ri!identifier,\n  fields: a!flatten(\n    {\n      /* Extraction Instance */\n      recordType!AIA Extraction Instance.modelVersionId,\n      recordType!AIA Extraction Instance.documentId,\n      recordType!AIA Extraction Instance.statusId,\n      recordType!AIA Extraction Instance.hasBoundingBoxes,\n      recordType!AIA Extraction Instance.boundingBoxesDocumentId,\n      recordType!AIA Extraction Instance.validationErrors,\n      recordType!AIA Extraction Instance.accuracy,\n      recordType!AIA Extraction Instance.precision,\n      recordType!AIA Extraction Instance.f1,\n      recordType!AIA Extraction Instance.recall,\n      recordType!AIA Extraction Instance.createdOn,\n      /* Extraction Fields */\n      recordType!AIA Extraction Instance.fields.modelVersionFieldId,\n      recordType!AIA Extraction Instance.fields.extractedValue,\n      recordType!AIA Extraction Instance.fields.overrideValue,\n      recordType!AIA Extraction Instance.fields.overrideNull,\n      recordType!AIA Extraction Instance.fields.boundingBox,\n      recordType!AIA Extraction Instance.fields.confidence,\n      /* Extraction Fields > Rows */\n      recordType!AIA Extraction Instance.fields.rows.overrideValue,\n      recordType!AIA Extraction Instance.fields.rows.boundingBox,\n      /* Extraction Fields > Rows > Cells */\n      recordType!AIA Extraction Instance.fields.rows.cells.modelVersionFieldId,\n      recordType!AIA Extraction Instance.fields.rows.cells.extractedValue,\n      recordType!AIA Extraction Instance.fields.rows.cells.overrideValue,\n      recordType!AIA Extraction Instance.fields.rows.cells.overrideNull,\n      recordType!AIA Extraction Instance.fields.rows.cells.confidence,\n      /* Extraction Fields > Model Field */\n      recordType!AIA Extraction Instance.fields.modelVersionField.key,\n      recordType!AIA Extraction Instance.fields.modelVersionField.columns.key,\n      /* Extraction Fields > Rows > Cells > Column */\n      recordType!AIA Extraction Instance.fields.rows.cells.column.key,\n      a!defaultValue(ri!additionalFields, {})\n    },\n    \n  )\n)"
+    },
+    "_a-0000ec44-cb49-8000-9be6-011c48011c48_82400": {
+      "name": "AIA_GetPageCount",
+      "type": "Expression Rule",
+      "sail_code": "rule!AIA_GetDocumentMetadata(\n  document: ri!document\n).pageCount"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92488": {
+      "name": "AIA_MTR_ExtractionInstanceError",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_159825": {
+      "name": "AIA_DocIsPdf",
+      "type": "Expression Rule",
+      "sail_code": "rule!AIA_IsDocumentExtension(\n  document: ri!document,\n  extensions: {\"pdf\"}\n)"
+    },
+    "_a-0000e79d-2c73-8000-97b9-01ef9001ef90_71617": {
+      "name": "SHRD_Merge",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  a!isNullOrEmpty(ri!object),\n  ri!source,\n  if(\n    a!isNullOrEmpty(ri!source),\n    null,\n    rule!SHRD_MergeInner(\n      object: if(a!isNullOrEmpty(ri!object ), null, #\"SYSTEM_SYSRULES_fromJson_v1\"(#\"SYSTEM_SYSRULES_toJson_v1\"(ri!object))),\n      source: if(a!isNullOrEmpty(ri!source), null, #\"SYSTEM_SYSRULES_fromJson_v1\"(#\"SYSTEM_SYSRULES_toJson_v1\"(ri!source)))\n    )\n  )\n)"
+    },
+    "_a-0000ed69-99d8-8000-9ba6-011c48011c48_88777": {
+      "name": "AIA_Extraction_ShouldConvertToPdf",
+      "type": "Expression Rule",
+      "sail_code": "or(\n  /* Do convert if:\n     - No document, just text input\n     - Document using sections with rules\n \n     Do not convert if: \n     - Document is a pdf\n     - Document is a csv\n     - Document is any of the supported types (png, tif, jpg) \n       and CONVERT FLAG is true\n       and autoRotate (which requires PDF) is not true\n     - Document is eml \n       and we aren't using Advanced IDP\n  */\n  not(\n    and(\n      a!isNotNullOrEmpty(ri!inputDoc),\n      or(\n        rule!AIA_DocIsPdf(\n          document: ri!inputDoc\n        ),\n        rule!AIA_IsDocumentExtension(\n          document: ri!inputDoc,\n          extensions: \"csv\"\n        ),\n        rule!AIA_IsDocumentExtension(\n          document: ri!inputDoc,\n          extensions: \"xml\"\n        ),\n        and(\n          cons!AIA_FLAG_CONVERT_IMAGES,\n          rule!AIA_IsDocumentExtension(\n            document: ri!inputDoc,\n            extensions: cons!AIA_AI_SUPPORTED_DOC_TYPES\n          ),\n          ri!ModelVersion[recordType!AIA Extraction Model Version.extractionModel.useAutoRotation] <> true\n        ),\n        and(\n          rule!AIA_IsDocumentExtension(\n            document: ri!inputDoc,\n            extensions: \"eml\"\n          ),\n          and(\n            ri!ModelVersion[recordType!AIA Extraction Model Version.extractionModel.useAdvancedLayout] <> true,\n            ri!ModelVersion[recordType!AIA Extraction Model Version.extractionModel.useBoundingBoxes] <> true\n          )\n        )\n      )\n    )\n  ),\n  and(\n    a!isNullOrEmpty(ri!inputDoc),\n    a!isNotNullOrEmpty(ri!inputText)\n  ),\n  a!isNotNullOrEmpty(reject(fn!isnull, ri!ModelVersion[recordType!AIA Extraction Model Version.sections.rule]))   \n)"
+    },
+    "_a-0000ee35-0ca2-8000-9ba6-011c48011c48_13646": {
+      "name": "AIA_LogMetric",
+      "type": "Expression Rule",
+      "sail_code": "a!match(\n  value: ri!name,\n  /* Classification Model Created */\n  equals: cons!AIA_MTR_CLASSIFICATION_MODEL_CREATED,\n  then: rule!AIA_MTR_ClassificationModelCreated(),\n  /* Classification Instance Created */\n  equals: cons!AIA_MTR_CLASSIFICATION_INSTANCE_CREATED,\n  then: rule!AIA_MTR_ClassificationInstanceCreated(),\n  /* Classification Instance Reconciled */\n  equals: cons!AIA_MTR_CLASSIFICATION_INSTANCE_RECONCILED,\n  then: rule!AIA_MTR_ClassificationInstanceReconciled(),\n  /* Classification Instance with Validation Errors */\n  equals: cons!AIA_MTR_INSTANCE_STATUS_CLASSIFIED_WITH_ERRORS,\n  then: rule!AIA_MTR_ClassificationInstanceClassifiedWithErrors(),\n  /* Classification Instance with Critical Error */\n  equals: cons!AIA_MTR_INSTANCE_STATUS_CLASSIFICATION_CRITICAL_ERROR,\n  then: rule!AIA_MTR_ClassificationInstanceError(),\n  \n  /* Extraction Model Created */\n  equals: cons!AIA_MTR_EXTRACTION_MODEL_CREATED,\n  then: rule!AIA_MTR_ExtractionModelCreated(),\n  /* Extraction Instance Created */\n  equals: cons!AIA_MTR_EXTRACTION_INSTANCE_CREATED,\n  then: rule!AIA_MTR_ExtractionInstanceCreated(),\n  /* Extraction Instance Reconciled */\n  equals: cons!AIA_MTR_EXTRACTION_INSTANCE_RECONCILED,\n  then: rule!AIA_MTR_ExtractionInstanceReconciled(),\n  /* Extraction Instance with Validation Errors */\n  equals: cons!AIA_MTR_INSTANCE_STATUS_EXTRACTED_WITH_ERRORS,\n  then: rule!AIA_MTR_ExtractionInstanceExtractedWithErrors(),\n  /* Extraction Instance with Critical Error */\n  equals: cons!AIA_MTR_INSTANCE_STATUS_EXTRACTION_CRITICAL_ERROR,\n  then: rule!AIA_MTR_ExtractionInstanceError(),\n  \n  /* Triggered when AI review raises an error (field level) */\n  equals: cons!AIA_MTR_AI_REVIEW_FIELD,\n  then: rule!AIA_MTR_ExtractionInstanceFieldAiReview(),\n  /* Triggered when AI review raises an error (instance level, this instance has 1 or more errors raised by AI review) */\n  equals: cons!AIA_MTR_AI_REVIEW_INSTANCE,\n  then: rule!AIA_MTR_ExtractionInstanceAiReview(),\n  /* Triggered when model is created with AI review turned on OR AI review is turned on for a model */\n  equals: cons!AIA_MTR_AI_REVIEW_MODEL_VERSION,\n  then: rule!AIA_MTR_ExtractionModelVersionAiReview(),\n  /* Triggered when user clicks accept */\n  equals: cons!AIA_MTR_AI_REVIEW_ACCEPT,\n  then: rule!AIA_MTR_ExtractionInstanceValidationAccept(),\n  /* Triggered when user clicks ignored */\n  equals: cons!AIA_MTR_AI_REVIEW_IGNORE,\n  then: rule!AIA_MTR_ExtractionInstanceValidationIgnore(),\n  /*triggered when spot check ocnfigured*/\n  equals: cons!AIA_MTR_SPOT_CHECK_MODEL_VERSION,\n  then: rule!AIA_MTR_ModelVersionConfigureSampling(),\n  /* Triggered when a model validation rule of type AI validation creates a validation instance */\n  equals: cons!AIA_MTR_AI_VALIDATION_RULE_OCCURANCE,\n  then: rule!AIA_MTR_InstanceValidationAiRuleOccurance(),\n  /*Confidence Threshold Enabled*/\n  equals: cons!AIA_MTR_CONFIDENCE_THRESHOLD_ENABLED,\n  then: rule!AIA_MTR_ConfidenceThresholdEnabled(),\n  /*Confidence Threshold Disabled*/\n  equals: cons!AIA_MTR_CONFIDENCE_THRESHOLD_DISABLED,\n  then: rule!AIA_MTR_ConfidenceThresholdDisabled(),\n  /*Extraction Model Version Restored*/\n  equals: cons!AIA_MTR_EXTRACTION_MODEL_VERSION_RESTORE,\n  then: rule!AIA_MTR_ExtractionModelVersionRestore(),\n  /*Classification Model Version Restored*/\n  equals: cons!AIA_MTR_CLASSIFICATION_MODEL_VERSION_RESTORE,\n  then: rule!AIA_MTR_ClassificationModelVersionRestore(),\n  /*Model Test Suite Created*/\n  equals: cons!AIA_MTR_MODEL_TEST_SUITE_CREATED,\n  then: rule!AIA_MTR_ModelTestSuiteCreated(),\n  /*Model Test Suite Updated*/\n  equals: cons!AIA_MTR_MODEL_TEST_SUITE_UPDATED,\n  then: rule!AIA_MTR_ModelTestSuiteUpdated(),\n  /*Model Test Run Initiated*/\n  equals: cons!AIA_MTR_MODEL_TEST_RUN_INITIATED,\n  then: rule!AIA_MTR_ModelTestRunInitiated(),\n  /*Classification Model Version Created with Multiple Outputs*/\n  equals: cons!AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_MODEL_VERSION_CREATED,\n  then: rule!AIA_MTR_MultipleOutputsClassificationModelVersionCreated(),\n  /*Classification Instance Created for a Model Version that Allows Multiple Outputs*/\n  equals: cons!AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_INSTANCE_CREATED,\n  then: rule!AIA_MTR_MultipleOutputsClassificationInstanceCreated(),\n  /*Classification Instance Reconciled for a Model Version that Allows Multiple Outputs*/\n  equals: cons!AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_INSTANCE_RECONCILED,\n  then: rule!AIA_MTR_MultipleOutputsClassificationInstanceReconciled(),\n  default: null\n)"
+    },
+    "_a-0000ee94-7472-8000-9bb4-011c48011c48_112828": {
+      "name": "AIA_Extraction_GetConfidenceForIds",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!boundingBoxesForSpanIds: rule!AIA_ExtractJson(\n    json: rule!AIA_PLG_QueryFile(\n      document: ri!boundingBoxDoc,\n      jsonPath: \"$[?(@.id in ['\" & joinarray(ri!spanIds, \"','\") & \"'])]\"\n    )\n  ),\n  if(\n    /*If no corresponding bounding boxes were returned for the inputted spanIds, return null*/\n    a!isNullOrEmpty(local!boundingBoxesForSpanIds),\n    null,\n    if(\n      /*If at least one of the returned bounding boxes has a confidence attached, use that*/\n      a!isNotNullOrEmpty(\n        reject(\n          a!isNullOrEmpty,\n          local!boundingBoxesForSpanIds.confidenceScore\n        )\n      ),\n      min(local!boundingBoxesForSpanIds.confidenceScore),\n      /*Otherwise, for each returned bounding box for the inputted spanIds, search for a nearby \"word\" dictionary \n      in the bounding boxes doc that matches the inputted extracted value*/\n      a!localVariables(\n        local!wordTypeBoundingBoxes: a!flatten(\n          #\"SYSTEM_SYSRULES_forEach\"(\n            items: local!boundingBoxesForSpanIds,\n            expression: index(\n              rule!AIA_ExtractJson(\n                json: rule!AIA_PLG_QueryFile(\n                  document: ri!boundingBoxDoc,\n                  jsonPath: concat(\n                    \"$[?(@.type == 'word' && @.text == '\",\n                    ri!extractedValue,\n                    \"' && @.pageNumber == \",\n                    fv!item.pageNumber,\n                    /*The following 4 filters ensure top left point of the \"word\" bounding box is contained in the larger one*/\n                    \" && @.geometry.top >= \",\n                    fv!item.geometry.top,\n                    \" && @.geometry.top <= \",\n                    todecimal(fv!item.geometry.top) + todecimal(fv!item.geometry.height),\n                    \" && @.geometry.left >= \",\n                    fv!item.geometry.left,\n                    \" && @.geometry.left <= \",\n                    todecimal(fv!item.geometry.left) + todecimal(fv!item.geometry.width),\n                    \")]\"\n                  )\n                )\n              ),\n              1,\n              {}\n            )\n          )\n        ),\n        if(\n          and(\n            a!isNotNullOrEmpty(\n              reject(\n                a!isNullOrEmpty,\n                local!wordTypeBoundingBoxes\n              )\n            ),\n            a!isNotNullOrEmpty(\n              reject(\n                a!isNullOrEmpty,\n                local!wordTypeBoundingBoxes.confidenceScore\n              )\n            )\n          ),\n          min(local!wordTypeBoundingBoxes.confidenceScore),\n          /*Lastly, if there were no \"word\" dictionaries that matched the inputted extracted value, search for ALL\n          \"word\" dictionaries contained inside the original bounding boxes and take the minimum of all of their confidence.\n          This is done in case the extracted value is additionally parsed or formatted differently in the bounding boxes doc*/\n          a!localVariables(\n            local!allContainedWordBoundingBoxes: a!flatten(\n              #\"SYSTEM_SYSRULES_forEach\"(\n                items: local!boundingBoxesForSpanIds,\n                expression: index(\n                  rule!AIA_ExtractJson(\n                    json: rule!AIA_PLG_QueryFile(\n                      document: ri!boundingBoxDoc,\n                      jsonPath: concat(\n                        \"$[?(@.type == 'word' && @.pageNumber == \",\n                        fv!item.pageNumber,\n                        /*The following 4 filters ensure top left point of the \"word\" bounding box is contained in the larger one*/\n                        \" && @.geometry.top >= \",\n                        fv!item.geometry.top,\n                        \" && @.geometry.top <= \",\n                        todecimal(fv!item.geometry.top) + todecimal(fv!item.geometry.height),\n                        \" && @.geometry.left >= \",\n                        fv!item.geometry.left,\n                        \" && @.geometry.left <= \",\n                        todecimal(fv!item.geometry.left) + todecimal(fv!item.geometry.width),\n                        \")]\"\n                      )\n                    )\n                  ),\n                  1,\n                  {}\n                )\n              )\n            ),\n            if(\n              and(\n                a!isNotNullOrEmpty(\n                  reject(\n                    a!isNullOrEmpty,\n                    local!allContainedWordBoundingBoxes\n                  )\n                ),\n                a!isNotNullOrEmpty(\n                  reject(\n                    a!isNullOrEmpty,\n                    local!allContainedWordBoundingBoxes.confidenceScore\n                  )\n                )\n              ),\n              min(local!allContainedWordBoundingBoxes.confidenceScore),\n              null\n            )\n          )\n        )\n      )\n    )\n  )\n)"
+    },
+    "_a-0000eea0-7c7f-8000-9bce-011c48011c48_123615": {
+      "name": "AIA_PLG_QueryFile",
+      "type": "Expression Rule",
+      "sail_code": "with(\n  local!result: queryfile(\n    ri!document,\n    ri!outputFormat,\n    now(),\n    ri!jsonPath\n  ),\n  local!result.result\n)"
+    },
+    "_a-0000eeb2-df20-8000-9bfe-011c48011c48_154565": {
+      "name": "AIA_MTR_InstanceValidationAiRuleOccurance",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_180846": {
+      "name": "AIA_MTR_ClassificationModelCreated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_180860": {
+      "name": "AIA_MTR_ClassificationInstanceCreated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_85019": {
+      "name": "AIA_IsExtractionInstance",
+      "type": "Expression Rule",
+      "sail_code": "runtimetypeof(\n  ri!Instance\n) = typeof(\n  recordType!AIA Extraction Instance()\n)"
+    },
+    "_a-0000e79d-2c73-8000-97b9-01ef9001ef90_77953": {
+      "name": "SHRD_MergeInner",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!sourceKeys: a!refreshVariable(\n    refreshAlways: true,\n    value: a!keys(ri!source)\n  ),\n  reduce(\n    rule!SHRD_Update(data: _, index: _, value: _),\n    ri!object, \n    merge(\n      local!sourceKeys,\n      apply(\n        fn!index(ri!source, _),\n        local!sourceKeys,\n      )\n    )\n  )\n)"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_180834": {
+      "name": "AIA_MTR_ExtractionModelCreated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000eea3-15ee-8000-9bd4-011c48011c48_138762": {
+      "name": "AIA_UTIL_SetRecordFields",
+      "type": "Expression Rule",
+      "sail_code": "/*\nFuture enhancement ideas:\n1 Parameter to skip update if the field isn't present in the object\n--- This would also apply to nested fields, as in, don't set a relationship field if the entire relationship object isn't there because it will instantiate it\n2 Parameter to overwrite based on more enhanced logic\n3 Allow list types for the `value`\n4 Allow reuse to apply setting metadata for nested relationships, but using their own set metadata rule\n--- e.g. CCM_Comment_SetMetaData can be used in both the Claim process and the individual Comment process\n*/\nif(\n  a!isNullOrEmpty(ri!record),\n  ri!record,\n  a!localVariables(\n    local!allUpdates: rule!AIA_UTIL_rejectNullValuesFromArray(a!flatten(\n      {\n        ri!alwaysOverwrite,\n        ri!childRelationships,\n        #\"SYSTEM_SYSRULES_forEach\"(\n          items: ri!neverOverwrite,\n          expression: #\"urn:appian:function:v1:a:update\"(\n            fv!item,\n            \"value\",\n            /*Specifically using this instead of a!defaultValue() to account for the `{null}` value*/\n            if(\n              rule!AIA_UTIL_isBlank(ri!record[fv!item.field]),\n              fv!item.value,\n              ri!record[fv!item.field]\n            )\n          )\n        )\n      }\n    )),\n    local!onlyChangedUpdates: a!flatten(\n      #\"SYSTEM_SYSRULES_forEach\"(\n        items: local!allUpdates,\n        expression: if(\n          or(\n            tostring(ri!record[fv!item.field]) = tostring(fv!item.value),\n            toboolean(fv!item.applyWhen) = false\n          ),\n          {},\n          fv!item\n        )\n      )\n    ),\n    if(\n      a!isNullOrEmpty(local!onlyChangedUpdates),\n      ri!record,\n      #\"urn:appian:function:v1:a:update\"(\n        data: ri!record,\n        index: local!onlyChangedUpdates.field,\n        value: local!onlyChangedUpdates.value\n      )\n    )\n  )\n)"
+    },
+    "_a-0000ec8b-a448-8000-9ba4-011c48011c48_12288": {
+      "name": "AIA_IsObject",
+      "type": "Expression Rule",
+      "sail_code": "or(\n  runtimetypeof(\n    ri!value\n  ) = 'type!{http://www.appian.com/ae/types/2009}Map',\n  runtimetypeof(\n    ri!value\n  ) = 'type!{http://www.appian.com/ae/types/2009}Dictionary'\n)"
+    },
+    "_a-0000ee3d-1f5c-8000-9ba4-011c48011c48_14175": {
+      "name": "AIA_FormatValueForDatabase",
+      "type": "Expression Rule",
+      "sail_code": "a!match(\n  value: ri!field[recordType!AIA Extraction Model Version Field.type],\n  whenTrue: a!isNullOrEmpty(ri!value),\n  then: ri!value,\n  whenTrue: contains(\n    index(cons!AIA_EXTRACTION_FIELD_TYPES, {4,5}),\n    fv!value\n  ),\n  then: rule!AIA_ConvertDateToIso(\n    value: if(\n      runtimetypeof(ri!value) = 'type!{http://www.appian.com/ae/types/2009}Text',\n      rule!AIA_TypeHelper(\n        value: ri!value,\n        field: ri!field\n      ),\n      ri!value\n    )\n  ),\n  default: ri!value\n)"
+    },
+    "_a-0000ec44-cb49-8000-9be6-011c48011c48_77894": {
+      "name": "AIA_TypeHelper",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!convertedValue: a!match(\n    value: ri!field[recordType!AIA Extraction Model Version Field.type],\n    equals: cons!AIA_EXTRACTION_FIELD_TYPES[1],\n    then: trim(ri!value),\n    equals: cons!AIA_EXTRACTION_FIELD_TYPES[2],\n    then: tointeger(ri!value),\n    equals: cons!AIA_EXTRACTION_FIELD_TYPES[3],\n    then: todecimal(ri!value),\n    equals: cons!AIA_EXTRACTION_FIELD_TYPES[4],\n    then: try(\n      if(\n        find(\"Z\", ri!value) > 0,\n        rule!AIA_ConvertIsoToDate(value: ri!value),\n        a!localVariables(\n          local!datetime: parsedate(trim(ri!value)),\n          date(year(local!datetime), month(local!datetime), day(local!datetime))\n        )\n      ),\n      ri!value\n    ),\n    equals: cons!AIA_EXTRACTION_FIELD_TYPES[5],\n    then: try(\n      if(\n        find(\"Z\", ri!value) > 0,\n        rule!AIA_ConvertIsoToDate(value: ri!value),\n        parsedate(trim(ri!value))\n      ),\n      ri!value\n    ),\n    equals: cons!AIA_EXTRACTION_FIELD_TYPES[6],\n    then: a!match(\n      value: trim(lower(ri!value)),\n      whenTrue: or(\n        ri!value = \"yes\",\n        toboolean(fv!value),\n      ),\n      then: true,\n      whenTrue: or(\n        ri!value = \"no\",\n        ri!value = \"false\"\n      ),\n      then: false,\n      default: trim(ri!value)\n    ),\n    equals: cons!AIA_EXTRACTION_FIELD_TYPES[8],\n    then: trim(ri!value),\n    default: trim(ri!value)\n  ),\n  if(\n    and(\n      a!isNullOrEmpty(local!convertedValue),\n      a!isNotNullOrEmpty(ri!value)\n    ),\n    ri!value,\n    local!convertedValue\n  )\n)"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_159813": {
+      "name": "AIA_ShouldRotateDoc",
+      "type": "Expression Rule",
+      "sail_code": "/* This rule should work for both classification and extraction */\nif(\n  typeof(ri!ModelVersion) = typeof(recordType!AIA Extraction Model Version()),\n  and(\n    ri!ModelVersion[recordType!AIA Extraction Model Version.extractionModel.useAutoRotation] = true,\n    rule!AIA_DocIsPdf(document: ri!document)\n  ),\n  /* TODO - handle for classification */\n  false\n)"
+    },
+    "_a-0000ef55-14e0-8000-a041-011c48011c48_505631": {
+      "name": "AIA_MTR_MultipleOutputsClassificationInstanceCreated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000eec9-5676-8000-9c92-011c48011c48_179352": {
+      "name": "AIA_MTR_ConfidenceThresholdEnabled",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000eea3-15ee-8000-9bd4-011c48011c48_137447": {
+      "name": "AIA_MTR_ModelVersionConfigureSampling",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000edb0-f009-8000-9ba8-011c48011c48_97176": {
+      "name": "AIA_UTIL_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n  typeof(ri!array),\n  reject(\n    rule!AIA_UTIL_isBlank(_),\n    a!flatten(ri!array)\n  )\n)"
+    },
+    "_a-0000ec5c-9eda-8000-9bec-011c48011c48_117023": {
+      "name": "AIA_Extraction_GetModelVersionById",
+      "type": "Expression Rule",
+      "sail_code": "#\"SYSTEM_SYSRULES_queryRecordByIdentifier\"(\n  recordType: recordType!AIA Extraction Model Version,\n  fields: {\n    rule!AIA_EXTRACTION_MODEL_VERSION_FIELDS()\n  },\n  relatedRecordData: {\n    #\"SYSTEM_SYSRULES_relatedRecordData\"(\n      relationship: recordType!AIA Extraction Model Version.fields,\n      sort: #\"SYSTEM_SYSRULES_sortInfo\"(\n        field: recordType!AIA Extraction Model Version Field.order,\n        ascending: true\n      )\n    ),\n    #\"SYSTEM_SYSRULES_relatedRecordData\"(\n      relationship: recordType!AIA Extraction Model Version.fields,\n      sort: #\"SYSTEM_SYSRULES_sortInfo\"(\n        field: recordType!AIA Extraction Model Version Field.order,\n        ascending: true\n      )\n    )\n  },\n  identifier: ri!identifier\n)"
+    },
+    "_a-0000ed16-a792-8000-9c64-011c48011c48_273379": {
+      "name": "SHRD_IsList",
+      "type": "Expression Rule",
+      "sail_code": "runtimetypeof(ri!value) = runtimetypeof(a!flatten({ri!value}))"
+    },
+    "_a-0000eeca-c121-8000-9cab-011c48011c48_181995": {
+      "name": "AIA_MTR_ExtractionModelVersionRestore",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee3e-060c-8000-9bb8-011c48011c48_203441": {
+      "name": "SHRD_ReadDocumentContent",
+      "type": "Expression Rule",
+      "sail_code": "/*readdocumentcontent(ri!document)*/\n\nqueryfile(\n  ri!document,\n  \"TEXT\",\n  now()\n).result"
+    },
+    "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_203145": {
+      "name": "AIA_EXTRACTION_MODEL_VERSION_FIELDS",
+      "type": "Expression Rule",
+      "sail_code": "{\n  /* Base */\n  recordType!AIA Extraction Model Version.status,\n  recordType!AIA Extraction Model Version.updates,\n  recordType!AIA Extraction Model Version.role,\n  recordType!AIA Extraction Model Version.instructions,\n  recordType!AIA Extraction Model Version.modelId,\n  recordType!AIA Extraction Model Version.versionId,\n  recordType!AIA Extraction Model Version.llm,\n  recordType!AIA Extraction Model Version.useAiReview,\n  recordType!AIA Extraction Model Version.aiReviewLlm,\n  recordType!AIA Extraction Model Version.aiReviewRole,\n  recordType!AIA Extraction Model Version.aiReviewInstructions,\n  recordType!AIA Extraction Model Version.useConfidence,\n  recordType!AIA Extraction Model Version.confidenceThreshold,\n  recordType!AIA Extraction Model Version.useSampling,\n  recordType!AIA Extraction Model Version.samplingRate,\n  recordType!AIA Extraction Model Version.instanceCount,\n  /* Fields */\n  recordType!AIA Extraction Model Version.fields.sectionId,\n  recordType!AIA Extraction Model Version.fields.section,\n  recordType!AIA Extraction Model Version.fields.order,\n  recordType!AIA Extraction Model Version.fields.key,\n  recordType!AIA Extraction Model Version.fields.label,\n  recordType!AIA Extraction Model Version.fields.type,\n  recordType!AIA Extraction Model Version.fields.isMultiple,\n  recordType!AIA Extraction Model Version.fields.description,\n  recordType!AIA Extraction Model Version.fields.instructions,\n  recordType!AIA Extraction Model Version.fields.extractionType,\n  recordType!AIA Extraction Model Version.fields.optionRule,\n  recordType!AIA Extraction Model Version.fields.validationRule,\n  recordType!AIA Extraction Model Version.fields.extractionRule,\n  recordType!AIA Extraction Model Version.fields.postProcessRule,\n  recordType!AIA Extraction Model Version.fields.required,\n  recordType!AIA Extraction Model Version.fields.useVision,\n  recordType!AIA Extraction Model Version.fields.isHidden,\n  recordType!AIA Extraction Model Version.fields.isNotTracked,\n  recordType!AIA Extraction Model Version.fields.useAiReview,\n  /* Columns */\n  recordType!AIA Extraction Model Version.fields.columns.order,\n  recordType!AIA Extraction Model Version.fields.columns.key,\n  recordType!AIA Extraction Model Version.fields.columns.label,\n  recordType!AIA Extraction Model Version.fields.columns.type,\n  recordType!AIA Extraction Model Version.fields.columns.isMultiple,\n  recordType!AIA Extraction Model Version.fields.columns.isHidden,\n  recordType!AIA Extraction Model Version.fields.columns.isNotTracked,\n  recordType!AIA Extraction Model Version.fields.columns.description,\n  recordType!AIA Extraction Model Version.fields.columns.instructions,\n  recordType!AIA Extraction Model Version.fields.columns.extractionType,\n  recordType!AIA Extraction Model Version.fields.columns.optionRule,\n  recordType!AIA Extraction Model Version.fields.columns.validationRule,\n  recordType!AIA Extraction Model Version.fields.columns.extractionRule,\n  recordType!AIA Extraction Model Version.fields.columns.postProcessRule,\n  recordType!AIA Extraction Model Version.fields.columns.required,\n  /* Examples */\n  recordType!AIA Extraction Model Version.examples,\n  /* Sections */\n  recordType!AIA Extraction Model Version.sections.name,\n  recordType!AIA Extraction Model Version.sections.description,\n  recordType!AIA Extraction Model Version.sections.rule,\n  /* Validation Rules */\n  recordType!AIA Extraction Model Version.validationRules.name,\n  recordType!AIA Extraction Model Version.validationRules.message,\n  recordType!AIA Extraction Model Version.validationRules.severity,\n  recordType!AIA Extraction Model Version.validationRules.validations,\n  /* Extraction Model */\n  recordType!AIA Extraction Model Version.extractionModel,\n}"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_184766": {
+      "name": "AIA_PLG_WriteFile",
+      "type": "Expression Rule",
+      "sail_code": "with(\n  local!result: writefile(\n    ri!content,\n    ri!name,\n    ri!extension,\n    ri!folder,\n    ri!description\n  ),\n  if(\n    local!result.success,\n    local!result,\n    fn!error(local!result.error)\n  )\n)"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_180874": {
+      "name": "AIA_MTR_ClassificationInstanceReconciled",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_199422": {
+      "name": "AIA_Test_GetLatestExtractionInstanceWithFields",
+      "type": "Expression Rule",
+      "sail_code": "rule!AIA_Extraction_GetInstanceById(\n  identifier: #\"SYSTEM_SYSRULES_queryRecordType_v1\"(\n    recordType: recordType!AIA Extraction Instance,\n    pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n      startIndex: 1,\n      batchSize: 1,\n      sort: {\n        #\"SYSTEM_SYSRULES_sortInfo\"(\n          field: recordType!AIA Extraction Instance.id\n        )\n      }\n    )\n  ).data[recordType!AIA Extraction Instance.id],\n  additionalFields: {\n    recordType!AIA Extraction Instance.inputDocumentId,\n    recordType!AIA Extraction Instance.documentFolderId,\n    recordType!AIA Extraction Instance.modelVersion,\n    recordType!AIA Extraction Instance.modelVersion.confidenceThreshold,\n    recordType!AIA Extraction Instance.modelVersion,\n    recordType!AIA Extraction Instance.modelVersion,\n  }\n)"
+    },
+    "_a-0000edb0-f009-8000-9ba8-011c48011c48_97164": {
+      "name": "AIA_UTIL_isBlank",
+      "type": "Expression Rule",
+      "sail_code": "cast(\n  'type!{http://www.appian.com/ae/types/2009}Boolean',\n  length(a!flatten(ri!value)) = 0\n)"
+    },
+    "_a-0000ed74-17c4-8000-9c8d-011c48011c48_403026": {
+      "name": "SHRD_CleanForFilename",
+      "type": "Expression Rule",
+      "sail_code": "stripwith(substitute(\n  substitute(\n    left(ri!input, 25),\n    char(10),\n    \" \"\n  ),\n  char(13),\n  \"\"\n), \"\\/;:\"\"|?'><*]\"),"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_180867": {
+      "name": "AIA_MTR_ExtractionInstanceReconciled",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92474": {
+      "name": "AIA_MTR_ClassificationInstanceError",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40839": {
+      "name": "AIA_Test_GetLatestExtractionInstance",
+      "type": "Expression Rule",
+      "sail_code": "rule!AIA_Extraction_GetInstanceById(\n  identifier: #\"SYSTEM_SYSRULES_queryRecordType_v3\"(\n    recordType: recordType!AIA Extraction Instance,\n    pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n      startIndex: 1,\n      batchSize: 1,\n      sort: {\n        #\"SYSTEM_SYSRULES_sortInfo\"(\n          field: recordType!AIA Extraction Instance.id\n        )\n      }\n    )\n  ).data[recordType!AIA Extraction Instance.id],\n  additionalFields: {\n    recordType!AIA Extraction Instance.instanceUuid,\n    recordType!AIA Extraction Instance.modelVersion.versionId,\n    recordType!AIA Extraction Instance.modelVersion.modelId,\n    recordType!AIA Extraction Instance.modelVersion.uuid,\n    recordType!AIA Extraction Instance.modelVersion.extractionModel.key,\n    recordType!AIA Extraction Instance.documentFolderId,\n    recordType!AIA Extraction Instance.fieldCount,\n    recordType!AIA Extraction Instance.sections,\n    recordType!AIA Extraction Instance.boundingBoxes,\n    recordType!AIA Extraction Instance.responseDocumentId,\n    recordType!AIA Extraction Instance.sourceDocumentId\n  }\n)"
+    },
+    "_a-0000ee3d-1f5c-8000-9ba4-011c48011c48_14385": {
+      "name": "AIA_ConvertDateToIso",
+      "type": "Expression Rule",
+      "sail_code": "regexsearch(\n  \":\"\"(.*)\"\"\",\n  #\"SYSTEM_SYSRULES_toJson_v1\"(\n    {\n      a: ri!value\n    }\n  ),\n  \"gms\",\n  true\n).groups[1].match"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92481": {
+      "name": "AIA_MTR_ExtractionInstanceExtractedWithErrors",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee3e-060c-8000-9bb8-011c48011c48_197494": {
+      "name": "AIA_Extraction_KeepXSpans",
+      "type": "Expression Rule",
+      "sail_code": "rule!SHRD_ArrayKeepXEntries(\n  array: a!flatten(\n    #\"SYSTEM_SYSRULES_forEach\"(\n      ri!spans,\n      if(\n        and(\n          a!isNotNullOrEmpty(fv!item),\n          find(\n            \",\",\n            fv!item\n          )\n        ),\n        split(\n          fv!item,\n          \",\"\n        ),\n        fv!item\n      )\n    )\n  ),\n  numToKeep: ri!numToKeep\n)"
+    },
+    "_a-0000ec60-a08d-8000-9bee-011c48011c48_124687": {
+      "name": "AIA_Extraction_CreateUpdateInstance",
+      "type": "Expression Rule",
+      "sail_code": "rule!AIA_UTIL_SetRecordFields(\n  record: a!defaultValue(\n    value: ri!ExtractionInstance,\n    default: recordType!AIA Extraction Instance()\n  ),\n  neverOverwrite: {\n    a!map(\n      field: recordType!AIA Extraction Instance.documentFolderId,\n      value: ri!folder\n    ),\n    a!map(\n      field: recordType!AIA Extraction Instance.documentId,\n      value: if(tointeger(ri!convertedDoc) > 0, ri!convertedDoc, null)\n    ),\n    a!map(\n      field: recordType!AIA Extraction Instance.sourceDocumentId,\n      value: if(tointeger(ri!inputDoc) > 0, ri!inputDoc, null)\n    ),\n    a!map(\n      field: recordType!AIA Extraction Instance.inputText,\n      value: ri!inputText\n    ),\n    a!map(\n      field: recordType!AIA Extraction Instance.modelVersionId,\n      value: ri!modelVersionId\n    ),\n    a!map(\n      field: recordType!AIA Extraction Instance.testSuiteRunId,\n      value: ri!testSuiteRunId,\n      applyWhen: and(\n        a!isNotNullOrEmpty(ri!testSuiteRunId),\n        ri!testSuiteRunId <> 0\n      )\n    ),\n    a!map(\n      field: recordType!AIA Extraction Instance.testRunProcessId,\n      value: ri!testRunProcessId\n    ),\n    a!map(\n      field: recordType!AIA Extraction Instance.createdOn,\n      value: now()\n    ),\n    a!map(\n      field: recordType!AIA Extraction Instance.createdBy,\n      value: ri!initiator\n    ),\n    a!map(\n      field: recordType!AIA Extraction Instance.responseDocumentId,\n      value: if(\n        a!isNullOrEmpty(ri!responseJson),\n        null,\n        rule!AIA_PLG_WriteFile(\n          content: ri!responseJson,\n          name: \"response\",\n          extension: \"json\",\n          folder: ri!ExtractionInstance[recordType!AIA Extraction Instance.documentFolderId]\n        ).document\n      )\n    ),\n    a!map(\n      field: recordType!AIA Extraction Instance.pageCount,\n      value: rule!AIA_GetPageCount(\n        document: a!defaultValue(\n          ri!ExtractionInstance[recordType!AIA Extraction Instance.documentId],\n          ri!convertedDoc,\n          ri!inputDoc\n        )\n      )\n    ),\n    a!map(\n      field: recordType!AIA Extraction Instance.fields,\n      value: if(\n        /*if there are no response passed in, this is liekyl being called before actual extraction save step*/\n        /*so can skip logic*/\n        /*intended to skip this logic when rule is called in intiate extraction and places like that where rest of rule is needed but extraction is not complete*/\n        a!isNullOrEmpty(ri!responseJson),\n        null,\n        rule!AIA_Extract_ExtractFieldsFromJsonResponse(\n          jsonResponse: ri!responseJson,\n          ExtractionInstance: ri!ExtractionInstance\n        ).extractedFields\n      )\n    )\n  },\n  alwaysOverwrite: {\n    a!map(\n      field: recordType!AIA Extraction Instance.testInstance,\n      value: a!defaultValue(\n        if(\n          a!isNullOrEmpty(ri!isDocumentTestCase),\n          ri!ExtractionInstance[recordType!AIA Extraction Instance.testInstance],\n          ri!isDocumentTestCase\n        ),\n        false()\n      )\n    ),\n    a!map(\n      field: recordType!AIA Extraction Instance.modifiedOn,\n      value: now()\n    ),\n    a!map(\n      field: recordType!AIA Extraction Instance.modifiedBy,\n      value: a!defaultValue(\n        value: ri!initiator,\n        default: loggedInUser()\n      )\n    ),\n    a!map(\n      field: recordType!AIA Extraction Instance.statusId,\n      value: a!match(\n        value: ri!ExtractionInstance[recordType!AIA Extraction Instance.statusId],\n        equals: cons!AIA_INSTANCE_STATUS_RECONCILED_MANUALLY,\n        equals: cons!AIA_INSTANCE_STATUS_RECONCILED_AUTOMATICALLY,\n        then: fv!value,\n        equals: cons!AIA_INSTANCE_STATUS_EXTRACTED,\n        then: fv!value,\n        whenTrue: and(\n          tointeger(fv!value) = cons!AIA_INSTANCE_STATUS_INITIATED,\n          a!isNotNullOrEmpty(ri!responseJson)\n        ),\n        then: cons!AIA_INSTANCE_STATUS_EXTRACTED,\n        default: cons!AIA_INSTANCE_STATUS_INITIATED\n      )\n    ),\n    a!map(\n      field: recordType!AIA Extraction Instance.inputTokens,\n      value: a!defaultValue(\n        ri!ExtractionInstance[recordType!AIA Extraction Instance.inputTokens],\n        0\n      ) + a!defaultValue(ri!inputTokens, 0)\n    ),\n    a!map(\n      field: recordType!AIA Extraction Instance.outputTokens,\n      value: a!defaultValue(\n        ri!ExtractionInstance[recordType!AIA Extraction Instance.outputTokens],\n        0\n      ) + a!defaultValue(ri!outputTokens, 0)\n    ),\n    a!map(\n      field: recordType!AIA Extraction Instance.isSamplingRequired,\n      value: false,\n      applyWhen: ri!isReconciliation = true()\n    )\n  }\n)"
+    },
+    "_a-0000ee3d-1f5c-8000-9ba4-011c48011c48_14361": {
+      "name": "AIA_ConvertIsoToDate",
+      "type": "Expression Rule",
+      "sail_code": "#\"SYSTEM_SYSRULES_fromJson_v1\"(\n  \"{\"\"a\"\":\"\"\" & ri!value & \"\"\"}\"\n).a"
+    },
+    "000dec67-1fdf-8000-019a-7f0000014e7a": {
+      "name": "AIA Initiate Extraction",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n=pv!ExtractionInstance\n\n// Output: ?\nac!ProcessInfo.pv.ExtractionInstance\n\n// Input: ?\n=rule!AIA_LogMetric( name: cons!AIA_MTR_EXTRACTION_INSTANCE_CREATED)\n\n// Output: ?\na!defaultValue(\n  pv!convertedDoc,\n  pv!inputDoc\n)\n\n// Input: ?\n=pv!ExtractionInstance\n\n// Output: ?\nac!ProcessInfo.pv.ExtractionInstance\n\n// Input: ?\n=pv!ExtractionInstance\n\n// Input: ?\n=pv!inputDoc\n\n// Input: ?\n=pv!inputText\n\n// Output: ?\nac!ProcessInfo.pv.convertedDocument\n\n// Output: ?\nac!ProcessInfo.pv.ExtractionInstance\n\n// Input: ?\n=rule!AIA_NameFromInput( inputDoc: pv!inputDoc, inputText: pv!inputText)\n\n// Input: ?\n=rule!AIA_Extraction_GetModelVersionById( identifier: if( and( a!isNotNullOrEmpty(pv!modelKey), pv!modelVersionId < 1 ), rule!AIA_Extraction_GetLatestModelVersionIdByKey(modelKey: pv!modelKey), pv!modelVersionId ))\n\n// Output: ?\nrule!AIA_Extraction_CreateUpdateInstance(\n  inputDoc: pv!inputDoc,\n  inputText: pv!inputText,\n  modelVersionId: ac!ModelVersion[recordType!AIA Extraction Model Version.modelVersionId],\n  initiator: pp!initiator,\n  isDocumentTestCase: pv!isDocumentTestCase,\n  folder: ac!NewFolder\n)\n\n// Input: ?\nfalse\n\n// Input: ?\n=pv!convertedDoc\n\n// Input: ?\npv!ExtractionInstance[recordType!AIA Extraction Instance.documentFolderId]\n\n// Input: ?\n=pv!ExtractionInstance[recordType!AIA Extraction Instance.id]\n\n// Input: ?\ncons!AIA_MODEL_TYPE_VALUES[1]\n\n// Output: ?\nac!ProcessInfo.pv.rotatedDocument\n\n// Output: ?\nrule!AIA_Extraction_AddTokens(ExtractionInstance: pv!ExtractionInstance, inputTokens: ac!ProcessInfo.pv.inputTokens, outputTokens: ac!ProcessInfo.pv.outputTokens)\n\n// Input: ?\nrule!AIA_CreateValidation(\n  instance: pv!ExtractionInstance,\n  instanceId: pv!extractionInstanceId,\n  typeId: cons!AIA_VALIDATION_TYPE_ID_EXECUTION,\n  severity: cons!AIA_SEVERITY_CRITICAL,\n  message: rule!AIA_CreateValidationErrorMessage(\n    type: #\"urn:appian:translation-string:v1:75321229-b22a-4a0b-a129-260a419a776f\",\n    error: if(\n      or(\n        /*If converted doc hasn't been set yet, inputted document was too big to begin with*/\n        a!isNullOrEmpty(pv!convertedDoc),\n        document(pv!convertedDoc, \"size\") > cons!AIA_INT_EXTRACTION_MAX_FILE_SIZE\n      ),\n      #\"urn:appian:translation-string:v1:a2096227-723f-4814-95e4-4b4c68568fe9\",\n      #\"urn:appian:translation-string:v1:773bee4c-81ab-415d-94b4-3c3e1012f76f\"\n    )\n  )\n)\n\n// Output: ?\nappian:record-relationship:v1:64322398-e457-4695-87d5-09794164cf77/e253e423-2caf-422e-ab44-4c7361a3470f\"]:ac!ProcessInfo.pv.Validation\n\n// Input: ?\n={rule!AIA_Extraction_CreateUpdateInstance(\n  inputDoc: pv!inputDoc,\n  convertedDoc: pv!convertedDoc,\n  modelVersionId: pv!ModelVersion[recordType!AIA Extraction Model Version.modelVersionId],\n  initiator: pp!initiator,\n  isDocumentTestCase: pv!isDocumentTestCase,\n  ExtractionInstance: pv!ExtractionInstance,\n  isReconciliation: false(),\n  testSuiteRunId: pv!testSuiteRunId,\n  testRunProcessId: pv!testRunProcessId\n)}\n\n// Input: ?\n={recordType!AIA Extraction Instance}\n\n// Input: ?\npp!initiator\n\n// Input: ?\nnow()\n\n// Input: ?\na!automationId(\"OTHER\")\n\n// Output: ?\n#\"urn:appian:function:v1:a:update\"(\n  ac!RecordsUpdated[1],\n  recordType!AIA Extraction Instance.modelVersion,\n  pv!ModelVersion\n)\n\n// Output: ?\nac!RecordsUpdated[1][recordType!AIA Extraction Instance.id]\n\n// Input: ?\n={rule!AIA_Extraction_CreateUpdateInstance(\n  inputDoc: pv!inputDoc,\n  convertedDoc: pv!convertedDoc,\n  modelVersionId: pv!ModelVersion[recordType!AIA Extraction Model Version.modelVersionId],\n  initiator: pp!initiator,\n  isDocumentTestCase: pv!isDocumentTestCase,\n  ExtractionInstance: pv!ExtractionInstance,\n  testSuiteRunId: pv!testSuiteRunId\n)}\n\n// Input: ?\n={recordType!AIA Extraction Instance}\n\n// Output: ?\n#\"urn:appian:function:v1:a:update\"(\n  ac!RecordsUpdated[1],\n  recordType!AIA Extraction Instance.modelVersion,\n  pv!ModelVersion\n)\n\n// Output: ?\nac!RecordsUpdated[1][recordType!AIA Extraction Instance.id]"
+    },
+    "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40903": {
+      "name": "AIA_Extract_ExtractFieldsFromJsonResponse",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!extractionResults: rule!AIA_ExtractJson(json: ri!jsonResponse, returnList: false),\n  local!modelVersionFields: if(\n    a!isNotNullOrEmpty(\n      ri!ExtractionInstance[recordType!AIA Extraction Instance.modelVersion]\n    ),\n    ri!ExtractionInstance[recordType!AIA Extraction Instance.modelVersion],\n    rule!AIA_Extraction_GetFieldsForModelVersionId(\n      modelVersionId: ri!ExtractionInstance[recordType!AIA Extraction Instance.modelVersionId]\n    )\n  ),\n  local!boundingBoxDoc: ri!ExtractionInstance[recordType!AIA Extraction Instance.boundingBoxesDocumentId],\n  local!extractedFields: #\"SYSTEM_SYSRULES_forEach\"(\n    items: local!modelVersionFields,\n    expression: a!localVariables(\n      local!extractedValue: rule!AIA_FormatValuesForDatabase(\n        value: local!extractionResults[fv!item[recordType!AIA Extraction Model Version Field.key]],\n        field: fv!item\n      ),\n      local!spanIds: reject(\n        fn!isnull,\n        {\n          rule!AIA_Extraction_KeepXSpans(\n            spans: index(\n              local!extractionResults[fv!item[recordType!AIA Extraction Model Version Field.key]],\n              \"spanId\",\n              null\n            ),\n            numToKeep: 25\n          )\n        }\n      ),\n      local!confidence: rule!AIA_Extraction_GetConfidenceForIds(\n        spanIds: local!spanIds,\n        boundingBoxDoc: local!boundingBoxDoc,\n        extractedValue: local!extractedValue\n      ),\n      recordType!AIA Extraction Instance Field(\n        recordType!AIA Extraction Instance Field.modelVersionFieldId: fv!item[recordType!AIA Extraction Model Version Field.fieldId],\n        recordType!AIA Extraction Instance Field.modelVersionField: fv!item,\n        recordType!AIA Extraction Instance Field.confidence: local!confidence,\n        recordType!AIA Extraction Instance Field.boundingBox: local!spanIds,\n        recordType!AIA Extraction Instance Field.extractedValue: local!extractedValue,\n        recordType!AIA Extraction Instance Field.rows: if(\n          /* Table Type */\n          fv!item[recordType!AIA Extraction Model Version Field.type] = cons!AIA_EXTRACTION_FIELD_TYPE_TABLE,\n          /* ForEach of the returned results, create a row with the columns */\n          a!localVariables(\n            local!field: fv!item,\n            #\"SYSTEM_SYSRULES_forEach\"(\n              local!extractionResults[fv!item[recordType!AIA Extraction Model Version Field.key]],\n              a!localVariables(\n                local!row: fv!item,\n                recordType!AIA Extraction Instance Field Row(\n                  recordType!AIA Extraction Instance Field Row.boundingBox: a!localVariables(\n                    local!spanIds: a!defaultValue(\n                      index(local!row, \"spanId\", null),\n                      #\"SYSTEM_SYSRULES_forEach\"(\n                        items: local!field[recordType!AIA Extraction Model Version Field.columns],\n                        expression: index(\n                          index(\n                            local!row,\n                            fv!item[recordType!AIA Extraction Model Version Field.key],\n                            null\n                          ),\n                          \"spanId\",\n                          null\n                        )\n                      )\n                    ),\n                    rule!AIA_Extraction_KeepXSpans(spans: local!spanIds, numToKeep: 100)\n                  ),\n                  recordType!AIA Extraction Instance Field Row.cells: #\"SYSTEM_SYSRULES_forEach\"(\n                    items: local!field[recordType!AIA Extraction Model Version Field.columns],\n                    expression: a!localVariables(\n                      local!extractedValueForCell: if(\n                        rule!AIA_IsObject(\n                          value: index(\n                            local!row,\n                            fv!item[recordType!AIA Extraction Model Version Field.key],\n                            null\n                          )\n                        ),\n                        index(\n                          index(\n                            local!row,\n                            fv!item[recordType!AIA Extraction Model Version Field.key],\n                            null\n                          ),\n                          \"value\",\n                          null\n                        ),\n                        index(\n                          local!row,\n                          fv!item[recordType!AIA Extraction Model Version Field.key],\n                          null\n                        )\n                      ),\n                      local!spanIdsForCell: reject(\n                        fn!isnull,\n                        {\n                          rule!AIA_Extraction_KeepXSpans(\n                            spans: index(\n                              index(\n                                local!row,\n                                fv!item[recordType!AIA Extraction Model Version Field.key],\n                                null\n                              ),\n                              \"spanId\",\n                              null\n                            ),\n                            numToKeep: 5\n                          )\n                        }\n                      ),\n                      local!confidenceForCell: rule!AIA_Extraction_GetConfidenceForIds(\n                        spanIds: local!spanIdsForCell,\n                        boundingBoxDoc: local!boundingBoxDoc,\n                        extractedValue: local!extractedValueForCell\n                      ),\n                      recordType!AIA Extraction Instance Field Row Cell(\n                        recordType!AIA Extraction Instance Field Row Cell.modelVersionFieldId: fv!item[recordType!AIA Extraction Model Version Field.fieldId],\n                        recordType!AIA Extraction Instance Field Row Cell.extractedValue: local!extractedValueForCell,\n                        recordType!AIA Extraction Instance Field Row Cell.boundingBox: local!spanIdsForCell,\n                        recordType!AIA Extraction Instance Field Row Cell.confidence: local!confidenceForCell\n                      )\n                    )\n                  )\n                )\n              )\n            )\n          ),\n          null\n        )\n      )\n    )\n  ),\n  local!extractedKeys: a!keys(local!extractionResults),\n  local!modelKeys: local!modelVersionFields[recordType!AIA Extraction Model Version Field.key],\n  local!additionalKeys: difference(local!extractedKeys, local!modelKeys),\n  local!missingKeys: difference(local!modelKeys, local!extractedKeys),\n  a!map(\n    extractedFields: local!extractedFields,\n    extraFields: local!additionalKeys,\n    missingFields: local!missingKeys\n  )\n)"
+    },
+    "_a-0000ed16-a792-8000-9c64-011c48011c48_274759": {
+      "name": "AIA_ToJson",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  a!isNullOrEmpty(ri!data),\n  \"null\",\n  #\"SYSTEM_SYSRULES_toJson_v1\"(ri!data)\n)"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_182518": {
+      "name": "AIA_IsDocumentExtension",
+      "type": "Expression Rule",
+      "sail_code": "and(\n  a!isNotNullOrEmpty(ri!document),\n  contains(\n    lower(ri!extensions),\n    lower(document(\n      ri!document,\n      \"extension\"\n    ))\n  )\n)"
+    },
+    "_a-0000ec44-cb49-8000-9be6-011c48011c48_94224": {
+      "name": "AIA_Extraction_GetLatestModelVersionIdByKey",
+      "type": "Expression Rule",
+      "sail_code": "index(\n  index(\n    #\"SYSTEM_SYSRULES_queryRecordType_v3\"(\n      fields: {\n        recordType!AIA Extraction Model Version.modelVersionId\n      },\n      recordType: recordType!AIA Extraction Model Version,\n      filters: {\n        #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: recordType!AIA Extraction Model Version.extractionModel.key,\n          operator: \"=\",\n          value: ri!modelKey\n        ),\n        #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: recordType!AIA Extraction Model Version.status,\n          operator: \"=\",\n          value: cons!AIA_MODEL_VERSION_STATUS_PUBLISHED\n        )\n      },\n      pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n        startIndex: 1,\n        batchSize: 1,\n        sort: #\"SYSTEM_SYSRULES_sortInfo\"(\n          field: recordType!AIA Extraction Model Version.versionId,\n          ascending: false\n        )\n      )\n    ).data,\n    1,\n    null\n  ),\n  recordType!AIA Extraction Model Version.modelVersionId,\n  null\n)"
+    },
+    "_a-0000ef55-14e0-8000-a041-011c48011c48_505670": {
+      "name": "AIA_MTR_MultipleOutputsClassificationInstanceReconciled",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ef55-14e0-8000-a041-011c48011c48_505575": {
+      "name": "AIA_MTR_MultipleOutputsClassificationModelVersionCreated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ed69-99d8-8000-9ba6-011c48011c48_55250": {
+      "name": "AIA_Extraction_ShouldRunAdvancedIdp",
+      "type": "Expression Rule",
+      "sail_code": "and(\n  cons!AIA_ADVANCED_IDP_ENABLED,\n  or(\n    ri!ExtractionInstance[recordType!AIA Extraction Instance.modelVersion.extractionModel.useAdvancedLayout] = true,\n    ri!ExtractionInstance[recordType!AIA Extraction Instance.modelVersion.extractionModel.useBoundingBoxes] = true\n  ),\n  or(\n    a!isNullOrEmpty(ri!useAdvancedIdp),\n    ri!useAdvancedIdp = true\n  ),\n  rule!AIA_IsDocumentExtension(\n    document: ri!ExtractionInstance[recordType!AIA Extraction Instance.documentId],\n    extensions: cons!AIA_AI_SUPPORTED_DOC_TYPES\n  ) \n)"
+    },
+    "_a-0000ee3d-1f5c-8000-9ba4-011c48011c48_14149": {
+      "name": "AIA_FormatValuesForDatabase",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  ri!field[recordType!AIA Extraction Model Version Field.isMultiple],\n  a!localVariables(\n    local!items: ri!value,\n    local!isObject: rule!AIA_IsObject(\n      /*even though field may be configured as multiple, LLM may not have responded with proper json [] wrapper if result was a single value*/\n      /*to correctly check if this is an object, verify if the value is a list before indexing, dont rely on field isMultiple config*/\n      value: \n      if(\n        rule!SHRD_IsList(local!items),\n        index(local!items, 1, null),\n        local!items\n      )\n    ),\n    if(\n      local!isObject,\n      /*if object, in index value from each item and flatten into json array*/\n      #\"SYSTEM_SYSRULES_toJson_v1\"(\n        a!flatten({ index(local!items, \"value\", {}) })\n      ),\n      /*else just flatten items*/\n      #\"SYSTEM_SYSRULES_toJson_v1\"(a!flatten({ local!items }))\n    )\n  ),\n  if(\n    /* Table Type */\n    ri!field[recordType!AIA Extraction Model Version Field.type] = cons!AIA_EXTRACTION_FIELD_TYPE_TABLE,\n    null,\n    rule!AIA_FormatValueForDatabase(\n      field: ri!field,\n      value: if(\n        rule!AIA_IsObject(value: ri!value),\n        index(\n          ri!value,\n          \"value\",\n          null\n        ),\n        ri!value\n      )\n    )\n  )\n),"
+    },
+    "_a-0000ef46-744c-8000-9fed-011c48011c48_483943": {
+      "name": "AIA_MTR_ModelTestSuiteCreated",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_90047": {
+      "name": "AIA_CreateValidationErrorMessage",
+      "type": "Expression Rule",
+      "sail_code": "#\"SYSTEM_SYSRULES_toJson_v1\"(\n  a!map(\n    type: ri!type,\n    error: ri!error\n  )\n)"
+    },
+    "_a-0001ee05-5006-8000-9ba7-011c48011c48_15621": {
+      "name": "SHRD_ArrayKeepXEntries",
+      "type": "Expression Rule",
+      "sail_code": "=if(\n  and(\n    a!isNotNullOrEmpty(ri!array),\n    a!isNotNullOrEmpty(ri!numToKeep),\n    ri!numToKeep > 0,\n    count(ri!array) > ri!numToKeep\n  ),\n  rdrop(\n    ri!array,\n    count(ri!array) - ri!numToKeep\n  ),\n  ri!array\n)\n"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92571": {
+      "name": "AIA_MTR_ExtractionInstanceAiReview",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ec1e-9975-8000-9bd6-011c48011c48_1381838": {
+      "name": "AIA_Extraction_GetFieldsForModelVersionId",
+      "type": "Expression Rule",
+      "sail_code": "#\"SYSTEM_SYSRULES_queryRecordByIdentifier\"(\n  recordType: recordType!AIA Extraction Model Version,\n  identifier: ri!modelVersionId,\n  fields: a!flatten(\n    {\n      recordType!AIA Extraction Model Version.modelVersionId,\n  \n      /* Fields */\n      recordType!AIA Extraction Model Version.fields.sectionId,\n      recordType!AIA Extraction Model Version.fields.section,\n      recordType!AIA Extraction Model Version.fields.order,\n      recordType!AIA Extraction Model Version.fields.key,\n      recordType!AIA Extraction Model Version.fields.label,\n      recordType!AIA Extraction Model Version.fields.type,\n      recordType!AIA Extraction Model Version.fields.isMultiple,\n      recordType!AIA Extraction Model Version.fields.description,\n      recordType!AIA Extraction Model Version.fields.instructions,\n      recordType!AIA Extraction Model Version.fields.extractionType,\n      recordType!AIA Extraction Model Version.fields.optionRule,\n      recordType!AIA Extraction Model Version.fields.validationRule,\n      recordType!AIA Extraction Model Version.fields.extractionRule,\n      recordType!AIA Extraction Model Version.fields.postProcessRule,\n      recordType!AIA Extraction Model Version.fields.required,\n      recordType!AIA Extraction Model Version.fields.useVision,\n      recordType!AIA Extraction Model Version.fields.isHidden,\n      recordType!AIA Extraction Model Version.fields.isNotTracked,\n      recordType!AIA Extraction Model Version.fields.useAiReview,\n  \n      /* Fields > Column */\n      recordType!AIA Extraction Model Version.fields.columns.fieldId,\n      recordType!AIA Extraction Model Version.fields.columns.label,\n      recordType!AIA Extraction Model Version.fields.columns.key,\n      recordType!AIA Extraction Model Version.fields.columns.optionRule,\n      recordType!AIA Extraction Model Version.fields.columns.validationRule,\n      recordType!AIA Extraction Model Version.fields.columns.postProcessRule,\n      recordType!AIA Extraction Model Version.fields.columns.isHidden,\n      recordType!AIA Extraction Model Version.fields.columns.isNotTracked,\n      recordType!AIA Extraction Model Version.fields.columns.type,\n      recordType!AIA Extraction Model Version.fields.columns.extractionType,\n      recordType!AIA Extraction Model Version.fields.columns.required,\n      recordType!AIA Extraction Model Version.fields.columns.description,\n      recordType!AIA Extraction Model Version.fields.columns.instructions,\n      recordType!AIA Extraction Model Version.fields.columns.accuracy,\n      a!defaultValue(ri!additionalFields, {})\n    },\n  ),\n  relatedRecordData: {\n    #\"SYSTEM_SYSRULES_relatedRecordData\"(\n      relationship: recordType!AIA Extraction Model Version.fields,\n      sort: #\"SYSTEM_SYSRULES_sortInfo\"(\n        field: recordType!AIA Extraction Model Version Field.order,\n        ascending: true\n      )\n    ),\n    #\"SYSTEM_SYSRULES_relatedRecordData\"(\n      relationship: recordType!AIA Extraction Model Version.fields,\n      sort: #\"SYSTEM_SYSRULES_sortInfo\"(\n        field: recordType!AIA Extraction Model Version Field.order,\n        ascending: true\n      )\n    )\n  }\n)[recordType!AIA Extraction Model Version.fields]"
+    },
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76653": {
+      "name": "AIA_CreateValidation",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!isExtraction: rule!AIA_IsExtractionInstance(\n    instance: ri!Instance\n  ),\n  recordType!AIA Instance Validation Error(\n    recordType!AIA Instance Validation Error.instanceId: a!defaultValue(\n      ri!instanceId,\n      if(\n        local!isExtraction,\n        ri!Instance[recordType!AIA Extraction Instance.id],\n        ri!Instance[recordType!AIA Classification Instance.id]\n      )\n    ),\n    recordType!AIA Instance Validation Error.instanceType: a!defaultValue(\n      ri!instanceType,\n      if(\n        local!isExtraction,\n        cons!AIA_MODEL_TYPE_VALUES[1],\n        cons!AIA_MODEL_TYPE_VALUES[2]\n      )\n    ),\n    recordType!AIA Instance Validation Error.typeId: ri!typeId,\n    recordType!AIA Instance Validation Error.message: ri!message,\n    recordType!AIA Instance Validation Error.severity: ri!severity\n  )\n)"
+    },
+    "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40909": {
+      "name": "AIA_ExtractJson",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!firstTry: rule!AIA_ExtractJsonInner(\n    json: ri!json\n  ),\n  local!result: if(\n    a!isNotNullOrEmpty(local!firstTry),\n    local!firstTry,\n    a!localVariables(\n      local!secondTry: rule!AIA_ExtractJsonInner(\n        json: index(split(ri!json, \"Appian's private AI\"), 1, null),\n      ),\n      if(\n        a!isNotNullOrEmpty(local!secondTry),\n        local!secondTry,\n        a!localVariables(\n          local!thirdTry: rule!AIA_ExtractJsonInner(\n            json: index(split(ri!json, \"Appian's private AI\"), 2, null),\n          ),\n          if(\n            a!isNotNullOrEmpty(local!thirdTry),\n            local!thirdTry,\n            a!localVariables(\n              local!forthTry: rule!AIA_ExtractJsonInner(\n                json: index(split(ri!json, \"<output>\"), 1, null),\n              ),\n              if(\n                a!isNotNullOrEmpty(local!forthTry),\n                local!forthTry,\n                a!localVariables(\n                  local!fifthTry: rule!AIA_ExtractJsonInner(\n                    json: index(split(ri!json, \"</entities>\"), 1, null),\n                  ),\n                  local!fifthTry\n                )\n              )\n            )\n          )\n        )\n      )\n    )\n  ),\n  local!finalResult: if(\n    a!isNullOrEmpty(local!result),\n    null,\n    if(\n      a!defaultValue(ri!returnList, true),\n      local!result,\n      if(\n        rule!SHRD_IsList(local!result),\n        null,\n        local!result\n      )\n    )\n  ),\n  /* Handle scenario where the result comes back as properties of a $schema */\n  if(\n    or(\n      a!defaultValue(ri!returnList, true),\n      a!isNullOrEmpty(local!finalResult),\n      not(contains(\n        a!keys(local!finalResult),\n        \"$schema\"\n      ))\n    ),\n    local!finalResult,\n    local!finalResult.properties\n  )\n)"
+    },
+    "_a-0000ee78-c4db-8000-9bae-011c48011c48_92564": {
+      "name": "AIA_MTR_ExtractionInstanceFieldAiReview",
+      "type": "Expression Rule",
+      "sail_code": "now()"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_176573": {
+      "name": "AIA_NameFromInput",
+      "type": "Expression Rule",
+      "sail_code": "rule!SHRD_CleanForFilename(\n  input: if(\n    and(\n      a!isNullOrEmpty(\n        ri!inputDoc\n      ),\n      a!isNotNullOrEmpty(\n        ri!inputText\n      )\n    ),\n    substitute(\n      substitute(\n        left(\n          ri!inputText,\n          25\n        ),\n        char(\n          10\n        ),\n        \" \"\n      ),\n      char(\n        13\n      ),\n      \"\"\n    ),\n    document(\n      ri!inputDoc,\n      \"name\"\n    )\n  )\n)"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_176683": {
+      "name": "AIA_Extraction_AddTokens",
+      "type": "Expression Rule",
+      "sail_code": "#\"urn:appian:function:v1:a:update\"(\n  data: ri!ExtractionInstance,\n  index: {\n    recordType!AIA Extraction Instance.inputTokens,\n    recordType!AIA Extraction Instance.outputTokens\n  },\n  value: {\n    a!defaultValue(\n      ri!ExtractionInstance[recordType!AIA Extraction Instance.inputTokens],\n      0\n    ) + a!defaultValue(ri!inputTokens, 0),\n    a!defaultValue(\n      ri!ExtractionInstance[recordType!AIA Extraction Instance.outputTokens],\n      0\n    ) + a!defaultValue(ri!outputTokens, 0)\n  }\n)"
+    },
+    "_a-0000e79d-2c73-8000-97b9-01ef9001ef90_71638": {
+      "name": "SHRD_Update",
+      "type": "Expression Rule",
+      "sail_code": "/* If the data[index] is a dictionary and so is the value, then recurse */\n/* Else overwrite */\n\nif(\n  and(\n    runtimetypeof(ri!data[ri!index]) = 'type!{http://www.appian.com/ae/types/2009}Dictionary',\n    runtimetypeof(ri!value) = 'type!{http://www.appian.com/ae/types/2009}Dictionary'\n  ),\n  a!localVariables(\n    local!mergedValue: a!refreshVariable(\n      refreshAlways: true,\n      value: rule!SHRD_MergeInner(\n        object: ri!data[ri!index],\n        source: ri!value\n      )\n    ),\n    #\"urn:appian:function:v1:a:update\"(\n      ri!data,\n      ri!index,\n      local!mergedValue\n    )\n  ),\n  if(\n    and(\n      runtimetypeof(ri!data[ri!index]) = 'type!{http://www.appian.com/ae/types/2009}Dictionary?list',\n      runtimetypeof(ri!value) = 'type!{http://www.appian.com/ae/types/2009}Dictionary?list',\n      length(a!flatten(ri!data[ri!index])) = length(a!flatten(ri!value))\n    ),\n    a!localVariables(\n      local!mergedValue: a!refreshVariable(\n        refreshAlways: true,\n        value: apply(\n          rule!SHRD_MergeInner(\n            object: _,\n            source: _\n          ),\n          merge(\n            a!flatten(ri!data[ri!index]),\n            ri!value  \n          )\n        )\n      ),\n      #\"urn:appian:function:v1:a:update\"(\n        ri!data,\n        ri!index,\n        local!mergedValue\n      )\n    ),\n    #\"urn:appian:function:v1:a:update\"(\n      ri!data,\n      ri!index,\n      if(\n        isnull(ri!value),\n        cast('type!{http://www.appian.com/ae/types/2009}Dictionary?list', null),\n        ri!value\n      )\n    )\n  )\n)"
+    }
+  }
+}

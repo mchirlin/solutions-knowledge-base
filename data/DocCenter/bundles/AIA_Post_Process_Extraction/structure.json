@@ -1,0 +1,985 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AIA Post Process Extraction",
+    "parent_name": null,
+    "total_objects": 52
+  },
+  "entry_point": {
+    "complexity_score": 66.0,
+    "total_nodes": 30,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Post Process Extraction",
+      "complexity_score": 66.0,
+      "total_nodes": 30,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Any vision fields?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Run Regex",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Merge Results"
+          ]
+        },
+        {
+          "name": "Run Rules",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Merge Results"
+          ]
+        },
+        {
+          "name": "Route",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Any regex fields"
+          ]
+        },
+        {
+          "name": "Any rule fields?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Run Rules",
+            "Any calculated fields?"
+          ]
+        },
+        {
+          "name": "Post Process Fields",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Merge Results"
+          ]
+        },
+        {
+          "name": "Any calculated fields?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Any post process fields?",
+            "Calculate Fields - Execute Prompt"
+          ]
+        },
+        {
+          "name": "Any search queries?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Any rule fields?",
+            "AIA Search Queries"
+          ]
+        },
+        {
+          "name": "Any analyze expense fields",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Any search queries?",
+            "AIA Analyze Expense"
+          ]
+        },
+        {
+          "name": "Merge Results",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Any XPath fields?"
+          ]
+        },
+        {
+          "name": "Merge Results",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Any search queries?"
+          ]
+        },
+        {
+          "name": "Merge Results",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Any rule fields?"
+          ]
+        },
+        {
+          "name": "Merge Results",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Any calculated fields?"
+          ]
+        },
+        {
+          "name": "Merge Results",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Merge Results",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Route"
+          ]
+        },
+        {
+          "name": "Merge Results",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Any post process fields?"
+          ]
+        },
+        {
+          "name": "Merge Results",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Advanced Layout?"
+          ]
+        },
+        {
+          "name": "AIA Analyze Expense",
+          "type": "Start Process",
+          "next": [
+            "Merge Results"
+          ]
+        },
+        {
+          "name": "AIA Search Queries",
+          "type": "Start Process",
+          "next": [
+            "Merge Results"
+          ]
+        },
+        {
+          "name": "Any vision fields?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Any regex fields",
+            "Execute Vision"
+          ]
+        },
+        {
+          "name": "Advanced Layout?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Route",
+            "Get Spans"
+          ]
+        },
+        {
+          "name": "Merge Results",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Any analyze expense fields"
+          ]
+        },
+        {
+          "name": "Any regex fields",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Run Regex",
+            "Any XPath fields?"
+          ]
+        },
+        {
+          "name": "Any post process fields?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Post Process Fields",
+            "End Node"
+          ]
+        },
+        {
+          "name": "XPath Fields",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Merge Results"
+          ]
+        },
+        {
+          "name": "Any XPath fields?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "XPath Fields",
+            "Any analyze expense fields"
+          ]
+        },
+        {
+          "name": "Calculate Fields - Execute Prompt",
+          "type": "Start Process",
+          "next": [
+            "Merge Results"
+          ]
+        },
+        {
+          "name": "Get Spans",
+          "type": "Start Process",
+          "next": [
+            "Merge Results"
+          ]
+        },
+        {
+          "name": "Execute Vision",
+          "type": "Start Process",
+          "next": [
+            "Merge Results"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ec2e-dd02-8000-9bde-011c48011c48_50410",
+      "name": "AIA_EXAMPLE_DOC_EXTRACTION_PDF",
+      "type": "Constant",
+      "description": "Example doc for extraction",
+      "value": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40815",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "SHRD_ReadDocumentContent"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2e-dd02-8000-9bde-011c48011c48_46896",
+      "name": "AIA_EXTRACTION_FIELD_TYPES",
+      "type": "Constant",
+      "description": "(1) Text, (2) Integer, (3) Decimal, (4) Date, (5) Datetime, (6) Boolean, (7) Table, (8) Paragraph",
+      "value": [
+        "Text",
+        "Integer",
+        "Decimal",
+        "Date",
+        "Datetime",
+        "Boolean",
+        "Table",
+        "Paragraph"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_FieldJsonSchema",
+        "AIA_FormatValueForMap"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec40-0355-8000-9be4-011c48011c48_73273",
+      "name": "AIA_EXTRACTION_FIELD_TYPE_TABLE",
+      "type": "Constant",
+      "description": "Table",
+      "value": "Table",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_API_Extraction_ConvertInstanceToMap",
+        "AIA_Extraction_DisplayPromptField",
+        "AIA_FieldJsonSchema"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_42675",
+      "name": "AIA_EXTRACTION_TYPES",
+      "type": "Constant",
+      "description": "(1) Generative AI, (2) Trained Model, (3) Rule, (4) Calculated, (5) Analyze Expense, (6) Regex, (7) Query, (8) XPath",
+      "value": [
+        "Generative AI",
+        "Trained Model",
+        "Rule",
+        "Calculated",
+        "Analyze Expense",
+        "Regex",
+        "Query",
+        "XPath"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA Post Process Extraction",
+        "AIA_Extraction_DisplayPromptField",
+        "AIA_Extraction_Regex",
+        "AIA_Extraction_RunRules",
+        "AIA_Extraction_XPath"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec40-0355-8000-9be4-011c48011c48_70311",
+      "name": "AIA_MODEL_TYPE_VALUES",
+      "type": "Constant",
+      "description": "(1) extraction, (2) classification",
+      "value": [
+        "extraction",
+        "classification"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA Post Process Extraction"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_32010",
+      "name": "AIA_PROMPT_MODE_CALCULATED",
+      "type": "Constant",
+      "description": "Calculated",
+      "value": "Calculated",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_CalculatedFieldPrompt",
+        "AIA_ENUM_FieldSchemas",
+        "AIA_Extraction_DisplayPromptField"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecfc-48c9-8000-9c55-011c48011c48_237587",
+      "name": "AIA_PROMPT_OPERATION_MODE_MULTIMODAL",
+      "type": "Constant",
+      "description": "MULTIMODAL",
+      "value": "MULTIMODAL",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA Post Process Extraction",
+        "AIA_Extraction_DisplayPromptField",
+        "AIA_Extraction_MergeResults",
+        "AIA_Extraction_VisionSpanPrompt",
+        "AIA_FieldJsonSchema"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecfc-48c9-8000-9c55-011c48011c48_237581",
+      "name": "AIA_PROMPT_OPERATION_MODE_TEXT",
+      "type": "Constant",
+      "description": "TEXT",
+      "value": "TEXT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_DisplayPromptField",
+        "AIA_FieldJsonSchema"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_31241",
+      "name": "AIA_SCHEMA_MODE_AI_REVIEW",
+      "type": "Constant",
+      "description": "ai_review",
+      "value": "ai_review",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_FieldSchemas",
+        "AIA_Extraction_DisplayPromptField",
+        "AIA_FieldJsonSchema"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_31723",
+      "name": "AIA_SCHEMA_MODE_PLAIN",
+      "type": "Constant",
+      "description": "plain",
+      "value": "plain",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_FieldSchemas",
+        "AIA_Extraction_CreateJsonSchema",
+        "AIA_FieldJsonSchema"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_31729",
+      "name": "AIA_SCHEMA_MODE_SPAN",
+      "type": "Constant",
+      "description": "span",
+      "value": "span",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_FieldSchemas",
+        "AIA_Extraction_VisionSpanPrompt"
+      ]
+    },
+    {
+      "uuid": "_a-0000eed1-1d21-8000-9cef-011c48011c48_187601",
+      "name": "AIA_TEXT_BASED_EXTENSIONS",
+      "type": "Constant",
+      "description": "csv, xml",
+      "value": [
+        "csv",
+        "xml"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_GetDocumentText"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec67-5f00-8000-9bf0-011c48011c48_126391",
+      "name": "AIA_API_Extraction_ConvertInstanceToMap",
+      "type": "Expression Rule",
+      "description": "Convert from extraction instance fields back to a map",
+      "parameters": [],
+      "calls": [
+        "AIA_EXTRACTION_FIELD_TYPE_TABLE",
+        "AIA_Extraction_GetFieldsForModelVersionId",
+        "AIA_FormatValueForMap",
+        "AIA_Test_GetLatestExtractionInstance",
+        "AIA_UTIL_UpdateByKeyValue"
+      ],
+      "called_by": [
+        "AIA_Extraction_PostProcessFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_32339",
+      "name": "AIA_CalculatedFieldInput",
+      "type": "Expression Rule",
+      "description": "Calculated field input",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Post Process Extraction"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecea-6c5f-8000-9c4b-011c48011c48_182408",
+      "name": "AIA_CalculatedFieldPrompt",
+      "type": "Expression Rule",
+      "description": "Calculated field prompt",
+      "parameters": [],
+      "calls": [
+        "AIA_Extraction_CreateJsonSchema",
+        "AIA_PROMPT_MODE_CALCULATED"
+      ],
+      "called_by": [
+        "AIA Post Process Extraction"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3d-1f5c-8000-9ba4-011c48011c48_14361",
+      "name": "AIA_ConvertIsoToDate",
+      "type": "Expression Rule",
+      "description": "Convert iso date/time string to date/time",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_FormatValueForMap"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_159825",
+      "name": "AIA_DocIsPdf",
+      "type": "Expression Rule",
+      "description": "Returns true if doc is a pdf",
+      "parameters": [],
+      "calls": [
+        "AIA_IsDocumentExtension"
+      ],
+      "called_by": [
+        "AIA_GetDocumentText"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee66-4fc0-8000-9baa-011c48011c48_43003",
+      "name": "AIA_ENUM_FieldSchemas",
+      "type": "Expression Rule",
+      "description": "Field schema types",
+      "parameters": [],
+      "calls": [
+        "AIA_PROMPT_MODE_CALCULATED",
+        "AIA_SCHEMA_MODE_AI_REVIEW",
+        "AIA_SCHEMA_MODE_PLAIN",
+        "AIA_SCHEMA_MODE_SPAN"
+      ],
+      "called_by": [
+        "AIA_FieldJsonSchema"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40909",
+      "name": "AIA_ExtractJson",
+      "type": "Expression Rule",
+      "description": "Extract json from prompt builder reponse",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Post Process Extraction",
+        "AIA_Extraction_MergeResults"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_176683",
+      "name": "AIA_Extraction_AddTokens",
+      "type": "Expression Rule",
+      "description": "Add tokens to extraction instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Post Process Extraction"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3e-060c-8000-9bb8-011c48011c48_204932",
+      "name": "AIA_Extraction_CreateJsonSchema",
+      "type": "Expression Rule",
+      "description": "Create json schema from extraction model version",
+      "parameters": [],
+      "calls": [
+        "AIA_Extraction_DisplayPromptField",
+        "AIA_FieldJsonSchema",
+        "AIA_SCHEMA_MODE_PLAIN",
+        "AIA_Test_GetLatestExtractionModelVersion"
+      ],
+      "called_by": [
+        "AIA_CalculatedFieldPrompt",
+        "AIA_Extraction_VisionSpanPrompt"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecea-6c5f-8000-9c4b-011c48011c48_190177",
+      "name": "AIA_Extraction_DisplayPromptField",
+      "type": "Expression Rule",
+      "description": "Whether to display a prompt field",
+      "parameters": [],
+      "calls": [
+        "AIA_EXTRACTION_FIELD_TYPE_TABLE",
+        "AIA_EXTRACTION_TYPES",
+        "AIA_PROMPT_MODE_CALCULATED",
+        "AIA_PROMPT_OPERATION_MODE_MULTIMODAL",
+        "AIA_PROMPT_OPERATION_MODE_TEXT",
+        "AIA_SCHEMA_MODE_AI_REVIEW"
+      ],
+      "called_by": [
+        "AIA_Extraction_CreateJsonSchema"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_158769",
+      "name": "AIA_Extraction_GetBoundingBoxesForExtraction",
+      "type": "Expression Rule",
+      "description": "Get bounding boxes for extraction",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_GetTextFromInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_79495",
+      "name": "AIA_Extraction_GetFieldOptions",
+      "type": "Expression Rule",
+      "description": "Returns a list of options for a field",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_FieldJsonSchema"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec1e-9975-8000-9bd6-011c48011c48_1381838",
+      "name": "AIA_Extraction_GetFieldsForModelVersionId",
+      "type": "Expression Rule",
+      "description": "Returns fields for model version id",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_API_Extraction_ConvertInstanceToMap"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3e-060c-8000-9bb8-011c48011c48_194081",
+      "name": "AIA_Extraction_GetInputDocuments",
+      "type": "Expression Rule",
+      "description": "Get input documents - for now this only returns a single document",
+      "parameters": [],
+      "calls": [
+        "AIA_Test_GetLatestExtractionInstance"
+      ],
+      "called_by": [
+        "AIA_Extraction_VisionSpanInput"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_43077",
+      "name": "AIA_Extraction_GetInstanceById",
+      "type": "Expression Rule",
+      "description": "Get extraction instance and all relationships by id",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Test_GetLatestExtractionInstance",
+        "AIA_Test_GetLatestExtractionInstanceWithFields"
+      ]
+    },
+    {
+      "uuid": "1dc1ab54-b05f-44f8-9cdc-c11198320666",
+      "name": "AIA_Extraction_MergeResults",
+      "type": "Expression Rule",
+      "description": "Only merge the results associated with the correct type",
+      "parameters": [],
+      "calls": [
+        "AIA_ExtractJson",
+        "AIA_PROMPT_OPERATION_MODE_MULTIMODAL",
+        "AIA_ToJson",
+        "SHRD_Merge"
+      ],
+      "called_by": [
+        "AIA Post Process Extraction"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed74-17c4-8000-9c8d-011c48011c48_351326",
+      "name": "AIA_Extraction_PostProcessFields",
+      "type": "Expression Rule",
+      "description": "Post process fields",
+      "parameters": [],
+      "calls": [
+        "AIA_API_Extraction_ConvertInstanceToMap",
+        "AIA_IsObject",
+        "AIA_Test_GetLatestExtractionInstanceWithFields"
+      ],
+      "called_by": [
+        "AIA Post Process Extraction"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_202842",
+      "name": "AIA_Extraction_Regex",
+      "type": "Expression Rule",
+      "description": "Run regex for extraction fields",
+      "parameters": [],
+      "calls": [
+        "AIA_EXTRACTION_TYPES",
+        "AIA_GetTextFromInstance",
+        "AIA_Test_GetLatestExtractionInstanceWithFields"
+      ],
+      "called_by": [
+        "AIA Post Process Extraction"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecea-6c5f-8000-9c4b-011c48011c48_194584",
+      "name": "AIA_Extraction_RunRules",
+      "type": "Expression Rule",
+      "description": "Run rules for extraction fields",
+      "parameters": [],
+      "calls": [
+        "AIA_EXTRACTION_TYPES",
+        "AIA_Test_GetLatestExtractionInstanceWithFields"
+      ],
+      "called_by": [
+        "AIA Post Process Extraction"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_32395",
+      "name": "AIA_Extraction_VisionSpanInput",
+      "type": "Expression Rule",
+      "description": "Vision span input",
+      "parameters": [],
+      "calls": [
+        "AIA_Extraction_GetInputDocuments",
+        "AIA_ToJson"
+      ],
+      "called_by": [
+        "AIA Post Process Extraction"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed57-1773-8000-9c7e-011c48011c48_328735",
+      "name": "AIA_Extraction_VisionSpanPrompt",
+      "type": "Expression Rule",
+      "description": "Vision span prompt",
+      "parameters": [],
+      "calls": [
+        "AIA_Extraction_CreateJsonSchema",
+        "AIA_PROMPT_OPERATION_MODE_MULTIMODAL",
+        "AIA_SCHEMA_MODE_SPAN"
+      ],
+      "called_by": [
+        "AIA Post Process Extraction"
+      ]
+    },
+    {
+      "uuid": "_a-0000eed1-1d21-8000-9cef-011c48011c48_187532",
+      "name": "AIA_Extraction_XPath",
+      "type": "Expression Rule",
+      "description": "Run xpath for extraction fields",
+      "parameters": [],
+      "calls": [
+        "AIA_EXTRACTION_TYPES",
+        "AIA_GetTextFromInstance",
+        "AIA_Test_GetLatestExtractionInstanceWithFields"
+      ],
+      "called_by": [
+        "AIA Post Process Extraction"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_31384",
+      "name": "AIA_FieldJsonSchema",
+      "type": "Expression Rule",
+      "description": "Schema for an individual field",
+      "parameters": [],
+      "calls": [
+        "AIA_ENUM_FieldSchemas",
+        "AIA_EXTRACTION_FIELD_TYPES",
+        "AIA_EXTRACTION_FIELD_TYPE_TABLE",
+        "AIA_Extraction_GetFieldOptions",
+        "AIA_PROMPT_OPERATION_MODE_MULTIMODAL",
+        "AIA_PROMPT_OPERATION_MODE_TEXT",
+        "AIA_SCHEMA_MODE_AI_REVIEW",
+        "AIA_SCHEMA_MODE_PLAIN"
+      ],
+      "called_by": [
+        "AIA_Extraction_CreateJsonSchema"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3d-1f5c-8000-9ba4-011c48011c48_14346",
+      "name": "AIA_FormatValueForMap",
+      "type": "Expression Rule",
+      "description": "Format a single value for map",
+      "parameters": [],
+      "calls": [
+        "AIA_ConvertIsoToDate",
+        "AIA_EXTRACTION_FIELD_TYPES"
+      ],
+      "called_by": [
+        "AIA_API_Extraction_ConvertInstanceToMap"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee52-8983-8000-9ba6-011c48011c48_27862",
+      "name": "AIA_GetDocumentText",
+      "type": "Expression Rule",
+      "description": "Get text from document",
+      "parameters": [],
+      "calls": [
+        "AIA_DocIsPdf",
+        "AIA_IsDocumentExtension",
+        "AIA_TEXT_BASED_EXTENSIONS"
+      ],
+      "called_by": [
+        "AIA_GetTextFromInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3d-9bf2-8000-9ba4-011c48011c48_20674",
+      "name": "AIA_GetTextFromInstance",
+      "type": "Expression Rule",
+      "description": "Get text from instance",
+      "parameters": [],
+      "calls": [
+        "AIA_Extraction_GetBoundingBoxesForExtraction",
+        "AIA_GetDocumentText",
+        "AIA_Test_GetLatestExtractionInstanceWithFields",
+        "SHRD_ReadDocumentContent"
+      ],
+      "called_by": [
+        "AIA_Extraction_Regex",
+        "AIA_Extraction_XPath"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_182518",
+      "name": "AIA_IsDocumentExtension",
+      "type": "Expression Rule",
+      "description": "Is the document of one of the following extensions",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_DocIsPdf",
+        "AIA_GetDocumentText"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec8b-a448-8000-9ba4-011c48011c48_12288",
+      "name": "AIA_IsObject",
+      "type": "Expression Rule",
+      "description": "Is value an object?",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_PostProcessFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40839",
+      "name": "AIA_Test_GetLatestExtractionInstance",
+      "type": "Expression Rule",
+      "description": "Get the latest extraction instance",
+      "parameters": [],
+      "calls": [
+        "AIA_Extraction_GetInstanceById"
+      ],
+      "called_by": [
+        "AIA_API_Extraction_ConvertInstanceToMap",
+        "AIA_Extraction_GetInputDocuments"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_199422",
+      "name": "AIA_Test_GetLatestExtractionInstanceWithFields",
+      "type": "Expression Rule",
+      "description": "Get the latest extraction instance with fields",
+      "parameters": [],
+      "calls": [
+        "AIA_Extraction_GetInstanceById"
+      ],
+      "called_by": [
+        "AIA_Extraction_PostProcessFields",
+        "AIA_Extraction_Regex",
+        "AIA_Extraction_RunRules",
+        "AIA_Extraction_XPath",
+        "AIA_GetTextFromInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec36-59aa-8000-9be0-011c48011c48_53600",
+      "name": "AIA_Test_GetLatestExtractionModelVersion",
+      "type": "Expression Rule",
+      "description": "Get the latest extraction model version",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_CreateJsonSchema"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed16-a792-8000-9c64-011c48011c48_274759",
+      "name": "AIA_ToJson",
+      "type": "Expression Rule",
+      "description": "To json with error handling",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Post Process Extraction",
+        "AIA_Extraction_MergeResults",
+        "AIA_Extraction_VisionSpanInput"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec67-5f00-8000-9bf0-011c48011c48_126403",
+      "name": "AIA_UTIL_UpdateByKeyValue",
+      "type": "Expression Rule",
+      "description": "Convert from instance fields to a map",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_API_Extraction_ConvertInstanceToMap"
+      ]
+    },
+    {
+      "uuid": "_a-0000e79d-2c73-8000-97b9-01ef9001ef90_71617",
+      "name": "SHRD_Merge",
+      "type": "Expression Rule",
+      "description": "Merges multiple source into object",
+      "parameters": [],
+      "calls": [
+        "SHRD_MergeInner"
+      ],
+      "called_by": [
+        "AIA Post Process Extraction",
+        "AIA_Extraction_MergeResults"
+      ]
+    },
+    {
+      "uuid": "_a-0000e79d-2c73-8000-97b9-01ef9001ef90_77953",
+      "name": "SHRD_MergeInner",
+      "type": "Expression Rule",
+      "description": "Wrapped by SHRD_Merge rule",
+      "parameters": [],
+      "calls": [
+        "SHRD_Update"
+      ],
+      "called_by": [
+        "SHRD_Merge",
+        "SHRD_Update"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3e-060c-8000-9bb8-011c48011c48_203441",
+      "name": "SHRD_ReadDocumentContent",
+      "type": "Expression Rule",
+      "description": "Read content from text document",
+      "parameters": [],
+      "calls": [
+        "AIA_EXAMPLE_DOC_EXTRACTION_PDF"
+      ],
+      "called_by": [
+        "AIA_GetTextFromInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000e79d-2c73-8000-97b9-01ef9001ef90_71638",
+      "name": "SHRD_Update",
+      "type": "Expression Rule",
+      "description": "Deep update",
+      "parameters": [],
+      "calls": [
+        "SHRD_MergeInner"
+      ],
+      "called_by": [
+        "SHRD_MergeInner"
+      ]
+    },
+    {
+      "uuid": "000eeceb-855e-8000-05ff-7f0000014e7a",
+      "name": "AIA Post Process Extraction",
+      "type": "Process Model",
+      "description": "Post process an extraction - calculated fields and category mapping",
+      "calls": [
+        "AIA_CalculatedFieldInput",
+        "AIA_CalculatedFieldPrompt",
+        "AIA_EXTRACTION_TYPES",
+        "AIA_ExtractJson",
+        "AIA_Extraction_AddTokens",
+        "AIA_Extraction_MergeResults",
+        "AIA_Extraction_PostProcessFields",
+        "AIA_Extraction_Regex",
+        "AIA_Extraction_RunRules",
+        "AIA_Extraction_VisionSpanInput",
+        "AIA_Extraction_VisionSpanPrompt",
+        "AIA_Extraction_XPath",
+        "AIA_MODEL_TYPE_VALUES",
+        "AIA_PROMPT_OPERATION_MODE_MULTIMODAL",
+        "AIA_ToJson",
+        "Calculate Fields",
+        "Get Visual Spans",
+        "SHRD_Merge"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "44936299-8f8f-4dca-8302-b1eb3ac5af74",
+      "name": "Calculate Fields",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA Post Process Extraction"
+      ]
+    },
+    {
+      "uuid": "0e0ded7a-dc14-44e7-8ba7-7608c468a864",
+      "name": "Get Visual Spans",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA Post Process Extraction"
+      ]
+    }
+  ]
+}

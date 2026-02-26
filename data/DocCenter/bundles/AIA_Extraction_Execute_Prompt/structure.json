@@ -1,0 +1,162 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AIA Extraction Execute Prompt",
+    "parent_name": null,
+    "total_objects": 5
+  },
+  "entry_point": {
+    "complexity_score": 21.0,
+    "total_nodes": 11,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Extraction Execute Prompt",
+      "complexity_score": 21.0,
+      "total_nodes": 11,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Has Sections?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Rules",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "AIA Extraction Execute Prompt Wrapper"
+          ]
+        },
+        {
+          "name": "Join",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Done?"
+          ]
+        },
+        {
+          "name": "Next Section",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Rules"
+          ]
+        },
+        {
+          "name": "Execute Prompt Wrapper",
+          "type": "Start Process",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Convert Response",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Has Sections?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Get Unique Sections (Sections with rules)",
+            "Execute Prompt Wrapper"
+          ]
+        },
+        {
+          "name": "Get Unique Sections",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Rules"
+          ]
+        },
+        {
+          "name": "AIA Extraction Execute Prompt Wrapper",
+          "type": "Start Process",
+          "next": [
+            "Join"
+          ]
+        },
+        {
+          "name": "Done?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Next Section",
+            "Convert Response"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40909",
+      "name": "AIA_ExtractJson",
+      "type": "Expression Rule",
+      "description": "Extract json from prompt builder reponse",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Extraction Execute Prompt"
+      ]
+    },
+    {
+      "uuid": "_a-0000e79d-2c73-8000-97b9-01ef9001ef90_71617",
+      "name": "SHRD_Merge",
+      "type": "Expression Rule",
+      "description": "Merges multiple source into object",
+      "parameters": [],
+      "calls": [
+        "SHRD_MergeInner"
+      ],
+      "called_by": [
+        "AIA Extraction Execute Prompt"
+      ]
+    },
+    {
+      "uuid": "_a-0000e79d-2c73-8000-97b9-01ef9001ef90_77953",
+      "name": "SHRD_MergeInner",
+      "type": "Expression Rule",
+      "description": "Wrapped by SHRD_Merge rule",
+      "parameters": [],
+      "calls": [
+        "SHRD_Update"
+      ],
+      "called_by": [
+        "SHRD_Merge",
+        "SHRD_Update"
+      ]
+    },
+    {
+      "uuid": "_a-0000e79d-2c73-8000-97b9-01ef9001ef90_71638",
+      "name": "SHRD_Update",
+      "type": "Expression Rule",
+      "description": "Deep update",
+      "parameters": [],
+      "calls": [
+        "SHRD_MergeInner"
+      ],
+      "called_by": [
+        "SHRD_MergeInner"
+      ]
+    },
+    {
+      "uuid": "0002eca7-a6fd-8000-0346-7f0000014e7a",
+      "name": "AIA Extraction Execute Prompt",
+      "type": "Process Model",
+      "description": "Run a dynamic prompt in an extraction",
+      "calls": [
+        "AIA_ExtractJson",
+        "SHRD_Merge"
+      ],
+      "called_by": []
+    }
+  ]
+}

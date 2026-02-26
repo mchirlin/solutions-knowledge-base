@@ -1,0 +1,25 @@
+{
+  "uuid": "_a-0000edb4-d4ac-8000-9bae-011c48011c48_101651",
+  "name": "AIA_GetValidationsCountForInstance",
+  "type": "Expression Rule",
+  "description": "Get validation errors for an instance",
+  "sail_code": "#\"SYSTEM_SYSRULES_queryRecordType_v1\"(\n  recordType: recordType!AIA Instance Validation Error,\n  fields: {},\n  filters: #\"SYSTEM_SYSRULES_queryLogicalExpression\"(\n    operator: \"AND\",\n    filters: {\n      #\"SYSTEM_SYSRULES_queryFilter\"(\n        field: recordType!AIA Instance Validation Error.instanceUuid,\n        operator: \"=\",\n        value: if(\n          rule!AIA_IsExtractionInstance(Instance: ri!Instance),\n          rule!AIA_Extraction_InstanceUuid(\n            ExtractionInstance: ri!Instance\n          ),\n          rule!AIA_Classification_InstanceUuid(\n            ClassificationInstance: ri!Instance\n          )\n        )\n      )\n    },\n    ignoreFiltersWithEmptyValues: true\n  ),\n  pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n    startIndex: 1,\n    batchSize: 0\n  )\n).totalCount",
+  "calls": [
+    {
+      "name": "AIA_IsExtractionInstance",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_Extraction_InstanceUuid",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_Classification_InstanceUuid",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

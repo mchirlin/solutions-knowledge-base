@@ -1,0 +1,138 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AIA Extraction Delete All Instances",
+    "parent_name": null,
+    "total_objects": 6
+  },
+  "entry_point": {
+    "complexity_score": 5.0,
+    "total_nodes": 4,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Extraction Delete All Instances",
+      "complexity_score": 5.0,
+      "total_nodes": 4,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Get Instances"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Delete Instances",
+          "type": "Start Process",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Get Instances",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Delete Instances"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_203500",
+      "name": "AIA_EXTRACTION_INSTANCE_FIELDS",
+      "type": "Expression Rule",
+      "description": "Instance fields for reconciliation",
+      "parameters": [],
+      "calls": [
+        "AIA Extraction Instance"
+      ],
+      "called_by": [
+        "AIA_getExtractionInstancesGeneric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3e-060c-8000-9bb8-011c48011c48_201634",
+      "name": "AIA_getExtractionInstancesForDeletion",
+      "type": "Expression Rule",
+      "description": "query extraction instances with correct fields for delete process. Must provide either instance ids, model version ids, or model ids",
+      "parameters": [],
+      "calls": [
+        "AIA_getExtractionInstancesGeneric"
+      ],
+      "called_by": [
+        "AIA Extraction Delete All Instances",
+        "AIA Extraction Instance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef4f-92e1-8000-a023-011c48011c48_496115",
+      "name": "AIA_getExtractionInstancesGeneric",
+      "type": "Expression Rule",
+      "description": "query extraction instances. Generally nested within more specific query rule or used for 1 off filter scenerios",
+      "parameters": [],
+      "calls": [
+        "AIA_EXTRACTION_INSTANCE_FIELDS",
+        "SHRD_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "AIA_getExtractionInstancesForDeletion"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_36163",
+      "name": "SHRD_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "description": "Enhanced wrapper rule around a!queryRecord()",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_getExtractionInstancesGeneric"
+      ]
+    },
+    {
+      "uuid": "0002ee40-5468-8000-0544-7f0000014e7a",
+      "name": "AIA Extraction Delete All Instances",
+      "type": "Process Model",
+      "description": "Delete all extraction instances",
+      "calls": [
+        "AIA_getExtractionInstancesForDeletion"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "64322398-e457-4695-87d5-09794164cf77",
+      "name": "AIA Extraction Instance",
+      "type": "Record Type",
+      "description": "Record to hold the AI Extraction scores and confidence threshold for each instance",
+      "actions": [
+        "reconcileField",
+        "reconcileUsingTestCase",
+        "runValidations",
+        "addRemoveTestCase",
+        "deleteExtractionInstance",
+        "deleteInstanceAndSkipConfirmation",
+        "updateAssociatedTestSuites"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "#\"urn:appian:translation-string:v1:ab6ce936-2015-4e58-a2d1-a10bcd2372e4\"",
+        "=#\"urn:appian:translation-string:v1:fe8f8d91-a84f-4494-9270-4959354698ce\"",
+        "List View"
+      ],
+      "calls": [
+        "AIA_getExtractionInstancesForDeletion"
+      ],
+      "called_by": [
+        "AIA_EXTRACTION_INSTANCE_FIELDS"
+      ]
+    }
+  ]
+}

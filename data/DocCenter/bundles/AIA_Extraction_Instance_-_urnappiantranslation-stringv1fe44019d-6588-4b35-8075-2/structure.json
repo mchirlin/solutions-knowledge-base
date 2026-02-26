@@ -1,0 +1,391 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "AIA Extraction Instance - #\"urn:appian:translation-string:v1:fe44019d-6588-4b35-8075-294e8634ddf4\"",
+    "parent_name": "AIA Extraction Instance",
+    "total_objects": 17
+  },
+  "entry_point": {
+    "action_type": "RECORD_ACTION",
+    "record_type": "AIA Extraction Instance",
+    "target_process": "AIA Instance Update Associate Test Suite",
+    "form_interface": "AIA_Instance_RecordAction_UpdateAssociatedModelTestSuites",
+    "expressions": {
+      "TITLE": "#\"urn:appian:translation-string:v1:fe44019d-6588-4b35-8075-294e8634ddf4\"",
+      "DESCRIPTION": null,
+      "VISIBILITY": "a!isNotNullOrEmpty(\n  rv!record[#\"urn:appian:record-relationship:v1:64322398-e457-4695-87d5-09794164cf77/5162b7ef-b5b5-4edc-a3d9-870a7f5127c0/31afa576-bd49-4f56-a2db-1df39df27f26/7778a47c-ff5f-4acf-943c-046fe4cfa9ce\"]\n)",
+      "CONTEXT": "{\n  cancel: null, /* Boolean */\n  uuid: rv!record[recordType!AIA Extraction Instance.modelVersion.extractionModel.uuid], /* Text */\n  instanceId: rv!record[recordType!AIA Extraction Instance.id],\n  instanceUuid: rv!record[recordType!AIA Extraction Instance.instanceUuid], /* Text */\n  modelId: rv!record[recordType!AIA Extraction Instance.modelVersion.modelId], /* Number (Integer) */\n  modelTestSuiteIds: null, /* List of Number (Integer) */\n  isExtract: typeof(rv!record[recordType!AIA Extraction Instance.modelVersion]) = typeof(recordType!AIA Extraction Model())\n}"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Instance Update Associate Test Suite",
+      "complexity_score": 27.0,
+      "total_nodes": 13,
+      "nodes": [
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Cancel?"
+          ]
+        },
+        {
+          "name": "Cancel?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node",
+            "Delete Records?"
+          ]
+        },
+        {
+          "name": "join",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Write Records",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Is Extraction?"
+          ]
+        },
+        {
+          "name": "join",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Has Test Suites?"
+          ]
+        },
+        {
+          "name": "Delete Records?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "join (No)",
+            "Delete Records (Yes)"
+          ]
+        },
+        {
+          "name": "Has Test Suites?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "join (No)",
+            "Link Test Cases to Suites (Yes)"
+          ]
+        },
+        {
+          "name": "Delete Records",
+          "type": "Delete Records",
+          "next": [
+            "join"
+          ]
+        },
+        {
+          "name": "Is Extraction?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Write Extraction Instance",
+            "Write Classification Instance"
+          ]
+        },
+        {
+          "name": "Write Extraction Instance",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "join"
+          ]
+        },
+        {
+          "name": "Write Classification Instance",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "join"
+          ]
+        },
+        {
+          "name": "Link Test Cases to Suites",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write Records"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000eeb2-df20-8000-9bfe-011c48011c48_154396",
+      "name": "AIA_ModelTestSuiteCase_InitializeInstanceForMultipleSuites",
+      "type": "Expression Rule",
+      "description": "Creates a list of AIA Model Test Suite Case based on suiteIds and baselineInstanceId.Used to add 1 test instance to multiple suites",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Instance Update Associate Test Suite"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef43-16ec-8000-9fda-011c48011c48_478809",
+      "name": "AIA_ModelTestSuite_getSuitesWithMaxTestSuiteCases",
+      "type": "Expression Rule",
+      "description": "returns list of suites from list of provided ids that are at the max case count allowed for validations",
+      "parameters": [],
+      "calls": [
+        "AIA_UTIL_rejectNullValuesFromArray",
+        "SHRD_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "AIA_Instance_RecordAction_UpdateAssociatedModelTestSuites"
+      ]
+    },
+    {
+      "uuid": "_a-0000eead-6b09-8000-9bee-011c48011c48_148667",
+      "name": "AIA_QR_getModelTestSuite",
+      "type": "Expression Rule",
+      "description": "Query record for model test suite",
+      "parameters": [],
+      "calls": [
+        "SHRD_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "AIA_Instance_RecordAction_UpdateAssociatedModelTestSuites"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeb3-c7af-8000-9c01-011c48011c48_155121",
+      "name": "AIA_QR_getModelTestSuiteCase",
+      "type": "Expression Rule",
+      "description": "Query record for model test suite case",
+      "parameters": [],
+      "calls": [
+        "SHRD_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "AIA_Instance_RecordAction_UpdateAssociatedModelTestSuites"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40839",
+      "name": "AIA_Test_GetLatestExtractionInstance",
+      "type": "Expression Rule",
+      "description": "Get the latest extraction instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Instance_RecordAction_UpdateAssociatedModelTestSuites"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_12129",
+      "name": "AIA_UTIL_LoadBrandingMap",
+      "type": "Expression Rule",
+      "description": "Returns branding data for AI Analytics in the type List of Map",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Instance_RecordAction_UpdateAssociatedModelTestSuites"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb0-f009-8000-9ba8-011c48011c48_97164",
+      "name": "AIA_UTIL_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_UTIL_rejectNullValuesFromArray"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb0-f009-8000-9ba8-011c48011c48_97176",
+      "name": "AIA_UTIL_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AIA_UTIL_isBlank"
+      ],
+      "called_by": [
+        "AIA_ModelTestSuite_getSuitesWithMaxTestSuiteCases"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_36163",
+      "name": "SHRD_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "description": "Enhanced wrapper rule around a!queryRecord()",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTestSuite_getSuitesWithMaxTestSuiteCases",
+        "AIA_QR_getModelTestSuite",
+        "AIA_QR_getModelTestSuiteCase"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeb5-6c41-8000-9c02-011c48011c48_158649",
+      "name": "AIA_Instance_RecordAction_UpdateAssociatedModelTestSuites",
+      "type": "Interface",
+      "description": "Update the extraction or classification instance model test suites",
+      "parameters": [
+        {
+          "name": "cancel",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "isExtract",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "modelId",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "modelTestSuiteIds",
+          "type": "http://www.appian.com/ae/types/2009:Integer?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Integer?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "instanceUuid",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "uuid",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "deleteModelTestSuiteInstances",
+          "type": "urn:com:appian:recordtype:datatype:b8fab18e-1807-48e2-b4f1-0b6418ceddb6?list",
+          "raw_type": "urn:com:appian:recordtype:datatype:b8fab18e-1807-48e2-b4f1-0b6418ceddb6?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 6
+        }
+      ],
+      "calls": [
+        "AIA_ModelTestSuite_getSuitesWithMaxTestSuiteCases",
+        "AIA_QR_getModelTestSuite",
+        "AIA_QR_getModelTestSuiteCase",
+        "AIA_Test_GetLatestExtractionInstance",
+        "AIA_UTIL_LoadBrandingMap",
+        "Cannot add to the following suites as they already contain 100 test cases: {test",
+        "Include in Test Suites",
+        "Label for Cancel",
+        "Select a {label}",
+        "Test Suite",
+        "Update Instance"
+      ],
+      "called_by": [
+        "AIA Instance Update Associate Test Suite"
+      ]
+    },
+    {
+      "uuid": "000ceeb5-7c28-8000-fdf7-7f0000014e7a",
+      "name": "AIA Instance Update Associate Test Suite",
+      "type": "Process Model",
+      "description": "Process to update the test suites linked to an instance",
+      "calls": [
+        "AIA_Instance_RecordAction_UpdateAssociatedModelTestSuites",
+        "AIA_ModelTestSuiteCase_InitializeInstanceForMultipleSuites"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "622db5b6-eb03-45db-a33e-180f6c840c16",
+      "name": "Cannot add to the following suites as they already contain 100 test cases: {test",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Instance_RecordAction_UpdateAssociatedModelTestSuites"
+      ]
+    },
+    {
+      "uuid": "e1d68a88-7496-4d79-9591-66cbdd9ef893",
+      "name": "Include in Test Suites",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Instance_RecordAction_UpdateAssociatedModelTestSuites"
+      ]
+    },
+    {
+      "uuid": "df61ccad-fe9a-4d7a-ba9a-d89b08f3467a",
+      "name": "Label for Cancel",
+      "type": "Translation String",
+      "description": "Label for Cancel",
+      "calls": [],
+      "called_by": [
+        "AIA_Instance_RecordAction_UpdateAssociatedModelTestSuites"
+      ]
+    },
+    {
+      "uuid": "f744141b-3e47-4992-827f-1758bb3ff64f",
+      "name": "Select a {label}",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Instance_RecordAction_UpdateAssociatedModelTestSuites"
+      ]
+    },
+    {
+      "uuid": "572d331a-7e5e-4c1c-a6d1-3f08b96a0aed",
+      "name": "Test Suite",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Instance_RecordAction_UpdateAssociatedModelTestSuites"
+      ]
+    },
+    {
+      "uuid": "fe44019d-6588-4b35-8075-294e8634ddf4",
+      "name": "Update Instance",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Instance_RecordAction_UpdateAssociatedModelTestSuites"
+      ]
+    }
+  ]
+}

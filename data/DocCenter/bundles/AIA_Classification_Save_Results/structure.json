@@ -1,0 +1,489 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AIA Classification Save Results",
+    "parent_name": null,
+    "total_objects": 26
+  },
+  "entry_point": {
+    "complexity_score": 29.0,
+    "total_nodes": 14,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Classification Save Results",
+      "complexity_score": 29.0,
+      "total_nodes": 14,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Any Documents to Cleanup?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Persist Classification Instance",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Any Outcomes to Delete?"
+          ]
+        },
+        {
+          "name": "Get Model Version Id",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Create/Update Instance"
+          ]
+        },
+        {
+          "name": "Allow Multiple Outputs?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Persist Classification Instance",
+            "Create Document for Outcome"
+          ]
+        },
+        {
+          "name": "Update Current Outcome Index",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Create Document for Outcome"
+          ]
+        },
+        {
+          "name": "Run Validations",
+          "type": "Start Process",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Any Documents to Cleanup?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Move Docs to Cleanup Folder",
+            "Get Model Version Id"
+          ]
+        },
+        {
+          "name": "Any Outcomes to Delete?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Delete Outcomes",
+            "Run Validations"
+          ]
+        },
+        {
+          "name": "Done Creating Documents?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Persist Classification Instance",
+            "Update Current Outcome Index"
+          ]
+        },
+        {
+          "name": "Delete Outcomes",
+          "type": "Delete Records",
+          "next": [
+            "Run Validations"
+          ]
+        },
+        {
+          "name": "Create/Update Instance",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Allow Multiple Outputs?"
+          ]
+        },
+        {
+          "name": "Create Document for Outcome",
+          "type": "pdftools.ExtractPDFPagesPauseOnError",
+          "next": [
+            "Done Creating Documents?"
+          ]
+        },
+        {
+          "name": "Move Docs to Cleanup Folder",
+          "type": "Start Process",
+          "next": [
+            "Get Model Version Id"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ec60-a08d-8000-9bee-011c48011c48_121650",
+      "name": "AIA_EML_PAGE_CHAR_COUNT",
+      "type": "Constant",
+      "description": "5000",
+      "value": "5000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_GetDocumentMetadata"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb4-d4ac-8000-9bae-011c48011c48_115758",
+      "name": "AIA_INSTANCE_STATUS_CLASSIFIED",
+      "type": "Constant",
+      "description": "Contains ref id for instance status classified",
+      "value": "3",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_Classification_CreateUpdateInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec9d-8afb-8000-9c07-011c48011c48_146171",
+      "name": "AIA_INSTANCE_STATUS_INITIATED",
+      "type": "Constant",
+      "description": "Instance status ref id for Initiated",
+      "value": "1",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA Classification Instance",
+        "AIA_Classification_CreateUpdateInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb4-d4ac-8000-9bae-011c48011c48_115723",
+      "name": "AIA_INSTANCE_STATUS_RECONCILED_AUTOMATICALLY",
+      "type": "Constant",
+      "description": "Contains ref id for status reconciled automatically",
+      "value": "6",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_Classification_CreateUpdateInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb4-d4ac-8000-9bae-011c48011c48_111914",
+      "name": "AIA_INSTANCE_STATUS_RECONCILED_MANUALLY",
+      "type": "Constant",
+      "description": "Contains ref id for status reconciled manually",
+      "value": "4",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_Classification_CreateUpdateInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_97714",
+      "name": "AIA_MODEL_VERSION_STATUS_PUBLISHED",
+      "type": "Constant",
+      "description": "Published",
+      "value": "Published",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_Classification_GetLatestModelVersionIdByKey"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef36-91aa-8000-9e87-011c48011c48_392149",
+      "name": "AIA_TXT_CLASSIFICATION_OUTCOME_OVERRIDE_ADDED",
+      "type": "Constant",
+      "description": "Added; possible value for outcomeOverride field of the AIA Classification Instance Outcome record",
+      "value": "Added",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA Classification Instance",
+        "AIA_ClassificationInstance_PostProcess"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef37-5b38-8000-9e88-011c48011c48_393777",
+      "name": "AIA_TXT_CLASSIFICATION_OUTCOME_OVERRIDE_DELETED",
+      "type": "Constant",
+      "description": "Deleted; possible value for outcomeOverride field of the AIA Classification Instance Outcome record. Outcomes with this value will be hard deleted (in the case that a user adds an Outcome on one reconciliation and then removes it the next)",
+      "value": "Deleted",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA Classification Save Results",
+        "AIA_ClassificationInstance_CreateUpdateInstanceOutcomes",
+        "AIA_ClassificationInstance_PostProcess"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef36-91aa-8000-9e87-011c48011c48_391842",
+      "name": "AIA_TXT_CLASSIFICATION_OUTCOME_OVERRIDE_REMOVED",
+      "type": "Constant",
+      "description": "Removed; possible value for outcomeOverride field of the AIA Classification Instance Outcome record",
+      "value": "Removed",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA Classification Instance",
+        "AIA Classification Save Results",
+        "AIA_ClassificationInstance_CreateUpdateInstanceOutcomes",
+        "AIA_ClassificationInstance_PostProcess"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef2c-4192-8000-9e56-011c48011c48_353021",
+      "name": "AIA_ClassificationInstanceOutcome_Initialize",
+      "type": "Expression Rule",
+      "description": "Given relevant inputs, returns an AIA Classification Instance Outcome record",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationInstance_CreateUpdateInstanceOutcomes"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef2c-4192-8000-9e56-011c48011c48_353033",
+      "name": "AIA_ClassificationInstance_CreateUpdateInstanceOutcomes",
+      "type": "Expression Rule",
+      "description": "Given a Classification Instance and a prompt response, returns a list of created or updated Classification Instance Outcome records to be written",
+      "parameters": [],
+      "calls": [
+        "AIA_ClassificationInstanceOutcome_Initialize",
+        "AIA_ExtractJson",
+        "AIA_TXT_CLASSIFICATION_OUTCOME_OVERRIDE_DELETED",
+        "AIA_TXT_CLASSIFICATION_OUTCOME_OVERRIDE_REMOVED",
+        "AIA_UTIL_Filter",
+        "AIA_UTIL_SetRecordFields"
+      ],
+      "called_by": [
+        "AIA Classification Save Results"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef3f-73a8-8000-9f8e-011c48011c48_454830",
+      "name": "AIA_ClassificationInstance_PostProcess",
+      "type": "Expression Rule",
+      "description": "Given a Classification Instance with a list of Outcomes, updates the fields (e.g., accuracy) on the Instance just prior to being written to the database (i.e,. after an AI response has been parsed or after a user has reconciled)",
+      "parameters": [],
+      "calls": [
+        "AIA_TXT_CLASSIFICATION_OUTCOME_OVERRIDE_ADDED",
+        "AIA_TXT_CLASSIFICATION_OUTCOME_OVERRIDE_DELETED",
+        "AIA_TXT_CLASSIFICATION_OUTCOME_OVERRIDE_REMOVED",
+        "AIA_UTIL_Filter",
+        "AIA_UTIL_rejectNullValuesFromArray"
+      ],
+      "called_by": [
+        "AIA Classification Save Results"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec67-5f00-8000-9bf0-011c48011c48_125297",
+      "name": "AIA_Classification_CreateUpdateInstance",
+      "type": "Expression Rule",
+      "description": "Create or update instance",
+      "parameters": [],
+      "calls": [
+        "AIA_GetPageCount",
+        "AIA_INSTANCE_STATUS_CLASSIFIED",
+        "AIA_INSTANCE_STATUS_INITIATED",
+        "AIA_INSTANCE_STATUS_RECONCILED_AUTOMATICALLY",
+        "AIA_INSTANCE_STATUS_RECONCILED_MANUALLY",
+        "AIA_PLG_WriteFile",
+        "AIA_UTIL_SetRecordFields"
+      ],
+      "called_by": [
+        "AIA Classification Save Results"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec5c-9eda-8000-9bec-011c48011c48_119664",
+      "name": "AIA_Classification_GetLatestModelVersionIdByKey",
+      "type": "Expression Rule",
+      "description": "Get latest model version id by key",
+      "parameters": [],
+      "calls": [
+        "AIA_MODEL_VERSION_STATUS_PUBLISHED",
+        "AIA_QR_getClassificationModelVersion"
+      ],
+      "called_by": [
+        "AIA Classification Save Results"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40909",
+      "name": "AIA_ExtractJson",
+      "type": "Expression Rule",
+      "description": "Extract json from prompt builder reponse",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Classification Save Results",
+        "AIA_ClassificationInstance_CreateUpdateInstanceOutcomes"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee52-8983-8000-9ba6-011c48011c48_27887",
+      "name": "AIA_GetDocumentMetadata",
+      "type": "Expression Rule",
+      "description": "Get document metadata",
+      "parameters": [],
+      "calls": [
+        "AIA_EML_PAGE_CHAR_COUNT"
+      ],
+      "called_by": [
+        "AIA_GetPageCount"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_82400",
+      "name": "AIA_GetPageCount",
+      "type": "Expression Rule",
+      "description": "Get page count for document",
+      "parameters": [],
+      "calls": [
+        "AIA_GetDocumentMetadata"
+      ],
+      "called_by": [
+        "AIA Classification Save Results",
+        "AIA_Classification_CreateUpdateInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_184766",
+      "name": "AIA_PLG_WriteFile",
+      "type": "Expression Rule",
+      "description": "Wrapper for `writeFile` plugin function",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Classification_CreateUpdateInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef39-a43c-8000-9ecf-011c48011c48_429114",
+      "name": "AIA_QR_getClassificationModelVersion",
+      "type": "Expression Rule",
+      "description": "Rule to query 'AIA Classification Model Version' Record",
+      "parameters": [],
+      "calls": [
+        "SHRD_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "AIA_Classification_GetLatestModelVersionIdByKey"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_26889",
+      "name": "AIA_UTIL_Filter",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Classification Save Results",
+        "AIA_ClassificationInstance_CreateUpdateInstanceOutcomes",
+        "AIA_ClassificationInstance_PostProcess"
+      ]
+    },
+    {
+      "uuid": "_a-0000eea3-15ee-8000-9bd4-011c48011c48_138762",
+      "name": "AIA_UTIL_SetRecordFields",
+      "type": "Expression Rule",
+      "description": "Runs a bulk update on a record object, setting new values for its fields",
+      "parameters": [],
+      "calls": [
+        "AIA_UTIL_isBlank",
+        "AIA_UTIL_rejectNullValuesFromArray"
+      ],
+      "called_by": [
+        "AIA_ClassificationInstance_CreateUpdateInstanceOutcomes",
+        "AIA_Classification_CreateUpdateInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb0-f009-8000-9ba8-011c48011c48_97164",
+      "name": "AIA_UTIL_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_UTIL_SetRecordFields",
+        "AIA_UTIL_rejectNullValuesFromArray"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb0-f009-8000-9ba8-011c48011c48_97176",
+      "name": "AIA_UTIL_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AIA_UTIL_isBlank"
+      ],
+      "called_by": [
+        "AIA_ClassificationInstance_PostProcess",
+        "AIA_UTIL_SetRecordFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_36163",
+      "name": "SHRD_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "description": "Enhanced wrapper rule around a!queryRecord()",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_QR_getClassificationModelVersion"
+      ]
+    },
+    {
+      "uuid": "0009eb88-96d2-8000-fa74-7f0000014e7a",
+      "name": "AIA Classification Save Results",
+      "type": "Process Model",
+      "description": "Save AI skill classification response",
+      "calls": [
+        "AIA Classification Instance",
+        "AIA_ClassificationInstance_CreateUpdateInstanceOutcomes",
+        "AIA_ClassificationInstance_PostProcess",
+        "AIA_Classification_CreateUpdateInstance",
+        "AIA_Classification_GetLatestModelVersionIdByKey",
+        "AIA_ExtractJson",
+        "AIA_GetPageCount",
+        "AIA_TXT_CLASSIFICATION_OUTCOME_OVERRIDE_DELETED",
+        "AIA_TXT_CLASSIFICATION_OUTCOME_OVERRIDE_REMOVED",
+        "AIA_UTIL_Filter"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "bba819fb-55a0-47e1-bb74-e385f32b6916",
+      "name": "AIA Classification Instance",
+      "type": "Record Type",
+      "description": "Email and document classifications performed by ai skills",
+      "actions": [
+        "reconcileInstance",
+        "addRemoveTestCase",
+        "deleteClassificationInstance",
+        "deleteClassificationInstanceAndSkipConfirmation"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "#\"urn:appian:translation-string:v1:ab6ce936-2015-4e58-a2d1-a10bcd2372e4\"",
+        "List View"
+      ],
+      "calls": [
+        "AIA_INSTANCE_STATUS_INITIATED",
+        "AIA_TXT_CLASSIFICATION_OUTCOME_OVERRIDE_ADDED",
+        "AIA_TXT_CLASSIFICATION_OUTCOME_OVERRIDE_REMOVED"
+      ],
+      "called_by": [
+        "AIA Classification Save Results"
+      ]
+    }
+  ]
+}

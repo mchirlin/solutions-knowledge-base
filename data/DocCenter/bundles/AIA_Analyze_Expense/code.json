@@ -1,0 +1,62 @@
+{
+  "_metadata": {
+    "bundle_id": "AIA_Analyze_Expense"
+  },
+  "objects": {
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_182518": {
+      "name": "AIA_IsDocumentExtension",
+      "type": "Expression Rule",
+      "sail_code": "and(\n  a!isNotNullOrEmpty(ri!document),\n  contains(\n    lower(ri!extensions),\n    lower(document(\n      ri!document,\n      \"extension\"\n    ))\n  )\n)"
+    },
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_85019": {
+      "name": "AIA_IsExtractionInstance",
+      "type": "Expression Rule",
+      "sail_code": "runtimetypeof(\n  ri!Instance\n) = typeof(\n  recordType!AIA Extraction Instance()\n)"
+    },
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_90047": {
+      "name": "AIA_CreateValidationErrorMessage",
+      "type": "Expression Rule",
+      "sail_code": "#\"SYSTEM_SYSRULES_toJson_v1\"(\n  a!map(\n    type: ri!type,\n    error: ri!error\n  )\n)"
+    },
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76725": {
+      "name": "AIA_CreateMaxPageValidation",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!feature: displayvalue(\n    ri!feature,\n    rule!AIA_ENUM_Features().id,\n    rule!AIA_ENUM_Features(),\n    null\n  ),\n  rule!AIA_CreateValidation(\n    instance: ri!Instance,\n    typeId: cons!AIA_VALIDATION_TYPE_ID_EXECUTION,\n    message: rule!AIA_CreateValidationErrorMessage(\n      type: #\"urn:appian:translation-string:v1:25266106-b29b-4b80-9261-5c5b2e4b0aa3\",\n      error: #\"urn:appian:translation-string:v1:73bdf5e0-f073-4e93-aa40-bdbfabbff2d3\"(\n        #\"urn:appian:translation-variable:v1:aac5d80e-8573-4620-81a7-245a7684ce13\": local!feature.label,\n        #\"urn:appian:translation-variable:v1:881cf1e3-d211-453b-b21c-24f0ad928cd1\": a!defaultValue(\n          ri!maxPages,\n          local!feature.maxPages\n        )\n      )\n    ),\n    severity: local!feature.severity\n  )\n)"
+    },
+    "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40839": {
+      "name": "AIA_Test_GetLatestExtractionInstance",
+      "type": "Expression Rule",
+      "sail_code": "rule!AIA_Extraction_GetInstanceById(\n  identifier: #\"SYSTEM_SYSRULES_queryRecordType_v3\"(\n    recordType: recordType!AIA Extraction Instance,\n    pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n      startIndex: 1,\n      batchSize: 1,\n      sort: {\n        #\"SYSTEM_SYSRULES_sortInfo\"(\n          field: recordType!AIA Extraction Instance.id\n        )\n      }\n    )\n  ).data[recordType!AIA Extraction Instance.id],\n  additionalFields: {\n    recordType!AIA Extraction Instance.instanceUuid,\n    recordType!AIA Extraction Instance.modelVersion.versionId,\n    recordType!AIA Extraction Instance.modelVersion.modelId,\n    recordType!AIA Extraction Instance.modelVersion.uuid,\n    recordType!AIA Extraction Instance.modelVersion.extractionModel.key,\n    recordType!AIA Extraction Instance.documentFolderId,\n    recordType!AIA Extraction Instance.fieldCount,\n    recordType!AIA Extraction Instance.sections,\n    recordType!AIA Extraction Instance.boundingBoxes,\n    recordType!AIA Extraction Instance.responseDocumentId,\n    recordType!AIA Extraction Instance.sourceDocumentId\n  }\n)"
+    },
+    "0002ecf1-97d8-8000-0664-7f0000014e7a": {
+      "name": "AIA Analyze Expense",
+      "type": "Process Model",
+      "sail_code": "// Output: ?\npv!ExtractionInstance[recordType!AIA Extraction Instance.documentId]\n\n// Input: ?\n=pv!ExtractionInstance[recordType!AIA Extraction Instance.documentId]\n\n// Output: ?\nAC!ErrorMessage\n\n// Output: ?\nAC!Success\n\n// Output: ?\nAC!AnalyzeExpenseResults\n\n// Output: ?\nrule!AIA_Extraction_ParseAnalyzeExpense(\n  AnalyzeExpense: ac!AnalyzeExpenseResults,\n  ExtractionInstance: pv!ExtractionInstance\n)\n\n// Input: ?\n=pv!ExtractionInstance\n\n// Input: ?\nrule!AIA_CreateMaxPageValidation(\n  ExtractionInstance: pv!ExtractionInstance,\n  feature: cons!AIA_FEATURE_ANALYZE_EXPENSE\n)\n\n// Input: ?\nrule!AIA_CreateAdvancedIdpValidation(\n  instanceId: pv!ExtractionInstance[recordType!AIA Extraction Instance.id],\n  instanceType: cons!AIA_MODEL_TYPE_VALUES[1],\n  errorMessage: pv!ErrorMessage,\n  severity: cons!AIA_SEVERITY_HIGH\n)\n\n// Input: ?\n=document(pv!ExtractionInstance[recordType!AIA Extraction Instance.documentId], \"name\") & \"_1-20\"\n\n// Input: ?\n=pv!ExtractionInstance[recordType!AIA Extraction Instance.documentFolderId]\n\n// Input: ?\n=pv!ExtractionInstance[recordType!AIA Extraction Instance.documentId]\n\n// Output: ?\nAC!NewDocumentCreated"
+    },
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76731": {
+      "name": "AIA_ENUM_Features",
+      "type": "Expression Rule",
+      "sail_code": "{\n  a!map(\n    id: cons!AIA_FEATURE_VISION,\n    label: #\"urn:appian:translation-string:v1:6e2f4447-827f-48a4-bb10-10b6c2a028b8\",\n    maxPages: cons!AIA_VISION_PAGE_MAX,\n    severity: cons!AIA_SEVERITY_HIGH\n  ),\n  a!map(\n    id: cons!AIA_FEATURE_ANALYZE_EXPENSE,\n    label: #\"urn:appian:translation-string:v1:4b200656-fadb-4ecc-98d6-fa93e9152840\",\n    maxPages: cons!AIA_ADVANCED_IDP_PAGE_MAX,\n    severity: cons!AIA_SEVERITY_HIGH\n  ),\n  a!map(\n    id: cons!AIA_FEATURE_AI_REVIEW,\n    label: #\"urn:appian:translation-string:v1:a67c9f85-f682-4191-bed6-c4912e7d88b4\",\n    severity: cons!AIA_SEVERITY_MEDIUM\n  ),\n  a!map(\n    id: cons!AIA_FEATURE_SEARCH_QUERY,\n    label: #\"urn:appian:translation-string:v1:7d663cf5-06ab-4445-979d-17074d9928f9\",\n    maxPages: cons!AIA_ADVANCED_IDP_PAGE_MAX,\n    severity: cons!AIA_SEVERITY_HIGH\n  ),\n  a!map(\n    id: cons!AIA_FEATURE_CLASSIFICATION,\n    label: #\"urn:appian:translation-string:v1:f04e5814-41aa-4705-bb0e-968fe8fc8ec5\",\n    maxPages: cons!AIA_CLASSIFICATION_MAX_PAGE_COUNT,\n    severity: cons!AIA_SEVERITY_HIGH\n  ),\n  a!map(\n    id: cons!AIA_FEATURE_AI_VALIDATION_RULE,\n    label: #\"urn:appian:translation-string:v1:8375b3de-d2a7-415d-983d-71e16d015d7e\",\n    severity: cons!AIA_SEVERITY_MEDIUM\n  )\n}"
+    },
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76653": {
+      "name": "AIA_CreateValidation",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!isExtraction: rule!AIA_IsExtractionInstance(\n    instance: ri!Instance\n  ),\n  recordType!AIA Instance Validation Error(\n    recordType!AIA Instance Validation Error.instanceId: a!defaultValue(\n      ri!instanceId,\n      if(\n        local!isExtraction,\n        ri!Instance[recordType!AIA Extraction Instance.id],\n        ri!Instance[recordType!AIA Classification Instance.id]\n      )\n    ),\n    recordType!AIA Instance Validation Error.instanceType: a!defaultValue(\n      ri!instanceType,\n      if(\n        local!isExtraction,\n        cons!AIA_MODEL_TYPE_VALUES[1],\n        cons!AIA_MODEL_TYPE_VALUES[2]\n      )\n    ),\n    recordType!AIA Instance Validation Error.typeId: ri!typeId,\n    recordType!AIA Instance Validation Error.message: ri!message,\n    recordType!AIA Instance Validation Error.severity: ri!severity\n  )\n)"
+    },
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_159825": {
+      "name": "AIA_DocIsPdf",
+      "type": "Expression Rule",
+      "sail_code": "rule!AIA_IsDocumentExtension(\n  document: ri!document,\n  extensions: {\"pdf\"}\n)"
+    },
+    "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_199383": {
+      "name": "AIA_Extraction_ParseAnalyzeExpense",
+      "type": "Expression Rule",
+      "sail_code": "a!localVariables(\n  local!fields: reject(\n    fn!isnull,\n    #\"SYSTEM_SYSRULES_forEach\"(\n      ri!ExtractionInstance[recordType!AIA Extraction Instance.modelVersion],\n      if(\n        fv!item[recordType!AIA Extraction Model Version Field.extractionType] = cons!AIA_EXTRACTION_TYPES[5],\n        fv!item,\n        null\n      )\n    )\n  ),\n  reduce(\n    #\"urn:appian:function:v1:a:update\",\n    a!map(),\n    merge(\n      local!fields[recordType!AIA Extraction Model Version Field.key],\n      #\"SYSTEM_SYSRULES_forEach\"(\n        local!fields,\n        a!localVariables(\n          local!field: fv!item,\n          local!matchingFields: reject(\n            fn!isnull,\n            a!flatten(\n              #\"SYSTEM_SYSRULES_forEach\"(\n                ri!AnalyzeExpense,\n                #\"SYSTEM_SYSRULES_forEach\"(\n                  fv!item.flatTextFields,\n                  if(\n                    fv!item.normalizedKey = local!field[recordType!AIA Extraction Model Version Field.description],\n                    a!map(\n                      value: fv!item.value,\n                      confidence: fv!item.valueConfidenceScore,\n                      boundingBox: fv!item.boundingBox\n                    ),\n                    null\n                  )\n                )\n              )\n            )\n          ),\n          index(\n            todatasubset(local!matchingFields, #\"SYSTEM_SYSRULES_pagingInfo\"(1, -1, #\"SYSTEM_SYSRULES_sortInfo\"(field: \"confidence\", ascending: false))).data,\n            1,\n            null\n          )\n        )\n      )\n    )\n  )\n)"
+    },
+    "_a-0000ee6e-3b90-8000-9bac-011c48011c48_89906": {
+      "name": "AIA_CreateAdvancedIdpValidation",
+      "type": "Expression Rule",
+      "sail_code": "rule!AIA_CreateValidation(\n  typeId: cons!AIA_VALIDATION_TYPE_ID_EXECUTION,\n  instanceId: ri!instanceId,\n  instanceType: ri!instanceType,\n  message: rule!AIA_CreateValidationErrorMessage(\n    type: #\"urn:appian:translation-string:v1:ff252c53-64e4-4a99-8d23-8bc72a94e3fc\",\n    error: ri!errorMessage\n  ),\n  severity: a!defaultValue(ri!severity, cons!AIA_SEVERITY_CRITICAL)\n)"
+    }
+  }
+}

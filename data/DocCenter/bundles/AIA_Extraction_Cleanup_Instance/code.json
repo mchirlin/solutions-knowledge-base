@@ -1,0 +1,17 @@
+{
+  "_metadata": {
+    "bundle_id": "AIA_Extraction_Cleanup_Instance"
+  },
+  "objects": {
+    "_a-0000ee21-294f-8000-9bb6-011c48011c48_158769": {
+      "name": "AIA_Extraction_GetBoundingBoxesForExtraction",
+      "type": "Expression Rule",
+      "sail_code": "#\"SYSTEM_SYSRULES_queryRecordType_v1\"(\n  recordType: recordType!AIA Extraction Bounding Boxes,\n  filters: #\"SYSTEM_SYSRULES_queryFilter\"(\n    field: recordType!AIA Extraction Bounding Boxes.extractionId,\n    operator: \"=\",\n    value: ri!ExtractionInstance[recordType!AIA Extraction Instance.id]\n  ),\n  pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n    startIndex: 1,\n    batchSize: 1000,\n    sort: #\"SYSTEM_SYSRULES_sortInfo\"(\n      field: recordType!AIA Extraction Bounding Boxes.minPage,\n      ascending: true\n    )\n  )\n).data"
+    },
+    "0002edfe-76c5-8000-0076-7f0000014e7a": {
+      "name": "AIA Extraction Cleanup Instance",
+      "type": "Process Model",
+      "sail_code": "// Input: ?\n=pv!ExtractionInstance[recordType!AIA Extraction Instance.sections]\n\n// Input: ?\n=rule!AIA_Extraction_GetBoundingBoxesForExtraction( ExtractionInstance: pv!ExtractionInstance)\n\n// Output: ?\nappian:record-relationship:v1:64322398-e457-4695-87d5-09794164cf77/29015678-c2e4-4af3-a3f8-d9d966872b71\"]:#\"SYSTEM_SYSRULES_queryRecordType_v1\"(\n  recordType: recordType!AIA Extraction Instance Section,\n  filters: {\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!AIA Extraction Instance Section.instanceId,\n      operator: \"=\",\n      value: pv!ExtractionInstance[recordType!AIA Extraction Instance.id]\n    )\n  },\n  pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(1, 1000)\n).data\n\n// Output: ?\nappian:record-relationship:v1:64322398-e457-4695-87d5-09794164cf77/554ac6fa-c312-4a12-bfbe-9580bd4ee445\"]:#\"SYSTEM_SYSRULES_queryRecordType_v1\"(\n  recordType: recordType!AIA Extraction Bounding Boxes,\n  filters: {\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!AIA Extraction Bounding Boxes.extractionId,\n      operator: \"=\",\n      value: pv!ExtractionInstance[recordType!AIA Extraction Instance.id]\n    )\n  },\n  pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(1, 1000)\n).data"
+    }
+  }
+}

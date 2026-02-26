@@ -1,0 +1,244 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AIA Rotate PDF",
+    "parent_name": null,
+    "total_objects": 12
+  },
+  "entry_point": {
+    "complexity_score": 19.0,
+    "total_nodes": 10,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Rotate PDF",
+      "complexity_score": 19.0,
+      "total_nodes": 10,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Create Rotated Pages PDF"
+          ]
+        },
+        {
+          "name": "End Event",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Parse Response",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Is Rotated?"
+          ]
+        },
+        {
+          "name": "Is Rotated?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Rotate P D F",
+            "Set Rotated Doc"
+          ]
+        },
+        {
+          "name": "Rotate P D F",
+          "type": "pdftools.RotatePDF",
+          "next": [
+            "End Event"
+          ]
+        },
+        {
+          "name": "Set Rotated Doc",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Event"
+          ]
+        },
+        {
+          "name": "Add Validation",
+          "type": "Start Process",
+          "next": [
+            "Set Rotated Doc"
+          ]
+        },
+        {
+          "name": "Error?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Parse Response",
+            "Add Validation"
+          ]
+        },
+        {
+          "name": "Create Rotated Pages PDF",
+          "type": "pdftools.CreateRotatedPagesPDF",
+          "next": [
+            "Get Rotated Position"
+          ]
+        },
+        {
+          "name": "Get Rotated Position",
+          "type": "Start Process",
+          "next": [
+            "Error?"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_32228",
+      "name": "AIA_INPUT_TYPE_DOC",
+      "type": "Constant",
+      "description": "doc",
+      "value": "doc",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA Rotate PDF"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec40-0355-8000-9be4-011c48011c48_70311",
+      "name": "AIA_MODEL_TYPE_VALUES",
+      "type": "Constant",
+      "description": "(1) extraction, (2) classification",
+      "value": [
+        "extraction",
+        "classification"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_CreateValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecfc-48c9-8000-9c55-011c48011c48_237587",
+      "name": "AIA_PROMPT_OPERATION_MODE_MULTIMODAL",
+      "type": "Constant",
+      "description": "MULTIMODAL",
+      "value": "MULTIMODAL",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA Rotate PDF"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76678",
+      "name": "AIA_SEVERITY_MEDIUM",
+      "type": "Constant",
+      "description": "2",
+      "value": "2",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA Rotate PDF"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee66-4fc0-8000-9baa-011c48011c48_72159",
+      "name": "AIA_VALIDATION_TYPE_ID_EXECUTION",
+      "type": "Constant",
+      "description": "4",
+      "value": "4",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA Rotate PDF",
+        "AIA_CreateValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76653",
+      "name": "AIA_CreateValidation",
+      "type": "Expression Rule",
+      "description": "Create a validation error for instance",
+      "parameters": [],
+      "calls": [
+        "AIA_IsExtractionInstance",
+        "AIA_MODEL_TYPE_VALUES",
+        "AIA_Test_GetLatestExtractionInstance",
+        "AIA_VALIDATION_TYPE_ID_EXECUTION"
+      ],
+      "called_by": [
+        "AIA Rotate PDF"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40909",
+      "name": "AIA_ExtractJson",
+      "type": "Expression Rule",
+      "description": "Extract json from prompt builder reponse",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Rotate PDF"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_85019",
+      "name": "AIA_IsExtractionInstance",
+      "type": "Expression Rule",
+      "description": "Returns true if the instance is an extraction instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_CreateValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeeb-a4e0-8000-9d56-011c48011c48_210324",
+      "name": "AIA_RotateDetermination_PromptInstructions",
+      "type": "Expression Rule",
+      "description": "Rotate prompt instructions",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Rotate PDF"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40839",
+      "name": "AIA_Test_GetLatestExtractionInstance",
+      "type": "Expression Rule",
+      "description": "Get the latest extraction instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_CreateValidation"
+      ]
+    },
+    {
+      "uuid": "0002ee1f-646f-8000-fac8-7f0000014e7a",
+      "name": "AIA Rotate PDF",
+      "type": "Process Model",
+      "description": "Determine if a PDF needs to be rotated and rotate to the correct orientation",
+      "calls": [
+        "AIA_CreateValidation",
+        "AIA_ExtractJson",
+        "AIA_INPUT_TYPE_DOC",
+        "AIA_PROMPT_OPERATION_MODE_MULTIMODAL",
+        "AIA_RotateDetermination_PromptInstructions",
+        "AIA_SEVERITY_MEDIUM",
+        "AIA_VALIDATION_TYPE_ID_EXECUTION",
+        "Document Rotation"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "f1916761-e2be-4a3f-a72c-5d78f4d7ea3a",
+      "name": "Document Rotation",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA Rotate PDF"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "uuid": "_a-0000ed1d-549f-8000-9c66-011c48011c48_277400",
+  "name": "AIA_ExtractJsonExpression",
+  "type": "Expression Rule",
+  "description": "Extract data from json",
+  "sail_code": "a!localVariables(\n  local!result: jsonexpression(rule!AIA_ToJson(data: ri!map), ri!expression),\n  local!firstChar: if(\n    a!isNotNullOrEmpty(local!result),\n    left(local!result, 1),\n    \" \"\n  ),\n  if(\n    or(\n      local!firstChar = \"{\",\n      local!firstChar = \"[\"\n    ),\n    rule!AIA_ExtractJson(json: local!result),\n    stripwith(local!result, \"\"\"\")\n  )\n)",
+  "calls": [
+    {
+      "name": "AIA_ToJson",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_ExtractJson",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AIA_RULE_Operation_CompareExpressions",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_RULE_Operation_CompareTwoValues",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ]
+}

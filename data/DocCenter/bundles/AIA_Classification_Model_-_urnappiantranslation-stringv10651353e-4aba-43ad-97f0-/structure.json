@@ -1,0 +1,2783 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "AIA Classification Model - #\"urn:appian:translation-string:v1:0651353e-4aba-43ad-97f0-2d35477f64e1\"",
+    "parent_name": "AIA Classification Model",
+    "total_objects": 156
+  },
+  "entry_point": {
+    "action_type": "RECORD_ACTION",
+    "record_type": "AIA Classification Model",
+    "target_process": "AIA_ClassificationModel_Delete",
+    "form_interface": "AIA_ClassificationModel_RecordAction_Delete",
+    "expressions": {
+      "TITLE": "#\"urn:appian:translation-string:v1:0651353e-4aba-43ad-97f0-2d35477f64e1\"",
+      "DESCRIPTION": "Action to delete a Classification Model",
+      "VISIBILITY": null,
+      "CONTEXT": "{\n  record: #\"SYSTEM_SYSRULES_queryRecordByIdentifier\"(\n    recordType: recordType!AIA Classification Model,\n    identifier: rv!identifier,\n    fields: {\n      recordType!AIA Classification Model.modelId,\n      recordType!AIA Classification Model.modelVersions.modelVersionId\n    }\n  ),\n  cancel: false()\n}"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA_ClassificationModel_Delete",
+      "complexity_score": 21.0,
+      "total_nodes": 11,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Cancel?"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Delete Records",
+          "type": "Delete Records",
+          "next": [
+            "SPLIT"
+          ]
+        },
+        {
+          "name": "Get All Instances",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Delete Records"
+          ]
+        },
+        {
+          "name": "Cancel?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node",
+            "Get All Instances"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Confirmation Screen",
+          "type": "USER_TASK",
+          "next": [
+            "End Node"
+          ],
+          "interface": "AIA_ClassificationModel_RecordAction_DeleteConfirmationScreen"
+        },
+        {
+          "name": "SPLIT",
+          "type": "AND_GATEWAY",
+          "next": [
+            "Confirmation Screen",
+            "Any?"
+          ]
+        },
+        {
+          "name": "Delete Classification Instance",
+          "type": "SUBPROCESS",
+          "next": [
+            "AIA Delete Examples"
+          ],
+          "subprocess": "AIA Classification Delete Instance"
+        },
+        {
+          "name": "Any?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Delete Classification Instance",
+            "AIA Delete Examples"
+          ]
+        },
+        {
+          "name": "AIA Delete Examples",
+          "type": "SUBPROCESS",
+          "next": [
+            "End Node"
+          ],
+          "subprocess": "AIA Delete Examples"
+        }
+      ]
+    },
+    "subprocesses": [
+      {
+        "name": "AIA Delete Examples",
+        "complexity_score": 8.0,
+        "total_nodes": 5,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Get Examples"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Get Examples",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Any?"
+            ]
+          },
+          {
+            "name": "Any?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Delete Examples",
+              "End Node"
+            ]
+          },
+          {
+            "name": "Delete Examples",
+            "type": "Delete Records",
+            "next": [
+              "End Node"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AIA Classification Delete Instance",
+        "complexity_score": 21.0,
+        "total_nodes": 10,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Cancel?"
+            ]
+          },
+          {
+            "name": "Cancel?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Delete Records",
+              "End Node"
+            ]
+          },
+          {
+            "name": "Delete Records",
+            "type": "Delete Records",
+            "next": [
+              "Skip Confirmation"
+            ]
+          },
+          {
+            "name": "Confirmation",
+            "type": "USER_TASK",
+            "next": [
+              "End Node"
+            ],
+            "interface": "AIA_ClassificationInstance_RecordAction_DeleteConfirmationScreen"
+          },
+          {
+            "name": "SPLIT",
+            "type": "AND_GATEWAY",
+            "next": [
+              "Confirmation",
+              "Join"
+            ]
+          },
+          {
+            "name": "Join",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Has Validations"
+            ]
+          },
+          {
+            "name": "Has Validations",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Delete Validations",
+              "End Node"
+            ]
+          },
+          {
+            "name": "Delete Validations",
+            "type": "Delete Records",
+            "next": [
+              "End Node"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Skip Confirmation",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "SPLIT",
+              "Join"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_37828",
+      "name": "AIA_BUTTON_TYPE_ACTION",
+      "type": "Constant",
+      "description": "action",
+      "value": "action",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_Deployment_RecordGrid",
+        "AIA_Template_EmptyState"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_37818",
+      "name": "AIA_BUTTON_TYPE_LINK",
+      "type": "Constant",
+      "description": "link",
+      "value": "link",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_Template_EmptyState"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_55610",
+      "name": "AIA_CLASSIFICATION_ICON",
+      "type": "Constant",
+      "description": "search",
+      "value": "search",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_Deployment_RecordGrid"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_203014",
+      "name": "AIA_DEPLOYMENT",
+      "type": "Constant",
+      "description": "Constant reference to the AIA deployment document.",
+      "value": "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_203004",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "AIA Deployment",
+        "AIA_Deployment_RecordGrid"
+      ]
+    },
+    {
+      "uuid": "_a-0000edd9-a94f-8000-9bb2-011c48011c48_140145",
+      "name": "AIA_DOCUMENTATION_LINK",
+      "type": "Constant",
+      "description": "https://docs.appian.com/suite/help/",
+      "value": "https://docs.appian.com/suite/help/",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ConstructDocumentationLink"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2e-dd02-8000-9bde-011c48011c48_50410",
+      "name": "AIA_EXAMPLE_DOC_EXTRACTION_PDF",
+      "type": "Constant",
+      "description": "Example doc for extraction",
+      "value": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40815",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "SHRD_ReadDocumentContent"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_55604",
+      "name": "AIA_EXTRACTION_ICON",
+      "type": "Constant",
+      "description": "sign-out",
+      "value": "sign-out",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_Deployment_RecordGrid"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec5c-9eda-8000-9bec-011c48011c48_111761",
+      "name": "AIA_GRP_USERS",
+      "type": "Constant",
+      "description": "AIA Users",
+      "value": "AIA Operations",
+      "value_type": "http://www.appian.com/ae/types/2009:Group",
+      "calls": [],
+      "called_by": [
+        "AIA Home Site"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_69978",
+      "name": "AIA_IMG_HOME_PAGE_BILLBOARD_IMAGE",
+      "type": "Constant",
+      "description": "Value : AIA Home Page Billboard Image",
+      "value": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_69972",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "AIA_DocumentationSplash",
+        "AIA_Sitepage_Home"
+      ]
+    },
+    {
+      "uuid": "_a-0000edd9-a94f-8000-9bb2-011c48011c48_133287",
+      "name": "AIA_IMG_HOME_PAGE_DEPLOYMENT_EMPTY_SCREEN",
+      "type": "Constant",
+      "description": "Value : AIA Home Page Deployment Empty Screen Icon",
+      "value": "_a-0000edd9-a94f-8000-9bb2-011c48011c48_133281",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "AIA_Template_EmptyState"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_70062",
+      "name": "AIA_IMG_HOME_PAGE_EMPTY_IMAGE",
+      "type": "Constant",
+      "description": "Value : AIA Home Page Empty Image",
+      "value": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_70054",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "AIA_Homepage_Sub_DisplayClassificationDetails",
+        "AIA_Homepage_Sub_DisplayExtractionDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee66-4fc0-8000-9baa-011c48011c48_64010",
+      "name": "AIA_IMG_MODEL_TRIGGERS_EMPTY_IMAGE",
+      "type": "Constant",
+      "description": "Value : AIA Model Triggers Empty Image",
+      "value": "_a-0000ee66-4fc0-8000-9baa-011c48011c48_64005",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "AIA_Deployment_RecordGrid"
+      ]
+    },
+    {
+      "uuid": "_a-0000edd9-a94f-8000-9bb2-011c48011c48_144286",
+      "name": "AIA_INSTANCE_STATUS_RECONCILED_ALL",
+      "type": "Constant",
+      "description": "Contains ref id for status reconciled manually & automatically",
+      "value": [
+        "4",
+        "6"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Integer?list",
+      "calls": [],
+      "called_by": [
+        "AIA Classification Model Version",
+        "AIA_Homepage_Sub_DisplayClassificationDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_85354",
+      "name": "AIA_INT_AREA_IMPROVEMENT_HIGH_RANGE_THRESHOLD_VALUE",
+      "type": "Constant",
+      "description": "Value : 0.20",
+      "value": "0.2",
+      "value_type": "http://www.w3.org/2001/XMLSchema:double",
+      "calls": [],
+      "called_by": [
+        "AIA_HomePage_Classification_GetHighRangeForImprovementData",
+        "AIA_HomePage_Extraction_GetHighRangeForImprovementData"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec40-0355-8000-9be4-011c48011c48_70311",
+      "name": "AIA_MODEL_TYPE_VALUES",
+      "type": "Constant",
+      "description": "(1) extraction, (2) classification",
+      "value": [
+        "extraction",
+        "classification"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModel_Delete",
+        "AIA_Classification_InstanceUuid",
+        "AIA_Deployment_RecordGrid",
+        "AIA_Extraction_InstanceUuid"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_55444",
+      "name": "AIA_SHOW_SITEPAGE_SHADOW",
+      "type": "Constant",
+      "description": "Boolean flag whether to display site page shadow",
+      "value": "false",
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "AIA_Sitepage_Deployments"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb87-8639-8000-9bb1-011c48011c48_16492",
+      "name": "AIA_SITE_NAME",
+      "type": "Constant",
+      "description": "Site name",
+      "value": "DocCenter",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA Home Site"
+      ]
+    },
+    {
+      "uuid": "_a-0000edd9-a94f-8000-9bb2-011c48011c48_133328",
+      "name": "AIA_URL_USER_GUIDE",
+      "type": "Constant",
+      "description": "Value : https://scribehow.com/viewer/Setting_Up_Service_Account_and_API_Key_in_Appian__fFy6dgaoSBS1GWrzJQX-TA",
+      "value": "https://scribehow.com/viewer/Setting_Up_Service_Account_and_API_Key_in_Appian__fFy6dgaoSBS1GWrzJQX-TA",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_Template_EmptyState"
+      ]
+    },
+    {
+      "uuid": "_a-0000eb87-8639-8000-9bb1-011c48011c48_16629",
+      "name": "AIA_VERSION",
+      "type": "Constant",
+      "description": "26.1 - 4.1.0",
+      "value": "26.01.04.01.00",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ConstructDocumentationLink"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec1e-9975-8000-9bd6-011c48011c48_1376783",
+      "name": "AIA_WARN_COLOR",
+      "type": "Constant",
+      "description": "#FF9900",
+      "value": "#FF9900",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_Deployment_RecordGrid"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_85064",
+      "name": "AIA_Classification_InstanceUuid",
+      "type": "Expression Rule",
+      "description": "Get instance uuid from classification",
+      "parameters": [],
+      "calls": [
+        "AIA_MODEL_TYPE_VALUES"
+      ],
+      "called_by": [
+        "AIA_GetValidationsForInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000edd9-a94f-8000-9bb2-011c48011c48_140262",
+      "name": "AIA_ConstructDocumentationLink",
+      "type": "Expression Rule",
+      "description": "Create documentation link",
+      "parameters": [],
+      "calls": [
+        "AIA_DOCUMENTATION_LINK",
+        "AIA_GetSiteVersion",
+        "AIA_VERSION"
+      ],
+      "called_by": [
+        "AIA_DocumentationSplash",
+        "AIA_Template_EmptyState"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec1e-9975-8000-9bd6-011c48011c48_1375434",
+      "name": "AIA_DisplayPercentage",
+      "type": "Expression Rule",
+      "description": "Display a decimal as a percentage",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_HomePage_Classification_GetDataForAreaOfImprovements",
+        "AIA_HomePage_Extraction_GetDataForAreaOfImprovements",
+        "AIA_Homepage_Sub_DisplayClassificationDetails",
+        "AIA_Homepage_Sub_DisplayExtractionDetails",
+        "AIA_UTIL_GetPercentageAttributes"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_84705",
+      "name": "AIA_Extraction_InstanceUuid",
+      "type": "Expression Rule",
+      "description": "Get instance uuid from extraction",
+      "parameters": [],
+      "calls": [
+        "AIA_MODEL_TYPE_VALUES"
+      ],
+      "called_by": [
+        "AIA_GetValidationsForInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee9c-6257-8000-9bbe-011c48011c48_119603",
+      "name": "AIA_GetSiteVersion",
+      "type": "Expression Rule",
+      "description": "Get version for site",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ConstructDocumentationLink"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed16-a792-8000-9c64-011c48011c48_269084",
+      "name": "AIA_GetValidationsForInstance",
+      "type": "Expression Rule",
+      "description": "Get validation errors for an instance",
+      "parameters": [],
+      "calls": [
+        "AIA_Classification_InstanceUuid",
+        "AIA_Extraction_InstanceUuid",
+        "AIA_IsExtractionInstance",
+        "AIA_Test_GetLatestExtractionInstance"
+      ],
+      "called_by": [
+        "AIA Classification Delete Instance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_77633",
+      "name": "AIA_HomePage_Classification_GetDataForAreaOfImprovements",
+      "type": "Expression Rule",
+      "description": "Expression rule to get Data for Area of Improvements",
+      "parameters": [],
+      "calls": [
+        "AIA_DisplayPercentage",
+        "AIA_HomePage_Classification_GetHighRangeForImprovementData"
+      ],
+      "called_by": [
+        "AIA_Homepage_Sub_DisplayClassificationDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_80043",
+      "name": "AIA_HomePage_Classification_GetHighRangeForImprovementData",
+      "type": "Expression Rule",
+      "description": "Expression rule to get the Get High Range Percentage for Improvement Data",
+      "parameters": [],
+      "calls": [
+        "AIA_INT_AREA_IMPROVEMENT_HIGH_RANGE_THRESHOLD_VALUE"
+      ],
+      "called_by": [
+        "AIA_HomePage_Classification_GetDataForAreaOfImprovements"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_77591",
+      "name": "AIA_HomePage_Extraction_GetDataForAreaOfImprovements",
+      "type": "Expression Rule",
+      "description": "Expression rule to get Data for Area of Improvements",
+      "parameters": [],
+      "calls": [
+        "AIA_DisplayPercentage",
+        "AIA_HomePage_Extraction_GetHighRangeForImprovementData",
+        "AIA_UTIL_LoadBrandingMap",
+        "AIA_getIntervalsForDateFilter"
+      ],
+      "called_by": [
+        "AIA_Homepage_Sub_DisplayExtractionDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_79967",
+      "name": "AIA_HomePage_Extraction_GetHighRangeForImprovementData",
+      "type": "Expression Rule",
+      "description": "Expression rule to get the Get High Range Percentage for Improvement Data",
+      "parameters": [],
+      "calls": [
+        "AIA_INT_AREA_IMPROVEMENT_HIGH_RANGE_THRESHOLD_VALUE"
+      ],
+      "called_by": [
+        "AIA_HomePage_Extraction_GetDataForAreaOfImprovements"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_85019",
+      "name": "AIA_IsExtractionInstance",
+      "type": "Expression Rule",
+      "description": "Returns true if the instance is an extraction instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_GetValidationsForInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40839",
+      "name": "AIA_Test_GetLatestExtractionInstance",
+      "type": "Expression Rule",
+      "description": "Get the latest extraction instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_GetValidationsForInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_12853",
+      "name": "AIA_UTIL_GetPercentageAttributes",
+      "type": "Expression Rule",
+      "description": "Display a percentage as a background color or text color",
+      "parameters": [],
+      "calls": [
+        "AIA_DisplayPercentage"
+      ],
+      "called_by": [
+        "AIA_HomePage_Sub_ClassificationModelGrid",
+        "AIA_HomePage_Sub_ExtractionModelGrid"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_12129",
+      "name": "AIA_UTIL_LoadBrandingMap",
+      "type": "Expression Rule",
+      "description": "Returns branding data for AI Analytics in the type List of Map",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Home Site",
+        "AIA_ClassificationInstance_RecordAction_DeleteConfirmationScreen",
+        "AIA_ClassificationModel_RecordAction_Delete",
+        "AIA_ClassificationModel_RecordAction_DeleteConfirmationScreen",
+        "AIA_Classification_DeleteInstance",
+        "AIA_Deployment_RecordGrid",
+        "AIA_DocumentationSplash",
+        "AIA_HomePage_Extraction_GetDataForAreaOfImprovements",
+        "AIA_HomePage_Sub_AreaOfImprovements",
+        "AIA_HomePage_Sub_ClassificationModelGrid",
+        "AIA_HomePage_Sub_ClassificationModelTokenGrid",
+        "AIA_HomePage_Sub_ExtractionModelGrid",
+        "AIA_HomePage_Sub_ExtractionModelTokenGrid",
+        "AIA_Homepage_Sub_DisplayClassificationDetails",
+        "AIA_Homepage_Sub_DisplayExtractionDetails",
+        "AIA_Sitepage_Deployments",
+        "AIA_Sitepage_Home",
+        "AIA_Template_EmptyState",
+        "AIA_Template_GreyCardWithInnerTitle",
+        "AIA_Template_HeadingAndContents",
+        "AIA_UTIL_NoDataAvailableForCharts",
+        "AIA_UTIL_userDateColumn"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb4-d4ac-8000-9bae-011c48011c48_104965",
+      "name": "AIA_UTIL_convertDateToDateTime",
+      "type": "Expression Rule",
+      "description": "Rule to convert the date to date time",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_getIntervalsForDateFilter"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_34388",
+      "name": "AIA_UTIL_displayDateTime",
+      "type": "Expression Rule",
+      "description": "Expression rule to Display Date Time in User Friendly Format",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_UTIL_userDateColumn"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_34420",
+      "name": "AIA_UTIL_displayUserFullName",
+      "type": "Expression Rule",
+      "description": "Interface to display User Full Name",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Sitepage_Home",
+        "AIA_UTIL_userDateColumn"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb0-f009-8000-9ba8-011c48011c48_97164",
+      "name": "AIA_UTIL_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_HomePage_Sub_ClassificationModelTokenGrid",
+        "AIA_HomePage_Sub_ExtractionModelTokenGrid",
+        "AIA_Homepage_Sub_DisplayClassificationDetails",
+        "AIA_Homepage_Sub_DisplayExtractionDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb4-d4ac-8000-9bae-011c48011c48_104959",
+      "name": "AIA_getIntervalsForDateFilter",
+      "type": "Expression Rule",
+      "description": "This rule returns the intervals to be used in metrics and query filter dropdowns",
+      "parameters": [],
+      "calls": [
+        "AIA_UTIL_convertDateToDateTime",
+        "Label for Year to Date",
+        "Label for compared to last {inputType}",
+        "Label for year",
+        "Last {number} days",
+        "compared to last {number} days"
+      ],
+      "called_by": [
+        "AIA_HomePage_Extraction_GetDataForAreaOfImprovements",
+        "AIA_Homepage_Sub_DisplayClassificationDetails",
+        "AIA_Sitepage_Home"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3e-060c-8000-9bb8-011c48011c48_203441",
+      "name": "SHRD_ReadDocumentContent",
+      "type": "Expression Rule",
+      "description": "Read content from text document",
+      "parameters": [],
+      "calls": [
+        "AIA_EXAMPLE_DOC_EXTRACTION_PDF"
+      ],
+      "called_by": [
+        "AIA Deployment",
+        "AIA_Deployment_RecordGrid"
+      ]
+    },
+    {
+      "uuid": "_a-0000edd9-a94f-8000-9bb2-011c48011c48_125621",
+      "name": "AIA_ClassificationInstance_RecordAction_DeleteConfirmationScreen",
+      "type": "Interface",
+      "description": "Confirmation Screen for Delete Classification Instance Record Action",
+      "parameters": [],
+      "calls": [
+        "AIA Home Site",
+        "AIA_UTIL_LoadBrandingMap",
+        "Back to Instances List",
+        "Classification instance has been deleted successfully"
+      ],
+      "called_by": [
+        "AIA Classification Delete Instance"
+      ]
+    },
+    {
+      "uuid": "1b1ad6e8-69d0-418a-9437-8565d8d506f9",
+      "name": "AIA_ClassificationModel_RecordAction_Delete",
+      "type": "Interface",
+      "description": "Form interface for confirming the deletion of a record",
+      "parameters": [
+        {
+          "name": "cancel",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        }
+      ],
+      "calls": [
+        "AIA_UTIL_LoadBrandingMap",
+        "Label for Are you sure you want to delete this model?",
+        "Label for Cancel",
+        "Label for Confirmation Message",
+        "Label for Delete",
+        "Label for Delete Classification Model",
+        "Label for Model Data will be permanently deleted"
+      ],
+      "called_by": [
+        "AIA_ClassificationModel_Delete"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_35141",
+      "name": "AIA_ClassificationModel_RecordAction_DeleteConfirmationScreen",
+      "type": "Interface",
+      "description": "Confirmation Screen for Delete Classification Model Record Action",
+      "parameters": [],
+      "calls": [
+        "AIA Home Site",
+        "AIA_UTIL_LoadBrandingMap",
+        "Label for Back to Models",
+        "Label for Classification model has been deleted successfully"
+      ],
+      "called_by": [
+        "AIA_ClassificationModel_Delete"
+      ]
+    },
+    {
+      "uuid": "81468705-719a-4107-967c-6baf5d8cfbf2",
+      "name": "AIA_Classification_DeleteInstance",
+      "type": "Interface",
+      "description": "Form interface for confirming the deletion of a record",
+      "parameters": [
+        {
+          "name": "cancel",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        }
+      ],
+      "calls": [
+        "AIA_UTIL_LoadBrandingMap",
+        "Delete Classification Instance",
+        "Label for Are you sure you want to delete this instance?",
+        "Label for Cancel",
+        "Label for Delete",
+        "Label for The record data will be permanently deleted"
+      ],
+      "called_by": [
+        "AIA Classification Delete Instance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_204654",
+      "name": "AIA_Deployment_RecordGrid",
+      "type": "Interface",
+      "description": "Set up a model deployment",
+      "parameters": [
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        }
+      ],
+      "calls": [
+        "AIA Classification Model Version",
+        "AIA Deployment",
+        "AIA Extraction Model Version",
+        "AIA_BUTTON_TYPE_ACTION",
+        "AIA_CLASSIFICATION_ICON",
+        "AIA_DEPLOYMENT",
+        "AIA_EXTRACTION_ICON",
+        "AIA_IMG_MODEL_TRIGGERS_EMPTY_IMAGE",
+        "AIA_MODEL_TYPE_VALUES",
+        "AIA_Template_EmptyState",
+        "AIA_Translations",
+        "AIA_UTIL_LoadBrandingMap",
+        "AIA_UTIL_userDateColumn",
+        "AIA_WARN_COLOR",
+        "Alt Text for Grid Labels",
+        "Description Label",
+        "Field Label",
+        "Grid Column Label",
+        "Grid column name",
+        "Navigation Bar Site Classification Page Name",
+        "Navigation Bar Site Extraction Page Name",
+        "No models selected yet",
+        "SHRD_ReadDocumentContent",
+        "Site Page Name",
+        "Version {count}"
+      ],
+      "called_by": [
+        "AIA_Sitepage_Deployments"
+      ]
+    },
+    {
+      "uuid": "_a-0000edd9-a94f-8000-9bb2-011c48011c48_140175",
+      "name": "AIA_DocumentationSplash",
+      "type": "Interface",
+      "description": "Home page for links to documentation",
+      "parameters": [],
+      "calls": [
+        "A guide to deploying your classification and extraction models to higher environ",
+        "AIA_ConstructDocumentationLink",
+        "AIA_IMG_HOME_PAGE_BILLBOARD_IMAGE",
+        "AIA_UTIL_LoadBrandingMap",
+        "Learn how to set up the deployment API in order to automatically create and vers",
+        "Learn how to test your extraction models once they've been configured.",
+        "Learn how to utilise the features for classifying documents.",
+        "Learn how to utilise the features for extracting documents.",
+        "Navigation Bar Site Classification Page Name",
+        "Navigation Bar Site Documentation Page Name",
+        "Navigation Bar Site Extraction Page Name",
+        "Overview",
+        "Review the documentation below to get started",
+        "Setup",
+        "Site Page Name",
+        "Testing & Metrics",
+        "The essential guide for new users to get up and running with our product quickly"
+      ],
+      "called_by": [
+        "AIA Home Site"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_70422",
+      "name": "AIA_HomePage_Sub_AreaOfImprovements",
+      "type": "Interface",
+      "description": "Interface to display area of improvements",
+      "parameters": [
+        {
+          "name": "improvementData",
+          "type": "http://www.appian.com/ae/types/2009:Map?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "record",
+          "type": "http://www.appian.com/ae/types/2009:RecordType2",
+          "raw_type": "http://www.appian.com/ae/types/2009:RecordType2",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        }
+      ],
+      "calls": [
+        "AIA_UTIL_LoadBrandingMap",
+        "Label for All models look good",
+        "Label for The accuracy of this model is",
+        "Label for lower than 80% of the models.",
+        "None of your classification models need improvement",
+        "None of your extraction models need improvement",
+        "label for which is significantly"
+      ],
+      "called_by": [
+        "AIA_Homepage_Sub_DisplayClassificationDetails",
+        "AIA_Homepage_Sub_DisplayExtractionDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_71503",
+      "name": "AIA_HomePage_Sub_ClassificationModelGrid",
+      "type": "Interface",
+      "description": "Interface to show Classification Model Data in homepage",
+      "parameters": [
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "topClassificationModelDetails",
+          "type": "urn:com:appian:recordtype:datatype:2685b10f-5739-4461-ba3a-caac3c8e6eb0?list",
+          "raw_type": "urn:com:appian:recordtype:datatype:2685b10f-5739-4461-ba3a-caac3c8e6eb0?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AIA_UTIL_GetPercentageAttributes",
+        "AIA_UTIL_LoadBrandingMap",
+        "Accuracy Label",
+        "Al Model Version Summary View Section label",
+        "Alt Text for Grid Labels",
+        "Back to Chart",
+        "Label for Categories",
+        "Label for Classification Instance Run",
+        "Label for Classification Model",
+        "Site Page Name"
+      ],
+      "called_by": [
+        "AIA_Homepage_Sub_DisplayClassificationDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000edd9-a94f-8000-9bb2-011c48011c48_127471",
+      "name": "AIA_HomePage_Sub_ClassificationModelTokenGrid",
+      "type": "Interface",
+      "description": "Interface to show Classification Model Token Data in homepage",
+      "parameters": [
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "topClassificationModelDetails",
+          "type": "urn:com:appian:recordtype:datatype:2685b10f-5739-4461-ba3a-caac3c8e6eb0?list",
+          "raw_type": "urn:com:appian:recordtype:datatype:2685b10f-5739-4461-ba3a-caac3c8e6eb0?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AIA_UTIL_LoadBrandingMap",
+        "AIA_UTIL_NoDataAvailableForCharts",
+        "AIA_UTIL_isBlank",
+        "Al Model Version Summary View Section label",
+        "Alt Text for Grid Labels",
+        "Avg Tokens",
+        "Back to Chart",
+        "Classification Total Tokens",
+        "Input Tokens",
+        "Label for Classification Model",
+        "Label for Total Tokens",
+        "Output Tokens",
+        "Site Page Name"
+      ],
+      "called_by": [
+        "AIA_Homepage_Sub_DisplayClassificationDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_18138",
+      "name": "AIA_HomePage_Sub_ExtractionModelGrid",
+      "type": "Interface",
+      "description": "Interface to show Extraction Instances Data in homepage",
+      "parameters": [
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "topExtractionModelDetails",
+          "type": "urn:com:appian:recordtype:datatype:1d688c85-2aff-47a5-84a7-b5c4ccf02a4d?list",
+          "raw_type": "urn:com:appian:recordtype:datatype:1d688c85-2aff-47a5-84a7-b5c4ccf02a4d?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AIA_UTIL_GetPercentageAttributes",
+        "AIA_UTIL_LoadBrandingMap",
+        "Accuracy Label",
+        "Al Model Version Grid label",
+        "Al Model Version Summary View Section label",
+        "Alt Text for Grid Labels",
+        "Back to Chart",
+        "Label for Extraction Instances Run",
+        "Label for Extraction Model",
+        "Site Page Name"
+      ],
+      "called_by": [
+        "AIA_Homepage_Sub_DisplayExtractionDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000edd9-a94f-8000-9bb2-011c48011c48_127396",
+      "name": "AIA_HomePage_Sub_ExtractionModelTokenGrid",
+      "type": "Interface",
+      "description": "Interface to show Extraction Instances Token Data in homepage",
+      "parameters": [
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "topExtractionModelDetails",
+          "type": "urn:com:appian:recordtype:datatype:1d688c85-2aff-47a5-84a7-b5c4ccf02a4d?list",
+          "raw_type": "urn:com:appian:recordtype:datatype:1d688c85-2aff-47a5-84a7-b5c4ccf02a4d?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        }
+      ],
+      "calls": [
+        "AIA_UTIL_LoadBrandingMap",
+        "AIA_UTIL_NoDataAvailableForCharts",
+        "AIA_UTIL_isBlank",
+        "Al Model Version Summary View Section label",
+        "Alt Text for Grid Labels",
+        "Avg Tokens",
+        "Back to Chart",
+        "Extraction Total Tokens",
+        "Input Tokens",
+        "Label for Extraction Model",
+        "Label for Total Tokens",
+        "Output Tokens",
+        "Site Page Name"
+      ],
+      "called_by": [
+        "AIA_Homepage_Sub_DisplayExtractionDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000edd9-a94f-8000-9bb2-011c48011c48_141643",
+      "name": "AIA_Homepage_Sub_DisplayClassificationDetails",
+      "type": "Interface",
+      "description": "Interface to display Classification Details for Home Page",
+      "parameters": [
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "selectedInterval",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "weekLabels",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        }
+      ],
+      "calls": [
+        "A token is unit of analysis as determined by the model.Token useage may be limit",
+        "AIA_DisplayPercentage",
+        "AIA_HomePage_Classification_GetDataForAreaOfImprovements",
+        "AIA_HomePage_Sub_AreaOfImprovements",
+        "AIA_HomePage_Sub_ClassificationModelGrid",
+        "AIA_HomePage_Sub_ClassificationModelTokenGrid",
+        "AIA_IMG_HOME_PAGE_EMPTY_IMAGE",
+        "AIA_INSTANCE_STATUS_RECONCILED_ALL",
+        "AIA_Template_GreyCardWithInnerTitle",
+        "AIA_Template_HeadingAndContents",
+        "AIA_UTIL_LoadBrandingMap",
+        "AIA_UTIL_isBlank",
+        "AIA_getIntervalsForDateFilter",
+        "Classification Total Tokens",
+        "Input Tokens",
+        "Instance Run",
+        "Label for Areas of Improvement",
+        "Label for Average Classification Accuracy",
+        "Label for Classification Instance Run",
+        "Label for Classification Model",
+        "Label for Classification Models",
+        "Label for No classification model data found",
+        "No suggestions yet",
+        "Output Tokens",
+        "Token Usage",
+        "Top Classification Models",
+        "Total Tokens Consumed",
+        "across {input} models",
+        "across {input} pages"
+      ],
+      "called_by": [
+        "AIA_Sitepage_Home"
+      ]
+    },
+    {
+      "uuid": "_a-0000edd9-a94f-8000-9bb2-011c48011c48_141652",
+      "name": "AIA_Homepage_Sub_DisplayExtractionDetails",
+      "type": "Interface",
+      "description": "Interface to display Extraction Details for Home Page",
+      "parameters": [
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "selectedInterval",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "weekLabels",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        }
+      ],
+      "calls": [
+        "A token is unit of analysis as determined by the model.Token useage may be limit",
+        "AIA_DisplayPercentage",
+        "AIA_HomePage_Extraction_GetDataForAreaOfImprovements",
+        "AIA_HomePage_Sub_AreaOfImprovements",
+        "AIA_HomePage_Sub_ExtractionModelGrid",
+        "AIA_HomePage_Sub_ExtractionModelTokenGrid",
+        "AIA_IMG_HOME_PAGE_EMPTY_IMAGE",
+        "AIA_Template_GreyCardWithInnerTitle",
+        "AIA_Template_HeadingAndContents",
+        "AIA_UTIL_LoadBrandingMap",
+        "AIA_UTIL_isBlank",
+        "Extraction Models",
+        "Input Tokens",
+        "Instance Run",
+        "Label for Areas of Improvement",
+        "Label for Average Extraction Accuracy",
+        "Label for Extraction Instances Run",
+        "Label for Extraction Model",
+        "Label for No extraction model data found",
+        "No suggestions yet",
+        "Output Tokens",
+        "Token Usage",
+        "Top Extraction Models",
+        "Total Tokens Consumed",
+        "across {input} models",
+        "across {input} pages"
+      ],
+      "called_by": [
+        "AIA_Sitepage_Home"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_35232",
+      "name": "AIA_Sitepage_Deployments",
+      "type": "Interface",
+      "description": "Sitepage Interface for Deployment",
+      "parameters": [],
+      "calls": [
+        "AIA_Deployment_RecordGrid",
+        "AIA_SHOW_SITEPAGE_SHADOW",
+        "AIA_UTIL_LoadBrandingMap",
+        "Site Page Name"
+      ],
+      "called_by": [
+        "AIA Home Site"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_18064",
+      "name": "AIA_Sitepage_Home",
+      "type": "Interface",
+      "description": "Site Page Wrapper for Home",
+      "parameters": [],
+      "calls": [
+        "AIA Classification Model",
+        "AIA Extraction Model",
+        "AIA_Homepage_Sub_DisplayClassificationDetails",
+        "AIA_Homepage_Sub_DisplayExtractionDetails",
+        "AIA_IMG_HOME_PAGE_BILLBOARD_IMAGE",
+        "AIA_UTIL_LoadBrandingMap",
+        "AIA_UTIL_displayUserFullName",
+        "AIA_getIntervalsForDateFilter",
+        "Label for Interval",
+        "Label for Welcome",
+        "Label for Year to Date"
+      ],
+      "called_by": [
+        "AIA Home Site"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_37798",
+      "name": "AIA_Template_EmptyState",
+      "type": "Interface",
+      "description": "Empty state template",
+      "parameters": [
+        {
+          "name": "image",
+          "type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+          "raw_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "header",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "buttons",
+          "type": "http://www.appian.com/ae/types/2009:Map?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "subheader",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "imageSize",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": "Size of the inputted document image. Defaults to SMALL_PLUS",
+          "display_order": 5
+        }
+      ],
+      "calls": [
+        "AIA_BUTTON_TYPE_ACTION",
+        "AIA_BUTTON_TYPE_LINK",
+        "AIA_ConstructDocumentationLink",
+        "AIA_IMG_HOME_PAGE_DEPLOYMENT_EMPTY_SCREEN",
+        "AIA_URL_USER_GUIDE",
+        "AIA_UTIL_LoadBrandingMap",
+        "Empty Screen",
+        "Home page empty screen tooltip",
+        "Label for API Key Installment Needed",
+        "VIEW DOCUMENTATION",
+        "VIEW USER GUIDE"
+      ],
+      "called_by": [
+        "AIA_Deployment_RecordGrid"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_38240",
+      "name": "AIA_Template_GreyCardWithInnerTitle",
+      "type": "Interface",
+      "description": "Grey card with inner title",
+      "parameters": [
+        {
+          "name": "title",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "caption",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "contents",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "headerPosition",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": "Valid values: \"ABOVE\" (Default), \"ADJACENT\"",
+          "display_order": 4
+        },
+        {
+          "name": "subheader",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "height",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 6
+        },
+        {
+          "name": "headingTag",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 7
+        },
+        {
+          "name": "headerSize",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": "Valid values: \"LARGE_PLUS\", \"LARGE\", \"MEDIUM_PLUS\", \"MEDIUM\", \"SMALL\", \"EXTRA_SMALL\" (default).",
+          "display_order": 8
+        }
+      ],
+      "calls": [
+        "AIA_UTIL_LoadBrandingMap"
+      ],
+      "called_by": [
+        "AIA_Homepage_Sub_DisplayClassificationDetails",
+        "AIA_Homepage_Sub_DisplayExtractionDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92030",
+      "name": "AIA_Template_HeadingAndContents",
+      "type": "Interface",
+      "description": "Level 3 heading and contents",
+      "parameters": [
+        {
+          "name": "contents",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "heading",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "tags",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "headingTag",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        }
+      ],
+      "calls": [
+        "AIA_UTIL_LoadBrandingMap"
+      ],
+      "called_by": [
+        "AIA_Homepage_Sub_DisplayClassificationDetails",
+        "AIA_Homepage_Sub_DisplayExtractionDetails"
+      ]
+    },
+    {
+      "uuid": "_a-0000edd9-a94f-8000-9bb2-011c48011c48_137176",
+      "name": "AIA_UTIL_NoDataAvailableForCharts",
+      "type": "Interface",
+      "description": "Interface to display no data available for Charts",
+      "parameters": [
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        }
+      ],
+      "calls": [
+        "AIA_UTIL_LoadBrandingMap",
+        "No data available for Token Usage"
+      ],
+      "called_by": [
+        "AIA_HomePage_Sub_ClassificationModelTokenGrid",
+        "AIA_HomePage_Sub_ExtractionModelTokenGrid"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_55530",
+      "name": "AIA_UTIL_userDateColumn",
+      "type": "Interface",
+      "description": "Rich text for a user date column",
+      "parameters": [
+        {
+          "name": "user",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "date",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "defaultUser",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        }
+      ],
+      "calls": [
+        "AIA_UTIL_LoadBrandingMap",
+        "AIA_UTIL_displayDateTime",
+        "AIA_UTIL_displayUserFullName"
+      ],
+      "called_by": [
+        "AIA_Deployment_RecordGrid"
+      ]
+    },
+    {
+      "uuid": "749d64ec-324f-4962-8f80-80c016cfec4d",
+      "name": "AIA Classification Delete Instance",
+      "type": "Process Model",
+      "description": "Delete Classification Instance",
+      "calls": [
+        "AIA_ClassificationInstance_RecordAction_DeleteConfirmationScreen",
+        "AIA_Classification_DeleteInstance",
+        "AIA_GetValidationsForInstance"
+      ],
+      "called_by": [
+        "AIA_ClassificationModel_Delete"
+      ]
+    },
+    {
+      "uuid": "0002edde-d114-8000-ffc6-7f0000014e7a",
+      "name": "AIA Delete Examples",
+      "type": "Process Model",
+      "description": "Delete classification/extraction examples",
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModel_Delete"
+      ]
+    },
+    {
+      "uuid": "248c84de-116f-4484-9107-385708ed7312",
+      "name": "AIA_ClassificationModel_Delete",
+      "type": "Process Model",
+      "description": "Delete Classification Model",
+      "calls": [
+        "AIA Classification Delete Instance",
+        "AIA Delete Examples",
+        "AIA_ClassificationModel_RecordAction_Delete",
+        "AIA_ClassificationModel_RecordAction_DeleteConfirmationScreen",
+        "AIA_MODEL_TYPE_VALUES"
+      ],
+      "called_by": [
+        "AIA Classification Model"
+      ]
+    },
+    {
+      "uuid": "2685b10f-5739-4461-ba3a-caac3c8e6eb0",
+      "name": "AIA Classification Model",
+      "type": "Record Type",
+      "description": "Classification models",
+      "actions": [
+        "newClassificationModel",
+        "testDocument",
+        "runAllTestInstances",
+        "newVersion",
+        "updateClassificationModelVersion",
+        "updateClassificationModel",
+        "deleteClassificationModel",
+        "createTrigger"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "#\"urn:appian:translation-string:v1:396bc6fa-092f-484e-948a-21d48eea366e\"",
+        "#\"urn:appian:translation-string:v1:2797f3e1-360c-4df8-8d1e-15678d75acba\"",
+        "#\"urn:appian:translation-string:v1:6d4cf8b5-f4ab-4812-a2bd-0bad449a9e9b\"",
+        "#\"urn:appian:translation-string:v1:ab6ce936-2015-4e58-a2d1-a10bcd2372e4\"",
+        "#\"urn:appian:translation-string:v1:44e82afe-99e6-475f-aeaf-1b26e1b047a6\"",
+        "List View"
+      ],
+      "calls": [
+        "AIA Classification Model Version",
+        "AIA_ClassificationModel_Delete",
+        "Delete Model",
+        "Site Page Name"
+      ],
+      "called_by": [
+        "AIA Classification Model Version",
+        "AIA_Sitepage_Home"
+      ]
+    },
+    {
+      "uuid": "a8b311eb-88c5-453a-a403-318071da677d",
+      "name": "AIA Classification Model Version",
+      "type": "Record Type",
+      "description": "Classification model versions",
+      "actions": [
+        "testDocument",
+        "runAllTestInstances",
+        "updateClassificationModelVersion",
+        "deleteClassificationModelVersion",
+        "restoreVersion",
+        "setupSpotSampling",
+        "updateClassificationModelVersionDescription"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "#\"urn:appian:translation-string:v1:396bc6fa-092f-484e-948a-21d48eea366e\"",
+        "#\"urn:appian:translation-string:v1:d1e3249f-29f4-42cc-b418-60fab040208e\"",
+        "=\"Investigation\"",
+        "#\"urn:appian:translation-string:v1:ab6ce936-2015-4e58-a2d1-a10bcd2372e4\"",
+        "#\"urn:appian:translation-string:v1:44e82afe-99e6-475f-aeaf-1b26e1b047a6\"",
+        "List View"
+      ],
+      "calls": [
+        "AIA Classification Model",
+        "AIA_INSTANCE_STATUS_RECONCILED_ALL",
+        "Site Page Name"
+      ],
+      "called_by": [
+        "AIA Classification Model",
+        "AIA_Deployment_RecordGrid"
+      ]
+    },
+    {
+      "uuid": "ef206688-0d93-4957-a86a-9824a3980c4c",
+      "name": "AIA Deployment",
+      "type": "Record Type",
+      "description": "Instance of deployment of models",
+      "actions": [
+        "modelDeployment",
+        "runDeployment"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "List View"
+      ],
+      "calls": [
+        "AIA_DEPLOYMENT",
+        "SHRD_ReadDocumentContent"
+      ],
+      "called_by": [
+        "AIA_Deployment_RecordGrid"
+      ]
+    },
+    {
+      "uuid": "1d688c85-2aff-47a5-84a7-b5c4ccf02a4d",
+      "name": "AIA Extraction Model",
+      "type": "Record Type",
+      "description": "Extraction models used to be data out of various sources",
+      "actions": [
+        "addExtractionModel",
+        "runExtraction",
+        "runAllTestInstances",
+        "createNewVersion",
+        "updateExtractionModelVersion",
+        "updateDetails",
+        "deleteExtactionModel",
+        "addValidationRule",
+        "deleteExtractionModelVersion",
+        "createTrigger",
+        "createTestSuite"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "#\"urn:appian:translation-string:v1:396bc6fa-092f-484e-948a-21d48eea366e\"",
+        "#\"urn:appian:translation-string:v1:2797f3e1-360c-4df8-8d1e-15678d75acba\"",
+        "#\"urn:appian:translation-string:v1:6d4cf8b5-f4ab-4812-a2bd-0bad449a9e9b\"",
+        "=#\"urn:appian:translation-string:v1:912bea31-a37e-46c0-aa12-1cef41bc4b6b\"",
+        "#\"urn:appian:translation-string:v1:ab6ce936-2015-4e58-a2d1-a10bcd2372e4\"",
+        "#\"urn:appian:translation-string:v1:44e82afe-99e6-475f-aeaf-1b26e1b047a6\"",
+        "List View"
+      ],
+      "calls": [
+        "AIA Extraction Model Version",
+        "Label for Delete",
+        "Site Page Name"
+      ],
+      "called_by": [
+        "AIA Extraction Model Version",
+        "AIA_Sitepage_Home"
+      ]
+    },
+    {
+      "uuid": "f00f33ce-439e-4c81-9931-a244a643c0e8",
+      "name": "AIA Extraction Model Version",
+      "type": "Record Type",
+      "description": "Version of an extraction model",
+      "actions": [
+        "newExtractionModelVersion",
+        "extractDocument",
+        "runAllTestInstances",
+        "updateExtractionModelVersion",
+        "restoreVersion",
+        "deleteExtractionModelVersion",
+        "addValidationRule",
+        "configureAiReviewer",
+        "setupConfidence",
+        "setupSampling",
+        "updateExtractionModelVersionDescription"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "#\"urn:appian:translation-string:v1:396bc6fa-092f-484e-948a-21d48eea366e\"",
+        "#\"urn:appian:translation-string:v1:d1e3249f-29f4-42cc-b418-60fab040208e\"",
+        "=#\"urn:appian:translation-string:v1:912bea31-a37e-46c0-aa12-1cef41bc4b6b\"",
+        "#\"urn:appian:translation-string:v1:ab6ce936-2015-4e58-a2d1-a10bcd2372e4\"",
+        "#\"urn:appian:translation-string:v1:44e82afe-99e6-475f-aeaf-1b26e1b047a6\"",
+        "List View"
+      ],
+      "calls": [
+        "AIA Extraction Model",
+        "Site Page Name"
+      ],
+      "called_by": [
+        "AIA Extraction Model",
+        "AIA_Deployment_RecordGrid"
+      ]
+    },
+    {
+      "uuid": "15ad6b1a-7c0a-47f8-8803-ac74b16df0df",
+      "name": "AIA Home Site",
+      "type": "Site",
+      "description": "Prompt manager site",
+      "url_stub": "doc-center",
+      "calls": [
+        "AIA_DocumentationSplash",
+        "AIA_GRP_USERS",
+        "AIA_SITE_NAME",
+        "AIA_Sitepage_Deployments",
+        "AIA_Sitepage_Home",
+        "AIA_UTIL_LoadBrandingMap"
+      ],
+      "called_by": [
+        "AIA_ClassificationInstance_RecordAction_DeleteConfirmationScreen",
+        "AIA_ClassificationModel_RecordAction_DeleteConfirmationScreen"
+      ]
+    },
+    {
+      "uuid": "b777166b-bd4b-4195-a492-718ccbfcaecc",
+      "name": "AIA_Translations",
+      "type": "Translation Set",
+      "description": "Translation Set for the AI Analytics application",
+      "calls": [],
+      "called_by": [
+        "AIA_Deployment_RecordGrid"
+      ]
+    },
+    {
+      "uuid": "da229016-a40f-4695-b765-851c46407f5b",
+      "name": "A guide to deploying your classification and extraction models to higher environ",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_DocumentationSplash"
+      ]
+    },
+    {
+      "uuid": "bb301535-de7e-42f7-9fa4-f001a24d34ed",
+      "name": "A token is unit of analysis as determined by the model.Token useage may be limit",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Homepage_Sub_DisplayClassificationDetails",
+        "AIA_Homepage_Sub_DisplayExtractionDetails"
+      ]
+    },
+    {
+      "uuid": "1d85cd95-b854-411a-907a-67f3ec9b03bd",
+      "name": "Accuracy Label",
+      "type": "Translation String",
+      "description": "Accuracy Label",
+      "calls": [],
+      "called_by": [
+        "AIA_HomePage_Sub_ClassificationModelGrid",
+        "AIA_HomePage_Sub_ExtractionModelGrid"
+      ]
+    },
+    {
+      "uuid": "15d21e83-aadd-4b1f-9cdf-d9db8556efc3",
+      "name": "Al Model Version Grid label",
+      "type": "Translation String",
+      "description": "Al Model Version Grid label",
+      "calls": [],
+      "called_by": [
+        "AIA_HomePage_Sub_ExtractionModelGrid"
+      ]
+    },
+    {
+      "uuid": "8b3e37cd-f1d6-4ed5-871a-154a1c7a0156",
+      "name": "Al Model Version Summary View Section label",
+      "type": "Translation String",
+      "description": "Al Model Version Summary View Section label",
+      "calls": [],
+      "called_by": [
+        "AIA_HomePage_Sub_ClassificationModelGrid",
+        "AIA_HomePage_Sub_ClassificationModelTokenGrid",
+        "AIA_HomePage_Sub_ExtractionModelGrid",
+        "AIA_HomePage_Sub_ExtractionModelTokenGrid"
+      ]
+    },
+    {
+      "uuid": "e349de12-26ce-4f07-a2d6-818892336ae7",
+      "name": "Alt Text for Grid Labels",
+      "type": "Translation String",
+      "description": "Alt Text for Grid Labels",
+      "calls": [],
+      "called_by": [
+        "AIA_Deployment_RecordGrid",
+        "AIA_HomePage_Sub_ClassificationModelGrid",
+        "AIA_HomePage_Sub_ClassificationModelTokenGrid",
+        "AIA_HomePage_Sub_ExtractionModelGrid",
+        "AIA_HomePage_Sub_ExtractionModelTokenGrid"
+      ]
+    },
+    {
+      "uuid": "a2885374-7f97-4307-b3c7-463db90fce0f",
+      "name": "Avg Tokens",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_HomePage_Sub_ClassificationModelTokenGrid",
+        "AIA_HomePage_Sub_ExtractionModelTokenGrid"
+      ]
+    },
+    {
+      "uuid": "c93f1aa7-8da2-4b25-bf5c-6b1d4658bfc5",
+      "name": "Back to Chart",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_HomePage_Sub_ClassificationModelGrid",
+        "AIA_HomePage_Sub_ClassificationModelTokenGrid",
+        "AIA_HomePage_Sub_ExtractionModelGrid",
+        "AIA_HomePage_Sub_ExtractionModelTokenGrid"
+      ]
+    },
+    {
+      "uuid": "77f91988-c7bf-4ac4-9c13-1e104dcb1c64",
+      "name": "Back to Instances List",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationInstance_RecordAction_DeleteConfirmationScreen"
+      ]
+    },
+    {
+      "uuid": "23b50efc-5945-4d0b-bd16-a7579e834f8c",
+      "name": "Classification Total Tokens",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_HomePage_Sub_ClassificationModelTokenGrid",
+        "AIA_Homepage_Sub_DisplayClassificationDetails"
+      ]
+    },
+    {
+      "uuid": "74d59bdb-4049-4d0f-b4f8-048536c12ba0",
+      "name": "Classification instance has been deleted successfully",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationInstance_RecordAction_DeleteConfirmationScreen"
+      ]
+    },
+    {
+      "uuid": "6c4d9351-6d04-4b80-b8cb-8cb32e96a671",
+      "name": "Delete Classification Instance",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Classification_DeleteInstance"
+      ]
+    },
+    {
+      "uuid": "0651353e-4aba-43ad-97f0-2d35477f64e1",
+      "name": "Delete Model",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA Classification Model"
+      ]
+    },
+    {
+      "uuid": "be96096c-d32a-4708-a91d-b5dda4f2f30c",
+      "name": "Description Label",
+      "type": "Translation String",
+      "description": "Description Label",
+      "calls": [],
+      "called_by": [
+        "AIA_Deployment_RecordGrid"
+      ]
+    },
+    {
+      "uuid": "f61e3282-b9ca-4efa-ba46-55c466fba0d0",
+      "name": "Empty Screen",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Template_EmptyState"
+      ]
+    },
+    {
+      "uuid": "3d55cbe9-da73-4073-9671-51b0c47b6458",
+      "name": "Extraction Models",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Homepage_Sub_DisplayExtractionDetails"
+      ]
+    },
+    {
+      "uuid": "81ba57d0-6fdb-4866-b51f-34e77e778694",
+      "name": "Extraction Total Tokens",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_HomePage_Sub_ExtractionModelTokenGrid"
+      ]
+    },
+    {
+      "uuid": "1d2ee947-3116-4cca-8a1f-26fe5bcc2914",
+      "name": "Field Label",
+      "type": "Translation String",
+      "description": "Field Label",
+      "calls": [],
+      "called_by": [
+        "AIA_Deployment_RecordGrid"
+      ]
+    },
+    {
+      "uuid": "51aad791-f453-4502-9cf0-f684f157f5fc",
+      "name": "Grid Column Label",
+      "type": "Translation String",
+      "description": "Grid Column Label",
+      "calls": [],
+      "called_by": [
+        "AIA_Deployment_RecordGrid"
+      ]
+    },
+    {
+      "uuid": "1d00013c-bedd-4682-be09-780cbfe87825",
+      "name": "Grid column name",
+      "type": "Translation String",
+      "description": "Grid column name",
+      "calls": [],
+      "called_by": [
+        "AIA_Deployment_RecordGrid"
+      ]
+    },
+    {
+      "uuid": "278efb35-a10e-4ca1-ab2a-e9332290fd8b",
+      "name": "Home page empty screen tooltip",
+      "type": "Translation String",
+      "description": "Home page empty screen tooltip",
+      "calls": [],
+      "called_by": [
+        "AIA_Template_EmptyState"
+      ]
+    },
+    {
+      "uuid": "0d0de93c-9bcc-4f59-9725-602644f08bb4",
+      "name": "Input Tokens",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_HomePage_Sub_ClassificationModelTokenGrid",
+        "AIA_HomePage_Sub_ExtractionModelTokenGrid",
+        "AIA_Homepage_Sub_DisplayClassificationDetails",
+        "AIA_Homepage_Sub_DisplayExtractionDetails"
+      ]
+    },
+    {
+      "uuid": "43850fbf-6b8f-4ed9-92a8-e4c584e1bd88",
+      "name": "Instance Run",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Homepage_Sub_DisplayClassificationDetails",
+        "AIA_Homepage_Sub_DisplayExtractionDetails"
+      ]
+    },
+    {
+      "uuid": "880c7ff0-2fe7-4e89-a5cc-780252e66e31",
+      "name": "Label for API Key Installment Needed",
+      "type": "Translation String",
+      "description": "Label for API Key Installment Needed",
+      "calls": [],
+      "called_by": [
+        "AIA_Template_EmptyState"
+      ]
+    },
+    {
+      "uuid": "1e102276-1fa9-41f4-b71b-ac217ab43fbc",
+      "name": "Label for All models look good",
+      "type": "Translation String",
+      "description": "Label for All models look good",
+      "calls": [],
+      "called_by": [
+        "AIA_HomePage_Sub_AreaOfImprovements"
+      ]
+    },
+    {
+      "uuid": "5f436bae-76c9-47fb-b0c3-21d86c48d948",
+      "name": "Label for Are you sure you want to delete this instance?",
+      "type": "Translation String",
+      "description": "Label for Are you sure you want to delete this instance?",
+      "calls": [],
+      "called_by": [
+        "AIA_Classification_DeleteInstance"
+      ]
+    },
+    {
+      "uuid": "92a7c5e1-1073-4de4-b665-8321a016a341",
+      "name": "Label for Are you sure you want to delete this model?",
+      "type": "Translation String",
+      "description": "Label for Are you sure you want to delete this model?",
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModel_RecordAction_Delete"
+      ]
+    },
+    {
+      "uuid": "660fd7ba-2b6e-4ec5-ab26-ad6396ed684e",
+      "name": "Label for Areas of Improvement",
+      "type": "Translation String",
+      "description": "Label for Areas of Improvement",
+      "calls": [],
+      "called_by": [
+        "AIA_Homepage_Sub_DisplayClassificationDetails",
+        "AIA_Homepage_Sub_DisplayExtractionDetails"
+      ]
+    },
+    {
+      "uuid": "c632a19b-3290-48a7-bd87-0c0e3bdbf347",
+      "name": "Label for Average Classification Accuracy",
+      "type": "Translation String",
+      "description": "Label for Average Classification Accuracy",
+      "calls": [],
+      "called_by": [
+        "AIA_Homepage_Sub_DisplayClassificationDetails"
+      ]
+    },
+    {
+      "uuid": "e7433e50-d077-40d2-b8d7-ece73c0d8e16",
+      "name": "Label for Average Extraction Accuracy",
+      "type": "Translation String",
+      "description": "Label for Average Extraction Accuracy",
+      "calls": [],
+      "called_by": [
+        "AIA_Homepage_Sub_DisplayExtractionDetails"
+      ]
+    },
+    {
+      "uuid": "9ce34954-83c9-4ad0-a22b-dce7052eac0b",
+      "name": "Label for Back to Models",
+      "type": "Translation String",
+      "description": "Label for Back to Models",
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModel_RecordAction_DeleteConfirmationScreen"
+      ]
+    },
+    {
+      "uuid": "df61ccad-fe9a-4d7a-ba9a-d89b08f3467a",
+      "name": "Label for Cancel",
+      "type": "Translation String",
+      "description": "Label for Cancel",
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModel_RecordAction_Delete",
+        "AIA_Classification_DeleteInstance"
+      ]
+    },
+    {
+      "uuid": "1b70fe4e-16c8-4dc8-90c0-094ca2ed8e4d",
+      "name": "Label for Categories",
+      "type": "Translation String",
+      "description": "Label for Categories",
+      "calls": [],
+      "called_by": [
+        "AIA_HomePage_Sub_ClassificationModelGrid"
+      ]
+    },
+    {
+      "uuid": "b33f39d8-4522-4329-bf2b-d489dda7bb5d",
+      "name": "Label for Classification Instance Run",
+      "type": "Translation String",
+      "description": "Label for Classification Instance Run",
+      "calls": [],
+      "called_by": [
+        "AIA_HomePage_Sub_ClassificationModelGrid",
+        "AIA_Homepage_Sub_DisplayClassificationDetails"
+      ]
+    },
+    {
+      "uuid": "45facea2-44a0-44d8-b555-babf57c98a02",
+      "name": "Label for Classification Model",
+      "type": "Translation String",
+      "description": "Label for Classification Model",
+      "calls": [],
+      "called_by": [
+        "AIA_HomePage_Sub_ClassificationModelGrid",
+        "AIA_HomePage_Sub_ClassificationModelTokenGrid",
+        "AIA_Homepage_Sub_DisplayClassificationDetails"
+      ]
+    },
+    {
+      "uuid": "4a0c114d-5821-4d89-94ed-40c5054c27ac",
+      "name": "Label for Classification Models",
+      "type": "Translation String",
+      "description": "Label for Classification Models",
+      "calls": [],
+      "called_by": [
+        "AIA_Homepage_Sub_DisplayClassificationDetails"
+      ]
+    },
+    {
+      "uuid": "390cc209-7911-4f7a-adc5-09e884d28764",
+      "name": "Label for Classification model has been deleted successfully",
+      "type": "Translation String",
+      "description": "Label for Classification model has been deleted successfully",
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModel_RecordAction_DeleteConfirmationScreen"
+      ]
+    },
+    {
+      "uuid": "cf9296c1-8afe-486d-805d-d14086bfb66f",
+      "name": "Label for Confirmation Message",
+      "type": "Translation String",
+      "description": "Label for Confirmation Message",
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModel_RecordAction_Delete"
+      ]
+    },
+    {
+      "uuid": "81c7b8e7-9c7e-46e7-aac2-ad9c55bfcfb7",
+      "name": "Label for Delete",
+      "type": "Translation String",
+      "description": "Label for Delete",
+      "calls": [],
+      "called_by": [
+        "AIA Extraction Model",
+        "AIA_ClassificationModel_RecordAction_Delete",
+        "AIA_Classification_DeleteInstance"
+      ]
+    },
+    {
+      "uuid": "cb5438ce-9c1a-4c1e-8c10-cd597212f363",
+      "name": "Label for Delete Classification Model",
+      "type": "Translation String",
+      "description": "Label for Delete Classification Model",
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModel_RecordAction_Delete"
+      ]
+    },
+    {
+      "uuid": "231c53d0-2ae0-4819-ae0a-372d31b4c766",
+      "name": "Label for Extraction Instances Run",
+      "type": "Translation String",
+      "description": "Label for Extraction Instances Run",
+      "calls": [],
+      "called_by": [
+        "AIA_HomePage_Sub_ExtractionModelGrid",
+        "AIA_Homepage_Sub_DisplayExtractionDetails"
+      ]
+    },
+    {
+      "uuid": "34f9dfa7-078c-4ec1-9534-9c12686132b9",
+      "name": "Label for Extraction Model",
+      "type": "Translation String",
+      "description": "Label for Extraction Model",
+      "calls": [],
+      "called_by": [
+        "AIA_HomePage_Sub_ExtractionModelGrid",
+        "AIA_HomePage_Sub_ExtractionModelTokenGrid",
+        "AIA_Homepage_Sub_DisplayExtractionDetails"
+      ]
+    },
+    {
+      "uuid": "b1c89ba1-87c5-4d8d-b8f3-b5f4960e19ec",
+      "name": "Label for Interval",
+      "type": "Translation String",
+      "description": "Label for Interval",
+      "calls": [],
+      "called_by": [
+        "AIA_Sitepage_Home"
+      ]
+    },
+    {
+      "uuid": "cb12e6e2-6a37-47b5-95f8-a9b5124a7163",
+      "name": "Label for Model Data will be permanently deleted",
+      "type": "Translation String",
+      "description": "Label for Model Data will be permanently deleted",
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationModel_RecordAction_Delete"
+      ]
+    },
+    {
+      "uuid": "e5a15e92-ff75-44bf-a236-4fea739bcc0a",
+      "name": "Label for No classification model data found",
+      "type": "Translation String",
+      "description": "Label for No classification model data found",
+      "calls": [],
+      "called_by": [
+        "AIA_Homepage_Sub_DisplayClassificationDetails"
+      ]
+    },
+    {
+      "uuid": "5bc2e3fa-5d9b-44b3-bd97-dae9967aac47",
+      "name": "Label for No extraction model data found",
+      "type": "Translation String",
+      "description": "Label for No extraction model data found",
+      "calls": [],
+      "called_by": [
+        "AIA_Homepage_Sub_DisplayExtractionDetails"
+      ]
+    },
+    {
+      "uuid": "222f8b81-9bde-467b-b271-11a2caf567c7",
+      "name": "Label for The accuracy of this model is",
+      "type": "Translation String",
+      "description": "Label for The accuracy of this model is",
+      "calls": [],
+      "called_by": [
+        "AIA_HomePage_Sub_AreaOfImprovements"
+      ]
+    },
+    {
+      "uuid": "fa73b0e7-6024-45f7-898e-1e3cc8aab687",
+      "name": "Label for The record data will be permanently deleted",
+      "type": "Translation String",
+      "description": "Label for The record data will be permanently deleted",
+      "calls": [],
+      "called_by": [
+        "AIA_Classification_DeleteInstance"
+      ]
+    },
+    {
+      "uuid": "1d6f44cb-8de8-48c2-9a6d-ed8379b88438",
+      "name": "Label for Total Tokens",
+      "type": "Translation String",
+      "description": "Label for Total Tokens",
+      "calls": [],
+      "called_by": [
+        "AIA_HomePage_Sub_ClassificationModelTokenGrid",
+        "AIA_HomePage_Sub_ExtractionModelTokenGrid"
+      ]
+    },
+    {
+      "uuid": "e5d682b8-ecc9-4ada-b941-9e3824918f1c",
+      "name": "Label for Welcome",
+      "type": "Translation String",
+      "description": "Label for Welcome",
+      "calls": [],
+      "called_by": [
+        "AIA_Sitepage_Home"
+      ]
+    },
+    {
+      "uuid": "f5eca8bb-66c4-4925-9a10-c2a74b4a1227",
+      "name": "Label for Year to Date",
+      "type": "Translation String",
+      "description": "Label for Year to Date",
+      "calls": [],
+      "called_by": [
+        "AIA_Sitepage_Home",
+        "AIA_getIntervalsForDateFilter"
+      ]
+    },
+    {
+      "uuid": "7922f723-db73-4942-8297-0cf80875e5ff",
+      "name": "Label for compared to last {inputType}",
+      "type": "Translation String",
+      "description": "Label for compared to last {inputType}",
+      "calls": [],
+      "called_by": [
+        "AIA_getIntervalsForDateFilter"
+      ]
+    },
+    {
+      "uuid": "efd43aa3-9ea9-40d1-a73d-ee53aade7d3c",
+      "name": "Label for lower than 80% of the models.",
+      "type": "Translation String",
+      "description": "Label for lower than 80% of the models.",
+      "calls": [],
+      "called_by": [
+        "AIA_HomePage_Sub_AreaOfImprovements"
+      ]
+    },
+    {
+      "uuid": "442ac098-88b9-4378-bd5f-c48386e12292",
+      "name": "Label for year",
+      "type": "Translation String",
+      "description": "Label for year",
+      "calls": [],
+      "called_by": [
+        "AIA_getIntervalsForDateFilter"
+      ]
+    },
+    {
+      "uuid": "74a2a818-84a0-43c9-ae15-58edc9824c8d",
+      "name": "Last {number} days",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_getIntervalsForDateFilter"
+      ]
+    },
+    {
+      "uuid": "4bc0dc4b-69d2-41c9-b56d-189740535736",
+      "name": "Learn how to set up the deployment API in order to automatically create and vers",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_DocumentationSplash"
+      ]
+    },
+    {
+      "uuid": "9eba5131-949e-4ac7-bf37-ece9350458f9",
+      "name": "Learn how to test your extraction models once they've been configured.",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_DocumentationSplash"
+      ]
+    },
+    {
+      "uuid": "cd536114-155a-432b-9ad4-0037a7e8f22d",
+      "name": "Learn how to utilise the features for classifying documents.",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_DocumentationSplash"
+      ]
+    },
+    {
+      "uuid": "8c30316c-4819-4515-93a9-81c191eec3e2",
+      "name": "Learn how to utilise the features for extracting documents.",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_DocumentationSplash"
+      ]
+    },
+    {
+      "uuid": "f04e5814-41aa-4705-bb0e-968fe8fc8ec5",
+      "name": "Navigation Bar Site Classification Page Name",
+      "type": "Translation String",
+      "description": "Navigation Bar Site Classification Page Name",
+      "calls": [],
+      "called_by": [
+        "AIA_Deployment_RecordGrid",
+        "AIA_DocumentationSplash"
+      ]
+    },
+    {
+      "uuid": "65c7bfb6-c5e2-4764-ad46-3de23ae94731",
+      "name": "Navigation Bar Site Documentation Page Name",
+      "type": "Translation String",
+      "description": "Navigation Bar Site Documentation Page Name",
+      "calls": [],
+      "called_by": [
+        "AIA_DocumentationSplash"
+      ]
+    },
+    {
+      "uuid": "ae9a7ca9-3e53-46ea-ade4-94c52c690440",
+      "name": "Navigation Bar Site Extraction Page Name",
+      "type": "Translation String",
+      "description": "Navigation Bar Site Extraction Page Name",
+      "calls": [],
+      "called_by": [
+        "AIA_Deployment_RecordGrid",
+        "AIA_DocumentationSplash"
+      ]
+    },
+    {
+      "uuid": "98326676-615a-4455-9d58-3cbda4890bd7",
+      "name": "No data available for Token Usage",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_UTIL_NoDataAvailableForCharts"
+      ]
+    },
+    {
+      "uuid": "dec364a0-c918-4e65-9112-c2d5ed68ceb9",
+      "name": "No models selected yet",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Deployment_RecordGrid"
+      ]
+    },
+    {
+      "uuid": "2317da00-a8b6-4a21-af83-15bd1298044b",
+      "name": "No suggestions yet",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Homepage_Sub_DisplayClassificationDetails",
+        "AIA_Homepage_Sub_DisplayExtractionDetails"
+      ]
+    },
+    {
+      "uuid": "c8e3e2b8-9ade-4893-ba3d-9b419b918ebb",
+      "name": "None of your classification models need improvement",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_HomePage_Sub_AreaOfImprovements"
+      ]
+    },
+    {
+      "uuid": "b11aa2ff-d112-4d2a-9e97-12925224f125",
+      "name": "None of your extraction models need improvement",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_HomePage_Sub_AreaOfImprovements"
+      ]
+    },
+    {
+      "uuid": "0ffc200f-4088-4aa5-bda2-ceefcfc53c1f",
+      "name": "Output Tokens",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_HomePage_Sub_ClassificationModelTokenGrid",
+        "AIA_HomePage_Sub_ExtractionModelTokenGrid",
+        "AIA_Homepage_Sub_DisplayClassificationDetails",
+        "AIA_Homepage_Sub_DisplayExtractionDetails"
+      ]
+    },
+    {
+      "uuid": "50912a1a-c14b-4036-87d5-6eca8af1d6a9",
+      "name": "Overview",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_DocumentationSplash"
+      ]
+    },
+    {
+      "uuid": "b2947d0e-a1ca-41b7-8de2-d3d0e82018cd",
+      "name": "Review the documentation below to get started",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_DocumentationSplash"
+      ]
+    },
+    {
+      "uuid": "20d5dbf1-a25c-4709-ba30-bf5fd589e2c6",
+      "name": "Setup",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_DocumentationSplash"
+      ]
+    },
+    {
+      "uuid": "396bc6fa-092f-484e-948a-21d48eea366e",
+      "name": "Site Page Name",
+      "type": "Translation String",
+      "description": "Site Page Name",
+      "calls": [],
+      "called_by": [
+        "AIA Classification Model",
+        "AIA Classification Model Version",
+        "AIA Extraction Model",
+        "AIA Extraction Model Version",
+        "AIA_HomePage_Sub_ClassificationModelGrid",
+        "AIA_HomePage_Sub_ClassificationModelTokenGrid",
+        "AIA_HomePage_Sub_ExtractionModelGrid",
+        "AIA_HomePage_Sub_ExtractionModelTokenGrid"
+      ]
+    },
+    {
+      "uuid": "1d431d3a-0469-4332-8b3c-9405a0d214d1",
+      "name": "Site Page Name",
+      "type": "Translation String",
+      "description": "Site Page Name",
+      "calls": [],
+      "called_by": [
+        "AIA_Deployment_RecordGrid",
+        "AIA_DocumentationSplash",
+        "AIA_Sitepage_Deployments"
+      ]
+    },
+    {
+      "uuid": "6da18add-f681-4f4f-a717-ee0614146c0a",
+      "name": "Testing & Metrics",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_DocumentationSplash"
+      ]
+    },
+    {
+      "uuid": "38337c4f-ce58-47fb-a3ce-db1927406b96",
+      "name": "The essential guide for new users to get up and running with our product quickly",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_DocumentationSplash"
+      ]
+    },
+    {
+      "uuid": "ec270ab9-6512-48ea-a3d2-1040ee7259ce",
+      "name": "Token Usage",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Homepage_Sub_DisplayClassificationDetails",
+        "AIA_Homepage_Sub_DisplayExtractionDetails"
+      ]
+    },
+    {
+      "uuid": "e07360df-5453-4f87-9d4b-057038e1aed8",
+      "name": "Top Classification Models",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Homepage_Sub_DisplayClassificationDetails"
+      ]
+    },
+    {
+      "uuid": "50eef2f5-c2c6-472f-b82a-a0db430f4940",
+      "name": "Top Extraction Models",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Homepage_Sub_DisplayExtractionDetails"
+      ]
+    },
+    {
+      "uuid": "c85d75d0-b3cb-48e8-8f2e-0d67a65fe1eb",
+      "name": "Total Tokens Consumed",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Homepage_Sub_DisplayClassificationDetails",
+        "AIA_Homepage_Sub_DisplayExtractionDetails"
+      ]
+    },
+    {
+      "uuid": "1878a7da-fcc6-4f27-9fe9-5df0036cafda",
+      "name": "VIEW DOCUMENTATION",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Template_EmptyState"
+      ]
+    },
+    {
+      "uuid": "4a2b9403-6e20-47ce-af93-f0a148cae510",
+      "name": "VIEW USER GUIDE",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Template_EmptyState"
+      ]
+    },
+    {
+      "uuid": "0dc23859-ec54-488e-8e0e-54f234016331",
+      "name": "Version {count}",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Deployment_RecordGrid"
+      ]
+    },
+    {
+      "uuid": "b2809814-6392-4b76-945d-88f1388c562c",
+      "name": "across {input} models",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Homepage_Sub_DisplayClassificationDetails",
+        "AIA_Homepage_Sub_DisplayExtractionDetails"
+      ]
+    },
+    {
+      "uuid": "4188cfea-32f0-4522-a83b-e3244dbff5fd",
+      "name": "across {input} pages",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Homepage_Sub_DisplayClassificationDetails",
+        "AIA_Homepage_Sub_DisplayExtractionDetails"
+      ]
+    },
+    {
+      "uuid": "03b3e703-00ee-4b8b-8f83-9209337d9407",
+      "name": "compared to last {number} days",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_getIntervalsForDateFilter"
+      ]
+    },
+    {
+      "uuid": "6ab085ca-afed-4f3c-9382-57afa19936f4",
+      "name": "label for which is significantly",
+      "type": "Translation String",
+      "description": "label for which is significantly",
+      "calls": [],
+      "called_by": [
+        "AIA_HomePage_Sub_AreaOfImprovements"
+      ]
+    }
+  ]
+}

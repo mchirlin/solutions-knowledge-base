@@ -1,0 +1,80 @@
+{
+  "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_31008",
+  "name": "AIA_ClassificationModel_RecordAction_Create",
+  "type": "Interface",
+  "description": "Wizard for creating a new classification model",
+  "sail_code": "a!localVariables(\n  /*Branding data for styling*/\n  local!brandingMap: rule!AIA_UTIL_LoadBrandingMap(),\n  /*Current Index Default Value 1*/\n  local!currentStep: 1,\n  /*Classification Model*/\n  local!classificationModel: if(\n    a!isNullOrEmpty(ri!classificationModel),\n    rule!AIA_ClassificationModel_RecordAction_Create_Initialize(),\n    ri!classificationModel\n  ),\n  /*Available Steps*/\n  local!availableSteps: rule!AIA_ClassificationModel_RecordAction_Create_ReturnSteps(),\n  local!lastStep: length(local!availableSteps),\n  #\"SYSTEM_SYSRULES_formLayout_v2\"(\n    titleBar: #\"SYSTEM_SYSRULES_sidebarTemplate\"(\n      backgroundColor: \"WHITE\",\n      additionalContents: {\n        #\"SYSTEM_SYSRULES_headingField\"(\n          text: #\"urn:appian:translation-string:v1:a4ed7a46-0749-4f75-ae40-f24853da7cfb\",\n          headingTag: \"H1\",\n          fontWeight: \"BOLD\"\n        ),\n        #\"SYSTEM_SYSRULES_cardLayout\"(\n          padding: \"NONE\",\n          contents: {\n            #\"SYSTEM_SYSRULES_forEach\"(\n              items: local!availableSteps,\n              expression: #\"SYSTEM_SYSRULES_cardLayout\"(\n                contents: {\n                  {\n                    #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                      labelPosition: \"COLLAPSED\",\n                      value: {\n                        #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                          style: if(\n                            fv!index = local!currentStep,\n                            \"STRONG\",\n                            \"PLAIN\"\n                          ),\n                          size: \"SMALL\",\n                          text: fv!item.number,\n                          color: local!brandingMap.AccentColor\n                        ),\n\n                      },\n                      marginBelow: \"NONE\",\n                    ),\n                    #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n                      items: {\n                        #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                          width: \"5X\",\n                          item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                            labelPosition: \"COLLAPSED\",\n                            value: {\n                              #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                                style: if(\n                                  fv!index = local!currentStep,\n                                  \"STRONG\",\n                                  \"PLAIN\"\n                                ),\n                                size: \"STANDARD\",\n                                text: fv!item.name,\n                                color: local!brandingMap.Gray4\n                              ),\n\n                            }\n                          )\n                        ),\n                        #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                          width: \"MINIMIZE\",\n                          item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                            labelPosition: \"COLLAPSED\",\n                            value: {\n                              #\"SYSTEM_SYSRULES_richTextIcon\"(\n                                showWhen: if(fv!index = local!currentStep, true, false),\n                                icon: \"arrow-right\",\n                                color: local!brandingMap.Blue3,\n                                altText: index(\n                                  local!availableSteps,\n                                  local!currentStep,\n                                  null()\n                                ).name\n                              )\n                            }\n                          )\n                        )\n                      },\n                      marginBelow: \"LESS\"\n                    )\n                  }\n                },\n                style: if(\n                  fv!index = local!currentStep,\n                  local!brandingMap.Blue1,\n                  local!brandingMap.White\n                ),\n                link: #\"SYSTEM_SYSRULES_dynamicLink\"(\n                  showWhen: local!currentStep > fv!index,\n                  saveInto: a!save(local!currentStep, fv!index)\n                ),\n                padding: \"LESS\",\n                marginAbove: \"NONE\",\n                marginBelow: \"NONE\",\n                showBorder: local!brandingMap.CardShowBorder,\n                shape: if(\n                  fv!index = local!currentStep,\n                  local!brandingMap.CardShape,\n                  {}\n                ),\n                accessibilityText: if(\n                  fv!index = local!currentStep,\n                  #\"urn:appian:translation-string:v1:c4fe0b43-af2b-44c8-b102-eef93af6d4c3\",\n                  {}\n                )\n              )\n            )\n          },\n          marginAbove: \"STANDARD\",\n          showBorder: false(),\n          style: local!brandingMap.DefaultPageBackground\n        )\n      }\n    ),\n    focusOnFirstInput: false,\n    /*Form Contents*/\n    contents: {\n      #\"SYSTEM_SYSRULES_sectionLayout_v1\"(\n        /*marginAbove: \"MORE\",*/\n        label: local!availableSteps[local!currentStep].number,\n        labelSize: \"EXTRA_SMALL\",\n        contents: {\n          #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n            labelPosition: \"COLLAPSED\",\n            value: {\n              #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                style: \"STRONG\",\n                text: local!availableSteps[local!currentStep].name,\n                size: \"MEDIUM_PLUS\",\n                color: local!brandingMap.Gray4\n              )\n            },\n            marginBelow: \"LESS\"\n          ),\n          #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n            labelPosition: \"COLLAPSED\",\n            value: {\n              #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                text: local!availableSteps[local!currentStep].description,\n                color: local!brandingMap.Gray3\n              )\n            },\n            marginBelow: \"STANDARD\"\n          ),\n          #\"SYSTEM_SYSRULES_columnsLayout\"(\n            columns: {\n              #\"SYSTEM_SYSRULES_columnLayout\"(\n                contents: {\n                  /*Wizard Content*/\n                  a!match(\n                    value: local!currentStep,\n                    equals: 1,\n                    then: {\n                      #\"SYSTEM_SYSRULES_cardLayout\"(\n                        marginBelow: \"STANDARD\",\n                        shape: local!brandingMap.CardShape,\n                        padding: \"STANDARD\",\n                        /*Model Details*/\n                        contents: {\n                          rule!AIA_ClassificationModel_Sub_ModelDetails(\n                            ClassificationModel: local!classificationModel\n                          ),\n                          rule!AIA_Classification_Sub_ModelAdvancedSettings(\n                            ClassificationModelVersion: local!classificationModel[recordType!AIA Classification Model.modelVersions][1],\n                            brandingMap: local!brandingMap\n                          )\n                        },\n                        showBorder: local!brandingMap.CardShowBorder,\n                        style: local!brandingMap.DefaultPageBackground,\n                      )\n                    },\n                    equals: 2,\n                    then: {\n                      rule!AIA_ClassificationModelVersion_Sub_AllowMultipleOutputsComponent(\n                        classificationModelVersion: local!classificationModel[recordType!AIA Classification Model.modelVersions][1],\n                        brandingMap: local!brandingMap,\n                        showWhen: true\n                      ),\n                      #\"SYSTEM_SYSRULES_cardLayout\"(\n                        shape: local!brandingMap.CardShape,\n                        padding: \"LESS\",\n                        /*Configure Options*/\n                        contents: rule!AIA_ClassificationModelVersion_Sub_ConfigureOptions(\n                          classficationModelVersion: local!classificationModel[recordType!AIA Classification Model.modelVersions][1],\n                          brandingMap: local!brandingMap\n                        ),\n                        showBorder: local!brandingMap.CardShowBorder,\n                        style: local!brandingMap.DefaultPageBackground\n                      )\n                    },\n                    equals: 3,\n                    then: #\"SYSTEM_SYSRULES_cardLayout\"(\n                      shape: local!brandingMap.CardShape,\n                      padding: \"STANDARD\",\n                      /*Refine Prompt*/\n                      contents: rule!AIA_ClassificationModelVersion_Sub_RefinePrompt(\n                        brandingMap: local!brandingMap,\n                        classificationModelVersion: local!classificationModel[recordType!AIA Classification Model.modelVersions][1],\n                        classificationModel: local!classificationModel\n                      ),\n                      showBorder: local!brandingMap.CardShowBorder,\n                      style: local!brandingMap.DefaultPageBackground\n                    ),\n                    default: {}\n                  )\n                },\n                width: a!match(\n                  value: local!currentStep,\n                  equals: 1,\n                  then: \"WIDE\",\n                  equals: 2,\n                  then: \"WIDE\",\n                  equals: 3,\n                  then: \"WIDE_PLUS\",\n                  default: \"WIDE\"\n                )\n              )\n            }\n          )\n        },\n        labelHeadingTag: \"H2\"\n      )\n    },\n    /*Button*/\n    buttons: #\"SYSTEM_SYSRULES_ButtonLayout\"(\n      secondaryButtons: {\n        /*Back Button*/\n        #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n          label: #\"urn:appian:translation-string:v1:e67a2d25-f970-42bf-acbe-44e96670b6df\",\n          color: local!brandingMap.AccentColor,\n          style: \"OUTLINE\",\n          submit: false,\n          saveInto: {\n            a!save(local!currentStep, local!currentStep - 1)\n          },\n          showWhen: local!currentStep <> 1\n        ),\n        /*Cancel Button*/\n        #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n          label: #\"urn:appian:translation-string:v1:df61ccad-fe9a-4d7a-ba9a-d89b08f3467a\",\n          style: \"LINK\",\n          submit: true,\n          validate: false,\n          value: null,\n          saveInto: ri!classificationModel\n        )\n      },\n      primaryButtons: {\n        /*Next Button*/\n        #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n          validationGroup: if(local!currentStep = 2, \"Options\", {}),\n          label: #\"urn:appian:translation-string:v1:1f6a7d97-a054-4ae4-bc78-ab32f05f4736\",\n          color: local!brandingMap.AccentColor,\n          submit: false,\n          validate: true,\n          style: \"SOLID\",\n          saveInto: {\n            a!save(local!currentStep, local!currentStep + 1)\n          },\n          showWhen: local!currentStep <> local!lastStep\n        ),\n        /*Create Button*/\n        #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n          label: #\"urn:appian:translation-string:v1:d00709b4-8675-4cbf-a285-2c15f3819e24\",\n          color: local!brandingMap.AccentColor,\n          submit: true(),\n          validate: true,\n          style: \"SOLID\",\n          saveInto: {\n            a!save(\n              local!classificationModel[recordType!AIA Classification Model.modelVersions],\n              #\"urn:appian:function:v1:a:update\"(\n                local!classificationModel[recordType!AIA Classification Model.modelVersions],\n                {\n                  recordType!AIA Classification Model Version.createdBy,\n                  recordType!AIA Classification Model Version.createdOn,\n                  recordType!AIA Classification Model Version.modifiedOn,\n                  recordType!AIA Classification Model Version.modifiedBy\n                },\n                {\n                  loggedInUser(),\n                  now(),\n                  now(),\n                  loggedInUser()\n                }\n              )\n            ),\n            a!save(\n              local!classificationModel,\n              #\"urn:appian:function:v1:a:update\"(\n                local!classificationModel,\n                {\n                  recordType!AIA Classification Model.createdBy,\n                  recordType!AIA Classification Model.createdOn,\n                  recordType!AIA Classification Model.modifiedBy,\n                  recordType!AIA Classification Model.modifiedOn\n                },\n                {\n                  loggedInUser(),\n                  now(),\n                  loggedInUser(),\n                  now()\n                }\n              )\n            ),\n            a!save(\n              ri!classificationModel,\n              local!classificationModel\n            )\n          },\n          showWhen: local!currentStep = local!lastStep\n        )\n      }\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AIA_UTIL_LoadBrandingMap",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_ClassificationModel_RecordAction_Create_Initialize",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_ClassificationModel_RecordAction_Create_ReturnSteps",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_ClassificationModel_Sub_ModelDetails",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_Classification_Sub_ModelAdvancedSettings",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_ClassificationModelVersion_Sub_AllowMultipleOutputsComponent",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_ClassificationModelVersion_Sub_ConfigureOptions",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_ClassificationModelVersion_Sub_RefinePrompt",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Label for Create Classification Model",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Label for Selected",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Button Label",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Label for Cancel",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Button Label",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Label Create",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

@@ -1,0 +1,1225 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AIA Extraction Execute Vision Prompt Wrapper",
+    "parent_name": null,
+    "total_objects": 86
+  },
+  "entry_point": {
+    "complexity_score": 12.0,
+    "total_nodes": 7,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Extraction Execute Vision Prompt Wrapper",
+      "complexity_score": 12.0,
+      "total_nodes": 7,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "> 20 pages"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Set doc",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Vision AI Skill"
+          ]
+        },
+        {
+          "name": "> 20 pages",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Set doc",
+            "Extract PDF Pages"
+          ]
+        },
+        {
+          "name": "Add Validation Warning",
+          "type": "Start Process",
+          "next": [
+            "Vision AI Skill"
+          ]
+        },
+        {
+          "name": "Extract PDF Pages",
+          "type": "pdftools.ExtractPDFPagesPauseOnError",
+          "next": [
+            "Add Validation Warning"
+          ]
+        },
+        {
+          "name": "Vision AI Skill",
+          "type": "Start Process",
+          "next": [
+            "End Node"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76707",
+      "name": "AIA_ADVANCED_IDP_PAGE_MAX",
+      "type": "Constant",
+      "description": "20",
+      "value": "20",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_96669",
+      "name": "AIA_CLASSIFICATION_MAX_PAGE_COUNT",
+      "type": "Constant",
+      "description": "100",
+      "value": "100",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed1d-549f-8000-9c66-011c48011c48_287286",
+      "name": "AIA_DSE_MODEL_VERSION_EXAMPLE",
+      "type": "Constant",
+      "description": "Data store entity for examples",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:DataStoreEntity",
+      "calls": [],
+      "called_by": [
+        "AIA_GetModelVersionExamples"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2e-dd02-8000-9bde-011c48011c48_46896",
+      "name": "AIA_EXTRACTION_FIELD_TYPES",
+      "type": "Constant",
+      "description": "(1) Text, (2) Integer, (3) Decimal, (4) Date, (5) Datetime, (6) Boolean, (7) Table, (8) Paragraph",
+      "value": [
+        "Text",
+        "Integer",
+        "Decimal",
+        "Date",
+        "Datetime",
+        "Boolean",
+        "Table",
+        "Paragraph"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_PromptInstructions",
+        "AIA_FieldJsonSchema"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec40-0355-8000-9be4-011c48011c48_73273",
+      "name": "AIA_EXTRACTION_FIELD_TYPE_TABLE",
+      "type": "Constant",
+      "description": "Table",
+      "value": "Table",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA Extraction Instance",
+        "AIA_Extraction_DisplayPromptField",
+        "AIA_FieldJsonSchema"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_42675",
+      "name": "AIA_EXTRACTION_TYPES",
+      "type": "Constant",
+      "description": "(1) Generative AI, (2) Trained Model, (3) Rule, (4) Calculated, (5) Analyze Expense, (6) Regex, (7) Query, (8) XPath",
+      "value": [
+        "Generative AI",
+        "Trained Model",
+        "Rule",
+        "Calculated",
+        "Analyze Expense",
+        "Regex",
+        "Query",
+        "XPath"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_DisplayPromptField"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76762",
+      "name": "AIA_FEATURE_AI_REVIEW",
+      "type": "Constant",
+      "description": "AI_REVIEW",
+      "value": "AI_REVIEW",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeb2-df20-8000-9bfe-011c48011c48_154530",
+      "name": "AIA_FEATURE_AI_VALIDATION_RULE",
+      "type": "Constant",
+      "description": "AI_VALIDATION_RULE",
+      "value": "AI_VALIDATION_RULE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76750",
+      "name": "AIA_FEATURE_ANALYZE_EXPENSE",
+      "type": "Constant",
+      "description": "ANALYZE_EXPENSE",
+      "value": "ANALYZE_EXPENSE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_96651",
+      "name": "AIA_FEATURE_CLASSIFICATION",
+      "type": "Constant",
+      "description": "AIA_FEATURE_CLASSIFICATION",
+      "value": "AIA_FEATURE_CLASSIFICATION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76768",
+      "name": "AIA_FEATURE_SEARCH_QUERY",
+      "type": "Constant",
+      "description": "SEARCH_QUERY",
+      "value": "SEARCH_QUERY",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76744",
+      "name": "AIA_FEATURE_VISION",
+      "type": "Constant",
+      "description": "VISION",
+      "value": "VISION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA Extraction Execute Vision Prompt Wrapper",
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_32228",
+      "name": "AIA_INPUT_TYPE_DOC",
+      "type": "Constant",
+      "description": "doc",
+      "value": "doc",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA Extraction Execute Vision Prompt Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec40-0355-8000-9be4-011c48011c48_70311",
+      "name": "AIA_MODEL_TYPE_VALUES",
+      "type": "Constant",
+      "description": "(1) extraction, (2) classification",
+      "value": [
+        "extraction",
+        "classification"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA Extraction Execute Vision Prompt Wrapper",
+        "AIA_CreateValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_32010",
+      "name": "AIA_PROMPT_MODE_CALCULATED",
+      "type": "Constant",
+      "description": "Calculated",
+      "value": "Calculated",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_FieldSchemas",
+        "AIA_Extraction_DisplayPromptField"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecfc-48c9-8000-9c55-011c48011c48_237587",
+      "name": "AIA_PROMPT_OPERATION_MODE_MULTIMODAL",
+      "type": "Constant",
+      "description": "MULTIMODAL",
+      "value": "MULTIMODAL",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA Extraction Execute Vision Prompt Wrapper",
+        "AIA_Extraction_DisplayPromptField",
+        "AIA_Extraction_GeneratePromptMap",
+        "AIA_FieldJsonSchema"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecfc-48c9-8000-9c55-011c48011c48_237581",
+      "name": "AIA_PROMPT_OPERATION_MODE_TEXT",
+      "type": "Constant",
+      "description": "TEXT",
+      "value": "TEXT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_DisplayPromptField",
+        "AIA_FieldJsonSchema"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_31241",
+      "name": "AIA_SCHEMA_MODE_AI_REVIEW",
+      "type": "Constant",
+      "description": "ai_review",
+      "value": "ai_review",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_FieldSchemas",
+        "AIA_Extraction_DisplayPromptField",
+        "AIA_FieldJsonSchema"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_31723",
+      "name": "AIA_SCHEMA_MODE_PLAIN",
+      "type": "Constant",
+      "description": "plain",
+      "value": "plain",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_FieldSchemas",
+        "AIA_Extraction_CreateJsonSchema",
+        "AIA_Extraction_GeneratePromptMap",
+        "AIA_FieldJsonSchema"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_31729",
+      "name": "AIA_SCHEMA_MODE_SPAN",
+      "type": "Constant",
+      "description": "span",
+      "value": "span",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_FieldSchemas",
+        "AIA_Extraction_GeneratePromptMap"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76672",
+      "name": "AIA_SEVERITY_HIGH",
+      "type": "Constant",
+      "description": "3",
+      "value": "3",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76678",
+      "name": "AIA_SEVERITY_MEDIUM",
+      "type": "Constant",
+      "description": "2",
+      "value": "2",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee66-4fc0-8000-9baa-011c48011c48_72159",
+      "name": "AIA_VALIDATION_TYPE_ID_EXECUTION",
+      "type": "Constant",
+      "description": "4",
+      "value": "4",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_CreateMaxPageValidation",
+        "AIA_CreateValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000edd9-a94f-8000-9bb2-011c48011c48_132142",
+      "name": "AIA_VISION_PAGE_MAX",
+      "type": "Constant",
+      "description": "20",
+      "value": "20",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA Extraction Execute Vision Prompt Wrapper",
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76725",
+      "name": "AIA_CreateMaxPageValidation",
+      "type": "Expression Rule",
+      "description": "Create max page validation error",
+      "parameters": [],
+      "calls": [
+        "AIA_CreateValidation",
+        "AIA_CreateValidationErrorMessage",
+        "AIA_ENUM_Features",
+        "AIA_VALIDATION_TYPE_ID_EXECUTION",
+        "Document length exceeded max {feature} processing ({maxPages} pages)",
+        "Max Pages Exceeded"
+      ],
+      "called_by": [
+        "AIA Extraction Execute Vision Prompt Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76653",
+      "name": "AIA_CreateValidation",
+      "type": "Expression Rule",
+      "description": "Create a validation error for instance",
+      "parameters": [],
+      "calls": [
+        "AIA_IsExtractionInstance",
+        "AIA_MODEL_TYPE_VALUES",
+        "AIA_Test_GetLatestExtractionInstance",
+        "AIA_VALIDATION_TYPE_ID_EXECUTION"
+      ],
+      "called_by": [
+        "AIA_CreateMaxPageValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_90047",
+      "name": "AIA_CreateValidationErrorMessage",
+      "type": "Expression Rule",
+      "description": "Create validation error message",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_CreateMaxPageValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000eed9-05f0-8000-9d10-011c48011c48_194872",
+      "name": "AIA_DefaultModel",
+      "type": "Expression Rule",
+      "description": "Default model for AIA",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_VisionModel"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_159825",
+      "name": "AIA_DocIsPdf",
+      "type": "Expression Rule",
+      "description": "Returns true if doc is a pdf",
+      "parameters": [],
+      "calls": [
+        "AIA_IsDocumentExtension"
+      ],
+      "called_by": [
+        "AIA Extraction Execute Vision Prompt Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76731",
+      "name": "AIA_ENUM_Features",
+      "type": "Expression Rule",
+      "description": "Enumeration of features with max page lengths",
+      "parameters": [],
+      "calls": [
+        "AI Review",
+        "AI Validation Rule",
+        "AIA_ADVANCED_IDP_PAGE_MAX",
+        "AIA_CLASSIFICATION_MAX_PAGE_COUNT",
+        "AIA_FEATURE_AI_REVIEW",
+        "AIA_FEATURE_AI_VALIDATION_RULE",
+        "AIA_FEATURE_ANALYZE_EXPENSE",
+        "AIA_FEATURE_CLASSIFICATION",
+        "AIA_FEATURE_SEARCH_QUERY",
+        "AIA_FEATURE_VISION",
+        "AIA_SEVERITY_HIGH",
+        "AIA_SEVERITY_MEDIUM",
+        "AIA_VISION_PAGE_MAX",
+        "Analyse Expense",
+        "Navigation Bar Site Classification Page Name",
+        "Search Query",
+        "Visual"
+      ],
+      "called_by": [
+        "AIA_CreateMaxPageValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee66-4fc0-8000-9baa-011c48011c48_43003",
+      "name": "AIA_ENUM_FieldSchemas",
+      "type": "Expression Rule",
+      "description": "Field schema types",
+      "parameters": [],
+      "calls": [
+        "AIA_PROMPT_MODE_CALCULATED",
+        "AIA_SCHEMA_MODE_AI_REVIEW",
+        "AIA_SCHEMA_MODE_PLAIN",
+        "AIA_SCHEMA_MODE_SPAN"
+      ],
+      "called_by": [
+        "AIA_FieldJsonSchema"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40909",
+      "name": "AIA_ExtractJson",
+      "type": "Expression Rule",
+      "description": "Extract json from prompt builder reponse",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Extraction Execute Vision Prompt Wrapper",
+        "AIA_GetModelVersionExamples"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_176683",
+      "name": "AIA_Extraction_AddTokens",
+      "type": "Expression Rule",
+      "description": "Add tokens to extraction instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Extraction Execute Vision Prompt Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000eca1-71bf-8000-9c0b-011c48011c48_149695",
+      "name": "AIA_Extraction_BoundingBoxesInstructions",
+      "type": "Expression Rule",
+      "description": "Instructions for bounding boxes",
+      "parameters": [],
+      "calls": [
+        "Bounding box instructions - list spanIds",
+        "Bounding boxes - spanIds reminder",
+        "Bounding boxes instruction - table spanId",
+        "Bounding boxes instructions - non-table spanIds",
+        "Bounding boxes instructions - spanId"
+      ],
+      "called_by": [
+        "AIA_Extraction_GeneratePromptMap"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3e-060c-8000-9bb8-011c48011c48_204932",
+      "name": "AIA_Extraction_CreateJsonSchema",
+      "type": "Expression Rule",
+      "description": "Create json schema from extraction model version",
+      "parameters": [],
+      "calls": [
+        "AIA_Extraction_DisplayPromptField",
+        "AIA_FieldJsonSchema",
+        "AIA_SCHEMA_MODE_PLAIN",
+        "AIA_Test_GetLatestExtractionModelVersion"
+      ],
+      "called_by": [
+        "AIA_Extraction_GeneratePromptEntities"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec1e-9975-8000-9bd6-011c48011c48_1378240",
+      "name": "AIA_Extraction_DefaultPromptRole",
+      "type": "Expression Rule",
+      "description": "Default extraction prompt role",
+      "parameters": [],
+      "calls": [
+        "Default extraction prompt role"
+      ],
+      "called_by": [
+        "AIA_Extraction_GeneratePromptMap"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecea-6c5f-8000-9c4b-011c48011c48_190177",
+      "name": "AIA_Extraction_DisplayPromptField",
+      "type": "Expression Rule",
+      "description": "Whether to display a prompt field",
+      "parameters": [],
+      "calls": [
+        "AIA_EXTRACTION_FIELD_TYPE_TABLE",
+        "AIA_EXTRACTION_TYPES",
+        "AIA_PROMPT_MODE_CALCULATED",
+        "AIA_PROMPT_OPERATION_MODE_MULTIMODAL",
+        "AIA_PROMPT_OPERATION_MODE_TEXT",
+        "AIA_SCHEMA_MODE_AI_REVIEW"
+      ],
+      "called_by": [
+        "AIA_Extraction_CreateJsonSchema",
+        "AIA_Extraction_GeneratePromptMap"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40675",
+      "name": "AIA_Extraction_GeneratePrompt",
+      "type": "Expression Rule",
+      "description": "Generate a prompt",
+      "parameters": [],
+      "calls": [
+        "AIA_Extraction_GeneratePromptMap",
+        "AIA_PROMPT_SECTION_DIVIDER",
+        "AIA_Test_GetLatestExtractionInstanceWithFields"
+      ],
+      "called_by": [
+        "AIA Extraction Execute Vision Prompt Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed5d-bd1b-8000-9c80-011c48011c48_329747",
+      "name": "AIA_Extraction_GeneratePromptEntities",
+      "type": "Expression Rule",
+      "description": "Generate the individual elements of a prompt",
+      "parameters": [],
+      "calls": [
+        "AIA_Extraction_CreateJsonSchema"
+      ],
+      "called_by": [
+        "AIA_Extraction_GeneratePromptMap"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecea-6c5f-8000-9c4b-011c48011c48_193367",
+      "name": "AIA_Extraction_GeneratePromptExamples",
+      "type": "Expression Rule",
+      "description": "Generate prompt examples",
+      "parameters": [],
+      "calls": [
+        "AIA Extraction Instance",
+        "AIA_Extraction_GetInstanceById",
+        "AIA_GetModelVersionExamples"
+      ],
+      "called_by": [
+        "AIA_Extraction_GeneratePromptMap"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed5d-bd1b-8000-9c80-011c48011c48_329766",
+      "name": "AIA_Extraction_GeneratePromptMap",
+      "type": "Expression Rule",
+      "description": "Generate a prompt map",
+      "parameters": [],
+      "calls": [
+        "AIA Extraction Model Version",
+        "AIA_Extraction_BoundingBoxesInstructions",
+        "AIA_Extraction_DefaultPromptRole",
+        "AIA_Extraction_DisplayPromptField",
+        "AIA_Extraction_GeneratePromptEntities",
+        "AIA_Extraction_GeneratePromptExamples",
+        "AIA_Extraction_PromptInstructions",
+        "AIA_Extraction_VisionInstructions",
+        "AIA_PROMPT_OPERATION_MODE_MULTIMODAL",
+        "AIA_SCHEMA_MODE_PLAIN",
+        "AIA_SCHEMA_MODE_SPAN"
+      ],
+      "called_by": [
+        "AIA_Extraction_GeneratePrompt"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_79495",
+      "name": "AIA_Extraction_GetFieldOptions",
+      "type": "Expression Rule",
+      "description": "Returns a list of options for a field",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_FieldJsonSchema"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_43077",
+      "name": "AIA_Extraction_GetInstanceById",
+      "type": "Expression Rule",
+      "description": "Get extraction instance and all relationships by id",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_GeneratePromptExamples",
+        "AIA_GetModelVersionExamples",
+        "AIA_Test_GetLatestExtractionInstance",
+        "AIA_Test_GetLatestExtractionInstanceWithFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec1e-9975-8000-9bd6-011c48011c48_1374470",
+      "name": "AIA_Extraction_PromptInstructions",
+      "type": "Expression Rule",
+      "description": "Extraction prompt instructions",
+      "parameters": [],
+      "calls": [
+        "AIA_EXTRACTION_FIELD_TYPES",
+        "Extraction default instruction - date formatting",
+        "Extraction default instruction - datetime formatting",
+        "Extraction default instruction - integer and decimal formatting",
+        "Extraction default instruction - options matching",
+        "Extraction default instruction - valid json, escape quotes",
+        "Extraction default instruction - valid json, json array",
+        "Extraction default instruction - valid json, no new line characters",
+        "Extraction default instruction - valid json, no trailing commas",
+        "Provide output as a single valid JSON object, do not return additional objects b"
+      ],
+      "called_by": [
+        "AIA_Extraction_GeneratePromptMap"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed57-1773-8000-9c7e-011c48011c48_327806",
+      "name": "AIA_Extraction_VisionInstructions",
+      "type": "Expression Rule",
+      "description": "Instructions for vision",
+      "parameters": [],
+      "calls": [
+        "Vision - list instructions",
+        "Vision - pageNum instructions",
+        "Vision instructions - include page num",
+        "Vision instructions - page number per row",
+        "Vision instructions - table"
+      ],
+      "called_by": [
+        "AIA_Extraction_GeneratePromptMap"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_78005",
+      "name": "AIA_Extraction_VisionModel",
+      "type": "Expression Rule",
+      "description": "Select llm model for vision",
+      "parameters": [],
+      "calls": [
+        "AIA_DefaultModel"
+      ],
+      "called_by": [
+        "AIA Extraction Execute Vision Prompt Wrapper"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_31384",
+      "name": "AIA_FieldJsonSchema",
+      "type": "Expression Rule",
+      "description": "Schema for an individual field",
+      "parameters": [],
+      "calls": [
+        "AIA_ENUM_FieldSchemas",
+        "AIA_EXTRACTION_FIELD_TYPES",
+        "AIA_EXTRACTION_FIELD_TYPE_TABLE",
+        "AIA_Extraction_GetFieldOptions",
+        "AIA_PROMPT_OPERATION_MODE_MULTIMODAL",
+        "AIA_PROMPT_OPERATION_MODE_TEXT",
+        "AIA_SCHEMA_MODE_AI_REVIEW",
+        "AIA_SCHEMA_MODE_PLAIN"
+      ],
+      "called_by": [
+        "AIA_Extraction_CreateJsonSchema"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed1d-549f-8000-9c66-011c48011c48_287313",
+      "name": "AIA_GetModelVersionExamples",
+      "type": "Expression Rule",
+      "description": "Get model version examples",
+      "parameters": [],
+      "calls": [
+        "AIA Extraction Instance",
+        "AIA_DSE_MODEL_VERSION_EXAMPLE",
+        "AIA_ExtractJson",
+        "AIA_Extraction_GetInstanceById"
+      ],
+      "called_by": [
+        "AIA_Extraction_GeneratePromptExamples"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_182518",
+      "name": "AIA_IsDocumentExtension",
+      "type": "Expression Rule",
+      "description": "Is the document of one of the following extensions",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_DocIsPdf"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_85019",
+      "name": "AIA_IsExtractionInstance",
+      "type": "Expression Rule",
+      "description": "Returns true if the instance is an extraction instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_CreateValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_33090",
+      "name": "AIA_PROMPT_SECTION_DIVIDER",
+      "type": "Expression Rule",
+      "description": "Prompt section divider",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_GeneratePrompt"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40839",
+      "name": "AIA_Test_GetLatestExtractionInstance",
+      "type": "Expression Rule",
+      "description": "Get the latest extraction instance",
+      "parameters": [],
+      "calls": [
+        "AIA_Extraction_GetInstanceById"
+      ],
+      "called_by": [
+        "AIA_CreateValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_199422",
+      "name": "AIA_Test_GetLatestExtractionInstanceWithFields",
+      "type": "Expression Rule",
+      "description": "Get the latest extraction instance with fields",
+      "parameters": [],
+      "calls": [
+        "AIA_Extraction_GetInstanceById"
+      ],
+      "called_by": [
+        "AIA_Extraction_GeneratePrompt"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec36-59aa-8000-9be0-011c48011c48_53600",
+      "name": "AIA_Test_GetLatestExtractionModelVersion",
+      "type": "Expression Rule",
+      "description": "Get the latest extraction model version",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_CreateJsonSchema"
+      ]
+    },
+    {
+      "uuid": "0010ede0-88bf-8000-fff5-7f0000014e7a",
+      "name": "AIA Extraction Execute Vision Prompt Wrapper",
+      "type": "Process Model",
+      "description": "Wrapper process to run multiple batches of extractions",
+      "calls": [
+        "AIA_CreateMaxPageValidation",
+        "AIA_DocIsPdf",
+        "AIA_ExtractJson",
+        "AIA_Extraction_AddTokens",
+        "AIA_Extraction_GeneratePrompt",
+        "AIA_Extraction_VisionModel",
+        "AIA_FEATURE_VISION",
+        "AIA_INPUT_TYPE_DOC",
+        "AIA_MODEL_TYPE_VALUES",
+        "AIA_PROMPT_OPERATION_MODE_MULTIMODAL",
+        "AIA_VISION_PAGE_MAX",
+        "Visual Extraction"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "64322398-e457-4695-87d5-09794164cf77",
+      "name": "AIA Extraction Instance",
+      "type": "Record Type",
+      "description": "Record to hold the AI Extraction scores and confidence threshold for each instance",
+      "actions": [
+        "reconcileField",
+        "reconcileUsingTestCase",
+        "runValidations",
+        "addRemoveTestCase",
+        "deleteExtractionInstance",
+        "deleteInstanceAndSkipConfirmation",
+        "updateAssociatedTestSuites"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "#\"urn:appian:translation-string:v1:ab6ce936-2015-4e58-a2d1-a10bcd2372e4\"",
+        "=#\"urn:appian:translation-string:v1:fe8f8d91-a84f-4494-9270-4959354698ce\"",
+        "List View"
+      ],
+      "calls": [
+        "AIA Extraction Model Version",
+        "AIA_EXTRACTION_FIELD_TYPE_TABLE"
+      ],
+      "called_by": [
+        "AIA Extraction Model Version",
+        "AIA_Extraction_GeneratePromptExamples",
+        "AIA_GetModelVersionExamples"
+      ]
+    },
+    {
+      "uuid": "f00f33ce-439e-4c81-9931-a244a643c0e8",
+      "name": "AIA Extraction Model Version",
+      "type": "Record Type",
+      "description": "Version of an extraction model",
+      "actions": [
+        "newExtractionModelVersion",
+        "extractDocument",
+        "runAllTestInstances",
+        "updateExtractionModelVersion",
+        "restoreVersion",
+        "deleteExtractionModelVersion",
+        "addValidationRule",
+        "configureAiReviewer",
+        "setupConfidence",
+        "setupSampling",
+        "updateExtractionModelVersionDescription"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "#\"urn:appian:translation-string:v1:396bc6fa-092f-484e-948a-21d48eea366e\"",
+        "#\"urn:appian:translation-string:v1:d1e3249f-29f4-42cc-b418-60fab040208e\"",
+        "=#\"urn:appian:translation-string:v1:912bea31-a37e-46c0-aa12-1cef41bc4b6b\"",
+        "#\"urn:appian:translation-string:v1:ab6ce936-2015-4e58-a2d1-a10bcd2372e4\"",
+        "#\"urn:appian:translation-string:v1:44e82afe-99e6-475f-aeaf-1b26e1b047a6\"",
+        "List View"
+      ],
+      "calls": [
+        "AIA Extraction Instance"
+      ],
+      "called_by": [
+        "AIA Extraction Instance",
+        "AIA_Extraction_GeneratePromptMap"
+      ]
+    },
+    {
+      "uuid": "a67c9f85-f682-4191-bed6-c4912e7d88b4",
+      "name": "AI Review",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "8375b3de-d2a7-415d-983d-71e16d015d7e",
+      "name": "AI Validation Rule",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "4b200656-fadb-4ecc-98d6-fa93e9152840",
+      "name": "Analyse Expense",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "7fdc7b4d-ae4b-482c-8042-2df75a693468",
+      "name": "Bounding box instructions - list spanIds",
+      "type": "Translation String",
+      "description": "Bounding box instructions - list spanIds",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_BoundingBoxesInstructions"
+      ]
+    },
+    {
+      "uuid": "9c5e3486-fcad-4bf4-ab97-eb0e6f2ec8fd",
+      "name": "Bounding boxes - spanIds reminder",
+      "type": "Translation String",
+      "description": "Bounding boxes - spanIds reminder",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_BoundingBoxesInstructions"
+      ]
+    },
+    {
+      "uuid": "fb5aa790-a812-42e8-b713-144b1e9f11ff",
+      "name": "Bounding boxes instruction - table spanId",
+      "type": "Translation String",
+      "description": "Bounding boxes instruction - table spanId",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_BoundingBoxesInstructions"
+      ]
+    },
+    {
+      "uuid": "6701bdd2-dc86-46fd-b918-39ee518ddfc0",
+      "name": "Bounding boxes instructions - non-table spanIds",
+      "type": "Translation String",
+      "description": "Bounding boxes instructions - non-table spanIds",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_BoundingBoxesInstructions"
+      ]
+    },
+    {
+      "uuid": "f430adf5-5028-4f82-9579-6d5a30d46b00",
+      "name": "Bounding boxes instructions - spanId",
+      "type": "Translation String",
+      "description": "Bounding boxes instructions - spanId",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_BoundingBoxesInstructions"
+      ]
+    },
+    {
+      "uuid": "ad2e9011-234a-41f6-979a-45bf04987d45",
+      "name": "Default extraction prompt role",
+      "type": "Translation String",
+      "description": "Default extraction prompt role",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_DefaultPromptRole"
+      ]
+    },
+    {
+      "uuid": "73bdf5e0-f073-4e93-aa40-bdbfabbff2d3",
+      "name": "Document length exceeded max {feature} processing ({maxPages} pages)",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_CreateMaxPageValidation"
+      ]
+    },
+    {
+      "uuid": "27d6e065-3f9f-471b-b412-1d3847d474bc",
+      "name": "Extraction default instruction - date formatting",
+      "type": "Translation String",
+      "description": "Extraction default instruction - date formatting",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_PromptInstructions"
+      ]
+    },
+    {
+      "uuid": "5bae3763-38ac-423c-9336-2c6d82051a95",
+      "name": "Extraction default instruction - datetime formatting",
+      "type": "Translation String",
+      "description": "Extraction default instruction - datetime formatting",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_PromptInstructions"
+      ]
+    },
+    {
+      "uuid": "8e6dd327-f952-4c3f-b8e3-8ce9acdc4345",
+      "name": "Extraction default instruction - integer and decimal formatting",
+      "type": "Translation String",
+      "description": "Extraction default instruction - integer and decimal formatting",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_PromptInstructions"
+      ]
+    },
+    {
+      "uuid": "c6d3ccf5-b428-4900-b98b-e8df8db90ce8",
+      "name": "Extraction default instruction - options matching",
+      "type": "Translation String",
+      "description": "Extraction default instruction - options matching",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_PromptInstructions"
+      ]
+    },
+    {
+      "uuid": "e3c91fec-48f5-4848-8406-e97856ad96af",
+      "name": "Extraction default instruction - valid json, escape quotes",
+      "type": "Translation String",
+      "description": "Extraction default instruction - valid json, escape quotes",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_PromptInstructions"
+      ]
+    },
+    {
+      "uuid": "925e0dd9-c0f8-45e7-af9f-916a29285ccd",
+      "name": "Extraction default instruction - valid json, json array",
+      "type": "Translation String",
+      "description": "Extraction default instruction - valid json, json array",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_PromptInstructions"
+      ]
+    },
+    {
+      "uuid": "361ff628-e4e9-431b-8472-ecadea9b11d8",
+      "name": "Extraction default instruction - valid json, no new line characters",
+      "type": "Translation String",
+      "description": "Extraction default instruction - valid json, no new line characters",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_PromptInstructions"
+      ]
+    },
+    {
+      "uuid": "bd52b8f6-1431-454e-875f-7e8b8ebe9da7",
+      "name": "Extraction default instruction - valid json, no trailing commas",
+      "type": "Translation String",
+      "description": "Extraction default instruction - valid json, no trailing commas",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_PromptInstructions"
+      ]
+    },
+    {
+      "uuid": "25266106-b29b-4b80-9261-5c5b2e4b0aa3",
+      "name": "Max Pages Exceeded",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_CreateMaxPageValidation"
+      ]
+    },
+    {
+      "uuid": "f04e5814-41aa-4705-bb0e-968fe8fc8ec5",
+      "name": "Navigation Bar Site Classification Page Name",
+      "type": "Translation String",
+      "description": "Navigation Bar Site Classification Page Name",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "068d246a-b84d-42a2-a07b-02833e24e15c",
+      "name": "Provide output as a single valid JSON object, do not return additional objects b",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_PromptInstructions"
+      ]
+    },
+    {
+      "uuid": "7d663cf5-06ab-4445-979d-17074d9928f9",
+      "name": "Search Query",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "d92f05d6-36f5-47d4-8a63-e1320620aebc",
+      "name": "Vision - list instructions",
+      "type": "Translation String",
+      "description": "Vision - list instructions",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_VisionInstructions"
+      ]
+    },
+    {
+      "uuid": "9202de9d-b760-4db0-b0a6-9c958417d630",
+      "name": "Vision - pageNum instructions",
+      "type": "Translation String",
+      "description": "Vision - pageNum instructions",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_VisionInstructions"
+      ]
+    },
+    {
+      "uuid": "37e1cfad-08b7-4397-bcee-4dd175e4f0e8",
+      "name": "Vision instructions - include page num",
+      "type": "Translation String",
+      "description": "Vision instructions - include page num",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_VisionInstructions"
+      ]
+    },
+    {
+      "uuid": "0f4e0ba0-b7aa-45a9-9087-95883107d7e6",
+      "name": "Vision instructions - page number per row",
+      "type": "Translation String",
+      "description": "Vision instructions - page number per row",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_VisionInstructions"
+      ]
+    },
+    {
+      "uuid": "f5505f0e-9119-4a41-8953-ec5ef8f2d904",
+      "name": "Vision instructions - table",
+      "type": "Translation String",
+      "description": "Vision instructions - table",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_VisionInstructions"
+      ]
+    },
+    {
+      "uuid": "6e2f4447-827f-48a4-bb10-10b6c2a028b8",
+      "name": "Visual",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_Features"
+      ]
+    },
+    {
+      "uuid": "3e549bf6-b60a-4c55-8651-60f217f44f72",
+      "name": "Visual Extraction",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA Extraction Execute Vision Prompt Wrapper"
+      ]
+    }
+  ]
+}

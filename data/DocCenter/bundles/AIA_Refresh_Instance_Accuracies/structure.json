@@ -1,0 +1,237 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AIA Refresh Instance Accuracies",
+    "parent_name": null,
+    "total_objects": 11
+  },
+  "entry_point": {
+    "complexity_score": 15.0,
+    "total_nodes": 8,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Refresh Instance Accuracies",
+      "complexity_score": 15.0,
+      "total_nodes": 8,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Get Total"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Increase Batch",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Get Extractions"
+          ]
+        },
+        {
+          "name": "Done?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node",
+            "Increase Batch"
+          ]
+        },
+        {
+          "name": "Write Instance",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Done?"
+          ]
+        },
+        {
+          "name": "Get Total",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "No batches"
+          ]
+        },
+        {
+          "name": "Get Extractions",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write Instance"
+          ]
+        },
+        {
+          "name": "No batches",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Get Extractions",
+            "End Node"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ec9e-8ba1-8000-9c08-011c48011c48_146690",
+      "name": "AIA_FIELD_RESULT_FALSE_NEGATIVE",
+      "type": "Constant",
+      "description": "FN",
+      "value": "FN",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_PostProcess"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec9e-8ba1-8000-9c08-011c48011c48_146684",
+      "name": "AIA_FIELD_RESULT_FALSE_POSITIVE",
+      "type": "Constant",
+      "description": "FP",
+      "value": "FP",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_PostProcess"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec9e-8ba1-8000-9c08-011c48011c48_146678",
+      "name": "AIA_FIELD_RESULT_TRUE_NEGATIVE",
+      "type": "Constant",
+      "description": "TN",
+      "value": "TN",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_PostProcess"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec9e-8ba1-8000-9c08-011c48011c48_146672",
+      "name": "AIA_FIELD_RESULT_TRUE_POSITIVE",
+      "type": "Constant",
+      "description": "TP",
+      "value": "TP",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_PostProcess"
+      ]
+    },
+    {
+      "uuid": "_a-0000edd9-a94f-8000-9bb2-011c48011c48_144286",
+      "name": "AIA_INSTANCE_STATUS_RECONCILED_ALL",
+      "type": "Constant",
+      "description": "Contains ref id for status reconciled manually & automatically",
+      "value": [
+        "4",
+        "6"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Integer?list",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_PostProcess"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_159079",
+      "name": "AIA_MIGRATION_BATCH_SIZE",
+      "type": "Constant",
+      "description": "Size of migration batches - process will be kicked off per",
+      "value": "10",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA Refresh Instance Accuracies"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_203500",
+      "name": "AIA_EXTRACTION_INSTANCE_FIELDS",
+      "type": "Expression Rule",
+      "description": "Instance fields for reconciliation",
+      "parameters": [],
+      "calls": [
+        "AIA Extraction Instance"
+      ],
+      "called_by": [
+        "AIA_Extraction_GetInstanceByIdForReconciliation"
+      ]
+    },
+    {
+      "uuid": "_a-0001eccb-4552-8000-9c3e-011c48011c48_161219",
+      "name": "AIA_Extraction_GetInstanceByIdForReconciliation",
+      "type": "Expression Rule",
+      "description": "Get extraction instance and all relationships by id for reconcilliation",
+      "parameters": [],
+      "calls": [
+        "AIA_EXTRACTION_INSTANCE_FIELDS"
+      ],
+      "called_by": [
+        "AIA Extraction Instance",
+        "AIA Refresh Instance Accuracies"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec9e-8ba1-8000-9c08-011c48011c48_146666",
+      "name": "AIA_Extraction_PostProcess",
+      "type": "Expression Rule",
+      "description": "Process fields to set values like response type (TP, TN, FP, FN)",
+      "parameters": [],
+      "calls": [
+        "AIA_FIELD_RESULT_FALSE_NEGATIVE",
+        "AIA_FIELD_RESULT_FALSE_POSITIVE",
+        "AIA_FIELD_RESULT_TRUE_NEGATIVE",
+        "AIA_FIELD_RESULT_TRUE_POSITIVE",
+        "AIA_INSTANCE_STATUS_RECONCILED_ALL"
+      ],
+      "called_by": [
+        "AIA Refresh Instance Accuracies"
+      ]
+    },
+    {
+      "uuid": "0007ee23-8b2c-8000-011f-7f0000014e7a",
+      "name": "AIA Refresh Instance Accuracies",
+      "type": "Process Model",
+      "description": "Refresh instance accuracies",
+      "calls": [
+        "AIA_Extraction_GetInstanceByIdForReconciliation",
+        "AIA_Extraction_PostProcess",
+        "AIA_MIGRATION_BATCH_SIZE"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "64322398-e457-4695-87d5-09794164cf77",
+      "name": "AIA Extraction Instance",
+      "type": "Record Type",
+      "description": "Record to hold the AI Extraction scores and confidence threshold for each instance",
+      "actions": [
+        "reconcileField",
+        "reconcileUsingTestCase",
+        "runValidations",
+        "addRemoveTestCase",
+        "deleteExtractionInstance",
+        "deleteInstanceAndSkipConfirmation",
+        "updateAssociatedTestSuites"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "#\"urn:appian:translation-string:v1:ab6ce936-2015-4e58-a2d1-a10bcd2372e4\"",
+        "=#\"urn:appian:translation-string:v1:fe8f8d91-a84f-4494-9270-4959354698ce\"",
+        "List View"
+      ],
+      "calls": [
+        "AIA_Extraction_GetInstanceByIdForReconciliation"
+      ],
+      "called_by": [
+        "AIA_EXTRACTION_INSTANCE_FIELDS"
+      ]
+    }
+  ]
+}

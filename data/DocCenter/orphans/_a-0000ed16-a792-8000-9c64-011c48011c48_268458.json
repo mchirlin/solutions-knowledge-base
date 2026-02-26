@@ -1,0 +1,180 @@
+{
+  "uuid": "_a-0000ed16-a792-8000-9c64-011c48011c48_268458",
+  "name": "AIA_ExtractionModelVersion_RecordAction_ValidationRules_CreateUpdate",
+  "type": "Interface",
+  "description": "Add/update validation to extraction model version",
+  "sail_code": "a!localVariables(\n  /*Branding Data for styling*/\n  local!brandingMap: rule!AIA_UTIL_LoadBrandingMap(),\n  local!validationRuleOperations: rule!AIA_UTIL_Filter(\n    records: rule!AIA_RULE_ENUM_RuleOperations(),\n    field: \"category\",\n    value: \"validation_rule\"\n  ),\n  local!extractionModelValidation: a!refreshVariable(\n    value: a!defaultValue(\n      ri!extractionModelVersionValidation,\n      recordType!AIA Extraction Model Version Validation Rule(\n        recordType!AIA Extraction Model Version Validation Rule.modelVersionId: ri!ExtractionModelVersion[recordType!AIA Extraction Model Version.modelVersionId]\n      )\n    ),\n    refreshOnReferencedVarChange: false\n  ),\n  local!extractionModelValidationDataMap: a!refreshVariable(\n    value: a!defaultValue(\n      rule!AIA_ExtractJson(\n        json: local!extractionModelValidation[recordType!AIA Extraction Model Version Validation Rule.validations]\n      ),\n      a!map(\n        modelVersionId: ri!ExtractionModelVersion[recordType!AIA Extraction Model Version.modelVersionId],\n        ruleOperationId: null\n      )\n    ),\n    refreshOnReferencedVarChange: false\n  ),\n  local!testJsonData: a!refreshVariable(\n    value: a!defaultValue(\n      value: ri!extractionModelVersionValidation[recordType!AIA Extraction Model Version Validation Rule.testPayload],\n      default: rule!AIA_Extraction_BlankModelVersionJson(\n        modelVersionId: local!extractionModelValidation[recordType!AIA Extraction Model Version Validation Rule.modelVersionId]\n      )\n    ),\n    refreshOnReferencedVarChange: false\n  ),\n  local!testDataMap: rule!AIA_ExtractJson(json: local!testJsonData),\n  local!displayResult: false(),\n  local!testResult,\n  local!selectedRuleOperation: rule!AIA_UTIL_returnRuleOperationById(\n    id: local!extractionModelValidationDataMap.ruleOperationId\n  ),\n  local!testCasePromptInput: rule!AIA_GeneratePromptInputForTestCaseGeneration(\n    extractionModelValidationDataMap: local!extractionModelValidationDataMap,\n    /*pass full model json into generation prompt so model sees full possible output*/\n    testJson: rule!AIA_Extraction_BlankModelVersionJson(\n      modelVersionId: local!extractionModelValidation[recordType!AIA Extraction Model Version Validation Rule.modelVersionId]\n    )\n  ),\n  #\"SYSTEM_SYSRULES_formLayout_v1\"(\n    label: if(\n      ri!isUpdate,\n      #\"urn:appian:translation-string:v1:73ed80d9-d967-480b-8f49-574ca4ad1ce1\",\n      #\"urn:appian:translation-string:v1:8bf002ba-7f93-4203-bcca-713abe25f9db\"\n    ),\n    contents: {\n      #\"SYSTEM_SYSRULES_columnsLayout\"(\n        columns: {\n          #\"SYSTEM_SYSRULES_columnLayout\"(\n            contents: {\n              #\"SYSTEM_SYSRULES_textField\"(\n                label: #\"urn:appian:translation-string:v1:8dbc4902-d0fb-4a2f-913c-9b26bc6250c0\",\n                value: local!extractionModelValidation[recordType!AIA Extraction Model Version Validation Rule.name],\n                saveInto: local!extractionModelValidation[recordType!AIA Extraction Model Version Validation Rule.name],\n                required: true\n              ),\n              #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n                items: {\n                  #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                    item: #\"SYSTEM_SYSRULES_dropdownField_v1\"(\n                      choiceLabels: rule!AIA_RULE_ENUM_Severity().label,\n                      choiceValues: rule!AIA_RULE_ENUM_Severity().value,\n                      label: #\"urn:appian:translation-string:v1:2cd86751-2849-4d45-88d9-0c46e711ce68\",\n                      placeholder: #\"urn:appian:translation-string:v1:5b618b55-852f-469d-a93c-723a92385c83\",\n                      value: local!extractionModelValidation[recordType!AIA Extraction Model Version Validation Rule.severity],\n                      saveInto: local!extractionModelValidation[recordType!AIA Extraction Model Version Validation Rule.severity],\n                      required: true\n                    )\n                  ),\n                  #\"SYSTEM_SYSRULES_sideBySideItem\"(width: \"1X\")\n                }\n              ),\n              #\"SYSTEM_SYSRULES_headingField\"(\n                marginAbove: \"STANDARD\",\n                size: \"SMALL\",\n                text: #\"urn:appian:translation-string:v1:ec30e445-77dc-4fc1-89dc-db96003e2dc1\",\n                headingTag: \"H2\",\n                fontWeight: \"BOLD\"\n              ),\n              #\"SYSTEM_SYSRULES_cardChoiceField\"(\n                label: #\"urn:appian:translation-string:v1:761129a1-b18e-40ab-b9ce-2bf56a1c35ea\",\n                labelPosition: \"COLLAPSED\",\n                required: true,\n                maxSelections: 1,\n                disabled: ri!isUpdate,\n                showShadow: false,\n                marginBelow: \"MORE\",\n                data: local!validationRuleOperations,\n                cardTemplate: #\"SYSTEM_SYSRULES_cardTemplateBarTextStacked\"(\n                  id: fv!data.id,\n                  icon: fv!data.cardChoiceConfig.icon,\n                  iconColor: local!brandingMap.Blue3,\n                  primaryText: fv!data.cardChoiceConfig.primaryText,\n                  secondaryText: fv!data.cardChoiceConfig.secondaryText\n                ),\n                value: local!extractionModelValidationDataMap.ruleOperationId,\n                saveInto: {\n                  a!save(\n                    local!extractionModelValidationDataMap,\n                    /*reset whole map on change to clear out any dynamic fields that may have been set*/\n                    a!map(\n                      modelVersionId: ri!ExtractionModelVersion[recordType!AIA Extraction Model Version.modelVersionId],\n                      ruleOperationId: cast(typeof(1),save!value)\n                    )\n                  )\n                }\n              ),\n              rule!AIA_RULE_DynamicExpression(\n                data: local!extractionModelValidationDataMap,\n                isCreateValidation: false(),\n                showWhen: a!isNotNullOrEmpty(local!extractionModelValidationDataMap.ruleOperationId)\n              )\n\n            }\n          ),\n          #\"SYSTEM_SYSRULES_columnLayout\"(\n            contents: #\"SYSTEM_SYSRULES_cardLayout\"(\n              contents: {\n                #\"SYSTEM_SYSRULES_headingField\"(\n                  marginBelow: \"NONE\",\n                  size: \"SMALL\",\n                  text: #\"urn:appian:translation-string:v1:99f0ff43-0b30-44d1-b85e-0beda394c1ad\",\n                  headingTag: \"H2\",\n                  fontWeight: \"BOLD\"\n                ),\n                #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                  labelPosition: \"COLLAPSED\",\n                  value: {\n                    #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                      text: #\"urn:appian:translation-string:v1:d501612c-94ac-44c5-83c1-e4d0e276e93e\",\n                      color: local!brandingMap.Gray3,\n                      size: \"SMALL\"\n                    )\n                  },\n                  marginBelow: \"MORE\"\n                ),\n                #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                  labelPosition: \"COLLAPSED\",\n                  value: #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                    text: #\"urn:appian:translation-string:v1:a262b6a3-5ef8-4203-bee0-1a97b1fea29c\",\n                    color: local!brandingMap.Gray4,\n                    style: \"STRONG\"\n                  ),\n                  accessibilityText: #\"urn:appian:translation-string:v1:a262b6a3-5ef8-4203-bee0-1a97b1fea29c\"\n                ),\n                #\"SYSTEM_SYSRULES_paragraphField\"(\n                  label: #\"urn:appian:translation-string:v1:a262b6a3-5ef8-4203-bee0-1a97b1fea29c\",\n                  labelPosition: \"COLLAPSED\",\n                  value: local!testJsonData,\n                  saveInto: {\n                    local!testJsonData,\n                    a!save(\n                      local!testDataMap,\n                      rule!AIA_ExtractJson(json: local!testJsonData)\n                    ),\n                    a!save(local!displayResult,false)\n                  }\n                ),\n                #\"SYSTEM_SYSRULES_ButtonArrayLayout\"(\n                  buttons: {\n                    #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n                      label: #\"urn:appian:translation-string:v1:57394a6f-fd19-429f-a92e-3f1f97736c9c\",\n                      disabled: a!isNullOrEmpty(local!extractionModelValidationDataMap.ruleOperationId),\n                      saveInto: if(\n                        a!isNotNullOrEmpty(local!selectedRuleOperation.testExecutionProcess),\n                        #\"SYSTEM_SYSRULES_startProcess3\"(\n                          processModel: local!selectedRuleOperation.testExecutionProcess,\n                          isSynchronous: true,\n                          processParameters: {\n                            validationDataMap: local!extractionModelValidationDataMap,\n                            testDataMap: local!testDataMap,\n                            llm: ri!extractionModelVersion[recordType!AIA Extraction Model Version.llm]\n                          },\n                          onSuccess: {\n                            a!save(local!displayResult, true()),\n                            a!save(\n                              local!testResult,\n                              fv!processInfo.pv.validations\n                            )\n                          },\n                          onError: {\n                            a!save(local!displayResult, true()),\n                            a!save(\n                              local!testResult,\n                              recordType!AIA Instance Validation Error(\n                                recordType!AIA Instance Validation Error.message: #\"urn:appian:translation-string:v1:a12f393a-a47b-474d-a0ae-4ce1224d0846\"\n                              )\n                            )\n                          }\n                        ),\n                        {\n                          a!save(local!displayResult, true()),\n                          a!save(\n                            local!testResult,\n                            try(\n                              rule!AIA_RULE_RunValidationRule(\n                                rule: #\"urn:appian:function:v1:a:update\"(\n                                  local!extractionModelValidation,\n                                  recordType!AIA Extraction Model Version Validation Rule.validations,\n                                  #\"SYSTEM_SYSRULES_toJson_v1\"(local!extractionModelValidationDataMap)\n                                ),\n                                instanceMap: local!testDataMap,\n                                ModelVersionFields: rule!AIA_Extraction_GetFieldsForModelVersionId(\n                                  modelVersionId: ri!ExtractionModelVersion[recordType!AIA Extraction Model Version.modelVersionId]\n                                )\n                              ),\n                              recordType!AIA Instance Validation Error(\n                                recordType!AIA Instance Validation Error.message: #\"urn:appian:translation-string:v1:89247c34-a564-4a9a-b238-856d20915913\"\n                              )\n                            )\n                          )\n                        }\n                      ),\n                      size: \"SMALL\",\n                      loadingIndicator: true\n                    ),\n                    #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n                      tooltip: if(\n                        a!isNullOrEmpty(local!testCasePromptInput),\n                        #\"urn:appian:translation-string:v1:8aaf0ac9-0623-449f-af68-2762ee573461\",\n                        null\n                      ),\n                      disabled: a!isNullOrEmpty(local!testCasePromptInput),\n                      label: #\"urn:appian:translation-string:v1:da5d1c39-44b0-4ab0-81d4-4b37674f8632\",\n                      icon: \"magic\",\n                      saveInto: #\"SYSTEM_SYSRULES_startProcess3\"(\n                        processModel: cons!AIA_RULE_PM_GENERATE_EXAMPLE_PAYLOAD,\n                        processParameters: {\n                          inputExpression: local!testCasePromptInput\n                        },\n                        isSynchronous: true,\n                        onSuccess: {\n                          {\n                            a!save(\n                              local!testJsonData,\n                              fv!processInfo.pv.response\n                            ),\n                            a!save(\n                              local!testDataMap,\n                              rule!AIA_ExtractJson(json: local!testJsonData)\n                            ),\n                            a!save(local!displayResult,false)\n                          }\n                        }\n                      ),\n                      size: \"SMALL\",\n                      style: \"LINK\",\n                      loadingIndicator: true\n                    )\n                  },\n                  marginBelow: \"MORE\",\n                  align: \"START\"\n                ),\n                #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                  labelPosition: \"COLLAPSED\",\n                  marginBelow: \"NONE\",\n                  value: #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                    text: #\"urn:appian:translation-string:v1:c4515d3d-e21d-4e70-8a35-be583f84096e\",\n                    color: local!brandingMap.Gray4,\n                    style: \"STRONG\"\n                  ),\n                  accessibilityText: #\"urn:appian:translation-string:v1:c4515d3d-e21d-4e70-8a35-be583f84096e\"\n                ),\n                #\"SYSTEM_SYSRULES_cardLayout\"(\n                  contents: {\n                    if(\n                      local!displayResult,\n                      /*test outcomes display*/\n                      a!match(\n                        value: local!testResult,\n                        whenTrue: a!isNullOrEmpty(fv!value),\n                        then: #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n                          items: {\n                            #\"SYSTEM_SYSRULES_sideBySideItem\"(),\n                            #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                              item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                                value: #\"SYSTEM_SYSRULES_richTextIcon\"(\n                                  icon: \"check-circle\",\n                                  color: \"POSITIVE\",\n                                  size: \"MEDIUM_PLUS\"\n                                )\n                              ),\n                              width: \"MINIMIZE\"\n                            ),\n                            #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                              item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                                value: #\"urn:appian:translation-string:v1:3cf2e3e1-e5e6-40a3-b12c-e06a339636a2\"\n                              )\n                            ),\n                            #\"SYSTEM_SYSRULES_sideBySideItem\"()\n                          },\n                          alignVertical: \"MIDDLE\"\n                        ),\n                        whenTrue: a!isNotNullOrEmpty(fv!value),\n                        then: #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n                          items: {\n                            #\"SYSTEM_SYSRULES_sideBySideItem\"(width: \"MINIMIZE\"),\n                            #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                              item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                                value: #\"SYSTEM_SYSRULES_richTextIcon\"(\n                                  icon: \"times-circle\",\n                                  color: \"NEGATIVE\",\n                                  size: \"MEDIUM_PLUS\"\n                                )\n                              ),\n                              width: \"MINIMIZE\"\n                            ),\n                            #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                              item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                                value: rule!AIA_DisplayValidationMessageForInstance(\n                                  validationInstance: local!testResult,\n                                  brandingMap: local!brandingMap\n                                )\n                              )\n                            ),\n                            #\"SYSTEM_SYSRULES_sideBySideItem\"(width: \"MINIMIZE\")\n                          },\n                          alignVertical: \"MIDDLE\"\n                        ),\n                        default: {}\n                      ),\n                      /*placeholder until test is run*/\n                      {\n                        #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                          marginAbove: \"STANDARD\",\n                          labelPosition: \"COLLAPSED\",\n                          align: \"CENTER\",\n                          value: {\n                            #\"SYSTEM_SYSRULES_richTextIcon\"(\n                              icon: \"database\",\n                              size: \"MEDIUM_PLUS\",\n                              color: local!brandingMap.Gray3\n                            )\n                          }\n                        ),\n                        #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                          marginBelow: \"STANDARD\",\n                          labelPosition: \"COLLAPSED\",\n                          align: \"CENTER\",\n                          value: {\n                            #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                              text: #\"urn:appian:translation-string:v1:05558dab-19c1-48ee-927e-fbe075e315f1\",\n                              color: local!brandingMap.Gray4\n                            )\n                          }\n                        )\n                      }\n                    )\n                  },\n                  showWhen: or(\n                    a!isNotNullOrEmpty(\n                      local!extractionModelValidationDataMap.ruleOperationId\n                    ),\n                    a!isNotNullOrEmpty(\n                      local!extractionModelValidationDataMap.conditions.ruleOperationId\n                    )\n                  ),\n                  style: local!brandingMap.White,\n                  shape: local!brandingMap.CardShape,\n                  padding: \"STANDARD\",\n                  marginAbove: \"LESS\",\n                  showBorder: local!brandingMap.CardShowBorder\n                )\n              },\n              style: local!brandingMap.Blue0,\n              shape: local!brandingMap.CardShape,\n              padding: \"STANDARD\",\n              showBorder: local!brandingMap.CardShowBorder\n            )\n          )\n        }\n      )\n    },\n    buttons: #\"SYSTEM_SYSRULES_ButtonLayout\"(\n      primaryButtons: {\n        #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n          label: if(\n            ri!isUpdate,\n            #\"urn:appian:translation-string:v1:25a51cae-0560-410b-9b56-ba2b024e6364\",\n            #\"urn:appian:translation-string:v1:d00709b4-8675-4cbf-a285-2c15f3819e24\"\n          ),\n          saveInto: {\n            a!save(\n              ri!extractionModelVersionValidation,\n              #\"urn:appian:function:v1:a:update\"(\n                local!extractionModelValidation,\n                {\n                  recordType!AIA Extraction Model Version Validation Rule.validations,\n                  recordType!AIA Extraction Model Version Validation Rule.testPayload\n                },\n                {\n                  #\"SYSTEM_SYSRULES_toJson_v1\"(local!extractionModelValidationDataMap),\n                  local!testJsonData\n                }\n              )\n            ),\n            a!save(\n              ri!extractionModelVersionValidation,\n              if(\n                ri!isUpdate,\n                #\"urn:appian:function:v1:a:update\"(\n                  ri!extractionModelVersionValidation,\n                  {\n                    recordType!AIA Extraction Model Version Validation Rule.modifiedBy,\n                    recordType!AIA Extraction Model Version Validation Rule.modifiedOn\n                  },\n                  { loggedInUser(), now() }\n                ),\n                #\"urn:appian:function:v1:a:update\"(\n                  ri!extractionModelVersionValidation,\n                  {\n                    recordType!AIA Extraction Model Version Validation Rule.createdBy,\n                    recordType!AIA Extraction Model Version Validation Rule.createdOn,\n                    recordType!AIA Extraction Model Version Validation Rule.modifiedBy,\n                    recordType!AIA Extraction Model Version Validation Rule.modifiedOn\n                  },\n                  {\n                    loggedInUser(),\n                    now(),\n                    loggedInUser(),\n                    now()\n                  }\n                )\n              )\n            )\n          },\n          submit: true,\n          style: \"SOLID\",\n          color: local!brandingMap.AccentColor\n        )\n      },\n      secondaryButtons: {\n        #\"SYSTEM_SYSRULES_buttonWidget_v1\"(\n          label: \"Cancel\",\n          value: true,\n          saveInto: ri!cancel,\n          submit: true,\n          style: \"OUTLINE\",\n          validate: false\n        )\n      }\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AIA_UTIL_LoadBrandingMap",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_UTIL_Filter",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_RULE_ENUM_RuleOperations",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_ExtractJson",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_Extraction_BlankModelVersionJson",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_UTIL_returnRuleOperationById",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_GeneratePromptInputForTestCaseGeneration",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_RULE_ENUM_Severity",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_RULE_DynamicExpression",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_RULE_RunValidationRule",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_Extraction_GetFieldsForModelVersionId",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_DisplayValidationMessageForInstance",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_RULE_PM_GENERATE_EXAMPLE_PAYLOAD",
+      "type": "Constant",
+      "dep_type": "USES_CONSTANT"
+    },
+    {
+      "name": "Update Model Validation Rule",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Label for Create Validation Rule",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Name",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Priority",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Select priority",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Build Your Rule",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Rule Type",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Test your Model Validation Rule",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Use example data to confirm validations appear as expected",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Test Data",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "RUN TEST",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Error occurred in test",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Invalid configuration",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Complete validation configuration to generate test data",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Generate Test Data",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Result",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "No Validation errors found",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Run your validation rule using test data above",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Label for Update",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Label Create",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_Test_GetLatestExtractionModelVersion",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

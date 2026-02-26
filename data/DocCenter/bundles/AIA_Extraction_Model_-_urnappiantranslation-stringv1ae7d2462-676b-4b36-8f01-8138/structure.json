@@ -1,0 +1,1227 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "AIA Extraction Model - #\"urn:appian:translation-string:v1:ae7d2462-676b-4b36-8f01-813815a4b2af\"",
+    "parent_name": "AIA Extraction Model",
+    "total_objects": 66
+  },
+  "entry_point": {
+    "action_type": "RECORD_ACTION",
+    "record_type": "AIA Extraction Model",
+    "target_process": "AIA Extraction Run Test Instance",
+    "form_interface": "AIA_RecordAction_ModelRunInstance",
+    "expressions": {
+      "TITLE": "#\"urn:appian:translation-string:v1:ae7d2462-676b-4b36-8f01-813815a4b2af\"",
+      "DESCRIPTION": null,
+      "VISIBILITY": null,
+      "CONTEXT": "{\n  modelVersionId: rv!record[recordType!AIA Extraction Model.publishedModelVersionId],\n  modelId: rv!record[recordType!AIA Extraction Model.modelId],\n  documents: null\n}"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Extraction Run Test Instance",
+      "complexity_score": 24.0,
+      "total_nodes": 12,
+      "nodes": [
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Cancel?"
+          ]
+        },
+        {
+          "name": "Cancel?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node",
+            "Run Instance"
+          ]
+        },
+        {
+          "name": "Reconcile",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Save Reconciliation"
+          ]
+        },
+        {
+          "name": "Save Reconciliation",
+          "type": "Start Process",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Get Baseline and Current Instance Fields",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Reconcile"
+          ]
+        },
+        {
+          "name": "Has Baseline?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "End Node",
+            "Get Baseline and Current Instance Fields"
+          ]
+        },
+        {
+          "name": "join",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Has Baseline?"
+          ]
+        },
+        {
+          "name": "Write Records",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "join"
+          ]
+        },
+        {
+          "name": "Run Instance",
+          "type": "Start Process",
+          "next": [
+            "Link to suite?"
+          ]
+        },
+        {
+          "name": "Link to suite?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "join (No)",
+            "Link Test Cases to Suites (Yes)"
+          ]
+        },
+        {
+          "name": "Link Test Cases to Suites",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write Records"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ec40-0355-8000-9be4-011c48011c48_73273",
+      "name": "AIA_EXTRACTION_FIELD_TYPE_TABLE",
+      "type": "Constant",
+      "description": "Table",
+      "value": "Table",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA Extraction Instance",
+        "AIA_Extraction_TestReconcilliation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ebab-b921-8000-9bbc-011c48011c48_22260",
+      "name": "AIA_FOLDER_INPUT_DOCS",
+      "type": "Constant",
+      "description": "Folder for input docs",
+      "value": "_a-0000ebaf-e36d-8000-9bbe-011c48011c48_23248",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationFolder",
+      "calls": [],
+      "called_by": [
+        "AIA_RecordAction_ModelRunInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb4-d4ac-8000-9bae-011c48011c48_115723",
+      "name": "AIA_INSTANCE_STATUS_RECONCILED_AUTOMATICALLY",
+      "type": "Constant",
+      "description": "Contains ref id for status reconciled automatically",
+      "value": "6",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA Extraction Run Test Instance"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb4-d4ac-8000-9bae-011c48011c48_111914",
+      "name": "AIA_INSTANCE_STATUS_RECONCILED_MANUALLY",
+      "type": "Constant",
+      "description": "Contains ref id for status reconciled manually",
+      "value": "4",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA Extraction Run Test Instance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec40-0355-8000-9be4-011c48011c48_70311",
+      "name": "AIA_MODEL_TYPE_VALUES",
+      "type": "Constant",
+      "description": "(1) extraction, (2) classification",
+      "value": [
+        "extraction",
+        "classification"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_InstanceUuid",
+        "AIA_RecordAction_ModelRunInstance_Sub_TestCaseSettings"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec3a-5c87-8000-9be2-011c48011c48_62261",
+      "name": "AIA_ROW_ADDED",
+      "type": "Constant",
+      "description": "Added",
+      "value": "Added",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_TestReconcilliation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec3a-5c87-8000-9be2-011c48011c48_62121",
+      "name": "AIA_ROW_OVERRIDDEN",
+      "type": "Constant",
+      "description": "Overridden",
+      "value": "Overridden",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_TestReconcilliation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec3a-5c87-8000-9be2-011c48011c48_62268",
+      "name": "AIA_ROW_REMOVED",
+      "type": "Constant",
+      "description": "Removed",
+      "value": "Removed",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_TestReconcilliation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_81660",
+      "name": "AIA_TABLE_UPDATED",
+      "type": "Constant",
+      "description": "Updates",
+      "value": "Updates",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_TestReconcilliation"
+      ]
+    },
+    {
+      "uuid": "_a-0000eed1-1d21-8000-9cef-011c48011c48_187601",
+      "name": "AIA_TEXT_BASED_EXTENSIONS",
+      "type": "Constant",
+      "description": "csv, xml",
+      "value": [
+        "csv",
+        "xml"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_ValidDocExtensions"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec67-5f00-8000-9bf0-011c48011c48_125023",
+      "name": "AIA_VALID_IMAGE_FORMATS",
+      "type": "Constant",
+      "description": "Valid image formats",
+      "value": [
+        "jpg",
+        "jpeg",
+        "gif",
+        "tiff",
+        "png"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_ENUM_ValidDocExtensions"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb0-f009-8000-9ba8-011c48011c48_98542",
+      "name": "AIA_ClassificationModel_GetRecentlyUploadedDocument",
+      "type": "Expression Rule",
+      "description": "retrieves recently uploaded classification model document details ",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationInstance_Sub_RecentlyUploadedDocuments"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec60-a08d-8000-9bee-011c48011c48_122457",
+      "name": "AIA_DocumentValidation",
+      "type": "Expression Rule",
+      "description": "Document validation",
+      "parameters": [],
+      "calls": [
+        "AIA_ENUM_ValidDocExtensions",
+        "AIA_IsValidDocumentExtension"
+      ],
+      "called_by": [
+        "AIA_RecordAction_ModelRunInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec67-5f00-8000-9bf0-011c48011c48_125041",
+      "name": "AIA_ENUM_ValidDocExtensions",
+      "type": "Expression Rule",
+      "description": "Valid extensions",
+      "parameters": [],
+      "calls": [
+        "AIA_TEXT_BASED_EXTENSIONS",
+        "AIA_VALID_IMAGE_FORMATS"
+      ],
+      "called_by": [
+        "AIA_DocumentValidation",
+        "AIA_IsValidDocumentExtension"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb0-f009-8000-9ba8-011c48011c48_98523",
+      "name": "AIA_ExtractionModel_GetRecentlyUploadedDocument",
+      "type": "Expression Rule",
+      "description": "retrieves recently uploaded extraction model document details ",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ExtractionInstance_Sub_RecentlyUploadedDocuments"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_87488",
+      "name": "AIA_Extraction_GetAllFieldsForInstance",
+      "type": "Expression Rule",
+      "description": "Get fields from instance",
+      "parameters": [],
+      "calls": [
+        "AIA_Test_GetLatestExtractionInstance"
+      ],
+      "called_by": [
+        "AIA Extraction Run Test Instance",
+        "AIA_Extraction_TestReconcilliation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_84705",
+      "name": "AIA_Extraction_InstanceUuid",
+      "type": "Expression Rule",
+      "description": "Get instance uuid from extraction",
+      "parameters": [],
+      "calls": [
+        "AIA_MODEL_TYPE_VALUES"
+      ],
+      "called_by": [
+        "AIA Extraction Run Test Instance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec54-bbf4-8000-9be8-011c48011c48_111680",
+      "name": "AIA_Extraction_TestReconcilliation",
+      "type": "Expression Rule",
+      "description": "Test reconcilliation",
+      "parameters": [],
+      "calls": [
+        "AIA_EXTRACTION_FIELD_TYPE_TABLE",
+        "AIA_Extraction_GetAllFieldsForInstance",
+        "AIA_ROW_ADDED",
+        "AIA_ROW_OVERRIDDEN",
+        "AIA_ROW_REMOVED",
+        "AIA_TABLE_UPDATED",
+        "AIA_Test_GetLatestExtractionInstance",
+        "AIA_UTIL_Filter"
+      ],
+      "called_by": [
+        "AIA Extraction Run Test Instance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec67-5f00-8000-9bf0-011c48011c48_125328",
+      "name": "AIA_FormatDocument",
+      "type": "Expression Rule",
+      "description": "Format document",
+      "parameters": [],
+      "calls": [
+        "AIA_Test_GetLatestClassificationInstance",
+        "AIA_Test_GetLatestExtractionInstance",
+        "Invalid Document"
+      ],
+      "called_by": [
+        "AIA Extraction Instance",
+        "AIA_ExtractionInstance_Sub_RecentlyUploadedDocuments"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec60-a08d-8000-9bee-011c48011c48_122463",
+      "name": "AIA_IsValidDocumentExtension",
+      "type": "Expression Rule",
+      "description": "Is valid document",
+      "parameters": [],
+      "calls": [
+        "AIA_ENUM_ValidDocExtensions"
+      ],
+      "called_by": [
+        "AIA_DocumentValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeb2-df20-8000-9bfe-011c48011c48_154396",
+      "name": "AIA_ModelTestSuiteCase_InitializeInstanceForMultipleSuites",
+      "type": "Expression Rule",
+      "description": "Creates a list of AIA Model Test Suite Case based on suiteIds and baselineInstanceId.Used to add 1 test instance to multiple suites",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Extraction Run Test Instance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef43-16ec-8000-9fda-011c48011c48_478809",
+      "name": "AIA_ModelTestSuite_getSuitesWithMaxTestSuiteCases",
+      "type": "Expression Rule",
+      "description": "returns list of suites from list of provided ids that are at the max case count allowed for validations",
+      "parameters": [],
+      "calls": [
+        "AIA_UTIL_rejectNullValuesFromArray",
+        "SHRD_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "AIA_RecordAction_ModelRunInstance_Sub_TestCaseSettings"
+      ]
+    },
+    {
+      "uuid": "_a-0000eead-6b09-8000-9bee-011c48011c48_148667",
+      "name": "AIA_QR_getModelTestSuite",
+      "type": "Expression Rule",
+      "description": "Query record for model test suite",
+      "parameters": [],
+      "calls": [
+        "SHRD_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "AIA_RecordAction_ModelRunInstance_Sub_TestCaseSettings"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec36-59aa-8000-9be0-011c48011c48_52454",
+      "name": "AIA_Test_GetLatestClassificationInstance",
+      "type": "Expression Rule",
+      "description": "Get the latest classification instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_FormatDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40839",
+      "name": "AIA_Test_GetLatestExtractionInstance",
+      "type": "Expression Rule",
+      "description": "Get the latest extraction instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_GetAllFieldsForInstance",
+        "AIA_Extraction_TestReconcilliation",
+        "AIA_FormatDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef3e-b586-8000-9f8a-011c48011c48_451285",
+      "name": "AIA_Test_GetLatestExtractionModelWithTestSuite",
+      "type": "Expression Rule",
+      "description": "Get the latest extraction model",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_RecordAction_ModelRunInstance_Sub_TestCaseSettings"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_26889",
+      "name": "AIA_UTIL_Filter",
+      "type": "Expression Rule",
+      "description": "Filters, rejects, or returns matching indices of a list of records by field-value filter combinations.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_TestReconcilliation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_12129",
+      "name": "AIA_UTIL_LoadBrandingMap",
+      "type": "Expression Rule",
+      "description": "Returns branding data for AI Analytics in the type List of Map",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationInstance_Sub_RecentlyUploadedDocuments",
+        "AIA_ExtractionInstance_Sub_RecentlyUploadedDocuments",
+        "AIA_RecordAction_ModelRunInstance",
+        "AIA_RecordAction_ModelRunInstance_Sub_TestCaseSettings",
+        "AIA_Template_ToggleField"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_34388",
+      "name": "AIA_UTIL_displayDateTime",
+      "type": "Expression Rule",
+      "description": "Expression rule to Display Date Time in User Friendly Format",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationInstance_Sub_RecentlyUploadedDocuments",
+        "AIA_ExtractionInstance_Sub_RecentlyUploadedDocuments"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_34420",
+      "name": "AIA_UTIL_displayUserFullName",
+      "type": "Expression Rule",
+      "description": "Interface to display User Full Name",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationInstance_Sub_RecentlyUploadedDocuments",
+        "AIA_ExtractionInstance_Sub_RecentlyUploadedDocuments"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb0-f009-8000-9ba8-011c48011c48_97164",
+      "name": "AIA_UTIL_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Extraction Run Test Instance",
+        "AIA_UTIL_rejectNullValuesFromArray"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb0-f009-8000-9ba8-011c48011c48_97176",
+      "name": "AIA_UTIL_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AIA_UTIL_isBlank"
+      ],
+      "called_by": [
+        "AIA_ModelTestSuite_getSuitesWithMaxTestSuiteCases"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_36163",
+      "name": "SHRD_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "description": "Enhanced wrapper rule around a!queryRecord()",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ModelTestSuite_getSuitesWithMaxTestSuiteCases",
+        "AIA_QR_getModelTestSuite"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb0-f009-8000-9ba8-011c48011c48_98603",
+      "name": "AIA_ClassificationInstance_Sub_RecentlyUploadedDocuments",
+      "type": "Interface",
+      "description": "Interface to display Recently Uploaded Documents",
+      "parameters": [
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "modelVersionId",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "selectedDocuments",
+          "type": "http://www.appian.com/ae/types/2009:Integer?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Integer?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        }
+      ],
+      "calls": [
+        "AIA_ClassificationModel_GetRecentlyUploadedDocument",
+        "AIA_UTIL_LoadBrandingMap",
+        "AIA_UTIL_displayDateTime",
+        "AIA_UTIL_displayUserFullName",
+        "For recent document component",
+        "Label for Recently Uploaded Documents"
+      ],
+      "called_by": [
+        "AIA_RecordAction_ModelRunInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb0-f009-8000-9ba8-011c48011c48_97936",
+      "name": "AIA_ExtractionInstance_Sub_RecentlyUploadedDocuments",
+      "type": "Interface",
+      "description": "Interface to display Recently Uploaded Documents",
+      "parameters": [
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "modelVersionId",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "selectedDocuments",
+          "type": "http://www.appian.com/ae/types/2009:Integer?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Integer?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        }
+      ],
+      "calls": [
+        "AIA_ExtractionModel_GetRecentlyUploadedDocument",
+        "AIA_FormatDocument",
+        "AIA_UTIL_LoadBrandingMap",
+        "AIA_UTIL_displayDateTime",
+        "AIA_UTIL_displayUserFullName",
+        "For recent document component",
+        "Label for Recently Uploaded Documents"
+      ],
+      "called_by": [
+        "AIA_RecordAction_ModelRunInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_94099",
+      "name": "AIA_RecordAction_ModelRunInstance",
+      "type": "Interface",
+      "description": "Select a document and run a test, used for classify and extract document actions",
+      "parameters": [
+        {
+          "name": "documents",
+          "type": "http://www.appian.com/ae/types/2009:CollaborationDocument?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:CollaborationDocument?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "cancel",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "input",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "isExtract",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "modelVersionId",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "isDocumentTestCase",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "modelId",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 6
+        },
+        {
+          "name": "modelTestSuiteIds",
+          "type": "http://www.appian.com/ae/types/2009:Integer?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Integer?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 7
+        }
+      ],
+      "calls": [
+        "AIA_ClassificationInstance_Sub_RecentlyUploadedDocuments",
+        "AIA_DocumentValidation",
+        "AIA_ExtractionInstance_Sub_RecentlyUploadedDocuments",
+        "AIA_FOLDER_INPUT_DOCS",
+        "AIA_RecordAction_ModelRunInstance_Sub_TestCaseSettings",
+        "AIA_UTIL_LoadBrandingMap",
+        "Button Label",
+        "Button to classify a document or block of text",
+        "Extract Document",
+        "Extraction Document Type Label",
+        "Field Label",
+        "Label for Cancel",
+        "Label for Classify Document",
+        "Place holder text",
+        "Section Label"
+      ],
+      "called_by": [
+        "AIA Extraction Run Test Instance"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb4-d4ac-8000-9bae-011c48011c48_107488",
+      "name": "AIA_RecordAction_ModelRunInstance_Sub_TestCaseSettings",
+      "type": "Interface",
+      "description": "Document Test Case settings for an extraction model",
+      "parameters": [
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map",
+          "required": false,
+          "default_value": null,
+          "description": "Initialize AIA_UTIL_LoadBrandingMap",
+          "display_order": 0
+        },
+        {
+          "name": "isDocumentTestCase",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "isExtraction",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "modelId",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "modelTestSuiteIds",
+          "type": "http://www.appian.com/ae/types/2009:Integer?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Integer?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        }
+      ],
+      "calls": [
+        "AIA_MODEL_TYPE_VALUES",
+        "AIA_ModelTestSuite_getSuitesWithMaxTestSuiteCases",
+        "AIA_QR_getModelTestSuite",
+        "AIA_Template_ToggleField",
+        "AIA_Test_GetLatestExtractionModelWithTestSuite",
+        "AIA_UTIL_LoadBrandingMap",
+        "Add to Test Suite",
+        "Cannot add to the following suites as they already contain 100 test cases: {test",
+        "Label for Set as Test Case",
+        "Select a {label}",
+        "Test Suite",
+        "Use the reconciled values from this test input as the baseline for future instan"
+      ],
+      "called_by": [
+        "AIA_RecordAction_ModelRunInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_73130",
+      "name": "AIA_Template_ToggleField",
+      "type": "Interface",
+      "description": "Rich text toggle field with a side-by-side layout",
+      "parameters": [
+        {
+          "name": "field",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "brandingMap",
+          "type": "http://www.appian.com/ae/types/2009:Map?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Map?list",
+          "required": false,
+          "default_value": null,
+          "description": "Initialize AIA_UTIL_LoadBrandingMap",
+          "display_order": 1
+        },
+        {
+          "name": "record",
+          "type": "http://www.appian.com/ae/types/2009:Variant",
+          "raw_type": "http://www.appian.com/ae/types/2009:Variant",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        },
+        {
+          "name": "label",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 3
+        },
+        {
+          "name": "description",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 4
+        },
+        {
+          "name": "defaultValue",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 5
+        },
+        {
+          "name": "saveInto",
+          "type": "http://www.appian.com/ae/types/2009:Save?list",
+          "raw_type": "http://www.appian.com/ae/types/2009:Save?list",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 6
+        },
+        {
+          "name": "value",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 7
+        }
+      ],
+      "calls": [
+        "AIA_UTIL_LoadBrandingMap",
+        "Bounding Boxes",
+        "Deselect {caption}",
+        "Select {caption}",
+        "Will display bounding boxes on the reconciliation screen for extracted values."
+      ],
+      "called_by": [
+        "AIA_RecordAction_ModelRunInstance_Sub_TestCaseSettings"
+      ]
+    },
+    {
+      "uuid": "000ded55-b201-8000-fa8e-7f0000014e7a",
+      "name": "AIA Extraction Run Test Instance",
+      "type": "Process Model",
+      "description": "Process to extract the uploaded document for the extraction model",
+      "calls": [
+        "AIA Extraction Instance",
+        "AIA_Extraction_GetAllFieldsForInstance",
+        "AIA_Extraction_InstanceUuid",
+        "AIA_Extraction_TestReconcilliation",
+        "AIA_INSTANCE_STATUS_RECONCILED_AUTOMATICALLY",
+        "AIA_INSTANCE_STATUS_RECONCILED_MANUALLY",
+        "AIA_ModelTestSuiteCase_InitializeInstanceForMultipleSuites",
+        "AIA_RecordAction_ModelRunInstance",
+        "AIA_UTIL_isBlank"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "64322398-e457-4695-87d5-09794164cf77",
+      "name": "AIA Extraction Instance",
+      "type": "Record Type",
+      "description": "Record to hold the AI Extraction scores and confidence threshold for each instance",
+      "actions": [
+        "reconcileField",
+        "reconcileUsingTestCase",
+        "runValidations",
+        "addRemoveTestCase",
+        "deleteExtractionInstance",
+        "deleteInstanceAndSkipConfirmation",
+        "updateAssociatedTestSuites"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "#\"urn:appian:translation-string:v1:ab6ce936-2015-4e58-a2d1-a10bcd2372e4\"",
+        "=#\"urn:appian:translation-string:v1:fe8f8d91-a84f-4494-9270-4959354698ce\"",
+        "List View"
+      ],
+      "calls": [
+        "AIA_EXTRACTION_FIELD_TYPE_TABLE",
+        "AIA_FormatDocument",
+        "Label for Set as Test Case"
+      ],
+      "called_by": [
+        "AIA Extraction Run Test Instance"
+      ]
+    },
+    {
+      "uuid": "b1dcc961-d661-4c36-b9d4-391ca5995eb7",
+      "name": "Add to Test Suite",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_RecordAction_ModelRunInstance_Sub_TestCaseSettings"
+      ]
+    },
+    {
+      "uuid": "b4c5b2fa-2efa-4c02-8bc4-4483abf45026",
+      "name": "Bounding Boxes",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Template_ToggleField"
+      ]
+    },
+    {
+      "uuid": "9bae1597-88bf-4ae9-a8d3-34be21fdaa11",
+      "name": "Button Label",
+      "type": "Translation String",
+      "description": "Button Label",
+      "calls": [],
+      "called_by": [
+        "AIA_RecordAction_ModelRunInstance"
+      ]
+    },
+    {
+      "uuid": "051ff814-18db-44bd-a332-1ca6054aec66",
+      "name": "Button to classify a document or block of text",
+      "type": "Translation String",
+      "description": "Button to classify a document or block of text",
+      "calls": [],
+      "called_by": [
+        "AIA_RecordAction_ModelRunInstance"
+      ]
+    },
+    {
+      "uuid": "622db5b6-eb03-45db-a33e-180f6c840c16",
+      "name": "Cannot add to the following suites as they already contain 100 test cases: {test",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_RecordAction_ModelRunInstance_Sub_TestCaseSettings"
+      ]
+    },
+    {
+      "uuid": "2bcaa33e-f7f3-49e1-a731-448d50b81aa5",
+      "name": "Deselect {caption}",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Template_ToggleField"
+      ]
+    },
+    {
+      "uuid": "462f4edf-6112-4749-b16a-b65aa5d37b33",
+      "name": "Extract Document",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_RecordAction_ModelRunInstance"
+      ]
+    },
+    {
+      "uuid": "a0b565e1-0a3e-4fcd-9db6-0f02c509edc0",
+      "name": "Extraction Document Type Label",
+      "type": "Translation String",
+      "description": "Extraction Document Type Label",
+      "calls": [],
+      "called_by": [
+        "AIA_RecordAction_ModelRunInstance"
+      ]
+    },
+    {
+      "uuid": "30e7aea8-0fc7-4996-ba6d-7adce844780e",
+      "name": "Extraction Document Type Label",
+      "type": "Translation String",
+      "description": "Extraction Document Type Label",
+      "calls": [],
+      "called_by": [
+        "AIA_RecordAction_ModelRunInstance"
+      ]
+    },
+    {
+      "uuid": "237b1bae-1428-4544-8ecf-6fa89331222c",
+      "name": "Extraction Document Type Label",
+      "type": "Translation String",
+      "description": "Extraction Document Type Label",
+      "calls": [],
+      "called_by": [
+        "AIA_RecordAction_ModelRunInstance"
+      ]
+    },
+    {
+      "uuid": "98615fbb-7de7-4c33-899c-f2c8f63d5e21",
+      "name": "Field Label",
+      "type": "Translation String",
+      "description": "Field Label",
+      "calls": [],
+      "called_by": [
+        "AIA_RecordAction_ModelRunInstance"
+      ]
+    },
+    {
+      "uuid": "4178454f-5b2a-4327-ad04-ce72fdbd4179",
+      "name": "Field Label",
+      "type": "Translation String",
+      "description": "Field Label",
+      "calls": [],
+      "called_by": [
+        "AIA_RecordAction_ModelRunInstance"
+      ]
+    },
+    {
+      "uuid": "89391e44-bfe2-407c-9423-65975c155a06",
+      "name": "For recent document component",
+      "type": "Translation String",
+      "description": "For recent document component",
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationInstance_Sub_RecentlyUploadedDocuments",
+        "AIA_ExtractionInstance_Sub_RecentlyUploadedDocuments"
+      ]
+    },
+    {
+      "uuid": "955ba2b6-66dc-4f51-96ff-bc7facbc8d66",
+      "name": "Invalid Document",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_FormatDocument"
+      ]
+    },
+    {
+      "uuid": "df61ccad-fe9a-4d7a-ba9a-d89b08f3467a",
+      "name": "Label for Cancel",
+      "type": "Translation String",
+      "description": "Label for Cancel",
+      "calls": [],
+      "called_by": [
+        "AIA_RecordAction_ModelRunInstance"
+      ]
+    },
+    {
+      "uuid": "223c21ab-c709-45fe-84d8-09be18dd4cd7",
+      "name": "Label for Classify Document",
+      "type": "Translation String",
+      "description": "Label for Classify Document",
+      "calls": [],
+      "called_by": [
+        "AIA_RecordAction_ModelRunInstance"
+      ]
+    },
+    {
+      "uuid": "8a471156-5fc9-419d-ad04-fcb0225e0957",
+      "name": "Label for Recently Uploaded Documents",
+      "type": "Translation String",
+      "description": "Label for Recently Uploaded Documents",
+      "calls": [],
+      "called_by": [
+        "AIA_ClassificationInstance_Sub_RecentlyUploadedDocuments",
+        "AIA_ExtractionInstance_Sub_RecentlyUploadedDocuments"
+      ]
+    },
+    {
+      "uuid": "c43ce91b-bcb2-40f7-b945-b009f5b48b26",
+      "name": "Label for Set as Test Case",
+      "type": "Translation String",
+      "description": "Label for Set as Test Case",
+      "calls": [],
+      "called_by": [
+        "AIA Extraction Instance",
+        "AIA_RecordAction_ModelRunInstance_Sub_TestCaseSettings"
+      ]
+    },
+    {
+      "uuid": "c66d26a9-dba4-425c-a05f-0d1ce9a13b22",
+      "name": "Place holder text",
+      "type": "Translation String",
+      "description": "Place holder text",
+      "calls": [],
+      "called_by": [
+        "AIA_RecordAction_ModelRunInstance"
+      ]
+    },
+    {
+      "uuid": "ae7d2462-676b-4b36-8f01-813815a4b2af",
+      "name": "Run Extraction",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": []
+    },
+    {
+      "uuid": "68fbf292-0312-430f-a09a-576bf0278417",
+      "name": "Section Label",
+      "type": "Translation String",
+      "description": "Section Label",
+      "calls": [],
+      "called_by": [
+        "AIA_RecordAction_ModelRunInstance"
+      ]
+    },
+    {
+      "uuid": "f744141b-3e47-4992-827f-1758bb3ff64f",
+      "name": "Select a {label}",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_RecordAction_ModelRunInstance_Sub_TestCaseSettings"
+      ]
+    },
+    {
+      "uuid": "5d5ccfce-4251-4290-af1d-2bca780b08dd",
+      "name": "Select {caption}",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Template_ToggleField"
+      ]
+    },
+    {
+      "uuid": "572d331a-7e5e-4c1c-a6d1-3f08b96a0aed",
+      "name": "Test Suite",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_RecordAction_ModelRunInstance_Sub_TestCaseSettings"
+      ]
+    },
+    {
+      "uuid": "6822d8fb-6b9f-4045-ba44-a3253c8da1b1",
+      "name": "Use the reconciled values from this test input as the baseline for future instan",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_RecordAction_ModelRunInstance_Sub_TestCaseSettings"
+      ]
+    },
+    {
+      "uuid": "f1335769-cd4c-4332-916a-bebc374a7f3d",
+      "name": "Will display bounding boxes on the reconciliation screen for extracted values.",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_Template_ToggleField"
+      ]
+    }
+  ]
+}

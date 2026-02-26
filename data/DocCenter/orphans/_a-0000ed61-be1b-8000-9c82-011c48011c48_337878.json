@@ -1,0 +1,15 @@
+{
+  "uuid": "_a-0000ed61-be1b-8000-9c82-011c48011c48_337878",
+  "name": "AIA_Classification_GeneratePromptExamples",
+  "type": "Expression Rule",
+  "description": "Generate prompt examples",
+  "sail_code": "a!localVariables(\n  local!examples: rule!AIA_GetModelVersionExamples(\n    modelVersion: ri!modelVersion\n  ),\n  if(\n    /*even if there are no bounding boxes, still include the examples*/\n    a!isNullOrEmpty(local!examples),\n    \"\",\n    \"\n\nHere are some examples:\n\" & joinarray(\n  #\"SYSTEM_SYSRULES_forEach\"(\n    local!examples,\n    \"\n<example>\n<input>\" & fv!item[recordType!AIA Model Version Example.input] & \"</input>\n<output>\" & fv!item[recordType!AIA Model Version Example.output] & \"</output>\n</example>\"\n  ),\n  \"\n\"\n)\n  )\n)",
+  "calls": [
+    {
+      "name": "AIA_GetModelVersionExamples",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

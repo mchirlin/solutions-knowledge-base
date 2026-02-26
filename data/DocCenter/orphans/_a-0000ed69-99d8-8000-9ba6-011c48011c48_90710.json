@@ -1,0 +1,9 @@
+{
+  "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_90710",
+  "name": "AIA_Example_LineItemTotalValidation",
+  "type": "Expression Rule",
+  "description": "Validates that the total for each line item is approximately equal to the product of quantity and unit price, allowing for minor rounding differences. Flags any discrepancies beyond the acceptable tolerance threshold.",
+  "sail_code": "a!localVariables(\n  local!result: if(\n    a!isNullOrEmpty(ri!parameters),\n    false,\n    a!localVariables(\n      local!lineItemsResults: #\"SYSTEM_SYSRULES_forEach\"(\n        items: ri!parameters.instanceMap.items,\n        expression: a!localVariables(\n          local!expectedTotal: todecimal(fv!item.Quantity) * todecimal(fv!item.UnitPrice),\n          local!tolerance: 0.01,\n          if(\n            or(\n              a!isNullOrEmpty(fv!item.Quantity),\n              a!isNullOrEmpty(fv!item.UnitPrice),\n              a!isNullOrEmpty(fv!item.Total)\n            ),\n            false,\n            abs(todecimal(fv!item.Total) - todecimal(local!expectedTotal)) > local!tolerance,\n          )\n        )\n      ),\n      or(local!lineItemsResults),\n    )\n  ),\n  if(\n    local!result,\n    a!map(result: false(), message: \"Totals do not match quantities * unit prices.\"),\n    a!map(result: true)\n  )\n)",
+  "calls": [],
+  "called_by": []
+}

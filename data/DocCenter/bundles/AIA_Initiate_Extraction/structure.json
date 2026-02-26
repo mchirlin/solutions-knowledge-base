@@ -1,0 +1,1702 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AIA Initiate Extraction",
+    "parent_name": null,
+    "total_objects": 120
+  },
+  "entry_point": {
+    "complexity_score": 30.0,
+    "total_nodes": 14,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Initiate Extraction",
+      "complexity_score": 30.0,
+      "total_nodes": 14,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Create Folder"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Advanced IDP Enabled",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Run Advanced IDP (Yes)",
+            "Standard Layout Processing"
+          ]
+        },
+        {
+          "name": "Run Advanced IDP",
+          "type": "Start Process",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Set Document  Capture Metrics",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Rotate Doc/ Exceed Page Limit?"
+          ]
+        },
+        {
+          "name": "Standard Layout Processing",
+          "type": "Start Process",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "AIA Convert Document to PDF",
+          "type": "Start Process",
+          "next": [
+            "Set Document  Capture Metrics"
+          ]
+        },
+        {
+          "name": "Create Folder",
+          "type": "Create Folder",
+          "next": [
+            "Write Instance"
+          ]
+        },
+        {
+          "name": "AIA Rotate PDF",
+          "type": "Start Process",
+          "next": [
+            "Write Instance"
+          ]
+        },
+        {
+          "name": "Should Convert?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Set Document  Capture Metrics (No)",
+            "AIA Convert Document to PDF (Yes)",
+            "Add Critical Validation Error (Exceeds Size Limit)"
+          ]
+        },
+        {
+          "name": "Rotate Doc/ Exceed Page Limit?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Write Instance",
+            "AIA Rotate PDF",
+            "Add Critical Validation Error (Exceeds Page or Size Limit)"
+          ]
+        },
+        {
+          "name": "Add Critical Validation Error",
+          "type": "Start Process",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Write Instance",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Should Convert?"
+          ]
+        },
+        {
+          "name": "Write Instance",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Advanced IDP Enabled"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000eca0-2a2c-8000-9c0a-011c48011c48_149548",
+      "name": "AIA_ADVANCED_IDP_ENABLED",
+      "type": "Constant",
+      "description": "Is Advanced IDP enabled on the site",
+      "value": "true",
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_ShouldRunAdvancedIdp"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee52-8983-8000-9ba6-011c48011c48_27516",
+      "name": "AIA_AI_SUPPORTED_DOC_TYPES",
+      "type": "Constant",
+      "description": "AI supported document types",
+      "value": [
+        "pdf",
+        "png",
+        "jpeg",
+        "jpg",
+        "tiff"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_ShouldConvertToPdf",
+        "AIA_Extraction_ShouldRunAdvancedIdp"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec60-a08d-8000-9bee-011c48011c48_121650",
+      "name": "AIA_EML_PAGE_CHAR_COUNT",
+      "type": "Constant",
+      "description": "5000",
+      "value": "5000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_GetDocumentMetadata"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2e-dd02-8000-9bde-011c48011c48_50410",
+      "name": "AIA_EXAMPLE_DOC_EXTRACTION_PDF",
+      "type": "Constant",
+      "description": "Example doc for extraction",
+      "value": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40815",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "SHRD_ReadDocumentContent"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2e-dd02-8000-9bde-011c48011c48_46896",
+      "name": "AIA_EXTRACTION_FIELD_TYPES",
+      "type": "Constant",
+      "description": "(1) Text, (2) Integer, (3) Decimal, (4) Date, (5) Datetime, (6) Boolean, (7) Table, (8) Paragraph",
+      "value": [
+        "Text",
+        "Integer",
+        "Decimal",
+        "Date",
+        "Datetime",
+        "Boolean",
+        "Table",
+        "Paragraph"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_FormatValueForDatabase",
+        "AIA_TypeHelper"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec40-0355-8000-9be4-011c48011c48_73273",
+      "name": "AIA_EXTRACTION_FIELD_TYPE_TABLE",
+      "type": "Constant",
+      "description": "Table",
+      "value": "Table",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA Extraction Instance",
+        "AIA_Extract_ExtractFieldsFromJsonResponse",
+        "AIA_FormatValuesForDatabase"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee52-8983-8000-9ba6-011c48011c48_28052",
+      "name": "AIA_FLAG_CONVERT_IMAGES",
+      "type": "Constant",
+      "description": "Flag to control whether images are converted to PDF",
+      "value": "false",
+      "value_type": "http://www.w3.org/2001/XMLSchema:boolean",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_ShouldConvertToPdf"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb4-d4ac-8000-9bae-011c48011c48_115730",
+      "name": "AIA_INSTANCE_STATUS_EXTRACTED",
+      "type": "Constant",
+      "description": "Contains ref id for status extracted",
+      "value": "2",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_CreateUpdateInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec9d-8afb-8000-9c07-011c48011c48_146171",
+      "name": "AIA_INSTANCE_STATUS_INITIATED",
+      "type": "Constant",
+      "description": "Instance status ref id for Initiated",
+      "value": "1",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA Extraction Instance",
+        "AIA_Extraction_CreateUpdateInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb4-d4ac-8000-9bae-011c48011c48_115723",
+      "name": "AIA_INSTANCE_STATUS_RECONCILED_AUTOMATICALLY",
+      "type": "Constant",
+      "description": "Contains ref id for status reconciled automatically",
+      "value": "6",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_CreateUpdateInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb4-d4ac-8000-9bae-011c48011c48_111914",
+      "name": "AIA_INSTANCE_STATUS_RECONCILED_MANUALLY",
+      "type": "Constant",
+      "description": "Contains ref id for status reconciled manually",
+      "value": "4",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_CreateUpdateInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000eee4-e15d-8000-9d3d-011c48011c48_205826",
+      "name": "AIA_INT_EXTRACTION_MAX_FILE_SIZE",
+      "type": "Constant",
+      "description": "Max file size in bytes for uploaded and converted documents going through extraction. If file size is greater than limit, then a critical validation error is thrown for the extraction instance and extraction is skipped",
+      "value": "26214400",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA Initiate Extraction"
+      ]
+    },
+    {
+      "uuid": "_a-0000eee4-e15d-8000-9d3d-011c48011c48_205820",
+      "name": "AIA_INT_EXTRACTION_MAX_PAGE_COUNT",
+      "type": "Constant",
+      "description": "Max page size for uploaded and converted documents going through extraction. If page size is greater than limit, then a critical validation error is thrown for the extraction instance and extraction is skipped",
+      "value": "1000",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA Initiate Extraction"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec40-0355-8000-9be4-011c48011c48_70311",
+      "name": "AIA_MODEL_TYPE_VALUES",
+      "type": "Constant",
+      "description": "(1) extraction, (2) classification",
+      "value": [
+        "extraction",
+        "classification"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA Initiate Extraction",
+        "AIA_CreateValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_97714",
+      "name": "AIA_MODEL_VERSION_STATUS_PUBLISHED",
+      "type": "Constant",
+      "description": "Published",
+      "value": "Published",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_GetLatestModelVersionIdByKey"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92546",
+      "name": "AIA_MTR_AI_REVIEW_ACCEPT",
+      "type": "Constant",
+      "description": "Metric triggered when user clicks accepts ai review",
+      "value": "AIA_MTR_AI_REVIEW_ACCEPT",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92528",
+      "name": "AIA_MTR_AI_REVIEW_FIELD",
+      "type": "Constant",
+      "description": "Metric triggered when AI reviewer raises an error (field level)",
+      "value": "AIA_MTR_AI_REVIEW_FIELD",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92552",
+      "name": "AIA_MTR_AI_REVIEW_IGNORE",
+      "type": "Constant",
+      "description": "Metric triggered when user clicks ignored",
+      "value": "AIA_MTR_AI_REVIEW_IGNORE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92534",
+      "name": "AIA_MTR_AI_REVIEW_INSTANCE",
+      "type": "Constant",
+      "description": "Metric triggered when AI review raises an error (instance level, this instance has 1 or more errors raised by AI reviewer)",
+      "value": "AIA_MTR_AI_REVIEW_INSTANCE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92540",
+      "name": "AIA_MTR_AI_REVIEW_MODEL_VERSION",
+      "type": "Constant",
+      "description": "Metric triggered when model is created with AI review turned on OR AI review is turned on for a model",
+      "value": "AIA_MTR_AI_REVIEW_MODEL",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeb2-df20-8000-9bfe-011c48011c48_154558",
+      "name": "AIA_MTR_AI_VALIDATION_RULE_OCCURANCE",
+      "type": "Constant",
+      "description": "Metric triggered when AI validation rule raises an error",
+      "value": "AIA_MTR_AI_VALIDATION_RULE_OCCURANCE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee35-0ca2-8000-9ba6-011c48011c48_13671",
+      "name": "AIA_MTR_CLASSIFICATION_INSTANCE_CREATED",
+      "type": "Constant",
+      "description": "Classification instance created metric",
+      "value": "AIA_MTR_CLASSIFICATION_INSTANCE_CREATED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee35-0ca2-8000-9ba6-011c48011c48_13692",
+      "name": "AIA_MTR_CLASSIFICATION_INSTANCE_RECONCILED",
+      "type": "Constant",
+      "description": "Classification instance reconciled metric",
+      "value": "AIA_MTR_CLASSIFICATION_INSTANCE_RECONCILED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee35-0ca2-8000-9ba6-011c48011c48_13652",
+      "name": "AIA_MTR_CLASSIFICATION_MODEL_CREATED",
+      "type": "Constant",
+      "description": "Classification model created metric",
+      "value": "AIA_MTR_CLASSIFICATION_MODEL_CREATED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeca-c121-8000-9cab-011c48011c48_182016",
+      "name": "AIA_MTR_CLASSIFICATION_MODEL_VERSION_RESTORE",
+      "type": "Constant",
+      "description": "Classification model version restored metric",
+      "value": "AIA_MTR_CLASSIFICATION_MODEL_VERSION_RESTORE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000eec9-5676-8000-9c92-011c48011c48_179373",
+      "name": "AIA_MTR_CONFIDENCE_THRESHOLD_DISABLED",
+      "type": "Constant",
+      "description": "Confidence threshold disabled metric",
+      "value": "AIA_MTR_CONFIDENCE_THRESHOLD_DISABLED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000eec9-5676-8000-9c92-011c48011c48_179366",
+      "name": "AIA_MTR_CONFIDENCE_THRESHOLD_ENABLED",
+      "type": "Constant",
+      "description": "Confidence threshold enabled metric",
+      "value": "AIA_MTR_CONFIDENCE_THRESHOLD_ENABLED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee35-0ca2-8000-9ba6-011c48011c48_13678",
+      "name": "AIA_MTR_EXTRACTION_INSTANCE_CREATED",
+      "type": "Constant",
+      "description": "Extraction instance created metric",
+      "value": "AIA_MTR_EXTRACTION_INSTANCE_CREATED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA Initiate Extraction",
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee35-0ca2-8000-9ba6-011c48011c48_13685",
+      "name": "AIA_MTR_EXTRACTION_INSTANCE_RECONCILED",
+      "type": "Constant",
+      "description": "Extraction instance reconciled created metric",
+      "value": "AIA_MTR_EXTRACTION_INSTANCE_RECONCILED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee35-0ca2-8000-9ba6-011c48011c48_13664",
+      "name": "AIA_MTR_EXTRACTION_MODEL_CREATED",
+      "type": "Constant",
+      "description": "Extraction model created metric",
+      "value": "AIA_MTR_EXTRACTION_MODEL_CREATED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeca-c121-8000-9cab-011c48011c48_182009",
+      "name": "AIA_MTR_EXTRACTION_MODEL_VERSION_RESTORE",
+      "type": "Constant",
+      "description": "Extraction model version restored metric",
+      "value": "AIA_MTR_EXTRACTION_MODEL_VERSION_RESTORE",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92447",
+      "name": "AIA_MTR_INSTANCE_STATUS_CLASSIFICATION_CRITICAL_ERROR",
+      "type": "Constant",
+      "description": "Classification instance with critical error",
+      "value": "AIA_MTR_INSTANCE_STATUS_CLASSIFICATION_CRITICAL_ERROR",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92433",
+      "name": "AIA_MTR_INSTANCE_STATUS_CLASSIFIED_WITH_ERRORS",
+      "type": "Constant",
+      "description": "Classification instance completed with errors",
+      "value": "AIA_MTR_INSTANCE_STATUS_CLASSIFIED_WITH_ERRORS",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92426",
+      "name": "AIA_MTR_INSTANCE_STATUS_EXTRACTED_WITH_ERRORS",
+      "type": "Constant",
+      "description": "Extraction instance completed with errors",
+      "value": "AIA_MTR_INSTANCE_STATUS_EXTRACTED_WITH_ERRORS",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92440",
+      "name": "AIA_MTR_INSTANCE_STATUS_EXTRACTION_CRITICAL_ERROR",
+      "type": "Constant",
+      "description": "Extraction instance with critical error",
+      "value": "AIA_MTR_INSTANCE_STATUS_EXTRACTION_CRITICAL_ERROR",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef46-744c-8000-9fed-011c48011c48_483957",
+      "name": "AIA_MTR_MODEL_TEST_RUN_INITIATED",
+      "type": "Constant",
+      "description": "test run initiated metric",
+      "value": "AIA_MTR_MODEL_TEST_RUN_INITIATED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef46-744c-8000-9fed-011c48011c48_483950",
+      "name": "AIA_MTR_MODEL_TEST_SUITE_CREATED",
+      "type": "Constant",
+      "description": "test suite created metric",
+      "value": "AIA_MTR_MODEL_TEST_SUITE_CREATED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef46-744c-8000-9fed-011c48011c48_483998",
+      "name": "AIA_MTR_MODEL_TEST_SUITE_UPDATED",
+      "type": "Constant",
+      "description": "test suite updated metric",
+      "value": "AIA_MTR_MODEL_TEST_SUITE_UPDATED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef55-14e0-8000-a041-011c48011c48_505638",
+      "name": "AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_INSTANCE_CREATED",
+      "type": "Constant",
+      "description": "Constant pointing to the metric for a classification instance created on a model version that allows multiple outputs",
+      "value": "AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_INSTANCE_CREATED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef55-14e0-8000-a041-011c48011c48_505663",
+      "name": "AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_INSTANCE_RECONCILED",
+      "type": "Constant",
+      "description": "Constant pointing to the metric for a classification instance created on a model version that allows multiple outputs",
+      "value": "AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_INSTANCE_RECONCILED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef55-14e0-8000-a041-011c48011c48_505582",
+      "name": "AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_MODEL_VERSION_CREATED",
+      "type": "Constant",
+      "description": "Constant pointing to the metric for a classification model version created that allows multiple outputs",
+      "value": "AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_MODEL_VERSION_CREATED",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000eea3-15ee-8000-9bd4-011c48011c48_137351",
+      "name": "AIA_MTR_SPOT_CHECK_MODEL_VERSION",
+      "type": "Constant",
+      "description": "Metric triggered when model is created with spot checking turned on OR spot checking is turned on for a model",
+      "value": "AIA_MTR_SPOT_CHECK_MODEL_VERSION",
+      "value_type": "http://www.w3.org/2001/XMLSchema:string",
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76666",
+      "name": "AIA_SEVERITY_CRITICAL",
+      "type": "Constant",
+      "description": "4",
+      "value": "4",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA Initiate Extraction"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee66-4fc0-8000-9baa-011c48011c48_72159",
+      "name": "AIA_VALIDATION_TYPE_ID_EXECUTION",
+      "type": "Constant",
+      "description": "4",
+      "value": "4",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA Initiate Extraction",
+        "AIA_CreateValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3d-1f5c-8000-9ba4-011c48011c48_14385",
+      "name": "AIA_ConvertDateToIso",
+      "type": "Expression Rule",
+      "description": "Convert date to iso string",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_FormatValueForDatabase"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3d-1f5c-8000-9ba4-011c48011c48_14361",
+      "name": "AIA_ConvertIsoToDate",
+      "type": "Expression Rule",
+      "description": "Convert iso date/time string to date/time",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_TypeHelper"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76653",
+      "name": "AIA_CreateValidation",
+      "type": "Expression Rule",
+      "description": "Create a validation error for instance",
+      "parameters": [],
+      "calls": [
+        "AIA_IsExtractionInstance",
+        "AIA_MODEL_TYPE_VALUES",
+        "AIA_Test_GetLatestExtractionInstance",
+        "AIA_VALIDATION_TYPE_ID_EXECUTION"
+      ],
+      "called_by": [
+        "AIA Initiate Extraction"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_90047",
+      "name": "AIA_CreateValidationErrorMessage",
+      "type": "Expression Rule",
+      "description": "Create validation error message",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Initiate Extraction"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_159825",
+      "name": "AIA_DocIsPdf",
+      "type": "Expression Rule",
+      "description": "Returns true if doc is a pdf",
+      "parameters": [],
+      "calls": [
+        "AIA_IsDocumentExtension"
+      ],
+      "called_by": [
+        "AIA_Extraction_ShouldConvertToPdf",
+        "AIA_ShouldRotateDoc"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_203145",
+      "name": "AIA_EXTRACTION_MODEL_VERSION_FIELDS",
+      "type": "Expression Rule",
+      "description": "List of extraction model fields",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_GetModelVersionById"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40909",
+      "name": "AIA_ExtractJson",
+      "type": "Expression Rule",
+      "description": "Extract json from prompt builder reponse",
+      "parameters": [],
+      "calls": [
+        "SHRD_IsList"
+      ],
+      "called_by": [
+        "AIA_Extract_ExtractFieldsFromJsonResponse",
+        "AIA_Extraction_GetConfidenceForIds",
+        "AIA_FormatValuesForDatabase"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40903",
+      "name": "AIA_Extract_ExtractFieldsFromJsonResponse",
+      "type": "Expression Rule",
+      "description": "Extract fields from json response",
+      "parameters": [],
+      "calls": [
+        "AIA_EXTRACTION_FIELD_TYPE_TABLE",
+        "AIA_ExtractJson",
+        "AIA_Extraction_GetConfidenceForIds",
+        "AIA_Extraction_GetFieldsForModelVersionId",
+        "AIA_Extraction_KeepXSpans",
+        "AIA_FormatValuesForDatabase",
+        "AIA_IsObject",
+        "AIA_Test_GetLatestExtractionInstance",
+        "SHRD_ReadDocumentContent"
+      ],
+      "called_by": [
+        "AIA_Extraction_CreateUpdateInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_176683",
+      "name": "AIA_Extraction_AddTokens",
+      "type": "Expression Rule",
+      "description": "Add tokens to extraction instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Initiate Extraction"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec60-a08d-8000-9bee-011c48011c48_124687",
+      "name": "AIA_Extraction_CreateUpdateInstance",
+      "type": "Expression Rule",
+      "description": "Create or update instance",
+      "parameters": [],
+      "calls": [
+        "AIA_Extract_ExtractFieldsFromJsonResponse",
+        "AIA_GetPageCount",
+        "AIA_INSTANCE_STATUS_EXTRACTED",
+        "AIA_INSTANCE_STATUS_INITIATED",
+        "AIA_INSTANCE_STATUS_RECONCILED_AUTOMATICALLY",
+        "AIA_INSTANCE_STATUS_RECONCILED_MANUALLY",
+        "AIA_PLG_WriteFile",
+        "AIA_UTIL_SetRecordFields"
+      ],
+      "called_by": [
+        "AIA Initiate Extraction"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee94-7472-8000-9bb4-011c48011c48_112828",
+      "name": "AIA_Extraction_GetConfidenceForIds",
+      "type": "Expression Rule",
+      "description": "Get confidence value for spanids",
+      "parameters": [],
+      "calls": [
+        "AIA_ExtractJson",
+        "AIA_PLG_QueryFile",
+        "AIA_Test_GetLatestExtractionInstanceWithFields"
+      ],
+      "called_by": [
+        "AIA_Extract_ExtractFieldsFromJsonResponse"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec1e-9975-8000-9bd6-011c48011c48_1381838",
+      "name": "AIA_Extraction_GetFieldsForModelVersionId",
+      "type": "Expression Rule",
+      "description": "Returns fields for model version id",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extract_ExtractFieldsFromJsonResponse"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_43077",
+      "name": "AIA_Extraction_GetInstanceById",
+      "type": "Expression Rule",
+      "description": "Get extraction instance and all relationships by id",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Test_GetLatestExtractionInstance",
+        "AIA_Test_GetLatestExtractionInstanceWithFields"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_94224",
+      "name": "AIA_Extraction_GetLatestModelVersionIdByKey",
+      "type": "Expression Rule",
+      "description": "Get latest model version id by key",
+      "parameters": [],
+      "calls": [
+        "AIA_MODEL_VERSION_STATUS_PUBLISHED"
+      ],
+      "called_by": [
+        "AIA Initiate Extraction"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec5c-9eda-8000-9bec-011c48011c48_117023",
+      "name": "AIA_Extraction_GetModelVersionById",
+      "type": "Expression Rule",
+      "description": "Get model version by id",
+      "parameters": [],
+      "calls": [
+        "AIA_EXTRACTION_MODEL_VERSION_FIELDS"
+      ],
+      "called_by": [
+        "AIA Initiate Extraction"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3e-060c-8000-9bb8-011c48011c48_197494",
+      "name": "AIA_Extraction_KeepXSpans",
+      "type": "Expression Rule",
+      "description": "Keep X spans",
+      "parameters": [],
+      "calls": [
+        "SHRD_ArrayKeepXEntries"
+      ],
+      "called_by": [
+        "AIA_Extract_ExtractFieldsFromJsonResponse"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_88777",
+      "name": "AIA_Extraction_ShouldConvertToPdf",
+      "type": "Expression Rule",
+      "description": "Should this input doc be converted to pdf",
+      "parameters": [],
+      "calls": [
+        "AIA_AI_SUPPORTED_DOC_TYPES",
+        "AIA_DocIsPdf",
+        "AIA_FLAG_CONVERT_IMAGES",
+        "AIA_IsDocumentExtension"
+      ],
+      "called_by": [
+        "AIA Initiate Extraction"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_55250",
+      "name": "AIA_Extraction_ShouldRunAdvancedIdp",
+      "type": "Expression Rule",
+      "description": "Used in the main model to determine whether to run advanced idp",
+      "parameters": [],
+      "calls": [
+        "AIA_ADVANCED_IDP_ENABLED",
+        "AIA_AI_SUPPORTED_DOC_TYPES",
+        "AIA_IsDocumentExtension"
+      ],
+      "called_by": [
+        "AIA Initiate Extraction"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3d-1f5c-8000-9ba4-011c48011c48_14175",
+      "name": "AIA_FormatValueForDatabase",
+      "type": "Expression Rule",
+      "description": "Format a single value for database",
+      "parameters": [],
+      "calls": [
+        "AIA_ConvertDateToIso",
+        "AIA_EXTRACTION_FIELD_TYPES",
+        "AIA_TypeHelper"
+      ],
+      "called_by": [
+        "AIA_FormatValuesForDatabase"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3d-1f5c-8000-9ba4-011c48011c48_14149",
+      "name": "AIA_FormatValuesForDatabase",
+      "type": "Expression Rule",
+      "description": "Format values for persistence to database",
+      "parameters": [],
+      "calls": [
+        "AIA_EXTRACTION_FIELD_TYPE_TABLE",
+        "AIA_ExtractJson",
+        "AIA_FormatValueForDatabase",
+        "AIA_IsObject",
+        "AIA_ToJson",
+        "SHRD_IsList",
+        "SHRD_Merge"
+      ],
+      "called_by": [
+        "AIA_Extract_ExtractFieldsFromJsonResponse"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee52-8983-8000-9ba6-011c48011c48_27887",
+      "name": "AIA_GetDocumentMetadata",
+      "type": "Expression Rule",
+      "description": "Get document metadata",
+      "parameters": [],
+      "calls": [
+        "AIA_EML_PAGE_CHAR_COUNT"
+      ],
+      "called_by": [
+        "AIA Initiate Extraction",
+        "AIA_GetPageCount"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_82400",
+      "name": "AIA_GetPageCount",
+      "type": "Expression Rule",
+      "description": "Get page count for document",
+      "parameters": [],
+      "calls": [
+        "AIA_GetDocumentMetadata"
+      ],
+      "called_by": [
+        "AIA_Extraction_CreateUpdateInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_182518",
+      "name": "AIA_IsDocumentExtension",
+      "type": "Expression Rule",
+      "description": "Is the document of one of the following extensions",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_DocIsPdf",
+        "AIA_Extraction_ShouldConvertToPdf",
+        "AIA_Extraction_ShouldRunAdvancedIdp"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_85019",
+      "name": "AIA_IsExtractionInstance",
+      "type": "Expression Rule",
+      "description": "Returns true if the instance is an extraction instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_CreateValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec8b-a448-8000-9ba4-011c48011c48_12288",
+      "name": "AIA_IsObject",
+      "type": "Expression Rule",
+      "description": "Is value an object?",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extract_ExtractFieldsFromJsonResponse",
+        "AIA_FormatValuesForDatabase"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee35-0ca2-8000-9ba6-011c48011c48_13646",
+      "name": "AIA_LogMetric",
+      "type": "Expression Rule",
+      "description": "Log metric",
+      "parameters": [],
+      "calls": [
+        "AIA_MTR_AI_REVIEW_ACCEPT",
+        "AIA_MTR_AI_REVIEW_FIELD",
+        "AIA_MTR_AI_REVIEW_IGNORE",
+        "AIA_MTR_AI_REVIEW_INSTANCE",
+        "AIA_MTR_AI_REVIEW_MODEL_VERSION",
+        "AIA_MTR_AI_VALIDATION_RULE_OCCURANCE",
+        "AIA_MTR_CLASSIFICATION_INSTANCE_CREATED",
+        "AIA_MTR_CLASSIFICATION_INSTANCE_RECONCILED",
+        "AIA_MTR_CLASSIFICATION_MODEL_CREATED",
+        "AIA_MTR_CLASSIFICATION_MODEL_VERSION_RESTORE",
+        "AIA_MTR_CONFIDENCE_THRESHOLD_DISABLED",
+        "AIA_MTR_CONFIDENCE_THRESHOLD_ENABLED",
+        "AIA_MTR_ClassificationInstanceClassifiedWithErrors",
+        "AIA_MTR_ClassificationInstanceCreated",
+        "AIA_MTR_ClassificationInstanceError",
+        "AIA_MTR_ClassificationInstanceReconciled",
+        "AIA_MTR_ClassificationModelCreated",
+        "AIA_MTR_ClassificationModelVersionRestore",
+        "AIA_MTR_ConfidenceThresholdDisabled",
+        "AIA_MTR_ConfidenceThresholdEnabled",
+        "AIA_MTR_EXTRACTION_INSTANCE_CREATED",
+        "AIA_MTR_EXTRACTION_INSTANCE_RECONCILED",
+        "AIA_MTR_EXTRACTION_MODEL_CREATED",
+        "AIA_MTR_EXTRACTION_MODEL_VERSION_RESTORE",
+        "AIA_MTR_ExtractionInstanceAiReview",
+        "AIA_MTR_ExtractionInstanceCreated",
+        "AIA_MTR_ExtractionInstanceError",
+        "AIA_MTR_ExtractionInstanceExtractedWithErrors",
+        "AIA_MTR_ExtractionInstanceFieldAiReview",
+        "AIA_MTR_ExtractionInstanceReconciled",
+        "AIA_MTR_ExtractionInstanceValidationAccept",
+        "AIA_MTR_ExtractionInstanceValidationIgnore",
+        "AIA_MTR_ExtractionModelCreated",
+        "AIA_MTR_ExtractionModelVersionAiReview",
+        "AIA_MTR_ExtractionModelVersionRestore",
+        "AIA_MTR_INSTANCE_STATUS_CLASSIFICATION_CRITICAL_ERROR",
+        "AIA_MTR_INSTANCE_STATUS_CLASSIFIED_WITH_ERRORS",
+        "AIA_MTR_INSTANCE_STATUS_EXTRACTED_WITH_ERRORS",
+        "AIA_MTR_INSTANCE_STATUS_EXTRACTION_CRITICAL_ERROR",
+        "AIA_MTR_InstanceValidationAiRuleOccurance",
+        "AIA_MTR_MODEL_TEST_RUN_INITIATED",
+        "AIA_MTR_MODEL_TEST_SUITE_CREATED",
+        "AIA_MTR_MODEL_TEST_SUITE_UPDATED",
+        "AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_INSTANCE_CREATED",
+        "AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_INSTANCE_RECONCILED",
+        "AIA_MTR_MULTIPLE_OUTPUTS_CLASSIFICATION_MODEL_VERSION_CREATED",
+        "AIA_MTR_ModelTestRunInitiated",
+        "AIA_MTR_ModelTestSuiteCreated",
+        "AIA_MTR_ModelTestSuiteUpdated",
+        "AIA_MTR_ModelVersionConfigureSampling",
+        "AIA_MTR_MultipleOutputsClassificationInstanceCreated",
+        "AIA_MTR_MultipleOutputsClassificationInstanceReconciled",
+        "AIA_MTR_MultipleOutputsClassificationModelVersionCreated",
+        "AIA_MTR_SPOT_CHECK_MODEL_VERSION"
+      ],
+      "called_by": [
+        "AIA Initiate Extraction"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92467",
+      "name": "AIA_MTR_ClassificationInstanceClassifiedWithErrors",
+      "type": "Expression Rule",
+      "description": "Metric rule called when classification instance has validation errors",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_180860",
+      "name": "AIA_MTR_ClassificationInstanceCreated",
+      "type": "Expression Rule",
+      "description": "Metric rule called when classification instance is created",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92474",
+      "name": "AIA_MTR_ClassificationInstanceError",
+      "type": "Expression Rule",
+      "description": "Metric rule called when classification instance has critical error",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_180874",
+      "name": "AIA_MTR_ClassificationInstanceReconciled",
+      "type": "Expression Rule",
+      "description": "Metric rule called when classification instance is reconciled",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_180846",
+      "name": "AIA_MTR_ClassificationModelCreated",
+      "type": "Expression Rule",
+      "description": "Metric rule called when classification model is created",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeca-c121-8000-9cab-011c48011c48_182002",
+      "name": "AIA_MTR_ClassificationModelVersionRestore",
+      "type": "Expression Rule",
+      "description": "Metric rule called when a previous version of a classification model is restored",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000eec9-5676-8000-9c92-011c48011c48_179359",
+      "name": "AIA_MTR_ConfidenceThresholdDisabled",
+      "type": "Expression Rule",
+      "description": "Metric rule called when confidence threshold is disabled on an extraction model",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000eec9-5676-8000-9c92-011c48011c48_179352",
+      "name": "AIA_MTR_ConfidenceThresholdEnabled",
+      "type": "Expression Rule",
+      "description": "Metric rule called when confidence threshold is enabled on an extraction model",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92571",
+      "name": "AIA_MTR_ExtractionInstanceAiReview",
+      "type": "Expression Rule",
+      "description": "Triggered when AI review raises an error (instance level, this instance has 1 or more errors raised by AI review)",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_180853",
+      "name": "AIA_MTR_ExtractionInstanceCreated",
+      "type": "Expression Rule",
+      "description": "Metric rule called when extraction instance is created",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92488",
+      "name": "AIA_MTR_ExtractionInstanceError",
+      "type": "Expression Rule",
+      "description": "Metric rule called when extraction instance has critical error",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92481",
+      "name": "AIA_MTR_ExtractionInstanceExtractedWithErrors",
+      "type": "Expression Rule",
+      "description": "Metric rule called when extraction instance has validation errors",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92564",
+      "name": "AIA_MTR_ExtractionInstanceFieldAiReview",
+      "type": "Expression Rule",
+      "description": "Triggered when AI review raises an error (field level)",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_180867",
+      "name": "AIA_MTR_ExtractionInstanceReconciled",
+      "type": "Expression Rule",
+      "description": "Metric rule called when extraction instance is reconciled",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92585",
+      "name": "AIA_MTR_ExtractionInstanceValidationAccept",
+      "type": "Expression Rule",
+      "description": "Triggered when user clicks accept",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92592",
+      "name": "AIA_MTR_ExtractionInstanceValidationIgnore",
+      "type": "Expression Rule",
+      "description": "Triggered when user clicks ignored",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_180834",
+      "name": "AIA_MTR_ExtractionModelCreated",
+      "type": "Expression Rule",
+      "description": "Metric rule called when extraction model is created",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee78-c4db-8000-9bae-011c48011c48_92578",
+      "name": "AIA_MTR_ExtractionModelVersionAiReview",
+      "type": "Expression Rule",
+      "description": "Triggered when model is created with AI review turned on OR AI review is turned on for a model",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeca-c121-8000-9cab-011c48011c48_181995",
+      "name": "AIA_MTR_ExtractionModelVersionRestore",
+      "type": "Expression Rule",
+      "description": "Metric rule called when a previous version of an extraction model is restored",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeb2-df20-8000-9bfe-011c48011c48_154565",
+      "name": "AIA_MTR_InstanceValidationAiRuleOccurance",
+      "type": "Expression Rule",
+      "description": "Triggered when a model validation rule of type AI validation creates a validation instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef46-744c-8000-9fed-011c48011c48_483964",
+      "name": "AIA_MTR_ModelTestRunInitiated",
+      "type": "Expression Rule",
+      "description": "Metric rule called when Test Run is initiated",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef46-744c-8000-9fed-011c48011c48_483943",
+      "name": "AIA_MTR_ModelTestSuiteCreated",
+      "type": "Expression Rule",
+      "description": "Metric rule called when Test Suite is created",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef46-744c-8000-9fed-011c48011c48_483991",
+      "name": "AIA_MTR_ModelTestSuiteUpdated",
+      "type": "Expression Rule",
+      "description": "Metric rule called when Test Suite is updated",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000eea3-15ee-8000-9bd4-011c48011c48_137447",
+      "name": "AIA_MTR_ModelVersionConfigureSampling",
+      "type": "Expression Rule",
+      "description": "Triggered when model is created with spot check turned on OR spot check is turned on for a model",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef55-14e0-8000-a041-011c48011c48_505631",
+      "name": "AIA_MTR_MultipleOutputsClassificationInstanceCreated",
+      "type": "Expression Rule",
+      "description": "Metric rule called when a Classification Instance is created on a model version that allows multiple outputs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef55-14e0-8000-a041-011c48011c48_505670",
+      "name": "AIA_MTR_MultipleOutputsClassificationInstanceReconciled",
+      "type": "Expression Rule",
+      "description": "Metric rule called when a Classification Instance is reconciled for a model version that allows multiple outputs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ef55-14e0-8000-a041-011c48011c48_505575",
+      "name": "AIA_MTR_MultipleOutputsClassificationModelVersionCreated",
+      "type": "Expression Rule",
+      "description": "Metric rule called when Classification Model Version is created that allows multiple outputs",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_LogMetric"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_176573",
+      "name": "AIA_NameFromInput",
+      "type": "Expression Rule",
+      "description": "Create name from input text or doc",
+      "parameters": [],
+      "calls": [
+        "SHRD_CleanForFilename"
+      ],
+      "called_by": [
+        "AIA Initiate Extraction"
+      ]
+    },
+    {
+      "uuid": "_a-0000eea0-7c7f-8000-9bce-011c48011c48_123615",
+      "name": "AIA_PLG_QueryFile",
+      "type": "Expression Rule",
+      "description": "Wrapper for `queryFile` plugin function",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_GetConfidenceForIds"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_184766",
+      "name": "AIA_PLG_WriteFile",
+      "type": "Expression Rule",
+      "description": "Wrapper for `writeFile` plugin function",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_CreateUpdateInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_159813",
+      "name": "AIA_ShouldRotateDoc",
+      "type": "Expression Rule",
+      "description": "Rule to determine whether a doc should be attempted to be rotated",
+      "parameters": [],
+      "calls": [
+        "AIA_DocIsPdf"
+      ],
+      "called_by": [
+        "AIA Initiate Extraction"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40839",
+      "name": "AIA_Test_GetLatestExtractionInstance",
+      "type": "Expression Rule",
+      "description": "Get the latest extraction instance",
+      "parameters": [],
+      "calls": [
+        "AIA_Extraction_GetInstanceById"
+      ],
+      "called_by": [
+        "AIA_CreateValidation",
+        "AIA_Extract_ExtractFieldsFromJsonResponse"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_199422",
+      "name": "AIA_Test_GetLatestExtractionInstanceWithFields",
+      "type": "Expression Rule",
+      "description": "Get the latest extraction instance with fields",
+      "parameters": [],
+      "calls": [
+        "AIA_Extraction_GetInstanceById"
+      ],
+      "called_by": [
+        "AIA_Extraction_GetConfidenceForIds"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed16-a792-8000-9c64-011c48011c48_274759",
+      "name": "AIA_ToJson",
+      "type": "Expression Rule",
+      "description": "To json with error handling",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_FormatValuesForDatabase"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec44-cb49-8000-9be6-011c48011c48_77894",
+      "name": "AIA_TypeHelper",
+      "type": "Expression Rule",
+      "description": "Try to help convert types",
+      "parameters": [],
+      "calls": [
+        "AIA_ConvertIsoToDate",
+        "AIA_EXTRACTION_FIELD_TYPES"
+      ],
+      "called_by": [
+        "AIA_FormatValueForDatabase"
+      ]
+    },
+    {
+      "uuid": "_a-0000eea3-15ee-8000-9bd4-011c48011c48_138762",
+      "name": "AIA_UTIL_SetRecordFields",
+      "type": "Expression Rule",
+      "description": "Runs a bulk update on a record object, setting new values for its fields",
+      "parameters": [],
+      "calls": [
+        "AIA_UTIL_isBlank",
+        "AIA_UTIL_rejectNullValuesFromArray"
+      ],
+      "called_by": [
+        "AIA_Extraction_CreateUpdateInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb0-f009-8000-9ba8-011c48011c48_97164",
+      "name": "AIA_UTIL_isBlank",
+      "type": "Expression Rule",
+      "description": "Evaluates if the provided value is empty/blank. Returns True or False.",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_UTIL_SetRecordFields",
+        "AIA_UTIL_rejectNullValuesFromArray"
+      ]
+    },
+    {
+      "uuid": "_a-0000edb0-f009-8000-9ba8-011c48011c48_97176",
+      "name": "AIA_UTIL_rejectNullValuesFromArray",
+      "type": "Expression Rule",
+      "description": "Removes null values from an array of primitive types or CDTs (for CDT the index must be null, not each field)",
+      "parameters": [],
+      "calls": [
+        "AIA_UTIL_isBlank"
+      ],
+      "called_by": [
+        "AIA_UTIL_SetRecordFields"
+      ]
+    },
+    {
+      "uuid": "_a-0001ee05-5006-8000-9ba7-011c48011c48_15621",
+      "name": "SHRD_ArrayKeepXEntries",
+      "type": "Expression Rule",
+      "description": "Keep X entries of an array",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_Extraction_KeepXSpans"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed74-17c4-8000-9c8d-011c48011c48_403026",
+      "name": "SHRD_CleanForFilename",
+      "type": "Expression Rule",
+      "description": "Clean text for a file or folder name",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_NameFromInput"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed16-a792-8000-9c64-011c48011c48_273379",
+      "name": "SHRD_IsList",
+      "type": "Expression Rule",
+      "description": "Is the type a list?",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_ExtractJson",
+        "AIA_FormatValuesForDatabase"
+      ]
+    },
+    {
+      "uuid": "_a-0000e79d-2c73-8000-97b9-01ef9001ef90_71617",
+      "name": "SHRD_Merge",
+      "type": "Expression Rule",
+      "description": "Merges multiple source into object",
+      "parameters": [],
+      "calls": [
+        "SHRD_MergeInner"
+      ],
+      "called_by": [
+        "AIA_FormatValuesForDatabase"
+      ]
+    },
+    {
+      "uuid": "_a-0000e79d-2c73-8000-97b9-01ef9001ef90_77953",
+      "name": "SHRD_MergeInner",
+      "type": "Expression Rule",
+      "description": "Wrapped by SHRD_Merge rule",
+      "parameters": [],
+      "calls": [
+        "SHRD_Update"
+      ],
+      "called_by": [
+        "SHRD_Merge",
+        "SHRD_Update"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3e-060c-8000-9bb8-011c48011c48_203441",
+      "name": "SHRD_ReadDocumentContent",
+      "type": "Expression Rule",
+      "description": "Read content from text document",
+      "parameters": [],
+      "calls": [
+        "AIA_EXAMPLE_DOC_EXTRACTION_PDF"
+      ],
+      "called_by": [
+        "AIA_Extract_ExtractFieldsFromJsonResponse"
+      ]
+    },
+    {
+      "uuid": "_a-0000e79d-2c73-8000-97b9-01ef9001ef90_71638",
+      "name": "SHRD_Update",
+      "type": "Expression Rule",
+      "description": "Deep update",
+      "parameters": [],
+      "calls": [
+        "SHRD_MergeInner"
+      ],
+      "called_by": [
+        "SHRD_MergeInner"
+      ]
+    },
+    {
+      "uuid": "000dec67-1fdf-8000-019a-7f0000014e7a",
+      "name": "AIA Initiate Extraction",
+      "type": "Process Model",
+      "description": "Create extraction instance",
+      "calls": [
+        "AIA Extraction Instance",
+        "AIA_CreateValidation",
+        "AIA_CreateValidationErrorMessage",
+        "AIA_Extraction_AddTokens",
+        "AIA_Extraction_CreateUpdateInstance",
+        "AIA_Extraction_GetLatestModelVersionIdByKey",
+        "AIA_Extraction_GetModelVersionById",
+        "AIA_Extraction_ShouldConvertToPdf",
+        "AIA_Extraction_ShouldRunAdvancedIdp",
+        "AIA_GetDocumentMetadata",
+        "AIA_INT_EXTRACTION_MAX_FILE_SIZE",
+        "AIA_INT_EXTRACTION_MAX_PAGE_COUNT",
+        "AIA_LogMetric",
+        "AIA_MODEL_TYPE_VALUES",
+        "AIA_MTR_EXTRACTION_INSTANCE_CREATED",
+        "AIA_NameFromInput",
+        "AIA_SEVERITY_CRITICAL",
+        "AIA_ShouldRotateDoc",
+        "AIA_VALIDATION_TYPE_ID_EXECUTION",
+        "File exceeds max size",
+        "The document exceeds the maximum file size and cannot be extracted.",
+        "The document exceeds the maximum page size and cannot be extracted."
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "64322398-e457-4695-87d5-09794164cf77",
+      "name": "AIA Extraction Instance",
+      "type": "Record Type",
+      "description": "Record to hold the AI Extraction scores and confidence threshold for each instance",
+      "actions": [
+        "reconcileField",
+        "reconcileUsingTestCase",
+        "runValidations",
+        "addRemoveTestCase",
+        "deleteExtractionInstance",
+        "deleteInstanceAndSkipConfirmation",
+        "updateAssociatedTestSuites"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "#\"urn:appian:translation-string:v1:ab6ce936-2015-4e58-a2d1-a10bcd2372e4\"",
+        "=#\"urn:appian:translation-string:v1:fe8f8d91-a84f-4494-9270-4959354698ce\"",
+        "List View"
+      ],
+      "calls": [
+        "AIA_EXTRACTION_FIELD_TYPE_TABLE",
+        "AIA_INSTANCE_STATUS_INITIATED"
+      ],
+      "called_by": [
+        "AIA Initiate Extraction"
+      ]
+    },
+    {
+      "uuid": "75321229-b22a-4a0b-a129-260a419a776f",
+      "name": "File exceeds max size",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA Initiate Extraction"
+      ]
+    },
+    {
+      "uuid": "a2096227-723f-4814-95e4-4b4c68568fe9",
+      "name": "The document exceeds the maximum file size and cannot be extracted.",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA Initiate Extraction"
+      ]
+    },
+    {
+      "uuid": "773bee4c-81ab-415d-94b4-3c3e1012f76f",
+      "name": "The document exceeds the maximum page size and cannot be extracted.",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA Initiate Extraction"
+      ]
+    }
+  ]
+}

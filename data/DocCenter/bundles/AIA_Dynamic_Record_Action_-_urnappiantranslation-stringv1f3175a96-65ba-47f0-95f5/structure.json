@@ -1,0 +1,310 @@
+{
+  "_metadata": {
+    "bundle_type": "action",
+    "root_name": "AIA Dynamic Record Action - #\"urn:appian:translation-string:v1:f3175a96-65ba-47f0-95f5-dd46a32007f3\"",
+    "parent_name": "AIA Dynamic Record Action",
+    "total_objects": 17
+  },
+  "entry_point": {
+    "action_type": "RECORD_ACTION",
+    "record_type": "AIA Dynamic Record Action",
+    "target_process": "AIA View Document",
+    "form_interface": "AIA_UTIL_displayInlineDocument",
+    "expressions": {
+      "TITLE": "#\"urn:appian:translation-string:v1:f3175a96-65ba-47f0-95f5-dd46a32007f3\"",
+      "DESCRIPTION": null,
+      "VISIBILITY": "=true()",
+      "CONTEXT": "{\n  documentId: #\"SYSTEM_SYSRULES_fromJson_v1\"(rv!identifier).documentId\n}"
+    }
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA View Document",
+      "complexity_score": 1.0,
+      "total_nodes": 2,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ee52-8983-8000-9ba6-011c48011c48_27516",
+      "name": "AIA_AI_SUPPORTED_DOC_TYPES",
+      "type": "Constant",
+      "description": "AI supported document types",
+      "value": [
+        "pdf",
+        "png",
+        "jpeg",
+        "jpg",
+        "tiff"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_UTIL_displayInlineDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2e-dd02-8000-9bde-011c48011c48_50410",
+      "name": "AIA_EXAMPLE_DOC_EXTRACTION_PDF",
+      "type": "Constant",
+      "description": "Example doc for extraction",
+      "value": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40815",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+      "calls": [],
+      "called_by": [
+        "SHRD_ReadDocumentContent"
+      ]
+    },
+    {
+      "uuid": "_a-0000eed1-1d21-8000-9cef-011c48011c48_187601",
+      "name": "AIA_TEXT_BASED_EXTENSIONS",
+      "type": "Constant",
+      "description": "csv, xml",
+      "value": [
+        "csv",
+        "xml"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_UTIL_displayInlineDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec67-5f00-8000-9bf0-011c48011c48_125328",
+      "name": "AIA_FormatDocument",
+      "type": "Expression Rule",
+      "description": "Format document",
+      "parameters": [],
+      "calls": [
+        "AIA_Test_GetLatestClassificationInstance",
+        "AIA_Test_GetLatestExtractionInstance",
+        "Invalid Document"
+      ],
+      "called_by": [
+        "AIA_UTIL_displayInlineDocument",
+        "AIA_ViewCsv"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_182518",
+      "name": "AIA_IsDocumentExtension",
+      "type": "Expression Rule",
+      "description": "Is the document of one of the following extensions",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_UTIL_displayInlineDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec36-59aa-8000-9be0-011c48011c48_52454",
+      "name": "AIA_Test_GetLatestClassificationInstance",
+      "type": "Expression Rule",
+      "description": "Get the latest classification instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_FormatDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40839",
+      "name": "AIA_Test_GetLatestExtractionInstance",
+      "type": "Expression Rule",
+      "description": "Get the latest extraction instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_FormatDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3e-060c-8000-9bb8-011c48011c48_203441",
+      "name": "SHRD_ReadDocumentContent",
+      "type": "Expression Rule",
+      "description": "Read content from text document",
+      "parameters": [],
+      "calls": [
+        "AIA_EXAMPLE_DOC_EXTRACTION_PDF"
+      ],
+      "called_by": [
+        "AIA_ViewCsv"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2c-7618-8000-9bc8-011c48011c48_912344",
+      "name": "AIA_UTIL_displayInlineDocument",
+      "type": "Interface",
+      "description": "Display document on an interface",
+      "parameters": [
+        {
+          "name": "documentId",
+          "type": "http://www.w3.org/2001/XMLSchema:int",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:int",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "height",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 1
+        },
+        {
+          "name": "showWhen",
+          "type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:boolean",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 2
+        }
+      ],
+      "calls": [
+        "AIA_AI_SUPPORTED_DOC_TYPES",
+        "AIA_FormatDocument",
+        "AIA_IsDocumentExtension",
+        "AIA_TEXT_BASED_EXTENSIONS",
+        "AIA_ViewCsv",
+        "AIA_ViewEml",
+        "CLICK HERE",
+        "The attached document cannot be displayed",
+        "to download the file."
+      ],
+      "called_by": [
+        "AIA View Document"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed57-e2bf-8000-9c54-011c48011c48_15225797",
+      "name": "AIA_ViewCsv",
+      "type": "Interface",
+      "description": "View csv file",
+      "parameters": [
+        {
+          "name": "document",
+          "type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+          "raw_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        }
+      ],
+      "calls": [
+        "AIA_FormatDocument",
+        "SHRD_ReadDocumentContent"
+      ],
+      "called_by": [
+        "AIA_UTIL_displayInlineDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec60-a08d-8000-9bee-011c48011c48_121190",
+      "name": "AIA_ViewEml",
+      "type": "Interface",
+      "description": "View EML file",
+      "parameters": [
+        {
+          "name": "eml",
+          "type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+          "raw_type": "http://www.appian.com/ae/types/2009:CollaborationDocument",
+          "required": false,
+          "default_value": null,
+          "description": null,
+          "display_order": 0
+        },
+        {
+          "name": "style",
+          "type": "http://www.w3.org/2001/XMLSchema:string",
+          "raw_type": "http://www.w3.org/2001/XMLSchema:string",
+          "required": false,
+          "default_value": null,
+          "description": "FORM or SECTION",
+          "display_order": 1
+        }
+      ],
+      "calls": [],
+      "called_by": [
+        "AIA_UTIL_displayInlineDocument"
+      ]
+    },
+    {
+      "uuid": "0002ec2e-cbea-8000-3bf7-7f0000014e7a",
+      "name": "AIA View Document",
+      "type": "Process Model",
+      "description": "View document action",
+      "calls": [
+        "AIA_UTIL_displayInlineDocument"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "cdd19acd-88fc-46ad-9184-5bcf62ebd2b3",
+      "name": "CLICK HERE",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_UTIL_displayInlineDocument"
+      ]
+    },
+    {
+      "uuid": "955ba2b6-66dc-4f51-96ff-bc7facbc8d66",
+      "name": "Invalid Document",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_FormatDocument"
+      ]
+    },
+    {
+      "uuid": "f3175a96-65ba-47f0-95f5-dd46a32007f3",
+      "name": "Label for View Document",
+      "type": "Translation String",
+      "description": "Label for View Document",
+      "calls": [],
+      "called_by": []
+    },
+    {
+      "uuid": "c6755e7b-0e3e-4450-a5e8-83768c5f51ff",
+      "name": "The attached document cannot be displayed",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_UTIL_displayInlineDocument"
+      ]
+    },
+    {
+      "uuid": "8831778e-03c2-46c1-aeae-baa89c699eca",
+      "name": "to download the file.",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_UTIL_displayInlineDocument"
+      ]
+    }
+  ]
+}

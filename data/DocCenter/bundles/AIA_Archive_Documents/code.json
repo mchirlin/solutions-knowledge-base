@@ -1,0 +1,27 @@
+{
+  "_metadata": {
+    "bundle_id": "AIA_Archive_Documents"
+  },
+  "objects": {
+    "_a-0000ee89-e9c9-8000-9bb2-011c48011c48_109370": {
+      "name": "AIA_DocumentArchivalRecordsToUpdate",
+      "type": "Expression Rule",
+      "sail_code": "#\"SYSTEM_SYSRULES_forEach\"(\n  items: ri!docDeletionMap,\n  expression: cast(\n    fv!item.recordType,\n    #\"SYSTEM_SYSRULES_fromJson_v1\"(#\"SYSTEM_SYSRULES_toJson_v1\"(reduce(\n      #\"urn:appian:function:v1:a:update\",\n      a!map(),\n      merge(\n        {tostring(fv!item.idField), tostring(fv!item.docField)},\n        {fv!item.id, null}\n      )\n    )\n  )))\n)"
+    },
+    "0002ee93-a6df-8000-fcc5-7f0000014e7a": {
+      "name": "AIA Archive Documents",
+      "type": "Process Model",
+      "sail_code": "// Output: ?\nrule!AIA_GetDocumentsForArchival()\n\n// Input: ?\n={rule!AIA_DocumentArchivalRecordsToUpdate(\n  docDeletionMap: pv!docDeletionMap\n)}\n\n// Input: ?\n=pv!docDeletionMap[tp!instanceindex].docId"
+    },
+    "_a-0000ee89-e9c9-8000-9bb2-011c48011c48_109349": {
+      "name": "AIA_GetDocumentsForArchival",
+      "type": "Expression Rule",
+      "sail_code": "a!flatten(\n  {\n    if(\n      cons!AIA_SETTING_ARCHIVE_BOUNDING_BOXES,\n      reject(\n        fn!isnull,\n        #\"SYSTEM_SYSRULES_forEach\"(\n          #\"SYSTEM_SYSRULES_queryRecordType_v3\"(\n            recordType: recordType!AIA Extraction Instance,\n            fields: {\n              recordType!AIA Extraction Instance.id,\n              recordType!AIA Extraction Instance.boundingBoxesDocumentId\n            },\n            filters: {\n              #\"SYSTEM_SYSRULES_queryFilter\"(\n                field: recordType!AIA Extraction Instance.createdOn,\n                operator: \"<\",\n                value: todatetime(subtractdays(now(), cons!AIA_SETTING_BOUNDING_BOX_DOC_ARCHIVAL_DAYS))\n              ),\n              #\"SYSTEM_SYSRULES_queryFilter\"(\n                field: recordType!AIA Extraction Instance.boundingBoxesDocumentId,\n                operator: \"not null\"\n              )\n            },\n            pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(1,5000)\n          ).data,\n          if(\n            rule!SHRD_DoesDocumentExist(\n              docId: fv!item[recordType!AIA Extraction Instance.boundingBoxesDocumentId]\n            ), \n            a!map(\n              recordType: recordType!AIA Extraction Instance,\n              idField: recordType!AIA Extraction Instance.id,\n              id: fv!item[recordType!AIA Extraction Instance.id],\n              docField: recordType!AIA Extraction Instance.boundingBoxesDocumentId,\n              docId: fv!item[recordType!AIA Extraction Instance.boundingBoxesDocumentId]\n            ),\n            null\n          )\n        )\n      ),\n      {}\n    )\n  }\n)"
+    },
+    "_a-0000edd9-a94f-8000-9bb2-011c48011c48_152373": {
+      "name": "SHRD_DoesDocumentExist",
+      "type": "Expression Rule",
+      "sail_code": "a!isNotNullOrEmpty(try(\n  document(\n    ri!docId,\n    \"name\"\n  ),\n  null\n))"
+    }
+  }
+}

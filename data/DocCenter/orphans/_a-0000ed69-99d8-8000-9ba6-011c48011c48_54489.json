@@ -1,0 +1,70 @@
+{
+  "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_54489",
+  "name": "AIA_ClassificationModelVersion_RecordAction_viewPrompt",
+  "type": "Interface",
+  "description": "Form interface for Classification Version Model Prompt as an action",
+  "sail_code": "a!localVariables(\n  local!brandingMap: rule!AIA_UTIL_LoadBrandingMap(),\n  #\"SYSTEM_SYSRULES_headerContentLayout\"(\n    contents: {\n      #\"SYSTEM_SYSRULES_cardLayout\"(\n        contents: #\"SYSTEM_SYSRULES_sectionLayout_v1\"(\n          labelHeadingTag: \"H2\",\n          labelSize: \"SMALL\",\n          labelColor: local!brandingMap.Gray4,\n          contents: rule!AIA_ClassificationModelVersion_Prompt_TokenKPI(\n            brandingMap: local!brandingMap,\n            modelVersionId: ri!ModelVersion[recordType!AIA Classification Model Version.modelVersionId]\n          )\n        ),\n        style: local!brandingMap.White,\n        showBorder: false(),\n        marginBelow: \"STANDARD\"\n      ),\n      #\"SYSTEM_SYSRULES_columnsLayout\"(\n        columns: {\n          #\"SYSTEM_SYSRULES_columnLayout\"(\n            contents: #\"SYSTEM_SYSRULES_cardLayout\"(\n              contents: #\"SYSTEM_SYSRULES_sectionLayout_v1\"(\n                label: #\"urn:appian:translation-string:v1:ab6ce936-2015-4e58-a2d1-a10bcd2372e4\",\n                labelHeadingTag: \"H2\",\n                labelSize: \"SMALL\",\n                labelColor: local!brandingMap.Gray4,\n                contents: #\"SYSTEM_SYSRULES_cardLayout\"(\n                  padding: \"LESS\",\n                  height: \"AUTO\",\n                  style: local!brandingMap.AppianBackground,\n                  marginAbove: \"NONE\",\n                  marginBelow: \"NONE\",\n                  showBorder: local!brandingMap.CardShowBorder,\n                  contents: #\"SYSTEM_SYSRULES_paragraphField\"(\n                    labelPosition: \"COLLAPSED\",\n                    value: rule!AIA_Classification_GeneratePrompt(modelVersion: ri!ModelVersion, ),\n                    readOnly: true\n                  )\n                )\n              ),\n              style: local!brandingMap.White,\n              showBorder: false()\n            ),\n\n          ),\n          /*Prompt Examples*/\n          #\"SYSTEM_SYSRULES_columnLayout\"(\n            contents: #\"SYSTEM_SYSRULES_cardLayout\"(\n              contents: #\"SYSTEM_SYSRULES_sectionLayout_v1\"(\n                label: #\"urn:appian:translation-string:v1:50f1d007-13c9-4e75-b540-e96bc09a3968\",\n                labelHeadingTag: \"H2\",\n                labelSize: \"SMALL\",\n                labelColor: local!brandingMap.Gray4,\n                contents: if(\n                  a!isNullOrEmpty(\n                    ri!ModelVersion[recordType!AIA Classification Model Version.examples]\n                  ),\n                  rule!AIA_UTIL_displayEmptyMessage(\n                    emptyMessage: #\"urn:appian:translation-string:v1:b33caf0b-37ef-4a87-b284-1a23eb79c9e8\",\n                    brandingMap: local!brandingMap\n                  ),\n                  #\"SYSTEM_SYSRULES_forEach\"(\n                    items: ri!ModelVersion[recordType!AIA Classification Model Version.examples],\n                    expression: {\n                      #\"SYSTEM_SYSRULES_boxLayout\"(\n                        showBorder: false,\n                        label: #\"urn:appian:translation-string:v1:e95689a9-6b4a-4515-a7f3-f683f15bf0c7\"(\n                          #\"urn:appian:translation-variable:v1:458c3433-d183-4858-a240-e9805a843147\": fv!index\n                        ),\n                        labelHeadingTag: \"H3\",\n                        padding: \"NONE\",\n                        contents: {\n                          #\"SYSTEM_SYSRULES_cardLayout\"(\n                            contents: {\n                              /*Example Input Value*/\n                              #\"SYSTEM_SYSRULES_paragraphField\"(\n                                readOnly: true,\n                                label: #\"urn:appian:translation-string:v1:4a6eaf6a-0039-4c71-abd0-e740b0eea194\",\n                                labelPosition: \"ABOVE\",\n                                value: if(\n                                  a!isNullOrEmpty(\n                                    fv!item[recordType!AIA Model Version Example.input]\n                                  ),\n                                  \"-\",\n                                  fv!item[recordType!AIA Model Version Example.input]\n                                ),\n\n                              ),\n                              /*Example Output Value*/\n                              #\"SYSTEM_SYSRULES_paragraphField\"(\n                                readOnly: true,\n                                label: #\"urn:appian:translation-string:v1:aa3725db-5df9-4b9f-9caa-8e203e558de8\",\n                                labelPosition: \"ABOVE\",\n                                value: if(\n                                  a!isNullOrEmpty(\n                                    fv!item[recordType!AIA Model Version Example.output]\n                                  ),\n                                  \"-\",\n                                  fv!item[recordType!AIA Model Version Example.output]\n                                ),\n\n                              ),\n                              /*Example Rule Value*/\n                              #\"SYSTEM_SYSRULES_paragraphField\"(\n                                readOnly: true,\n                                label: #\"urn:appian:translation-string:v1:af1495f1-ddf0-446b-a3f4-5bacc9101672\",\n                                labelPosition: \"ABOVE\",\n                                value: if(\n                                  a!isNullOrEmpty(\n                                    fv!item[recordType!AIA Model Version Example.rule]\n                                  ),\n                                  \"-\",\n                                  fv!item[recordType!AIA Model Version Example.rule]\n                                ),\n\n                              )\n                            },\n                            style: local!brandingMap.DefaultPageBackground,\n                            showBorder: false()\n                          )\n                        },\n                        isCollapsible: true(),\n                        style: local!brandingMap.Blue1,\n                        marginBelow: \"STANDARD\"\n                      )\n                    }\n                  )\n                )\n              ),\n              style: local!brandingMap.White,\n              showBorder: false()\n            )\n          )\n        }\n      )\n    },\n    backgroundColor: local!brandingMap.AppianBackground\n  )\n)",
+  "calls": [
+    {
+      "name": "AIA_UTIL_LoadBrandingMap",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_ClassificationModelVersion_Prompt_TokenKPI",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_Classification_GeneratePrompt",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_UTIL_displayEmptyMessage",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Prompt",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Examples",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Label for No examples have been added yet",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Example {number}",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Input",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Output",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Rule",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_Test_GetLatestExtractionModelVersion",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

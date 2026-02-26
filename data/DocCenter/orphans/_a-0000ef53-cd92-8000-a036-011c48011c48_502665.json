@@ -1,0 +1,9 @@
+{
+  "uuid": "_a-0000ef53-cd92-8000-a036-011c48011c48_502665",
+  "name": "SHRD_UTIL_castJsonToMap",
+  "type": "Expression Rule",
+  "description": "casts jsonText to map with null handling",
+  "sail_code": "a!match(\n  value: if(\n    a!isNotNullOrEmpty(ri!json),\n    #\"SYSTEM_SYSRULES_fromJson_v1\"(jsonText: ri!json),\n    null\n  ),\n  default: fv!value,\n  /*null output - null map*/\n  whenTrue: or(\n    a!isNullOrEmpty(fv!value),\n    ri!json = \"{}\"\n  ),\n  then: cast(typeof(a!map()),null),\n  /*list of dictonary or variant output - list of map*/\n  whenTrue: or(\n    typeof(fv!value)=typeof({{id: 1}}),\n    typeof(fv!value)=typeof({})\n  ),\n  then: cast(typeof({a!map()}),fv!value),\n  /*dictionary output - map*/\n  whenTrue: typeof(fv!value)=typeof({id: 1}),\n  then: cast(typeof(a!map()),fv!value)\n)",
+  "calls": [],
+  "called_by": []
+}

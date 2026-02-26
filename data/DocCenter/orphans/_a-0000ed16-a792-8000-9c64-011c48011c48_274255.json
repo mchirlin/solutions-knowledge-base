@@ -1,0 +1,15 @@
+{
+  "uuid": "_a-0000ed16-a792-8000-9c64-011c48011c48_274255",
+  "name": "AIA_GetLatestExtractionInstanceByModelVersionId",
+  "type": "Expression Rule",
+  "description": "Get the latest extraction instance for a model version id",
+  "sail_code": "a!localVariables(\n  local!id: #\"SYSTEM_SYSRULES_queryRecordType_v1\"(\n    recordType: recordType!AIA Extraction Instance,\n    filters: #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!AIA Extraction Instance.modelVersionId,\n      operator: \"=\",\n      value: ri!modelVersionId\n    ),\n    pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(\n      startIndex: 1,\n      batchSize: 1,\n      sort: {\n        #\"SYSTEM_SYSRULES_sortInfo\"(\n          field: recordType!AIA Extraction Instance.id\n        )\n      }\n    )\n  ).data[recordType!AIA Extraction Instance.id],\n  if(\n    a!isNullOrEmpty(local!id),\n    null,\n    rule!AIA_Extraction_GetInstanceById(\n      identifier: #\"SYSTEM_SYSRULES_queryRecordType_v1\"(\n        recordType: recordType!AIA Extraction Instance,\n        filters: #\"SYSTEM_SYSRULES_queryFilter\"(\n          field: recordType!AIA Extraction Instance.modelVersionId,\n          operator: \"=\",\n          value: ri!modelVersionId\n        ),\n        pagingInfo: if(\n          a!isNullOrEmpty(ri!pagingInfo),\n          #\"SYSTEM_SYSRULES_pagingInfo\"(\n            startIndex: 1,\n            batchSize: 1,\n            sort: {\n              #\"SYSTEM_SYSRULES_sortInfo\"(\n                field: recordType!AIA Extraction Instance.id\n              )\n            }\n          ),\n          ri!pagingInfo\n        ),\n        \n      ).data[recordType!AIA Extraction Instance.id],\n      additionalFields: {\n        recordType!AIA Extraction Instance.fieldCount\n      }\n    )\n  )\n)",
+  "calls": [
+    {
+      "name": "AIA_Extraction_GetInstanceById",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

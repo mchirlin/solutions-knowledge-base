@@ -1,0 +1,210 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AIA EXAMPLE Extraction Model Trigger - Send Email",
+    "parent_name": null,
+    "total_objects": 12
+  },
+  "entry_point": {
+    "complexity_score": 5.0,
+    "total_nodes": 4,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA EXAMPLE Extraction Model Trigger - Send Email",
+      "complexity_score": 5.0,
+      "total_nodes": 4,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Get Model Data"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Get Model Data",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Send E-Mail"
+          ]
+        },
+        {
+          "name": "Send E-Mail",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Node"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ec67-5f00-8000-9bf0-011c48011c48_125328",
+      "name": "AIA_FormatDocument",
+      "type": "Expression Rule",
+      "description": "Format document",
+      "parameters": [],
+      "calls": [
+        "AIA_Test_GetLatestClassificationInstance",
+        "AIA_Test_GetLatestExtractionInstance",
+        "Invalid Document"
+      ],
+      "called_by": [
+        "AIA EXAMPLE Extraction Model Trigger - Send Email",
+        "AIA Extraction Instance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec36-59aa-8000-9be0-011c48011c48_51170",
+      "name": "AIA_ModelVersionName",
+      "type": "Expression Rule",
+      "description": "Display model name and version",
+      "parameters": [],
+      "calls": [
+        "Version {count}"
+      ],
+      "called_by": [
+        "AIA EXAMPLE Extraction Model Trigger - Send Email"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_42914",
+      "name": "AIA_QR_getExtractionModelVersion",
+      "type": "Expression Rule",
+      "description": "Rule to query 'AIA Extraction Model Version' Record",
+      "parameters": [],
+      "calls": [
+        "SHRD_UTIL_QueryRecord"
+      ],
+      "called_by": [
+        "AIA EXAMPLE Extraction Model Trigger - Send Email"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec36-59aa-8000-9be0-011c48011c48_52454",
+      "name": "AIA_Test_GetLatestClassificationInstance",
+      "type": "Expression Rule",
+      "description": "Get the latest classification instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_FormatDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40839",
+      "name": "AIA_Test_GetLatestExtractionInstance",
+      "type": "Expression Rule",
+      "description": "Get the latest extraction instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_FormatDocument"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed69-99d8-8000-9ba6-011c48011c48_37482",
+      "name": "AIA_UTIL_displayRequestId",
+      "type": "Expression Rule",
+      "description": "Expression rule to display Request Id",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA EXAMPLE Extraction Model Trigger - Send Email",
+        "AIA Extraction Instance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed46-3c8c-8000-9bac-011c48011c48_34420",
+      "name": "AIA_UTIL_displayUserFullName",
+      "type": "Expression Rule",
+      "description": "Interface to display User Full Name",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA EXAMPLE Extraction Model Trigger - Send Email"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee5d-151c-8000-9ba8-011c48011c48_36163",
+      "name": "SHRD_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "description": "Enhanced wrapper rule around a!queryRecord()",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_QR_getExtractionModelVersion"
+      ]
+    },
+    {
+      "uuid": "0002ee65-7abf-8000-fb2c-7f0000014e7a",
+      "name": "AIA EXAMPLE Extraction Model Trigger - Send Email",
+      "type": "Process Model",
+      "description": "Example PM that can be set as a trigger for an Extraction Model. Will send email to model creator",
+      "calls": [
+        "AIA Extraction Instance",
+        "AIA_FormatDocument",
+        "AIA_ModelVersionName",
+        "AIA_QR_getExtractionModelVersion",
+        "AIA_UTIL_displayRequestId",
+        "AIA_UTIL_displayUserFullName"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "64322398-e457-4695-87d5-09794164cf77",
+      "name": "AIA Extraction Instance",
+      "type": "Record Type",
+      "description": "Record to hold the AI Extraction scores and confidence threshold for each instance",
+      "actions": [
+        "reconcileField",
+        "reconcileUsingTestCase",
+        "runValidations",
+        "addRemoveTestCase",
+        "deleteExtractionInstance",
+        "deleteInstanceAndSkipConfirmation",
+        "updateAssociatedTestSuites"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "#\"urn:appian:translation-string:v1:ab6ce936-2015-4e58-a2d1-a10bcd2372e4\"",
+        "=#\"urn:appian:translation-string:v1:fe8f8d91-a84f-4494-9270-4959354698ce\"",
+        "List View"
+      ],
+      "calls": [
+        "AIA_FormatDocument",
+        "AIA_UTIL_displayRequestId"
+      ],
+      "called_by": [
+        "AIA EXAMPLE Extraction Model Trigger - Send Email"
+      ]
+    },
+    {
+      "uuid": "955ba2b6-66dc-4f51-96ff-bc7facbc8d66",
+      "name": "Invalid Document",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_FormatDocument"
+      ]
+    },
+    {
+      "uuid": "0dc23859-ec54-488e-8e0e-54f234016331",
+      "name": "Version {count}",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_ModelVersionName"
+      ]
+    }
+  ]
+}

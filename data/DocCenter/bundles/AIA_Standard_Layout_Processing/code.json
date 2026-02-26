@@ -1,0 +1,22 @@
+{
+  "_metadata": {
+    "bundle_id": "AIA_Standard_Layout_Processing"
+  },
+  "objects": {
+    "000bedb3-a27b-8000-173b-7f0000014e7a": {
+      "name": "AIA Standard Layout Processing",
+      "type": "Process Model",
+      "sail_code": "// Output: ?\nappian:record-relationship:v1:64322398-e457-4695-87d5-09794164cf77/29015678-c2e4-4af3-a3f8-d9d966872b71\"]:#\"SYSTEM_SYSRULES_queryRecordType_v1\"(\n  recordType: recordType!AIA Extraction Instance Section,\n  filters: {\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!AIA Extraction Instance Section.instanceId,\n      operator: \"=\",\n      value: pv!ExtractionInstance[recordType!AIA Extraction Instance.id]\n    )\n  },\n  pagingInfo: #\"SYSTEM_SYSRULES_pagingInfo\"(1, 100)\n).data\n\n// Input: ?\n=pv!ExtractionInstance\n\n// Input: ?\n=recordType!AIA Extraction Instance\n\n// Output: ?\nAC!RecordsUpdated\n\n// Input: ?\n=pv!ExtractionInstance\n\n// Output: ?\nac!ProcessInfo.pv.ExtractionInstance\n\n// Input: ?\n=pv!ExtractionInstance\n\n// Output: ?\nac!ProcessInfo.pv.ExtractionInstance\n\n// Output: ?\nac!ProcessInfo.pv.SectionInstances\n\n// Input: ?\nrule!AIA_UTIL_ProcessModelForEach()\n\n// Input: ?\na!map(\n  processModel: cons!AIA_PM_STANDARD_LAYOUT_PROCESS_SECTION,\n  processParameters: #\"SYSTEM_SYSRULES_forEach\"(\n    items: pv!SectionInstances,\n    expression: a!map(\n      ExtractionInstance: pv!ExtractionInstance,\n      Section: fv!item\n    )\n  )\n)\n\n// Output: ?\nappian:record-field:v1:64322398-e457-4695-87d5-09794164cf77/df53ae63-a64a-4a79-ad4f-79ca0c54cd84\"]:false"
+    },
+    "_a-0000eeb3-c7af-8000-9c01-011c48011c48_157749": {
+      "name": "AIA_PLG_IsAutoscaleEnabled",
+      "type": "Expression Rule",
+      "sail_code": "a!defaultValue(\n  toboolean(getenvironmentconfigs().isAutscaleEnabled),\n  false\n)"
+    },
+    "_a-0000eeb8-377a-8000-9c16-011c48011c48_167255": {
+      "name": "AIA_UTIL_ProcessModelForEach",
+      "type": "Expression Rule",
+      "sail_code": "if(\n  rule!AIA_PLG_IsAutoscaleEnabled(),\n  cons!AIA_PM_FOR_EACH_LOOP,\n  cons!AIA_PM_FOR_EACH_MNI\n)"
+    }
+  }
+}

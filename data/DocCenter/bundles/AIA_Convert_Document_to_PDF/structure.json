@@ -1,0 +1,463 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AIA Convert Document to PDF",
+    "parent_name": null,
+    "total_objects": 23
+  },
+  "entry_point": {
+    "complexity_score": 45.0,
+    "total_nodes": 19,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Convert Document to PDF",
+      "complexity_score": 45.0,
+      "total_nodes": 19,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "AND"
+          ]
+        },
+        {
+          "name": "Set Filename",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "File Type?"
+          ]
+        },
+        {
+          "name": "Create Attachments Folder",
+          "type": "Create Folder",
+          "next": [
+            "Read MSG"
+          ]
+        },
+        {
+          "name": "Create Txt Document",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Convert Text to PDF"
+          ]
+        },
+        {
+          "name": "Convert EML to Txt Document",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Convert Text to PDF"
+          ]
+        },
+        {
+          "name": "Read MSG",
+          "type": "com.vuram.plugins.msghandler.ReadMsgHandler",
+          "next": [
+            "Convert Text to PDF"
+          ]
+        },
+        {
+          "name": "AND",
+          "type": "AND_GATEWAY",
+          "next": [
+            "Set Filename",
+            "2 minutes"
+          ]
+        },
+        {
+          "name": "2 minutes",
+          "type": "Timer/Rule/Receive Message",
+          "next": [
+            "Set Error Message"
+          ]
+        },
+        {
+          "name": "End Node",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Update extension",
+          "type": "com.appiancorp.ps.plugins.contenttools.copyDocument",
+          "next": [
+            "Error Occurred?"
+          ]
+        },
+        {
+          "name": "Convert Text to PDF",
+          "type": "pdftools.ConvertTxtToPDF",
+          "next": [
+            "Error Occurred?"
+          ]
+        },
+        {
+          "name": "Convert Excel To CSV",
+          "type": "com.appiancorp.ps.exceltools.ConvertExcelToCSVv3",
+          "next": [
+            "Error Occurred?"
+          ]
+        },
+        {
+          "name": "Convert Image to PDF",
+          "type": "pdftools.ConvertImageToPDFWithDpiInput",
+          "next": [
+            "Error Occurred?"
+          ]
+        },
+        {
+          "name": "PDF from HTML",
+          "type": "DynamicDocumentGen.PdfFromHtml",
+          "next": [
+            "Error Occurred?"
+          ]
+        },
+        {
+          "name": "PDF from Single DOCX (with Fonts)",
+          "type": "DynamicDocumentGen.PdfFromDocxWithFonts",
+          "next": [
+            "Error Occurred?"
+          ]
+        },
+        {
+          "name": "Error Occurred?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Add Validation Warning (Errors)",
+            "End Node (No Errors)"
+          ]
+        },
+        {
+          "name": "Add Validation Warning",
+          "type": "Start Process",
+          "next": [
+            "End Node"
+          ]
+        },
+        {
+          "name": "Set Error Message",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Add Validation Warning"
+          ]
+        },
+        {
+          "name": "File Type?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "PDF from Single DOCX (with Fonts) (DOCX)",
+            "End Node (Other)",
+            "PDF from HTML (HTML)",
+            "Convert Image to PDF (JPG, TIFF, PNG, GIF)",
+            "Convert EML to Txt Document",
+            "Update extension",
+            "Convert Excel To CSV (XLSX or XLSM)",
+            "Create Txt Document (Input Text)",
+            "Create Attachments Folder"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_174427",
+      "name": "AIA_FOLDER_TEMP_DOCS",
+      "type": "Constant",
+      "description": "Temporary docs folder",
+      "value": "_a-0000ecbc-e686-8000-9c18-011c48011c48_158095",
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationFolder",
+      "calls": [],
+      "called_by": [
+        "AIA Convert Document to PDF"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec40-0355-8000-9be4-011c48011c48_70311",
+      "name": "AIA_MODEL_TYPE_VALUES",
+      "type": "Constant",
+      "description": "(1) extraction, (2) classification",
+      "value": [
+        "extraction",
+        "classification"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_CreateValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76666",
+      "name": "AIA_SEVERITY_CRITICAL",
+      "type": "Constant",
+      "description": "4",
+      "value": "4",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_CreateConversionValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee66-4fc0-8000-9baa-011c48011c48_72159",
+      "name": "AIA_VALIDATION_TYPE_ID_EXECUTION",
+      "type": "Constant",
+      "description": "4",
+      "value": "4",
+      "value_type": "http://www.w3.org/2001/XMLSchema:int",
+      "calls": [],
+      "called_by": [
+        "AIA_CreateConversionValidation",
+        "AIA_CreateValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec67-5f00-8000-9bf0-011c48011c48_125023",
+      "name": "AIA_VALID_IMAGE_FORMATS",
+      "type": "Constant",
+      "description": "Valid image formats",
+      "value": [
+        "jpg",
+        "jpeg",
+        "gif",
+        "tiff",
+        "png"
+      ],
+      "value_type": "http://www.appian.com/ae/types/2009:Text?list",
+      "calls": [],
+      "called_by": [
+        "AIA_DocumentIsImage"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee3e-060c-8000-9bb8-011c48011c48_201069",
+      "name": "SHRD_FONTS",
+      "type": "Constant",
+      "description": "Fonts for pdf conversion - add more if necessary",
+      "value": null,
+      "value_type": "http://www.appian.com/ae/types/2009:CollaborationDocument?list",
+      "calls": [],
+      "called_by": [
+        "AIA Convert Document to PDF"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_83835",
+      "name": "AIA_CreateConversionValidation",
+      "type": "Expression Rule",
+      "description": "Create document conversion validation",
+      "parameters": [],
+      "calls": [
+        "AIA_CreateValidation",
+        "AIA_CreateValidationErrorMessage",
+        "AIA_SEVERITY_CRITICAL",
+        "AIA_VALIDATION_TYPE_ID_EXECUTION",
+        "Document Conversion Failed"
+      ],
+      "called_by": [
+        "AIA Convert Document to PDF"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_76653",
+      "name": "AIA_CreateValidation",
+      "type": "Expression Rule",
+      "description": "Create a validation error for instance",
+      "parameters": [],
+      "calls": [
+        "AIA_IsExtractionInstance",
+        "AIA_MODEL_TYPE_VALUES",
+        "AIA_Test_GetLatestExtractionInstance",
+        "AIA_VALIDATION_TYPE_ID_EXECUTION"
+      ],
+      "called_by": [
+        "AIA_CreateConversionValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_90047",
+      "name": "AIA_CreateValidationErrorMessage",
+      "type": "Expression Rule",
+      "description": "Create validation error message",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_CreateConversionValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec67-5f00-8000-9bf0-011c48011c48_125017",
+      "name": "AIA_DocumentIsImage",
+      "type": "Expression Rule",
+      "description": "Returns true if document is image",
+      "parameters": [],
+      "calls": [
+        "AIA_IsDocumentExtension",
+        "AIA_VALID_IMAGE_FORMATS"
+      ],
+      "called_by": [
+        "AIA Convert Document to PDF"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_182545",
+      "name": "AIA_FormatEmailAsText",
+      "type": "Expression Rule",
+      "description": "Format email as text",
+      "parameters": [],
+      "calls": [
+        "SHRD_CleanHmtl"
+      ],
+      "called_by": [
+        "AIA_FormatEmlAsText",
+        "AIA_FormatMsgAsText"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_218800",
+      "name": "AIA_FormatEmlAsText",
+      "type": "Expression Rule",
+      "description": "Format eml as text",
+      "parameters": [],
+      "calls": [
+        "AIA_FormatEmailAsText"
+      ],
+      "called_by": [
+        "AIA Convert Document to PDF"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_182538",
+      "name": "AIA_FormatMsgAsText",
+      "type": "Expression Rule",
+      "description": "Format msg as text",
+      "parameters": [],
+      "calls": [
+        "AIA_FormatEmailAsText"
+      ],
+      "called_by": [
+        "AIA Convert Document to PDF"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_182518",
+      "name": "AIA_IsDocumentExtension",
+      "type": "Expression Rule",
+      "description": "Is the document of one of the following extensions",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Convert Document to PDF",
+        "AIA_DocumentIsImage"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee6e-3b90-8000-9bac-011c48011c48_85019",
+      "name": "AIA_IsExtractionInstance",
+      "type": "Expression Rule",
+      "description": "Returns true if the instance is an extraction instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_CreateValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_217904",
+      "name": "AIA_NameFromInstance",
+      "type": "Expression Rule",
+      "description": "Get a name from instance",
+      "parameters": [],
+      "calls": [
+        "SHRD_CleanForFilename"
+      ],
+      "called_by": [
+        "AIA Convert Document to PDF"
+      ]
+    },
+    {
+      "uuid": "_a-0000ee21-294f-8000-9bb6-011c48011c48_184766",
+      "name": "AIA_PLG_WriteFile",
+      "type": "Expression Rule",
+      "description": "Wrapper for `writeFile` plugin function",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA Convert Document to PDF"
+      ]
+    },
+    {
+      "uuid": "_a-0000ec2d-5396-8000-9bdc-011c48011c48_40839",
+      "name": "AIA_Test_GetLatestExtractionInstance",
+      "type": "Expression Rule",
+      "description": "Get the latest extraction instance",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_CreateValidation"
+      ]
+    },
+    {
+      "uuid": "_a-0000ed74-17c4-8000-9c8d-011c48011c48_403026",
+      "name": "SHRD_CleanForFilename",
+      "type": "Expression Rule",
+      "description": "Clean text for a file or folder name",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_NameFromInstance"
+      ]
+    },
+    {
+      "uuid": "_a-0000ecf1-11b9-8000-9c4e-011c48011c48_218469",
+      "name": "SHRD_CleanHmtl",
+      "type": "Expression Rule",
+      "description": "Clean html for conversion",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_FormatEmailAsText"
+      ]
+    },
+    {
+      "uuid": "0002ec67-21e4-8000-019b-7f0000014e7a",
+      "name": "AIA Convert Document to PDF",
+      "type": "Process Model",
+      "description": "Convert document to pdf",
+      "calls": [
+        "AIA_CreateConversionValidation",
+        "AIA_DocumentIsImage",
+        "AIA_FOLDER_TEMP_DOCS",
+        "AIA_FormatEmlAsText",
+        "AIA_FormatMsgAsText",
+        "AIA_IsDocumentExtension",
+        "AIA_NameFromInstance",
+        "AIA_PLG_WriteFile",
+        "Conversion timed out. Please contact your administrator for further assistance.",
+        "SHRD_FONTS"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "bba13b0f-c7f8-4e60-bf06-25b99f367464",
+      "name": "Conversion timed out. Please contact your administrator for further assistance.",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA Convert Document to PDF"
+      ]
+    },
+    {
+      "uuid": "a2f8e2ac-32c6-4cf3-a6c7-c45b4b75ddb2",
+      "name": "Document Conversion Failed",
+      "type": "Translation String",
+      "description": null,
+      "calls": [],
+      "called_by": [
+        "AIA_CreateConversionValidation"
+      ]
+    }
+  ]
+}

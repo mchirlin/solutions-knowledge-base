@@ -1,0 +1,66 @@
+{
+  "uuid": "_a-0000ef2d-a134-8000-9e5e-011c48011c48_356035",
+  "name": "AIA_ClassificationModelVersion_Sub_AllowMultipleOutputsComponent",
+  "type": "Interface",
+  "description": "Subcomponent used for toggling whether a Classification Model Version allows for multiple outputs",
+  "sail_code": "#\"SYSTEM_SYSRULES_cardGroupLayout\"(\n  showWhen: ri!showWhen,\n  labelPosition: \"COLLAPSED\",\n  cards: {\n    #\"SYSTEM_SYSRULES_cardLayout\"(\n      contents: {\n        #\"SYSTEM_SYSRULES_columnsLayout\"(\n          columns: {\n            #\"SYSTEM_SYSRULES_columnLayout\"(\n              contents: {\n                #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n                  items: {\n                    #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                      item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                        labelPosition: \"COLLAPSED\",\n                        value: #\"SYSTEM_SYSRULES_richTextIcon\"(\n                          icon: \"file\",\n                          size: \"LARGE\",\n                          color: \"ACCENT\"\n                        )\n                      ),\n                      width: \"MINIMIZE\"\n                    ),\n                    #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                      item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                        labelPosition: \"COLLAPSED\",\n                        value: {\n                          #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                            text: #\"urn:appian:translation-string:v1:c6e59a5b-39ea-4713-a231-1d309996f3f3\",\n                            style: \"STRONG\"\n                          ),\n                          char(\n                            10\n                          ),\n                          #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                            text: #\"urn:appian:translation-string:v1:6f27a0d3-0b14-4873-8b29-a7e9f97b0b31\",\n                            color: ri!brandingMap.Gray3\n                          )\n                        }\n                      )\n                    )\n                  },\n                  alignVertical: \"MIDDLE\"\n                )\n              }\n            ),\n            #\"SYSTEM_SYSRULES_columnLayout\"(\n              contents: {\n                #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                  labelPosition: \"COLLAPSED\",\n                  value: #\"SYSTEM_SYSRULES_richTextIcon\"(\n                    icon: if(\n                      ri!classificationModelVersion[recordType!AIA Classification Model Version.allowMultipleOutputs] = false,\n                      \"dot-circle-large\",\n                      \"circle-o-large\"\n                    ),\n                    color: if(\n                      ri!classificationModelVersion[recordType!AIA Classification Model Version.allowMultipleOutputs] = false,\n                      \"ACCENT\",\n                      \"SECONDARY\"\n                    )\n                  ),\n                  align: \"RIGHT\"\n                )\n              },\n              width: \"EXTRA_NARROW\"\n            )\n          },\n          alignVertical: \"TOP\",\n          showDividers: false\n        )\n      },\n      link: #\"SYSTEM_SYSRULES_dynamicLink\"(\n        saveInto: {\n          /*If this choice was already selected, then no need to save anything*/\n          if(\n            ri!classificationModelVersion[recordType!AIA Classification Model Version.allowMultipleOutputs] = false,\n            {},\n            {\n              a!save(\n                ri!classificationModelVersion[recordType!AIA Classification Model Version.allowMultipleOutputs],\n                false\n              ),\n              a!save(\n                ri!classificationModelVersion[recordType!AIA Classification Model Version.categories],\n                /*The \"Other\" category will always have the highest possible sortOrder*/\n                /*Don't have to hard delete the Other category since Allow Multiple Outputs can only be edited when creating a new Model Version*/\n                remove(\n                  ri!classificationModelVersion[recordType!AIA Classification Model Version.categories],\n                  rule!AIA_UTIL_Filter(\n                    records: ri!classificationModelVersion[recordType!AIA Classification Model Version.categories],\n                    field: recordType!AIA Classification Model Version Category.sortOrder,\n                    value: max(ri!classificationModelVersion[recordType!AIA Classification Model Version.categories.sortOrder]),\n                    filterType: \"MATCH_INDICES\"\n                  )\n                )\n              )\n            }\n          )\n        }\n      ),\n      borderColor: if(\n        ri!classificationModelVersion[recordType!AIA Classification Model Version.allowMultipleOutputs] = false,\n        \"ACCENT\",\n        null\n      ),\n      shape: \"SEMI_ROUNDED\"\n    ),\n    #\"SYSTEM_SYSRULES_cardLayout\"(\n      contents: {\n        #\"SYSTEM_SYSRULES_columnsLayout\"(\n          columns: {\n            #\"SYSTEM_SYSRULES_columnLayout\"(\n              contents: {\n                #\"SYSTEM_SYSRULES_sideBySideLayout\"(\n                  items: {\n                    #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                      item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                        labelPosition: \"COLLAPSED\",\n                        value: #\"SYSTEM_SYSRULES_richTextIcon\"(\n                          icon: \"files-solid\",\n                          size: \"LARGE\",\n                          color: \"ACCENT\"\n                        )\n                      ),\n                      width: \"MINIMIZE\"\n                    ),\n                    #\"SYSTEM_SYSRULES_sideBySideItem\"(\n                      item: #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                        labelPosition: \"COLLAPSED\",\n                        value: {\n                          #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                            text: #\"urn:appian:translation-string:v1:1d06bf75-460d-4870-90e1-f16831bc9b29\",\n                            style: \"STRONG\"\n                          ),\n                          char(\n                            10\n                          ),\n                          #\"SYSTEM_SYSRULES_richTextItem_v1\"(\n                            text: #\"urn:appian:translation-string:v1:1610afdd-70df-4a55-bb30-7bb5d59b4785\",\n                            color: ri!brandingMap.Gray3\n                          )\n                        }\n                      )\n                    )\n                  },\n                  alignVertical: \"MIDDLE\"\n                )\n\n              }\n            ),\n            #\"SYSTEM_SYSRULES_columnLayout\"(\n              contents: {\n                #\"SYSTEM_SYSRULES_richTextDisplayField\"(\n                  labelPosition: \"COLLAPSED\",\n                  value: #\"SYSTEM_SYSRULES_richTextIcon\"(\n                    icon: if(\n                      ri!classificationModelVersion[recordType!AIA Classification Model Version.allowMultipleOutputs] = true,\n                      \"dot-circle-large\",\n                      \"circle-o-large\"\n                    ),\n                    color: if(\n                      ri!classificationModelVersion[recordType!AIA Classification Model Version.allowMultipleOutputs] = true,\n                      \"ACCENT\",\n                      \"SECONDARY\"\n                    )\n                  ),\n                  align: \"RIGHT\"\n                )\n              },\n              width: \"EXTRA_NARROW\"\n            )\n          },\n          alignVertical: \"TOP\"\n        )\n      },\n      link: #\"SYSTEM_SYSRULES_dynamicLink\"(\n        saveInto:\n        /*If this choice was already selected, then no need to save anything*/\n        if(\n          ri!classificationModelVersion[recordType!AIA Classification Model Version.allowMultipleOutputs] = true,\n          {},\n          {\n            a!save(\n              ri!classificationModelVersion[recordType!AIA Classification Model Version.allowMultipleOutputs],\n              true\n            ),\n            a!save(\n              ri!classificationModelVersion[recordType!AIA Classification Model Version.categories],\n              append(\n                ri!classificationModelVersion[recordType!AIA Classification Model Version.categories],\n                rule!AIA_ClassificationModelVersionCategory_Initialize(\n                  name: #\"urn:appian:translation-string:v1:a8b8fd7a-5388-4951-bf89-254fbbe97592\",\n                  sortOrder: length(ri!classificationModelVersion[recordType!AIA Classification Model Version.categories]) + 1\n                )\n              )\n            )\n          }\n        )\n      ),\n      borderColor: if(\n        ri!classificationModelVersion[recordType!AIA Classification Model Version.allowMultipleOutputs] = true,\n        \"ACCENT\",\n        null\n      ),\n      shape: \"SEMI_ROUNDED\"\n    )\n\n  },\n  marginAbove: \"STANDARD\",\n  marginBelow: \"STANDARD\",\n  fillContainer: true,\n  spacing: \"DENSE\"\n)",
+  "calls": [
+    {
+      "name": "AIA_UTIL_Filter",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_ClassificationModelVersionCategory_Initialize",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Primary text for setting allowMultipleOutputs to false when creating/editing a C",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Secondary text for setting allowMultipleOutputs to false when creating/editing a",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Primary text for setting allowMultipleOutputs to true when creating/editing a Cl",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Secondary text for setting allowMultipleOutputs to true when creating/editing a ",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "Default catch-all category name for Classification Model Versions that allow mul",
+      "type": "Translation String",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_ClassificationModel_RecordAction_Create_Initialize",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_UTIL_LoadBrandingMap",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": [
+    {
+      "name": "AIA_ClassificationModel_RecordAction_Create",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_ClassificationModelVersion_RecordAction_CreateUpdateVersion",
+      "type": "Interface",
+      "dep_type": "CALLS"
+    }
+  ]
+}

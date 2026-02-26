@@ -1,0 +1,184 @@
+{
+  "_metadata": {
+    "bundle_type": "process",
+    "root_name": "AIA Standard Layout Processing",
+    "parent_name": null,
+    "total_objects": 7
+  },
+  "entry_point": {
+    "complexity_score": 16.0,
+    "total_nodes": 9,
+    "start_form": null
+  },
+  "flow": {
+    "process_model": {
+      "name": "AIA Standard Layout Processing",
+      "complexity_score": 16.0,
+      "total_nodes": 9,
+      "nodes": [
+        {
+          "name": "Start Node",
+          "type": "START_EVENT",
+          "next": [
+            "Sections with Rules?"
+          ]
+        },
+        {
+          "name": "End Event",
+          "type": "END_EVENT"
+        },
+        {
+          "name": "Sections with Rules?",
+          "type": "XOR_GATEWAY",
+          "next": [
+            "Process Section",
+            "AIA Find Sections"
+          ]
+        },
+        {
+          "name": "Get Sections",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Write Extraction Instance"
+          ]
+        },
+        {
+          "name": "Write Extraction Instance",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "Join"
+          ]
+        },
+        {
+          "name": "Process Section",
+          "type": "Start Process",
+          "next": [
+            "Join"
+          ]
+        },
+        {
+          "name": "AIA Find Sections",
+          "type": "Start Process",
+          "next": [
+            "Process Sections"
+          ]
+        },
+        {
+          "name": "Process Sections",
+          "type": "Start Process",
+          "next": [
+            "Get Sections"
+          ]
+        },
+        {
+          "name": "Join",
+          "type": "SCRIPT_TASK",
+          "next": [
+            "End Event"
+          ]
+        }
+      ]
+    }
+  },
+  "objects": [
+    {
+      "uuid": "_a-0000eeb8-377a-8000-9c16-011c48011c48_167261",
+      "name": "AIA_PM_FOR_EACH_LOOP",
+      "type": "Constant",
+      "description": "Value: AIA For Each (Loop) process model",
+      "value": "AIA For Each (Loop)",
+      "value_type": "http://www.appian.com/ae/types/2009:ProcessModel",
+      "calls": [],
+      "called_by": [
+        "AIA_UTIL_ProcessModelForEach"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeb8-377a-8000-9c16-011c48011c48_167268",
+      "name": "AIA_PM_FOR_EACH_MNI",
+      "type": "Constant",
+      "description": "Value: AIA For Each (MNI) process model",
+      "value": "AIA For Each (MNI)",
+      "value_type": "http://www.appian.com/ae/types/2009:ProcessModel",
+      "calls": [],
+      "called_by": [
+        "AIA_UTIL_ProcessModelForEach"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeb8-377a-8000-9c16-011c48011c48_167579",
+      "name": "AIA_PM_STANDARD_LAYOUT_PROCESS_SECTION",
+      "type": "Constant",
+      "description": "Process model - Process Section",
+      "value": "AIA Standard Layout Process Section",
+      "value_type": "http://www.appian.com/ae/types/2009:ProcessModel",
+      "calls": [],
+      "called_by": [
+        "AIA Standard Layout Processing"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeb3-c7af-8000-9c01-011c48011c48_157749",
+      "name": "AIA_PLG_IsAutoscaleEnabled",
+      "type": "Expression Rule",
+      "description": "Returns true if the environment has autoscale enabled",
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_UTIL_ProcessModelForEach"
+      ]
+    },
+    {
+      "uuid": "_a-0000eeb8-377a-8000-9c16-011c48011c48_167255",
+      "name": "AIA_UTIL_ProcessModelForEach",
+      "type": "Expression Rule",
+      "description": "Determines the process model to run forEach regarding autoscale vs k",
+      "parameters": [],
+      "calls": [
+        "AIA_PLG_IsAutoscaleEnabled",
+        "AIA_PM_FOR_EACH_LOOP",
+        "AIA_PM_FOR_EACH_MNI"
+      ],
+      "called_by": [
+        "AIA Standard Layout Processing"
+      ]
+    },
+    {
+      "uuid": "000bedb3-a27b-8000-173b-7f0000014e7a",
+      "name": "AIA Standard Layout Processing",
+      "type": "Process Model",
+      "description": "Save large docs into batches",
+      "calls": [
+        "AIA Extraction Instance",
+        "AIA_PM_STANDARD_LAYOUT_PROCESS_SECTION",
+        "AIA_UTIL_ProcessModelForEach"
+      ],
+      "called_by": []
+    },
+    {
+      "uuid": "64322398-e457-4695-87d5-09794164cf77",
+      "name": "AIA Extraction Instance",
+      "type": "Record Type",
+      "description": "Record to hold the AI Extraction scores and confidence threshold for each instance",
+      "actions": [
+        "reconcileField",
+        "reconcileUsingTestCase",
+        "runValidations",
+        "addRemoveTestCase",
+        "deleteExtractionInstance",
+        "deleteInstanceAndSkipConfirmation",
+        "updateAssociatedTestSuites"
+      ],
+      "views": [
+        "#\"SYSTEM_SYSRULES_rtd_getDefaultSummaryViewName\"()",
+        "#\"urn:appian:translation-string:v1:ab6ce936-2015-4e58-a2d1-a10bcd2372e4\"",
+        "=#\"urn:appian:translation-string:v1:fe8f8d91-a84f-4494-9270-4959354698ce\"",
+        "List View"
+      ],
+      "calls": [],
+      "called_by": [
+        "AIA Standard Layout Processing"
+      ]
+    }
+  ]
+}

@@ -1,1 +1,0 @@
-"""Appian Parser MCP Server."""

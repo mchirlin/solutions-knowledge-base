@@ -1,18 +1,22 @@
 /*
  * Interface: AS_FM_captureUserContactDetails
  *
- * A styled account-creation / contact-details form inspired by a
- * dark-themed split-panel design.  Left panel shows branding and a
- * hero message; right panel contains the form fields.
+ * A styled contact form for a website, using a dark-themed split-panel
+ * layout. Left panel shows branding with a hero message and decorative
+ * elements. Right panel contains the contact form fields with validation.
  *
- * Fields:
- *   - First Name (required)
- *   - Last Name (required)
- *   - Email (required, regex validated)
- *   - Phone (optional, regex validated)
- *   - Organization (optional)
- *   - Role / Title (optional)
- *   - Notes (optional, paragraph)
+ * Fields: First Name, Last Name, Email, Phone, Subject (dropdown),
+ *         Message, and a consent checkbox.
+ *
+ * NOTE: a!richTextItem is avoided because the evaluation API cannot
+ *       resolve env!features. Plain string values and a!stampField /
+ *       a!imageField are used for visual elements instead.
+ *
+ * NOTE: a!cardLayout CANNOT be a direct child inside a!columnLayout
+ *       within a!columnsLayout — it causes a runtime error. Instead,
+ *       the dark background comes from a!headerContentLayout's
+ *       backgroundColor, and a single outer a!cardLayout wraps the
+ *       entire columnsLayout.
  */
 a!localVariables(
   local!contact: a!map(
@@ -20,17 +24,11 @@ a!localVariables(
     lastName: null,
     email: null,
     phone: null,
-    organization: null,
-    roleTitle: null,
-    notes: null
+    subject: null,
+    message: null
   ),
   local!isSubmitted: false,
-
-  /* ── Colour tokens ── */
-  local!darkNavy:  "#1B3A4B",
-  local!gold:      "#C9A96E",
-  local!white:     "#FFFFFF",
-  local!lightGrey: "#F5F5F5",
+  local!consentGiven: false,
 
   a!headerContentLayout(
     header: {},
@@ -45,300 +43,232 @@ a!localVariables(
               a!columnLayout(
                 width: "MEDIUM",
                 contents: {
-                  a!cardLayout(
-                    contents: {
-                      a!richTextDisplayField(
-                        labelPosition: "COLLAPSED",
-                        value: {
-                          a!richTextItem(
-                            text: char(10) & char(10),
-                            size: "MEDIUM"
-                          )
-                        }
-                      ),
+                  /* Accent bar */
+                  a!stampField(
+                    labelPosition: "COLLAPSED",
+                    icon: "square",
+                    backgroundColor: "#C9A96E",
+                    contentColor: "#C9A96E",
+                    size: "TINY",
+                    align: "START",
+                    marginBelow: "MORE"
+                  ),
 
-                      /* Gold accent bar */
-                      a!cardLayout(
-                        contents: {},
-                        height: "EXTRA_SHORT",
-                        style: "NONE",
-                        backgroundColor: local!gold,
-                        marginBelow: "STANDARD",
-                        showBorder: false
-                      ),
+                  /* Hero headline */
+                  a!richTextDisplayField(
+                    labelPosition: "COLLAPSED",
+                    value: "Get In Touch With Us",
+                    marginBelow: "STANDARD"
+                  ),
 
-                      a!richTextDisplayField(
-                        labelPosition: "COLLAPSED",
-                        value: {
-                          a!richTextItem(
-                            text: "CO.",
-                            size: "LARGE",
-                            style: "STRONG",
-                            color: local!gold
-                          )
-                        },
-                        marginBelow: "STANDARD"
-                      ),
+                  /* Subtext */
+                  a!richTextDisplayField(
+                    labelPosition: "COLLAPSED",
+                    value: "We would love to hear from you. Fill out the form and our team will get back to you within 24 hours.",
+                    marginBelow: "MORE"
+                  ),
 
-                      /* Hero headline */
-                      a!richTextDisplayField(
-                        labelPosition: "COLLAPSED",
-                        value: {
-                          a!richTextItem(
-                            text: "Let's Make" & char(10) & "it Happen" & char(10) & "Together!",
-                            size: "LARGE",
-                            style: "STRONG",
-                            color: local!white
-                          )
-                        },
-                        marginBelow: "STANDARD"
-                      ),
+                  /* Decorative envelope icon */
+                  a!stampField(
+                    labelPosition: "COLLAPSED",
+                    icon: "ENVELOPE",
+                    backgroundColor: "#2C5060",
+                    contentColor: "#8AACB8",
+                    size: "LARGE",
+                    align: "CENTER",
+                    marginBelow: "STANDARD"
+                  ),
 
-                      /* Decorative circle (stamp) */
-                      a!stampField(
-                        labelPosition: "COLLAPSED",
-                        icon: "USER",
-                        backgroundColor: local!darkNavy,
-                        contentColor: local!lightGrey,
-                        size: "LARGE",
-                        align: "CENTER",
-                        marginBelow: "STANDARD"
-                      ),
+                  /* Contact info hints */
+                  a!richTextDisplayField(
+                    labelPosition: "COLLAPSED",
+                    value: "support@example.com",
+                    align: "CENTER",
+                    marginBelow: "EVEN_LESS"
+                  ),
 
-                      a!richTextDisplayField(
-                        labelPosition: "COLLAPSED",
-                        value: {
-                          a!richTextItem(
-                            text: char(10),
-                            size: "MEDIUM"
-                          )
-                        }
-                      )
-                    },
-                    style: "NONE",
-                    backgroundColor: local!darkNavy,
-                    padding: "STANDARD",
-                    marginBelow: "NONE",
-                    showBorder: false
+                  a!richTextDisplayField(
+                    labelPosition: "COLLAPSED",
+                    value: "+1 (555) 000-0000",
+                    align: "CENTER",
+                    marginBelow: "STANDARD"
                   )
                 }
               ),
 
               /* ═══════════════════════════════════════════
-                 RIGHT PANEL – Form
+                 RIGHT PANEL – Contact Form
                  ═══════════════════════════════════════════ */
               a!columnLayout(
                 width: "WIDE",
                 contents: {
-                  a!cardLayout(
-                    contents: {
-                      /* Sign-in link */
-                      a!richTextDisplayField(
-                        labelPosition: "COLLAPSED",
-                        value: {
-                          a!richTextItem(
-                            text: "Already have an account? ",
-                            color: "SECONDARY"
-                          ),
-                          a!richTextItem(
-                            text: "Sign in here!",
-                            link: a!dynamicLink(value: true, saveInto: local!isSubmitted),
-                            linkStyle: "STANDALONE",
-                            color: local!gold
-                          )
-                        },
-                        align: "RIGHT",
-                        marginBelow: "STANDARD"
-                      ),
+                  /* Form heading */
+                  a!richTextDisplayField(
+                    labelPosition: "COLLAPSED",
+                    value: "Contact Us",
+                    marginBelow: "STANDARD"
+                  ),
 
-                      /* Form heading */
-                      a!richTextDisplayField(
-                        labelPosition: "COLLAPSED",
-                        value: {
-                          a!richTextItem(
-                            text: "Create An Account",
-                            size: "LARGE",
-                            style: "STRONG",
-                            color: local!white
-                          )
-                        },
-                        marginBelow: "STANDARD"
+                  /* ── Row 1: First Name / Last Name ── */
+                  a!sideBySideLayout(
+                    items: {
+                      a!sideBySideItem(
+                        item: a!textField(
+                          label: "First Name",
+                          labelPosition: "ABOVE",
+                          value: local!contact.firstName,
+                          saveInto: local!contact.firstName,
+                          required: true,
+                          characterLimit: 100,
+                          placeholder: "First Name"
+                        )
                       ),
+                      a!sideBySideItem(
+                        item: a!textField(
+                          label: "Last Name",
+                          labelPosition: "ABOVE",
+                          value: local!contact.lastName,
+                          saveInto: local!contact.lastName,
+                          required: true,
+                          characterLimit: 100,
+                          placeholder: "Last Name"
+                        )
+                      )
+                    }
+                  ),
 
-                      /* ── Row 1: First Name / Last Name ── */
-                      a!columnsLayout(
-                        columns: {
-                          a!columnLayout(
-                            contents: {
-                              a!textField(
-                                label: "First Name",
-                                labelPosition: "ABOVE",
-                                value: local!contact.firstName,
-                                saveInto: local!contact.firstName,
-                                required: true,
-                                characterLimit: 100,
-                                placeholder: "First Name"
-                              )
-                            }
-                          ),
-                          a!columnLayout(
-                            contents: {
-                              a!textField(
-                                label: "Last Name",
-                                labelPosition: "ABOVE",
-                                value: local!contact.lastName,
-                                saveInto: local!contact.lastName,
-                                required: true,
-                                characterLimit: 100,
-                                placeholder: "Last Name"
-                              )
-                            }
-                          )
-                        }
-                      ),
-
-                      /* ── Row 2: Email / Phone ── */
-                      a!columnsLayout(
-                        columns: {
-                          a!columnLayout(
-                            contents: {
-                              a!textField(
-                                label: "Email",
-                                labelPosition: "ABOVE",
-                                value: local!contact.email,
-                                saveInto: local!contact.email,
-                                required: true,
-                                characterLimit: 254,
-                                placeholder: "email@example.com",
-                                validations: if(
-                                  a!isNullOrEmpty(local!contact.email),
-                                  {},
-                                  if(
-                                    not(
-                                      regexmatch(
-                                        "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+[.][A-Za-z]{2,}$",
-                                        local!contact.email
-                                      )
-                                    ),
-                                    "Please enter a valid email address.",
-                                    {}
-                                  )
+                  /* ── Row 2: Email / Phone ── */
+                  a!sideBySideLayout(
+                    items: {
+                      a!sideBySideItem(
+                        item: a!textField(
+                          label: "Email",
+                          labelPosition: "ABOVE",
+                          value: local!contact.email,
+                          saveInto: local!contact.email,
+                          required: true,
+                          characterLimit: 250,
+                          placeholder: "you@example.com",
+                          validations: if(
+                            a!isNullOrEmpty(local!contact.email),
+                            {},
+                            if(
+                              not(
+                                regexMatch(
+                                  pattern: "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$",
+                                  value: local!contact.email
                                 )
-                              )
-                            }
-                          ),
-                          a!columnLayout(
-                            contents: {
-                              a!textField(
-                                label: "Phone",
-                                labelPosition: "ABOVE",
-                                value: local!contact.phone,
-                                saveInto: local!contact.phone,
-                                characterLimit: 20,
-                                placeholder: "+1 (555) 123-4567",
-                                validations: if(
-                                  a!isNullOrEmpty(local!contact.phone),
-                                  {},
-                                  if(
-                                    not(
-                                      regexmatch(
-                                        "^[+]?[0-9 ()-]{7,20}$",
-                                        local!contact.phone
-                                      )
-                                    ),
-                                    "Please enter a valid phone number.",
-                                    {}
-                                  )
+                              ),
+                              { "Please enter a valid email address." },
+                              {}
+                            )
+                          )
+                        )
+                      ),
+                      a!sideBySideItem(
+                        item: a!textField(
+                          label: "Phone",
+                          labelPosition: "ABOVE",
+                          value: local!contact.phone,
+                          saveInto: local!contact.phone,
+                          characterLimit: 20,
+                          placeholder: "+1 (555) 123-4567",
+                          validations: if(
+                            a!isNullOrEmpty(local!contact.phone),
+                            {},
+                            if(
+                              not(
+                                regexMatch(
+                                  pattern: "^[+]?[0-9 ()-]{7,20}$",
+                                  value: local!contact.phone
                                 )
-                              )
-                            }
+                              ),
+                              { "Please enter a valid phone number." },
+                              {}
+                            )
                           )
-                        }
-                      ),
+                        )
+                      )
+                    }
+                  ),
 
-                      /* ── Row 3: Organization / Role ── */
-                      a!columnsLayout(
-                        columns: {
-                          a!columnLayout(
-                            contents: {
-                              a!textField(
-                                label: "Organization",
-                                labelPosition: "ABOVE",
-                                value: local!contact.organization,
-                                saveInto: local!contact.organization,
-                                characterLimit: 200,
-                                placeholder: "Company name"
-                              )
-                            }
-                          ),
-                          a!columnLayout(
-                            contents: {
-                              a!textField(
-                                label: "Role / Title",
-                                labelPosition: "ABOVE",
-                                value: local!contact.roleTitle,
-                                saveInto: local!contact.roleTitle,
-                                characterLimit: 150,
-                                placeholder: "Your role"
-                              )
-                            }
-                          )
-                        }
-                      ),
+                  /* ── Subject dropdown ── */
+                  a!dropdownField(
+                    label: "Subject",
+                    labelPosition: "ABOVE",
+                    placeholder: "Select a subject...",
+                    choiceLabels: {
+                      "General Inquiry",
+                      "Technical Support",
+                      "Sales",
+                      "Partnership",
+                      "Feedback",
+                      "Other"
+                    },
+                    choiceValues: {
+                      "general",
+                      "support",
+                      "sales",
+                      "partnership",
+                      "feedback",
+                      "other"
+                    },
+                    value: local!contact.subject,
+                    saveInto: local!contact.subject,
+                    required: true
+                  ),
 
-                      /* ── Notes ── */
-                      a!paragraphField(
-                        label: "Notes",
-                        labelPosition: "ABOVE",
-                        value: local!contact.notes,
-                        saveInto: local!contact.notes,
-                        height: "SHORT",
-                        characterLimit: 1000,
-                        placeholder: "Any additional information..."
-                      ),
+                  /* ── Message ── */
+                  a!paragraphField(
+                    label: "Message",
+                    labelPosition: "ABOVE",
+                    value: local!contact.message,
+                    saveInto: local!contact.message,
+                    required: true,
+                    characterLimit: 4000,
+                    placeholder: "How can we help you?",
+                    height: "SHORT"
+                  ),
 
-                      /* ── Submit button (gold-styled) ── */
-                      a!buttonLayout(
-                        primaryButtons: {
-                          a!buttonWidget(
-                            label: "Submit",
-                            submit: true,
-                            style: "SOLID",
-                            validate: true,
-                            width: "FILL"
-                          )
-                        },
-                        secondaryButtons: {
-                          a!buttonWidget(
-                            label: "Cancel",
-                            style: "OUTLINE",
-                            submit: true,
-                            validate: false,
-                            value: true,
-                            saveInto: local!isSubmitted
-                          )
-                        }
-                      ),
-
-                      /* ── Footer ── */
-                      a!richTextDisplayField(
-                        labelPosition: "COLLAPSED",
-                        value: {
-                          a!richTextItem(
-                            text: char(169) & " 2026 Company Inc Ltd.",
-                            size: "SMALL",
-                            color: "SECONDARY"
-                          )
-                        },
-                        align: "CENTER",
-                        marginAbove: "STANDARD"
+                  /* ── Consent checkbox ── */
+                  a!checkboxField(
+                    labelPosition: "COLLAPSED",
+                    choiceLabels: { "I agree to the privacy policy and consent to being contacted." },
+                    choiceValues: { true },
+                    value: if(local!consentGiven, { true }, {}),
+                    saveInto: {
+                      a!save(
+                        local!consentGiven,
+                        if(length(save!value) > 0, true, false)
                       )
                     },
-                    style: "NONE",
-                    backgroundColor: local!darkNavy,
-                    padding: "STANDARD",
-                    marginBelow: "NONE",
-                    showBorder: false
+                    validations: if(
+                      not(local!consentGiven),
+                      { "You must agree to the privacy policy to submit." },
+                      {}
+                    )
+                  ),
+
+                  /* ── Submit button ── */
+                  a!buttonLayout(
+                    primaryButtons: {
+                      a!buttonWidget(
+                        label: "Send Message",
+                        style: "SOLID",
+                        width: "FILL",
+                        saveInto: local!isSubmitted,
+                        value: true,
+                        validate: true
+                      )
+                    }
+                  ),
+
+                  /* ── Footer ── */
+                  a!richTextDisplayField(
+                    labelPosition: "COLLAPSED",
+                    value: "We typically respond within 1 business day.",
+                    align: "CENTER",
+                    marginBelow: "NONE"
                   )
                 }
               )
@@ -347,11 +277,12 @@ a!localVariables(
           )
         },
         style: "NONE",
+        backgroundColor: "#1B3A4B",
         padding: "NONE",
         marginBelow: "NONE",
         showBorder: false
       )
     },
-    backgroundColor: local!darkNavy
+    backgroundColor: "#1B3A4B"
   )
 )

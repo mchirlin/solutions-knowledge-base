@@ -2,7 +2,7 @@
  * Tests for: AS_FM_captureUserContactDetails
  *
  * These test expressions validate the regex patterns and logic
- * used in the contact details form. Each test can be evaluated
+ * used in the contact form. Each test can be evaluated
  * independently via the SAIL expression evaluator.
  */
 
@@ -140,7 +140,48 @@ a!localVariables(
 
 
 /* ═══════════════════════════════════════════════════════════════════════
- * TEST 6: Full Interface Render — Smoke Test
+ * TEST 6: Consent Checkbox Logic
+ * Expected: consentGiven toggles correctly based on checkbox selection
+ * ═══════════════════════════════════════════════════════════════════════ */
+a!localVariables(
+  local!selectedTrue: { true },
+  local!selectedEmpty: {},
+  local!consentWhenChecked: if(length(local!selectedTrue) > 0, true, false),
+  local!consentWhenUnchecked: if(length(local!selectedEmpty) > 0, true, false),
+  a!map(
+    checkedResult: local!consentWhenChecked,
+    checkedPass: local!consentWhenChecked = true,
+    uncheckedResult: local!consentWhenUnchecked,
+    uncheckedPass: local!consentWhenUnchecked = false
+  )
+)
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * TEST 7: Subject Dropdown Values
+ * Expected: all choice values are non-null and unique
+ * ═══════════════════════════════════════════════════════════════════════ */
+a!localVariables(
+  local!choiceValues: {
+    "general",
+    "support",
+    "sales",
+    "partnership",
+    "feedback",
+    "other"
+  },
+  local!uniqueCount: length(union(local!choiceValues, local!choiceValues)),
+  a!map(
+    totalValues: length(local!choiceValues),
+    uniqueValues: local!uniqueCount,
+    allUnique: length(local!choiceValues) = local!uniqueCount,
+    pass: length(local!choiceValues) = local!uniqueCount
+  )
+)
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * TEST 8: Full Interface Render — Smoke Test
  * Expected: status 200, interface renders without errors
  * Validate this expression via the evaluate-sail API.
  * ═══════════════════════════════════════════════════════════════════════ */
@@ -150,13 +191,13 @@ a!localVariables(
     lastName: null,
     email: null,
     phone: null,
-    organization: null,
-    roleTitle: null,
-    notes: null
+    subject: null,
+    message: null
   ),
   local!isSubmitted: false,
+  local!consentGiven: false,
   a!formLayout(
-    label: "User Contact Details",
+    label: "Contact Us",
     contents: {
       a!columnsLayout(
         columns: {
@@ -176,7 +217,7 @@ a!localVariables(
                 value: local!contact.email,
                 saveInto: local!contact.email,
                 required: true,
-                characterLimit: 254,
+                characterLimit: 250,
                 validations: if(
                   a!isNullOrEmpty(local!contact.email),
                   {},
@@ -192,12 +233,29 @@ a!localVariables(
                   )
                 )
               ),
-              a!textField(
-                label: "Organization",
+              a!dropdownField(
+                label: "Subject",
                 labelPosition: "ABOVE",
-                value: local!contact.organization,
-                saveInto: local!contact.organization,
-                characterLimit: 200
+                placeholder: "Select a subject...",
+                choiceLabels: {
+                  "General Inquiry",
+                  "Technical Support",
+                  "Sales",
+                  "Partnership",
+                  "Feedback",
+                  "Other"
+                },
+                choiceValues: {
+                  "general",
+                  "support",
+                  "sales",
+                  "partnership",
+                  "feedback",
+                  "other"
+                },
+                value: local!contact.subject,
+                saveInto: local!contact.subject,
+                required: true
               )
             }
           ),
@@ -231,31 +289,38 @@ a!localVariables(
                     {}
                   )
                 )
-              ),
-              a!textField(
-                label: "Role / Title",
-                labelPosition: "ABOVE",
-                value: local!contact.roleTitle,
-                saveInto: local!contact.roleTitle,
-                characterLimit: 150
               )
             }
           )
         }
       ),
       a!paragraphField(
-        label: "Notes",
+        label: "Message",
         labelPosition: "ABOVE",
-        value: local!contact.notes,
-        saveInto: local!contact.notes,
-        height: "MEDIUM",
-        characterLimit: 1000
+        value: local!contact.message,
+        saveInto: local!contact.message,
+        required: true,
+        height: "SHORT",
+        characterLimit: 4000
+      ),
+      a!checkboxField(
+        labelPosition: "COLLAPSED",
+        choiceLabels: { "I agree to the privacy policy and consent to being contacted." },
+        choiceValues: { true },
+        value: if(local!consentGiven, { true }, {}),
+        saveInto: {
+          a!save(
+            local!consentGiven,
+            if(length(save!value) > 0, true, false)
+          )
+        }
       )
     },
     buttons: a!buttonLayout(
       primaryButtons: {
         a!buttonWidget(
-          label: "Submit",
+          label: "Send Message",
+          accessibilityText: "Submit your contact form",
           submit: true,
           style: "SOLID",
           validate: true

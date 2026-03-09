@@ -1,0 +1,20 @@
+{
+  "uuid": "_a-0000ef67-8ef7-8000-a08a-011c48011c48_587831",
+  "name": "AIA_getClassificationInstancesGeneric",
+  "type": "Expression Rule",
+  "description": "query classification instances. Generally nested within more specific query rule or used for 1 off filter scenerios",
+  "sail_code": "rule!SHRD_UTIL_QueryRecord(\n  recordType: recordType!AIA Classification Instance,\n  returnType: ri!returnType,\n  executeWhen: ri!executeWhen,\n  identifier: ri!instanceIds,\n  pagingInfo: ri!pagingInfo,\n  sort: ri!sort,\n  fields: a!defaultValue(\n    value: ri!fields,\n    default: rule!AIA_CLASSIFICATION_INSTANCE_FIELDS()\n  ),\n  logicalExpressions: ri!logicalExpressions,\n  filters: {\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!AIA Classification Instance.id,\n      operator: \"in\",\n      value: ri!instanceIds,\n      applyWhen: a!isNotNullOrEmpty(ri!instanceIds)\n    ),\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!AIA Classification Instance.modelVersionId,\n      operator: \"in\",\n      value: ri!modelVersionIds,\n      applyWhen: a!isNotNullOrEmpty(ri!modelVersionIds)\n    ),\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!AIA Classification Instance.modelVersion.modelId,\n      operator: \"in\",\n      value: ri!modelIds,\n      applyWhen: a!isNotNullOrEmpty(ri!modelIds)\n    ),\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!AIA Classification Instance.modelVersion.model.key,\n      operator: \"in\",\n      value: ri!modelKeys,\n      applyWhen: a!isNotNullOrEmpty(ri!modelKeys)\n    ),\n    #\"SYSTEM_SYSRULES_queryFilter\"(\n      field: recordType!AIA Classification Instance.documentId,\n      operator: \"in\",\n      value: ri!documentIds,\n      applyWhen: a!isNotNullOrEmpty(ri!documentIds)\n    ),\n    ri!additionalFilters\n  }\n)",
+  "calls": [
+    {
+      "name": "SHRD_UTIL_QueryRecord",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    },
+    {
+      "name": "AIA_CLASSIFICATION_INSTANCE_FIELDS",
+      "type": "Expression Rule",
+      "dep_type": "CALLS"
+    }
+  ],
+  "called_by": []
+}

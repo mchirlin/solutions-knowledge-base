@@ -3,7 +3,7 @@
     "bundle_type": "action",
     "root_name": "AIA Deployment - runDeployment",
     "parent_name": "AIA Deployment",
-    "total_objects": 446
+    "total_objects": 447
   },
   "entry_point": {
     "action_type": "RECORD_LIST_ACTION",
@@ -143,6 +143,200 @@
               "AIA Update Model Version"
             ],
             "subprocess": "AIA Update Classification Model"
+          }
+        ]
+      },
+      {
+        "name": "AIA Create Extraction Model",
+        "complexity_score": 22.0,
+        "total_nodes": 11,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Cancel?"
+            ]
+          },
+          {
+            "name": "Delete Records",
+            "type": "Delete Records",
+            "next": [
+              "Write Records"
+            ]
+          },
+          {
+            "name": "Write Records",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Any Sections?"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Write Examples",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "End Node"
+            ]
+          },
+          {
+            "name": "Route",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "End Node"
+            ]
+          },
+          {
+            "name": "Cancel?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Delete Records (No)",
+              "Route"
+            ]
+          },
+          {
+            "name": "Write Fields with Sections",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Examples Exist?"
+            ]
+          },
+          {
+            "name": "Any Sections?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Update IDs",
+              "Examples Exist?"
+            ]
+          },
+          {
+            "name": "Update IDs",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Write Fields with Sections"
+            ]
+          },
+          {
+            "name": "Examples Exist?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Write Examples (Yes)",
+              "End Node"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AIA Refresh Instance Accuracies",
+        "complexity_score": 15.0,
+        "total_nodes": 8,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Get Total"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Increase Batch",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Get Extractions"
+            ]
+          },
+          {
+            "name": "Done?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "End Node",
+              "Increase Batch"
+            ]
+          },
+          {
+            "name": "Write Instance",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Done?"
+            ]
+          },
+          {
+            "name": "Get Total",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "No batches"
+            ]
+          },
+          {
+            "name": "Get Extractions",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Write Instance"
+            ]
+          },
+          {
+            "name": "No batches",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "Get Extractions",
+              "End Node"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AIA Update Classification Model",
+        "complexity_score": 11.0,
+        "total_nodes": 6,
+        "nodes": [
+          {
+            "name": "Start Node",
+            "type": "START_EVENT",
+            "next": [
+              "Cancel?"
+            ]
+          },
+          {
+            "name": "Cancel?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "End Node",
+              "Write Records"
+            ]
+          },
+          {
+            "name": "Write Records",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "Examples Exist?"
+            ]
+          },
+          {
+            "name": "End Node",
+            "type": "END_EVENT"
+          },
+          {
+            "name": "Write Examples",
+            "type": "SCRIPT_TASK",
+            "next": [
+              "End Node"
+            ]
+          },
+          {
+            "name": "Examples Exist?",
+            "type": "XOR_GATEWAY",
+            "next": [
+              "End Node",
+              "Write Examples"
+            ]
           }
         ]
       },
@@ -450,200 +644,6 @@
             "type": "SCRIPT_TASK",
             "next": [
               "Old Versions?"
-            ]
-          }
-        ]
-      },
-      {
-        "name": "AIA Create Extraction Model",
-        "complexity_score": 22.0,
-        "total_nodes": 11,
-        "nodes": [
-          {
-            "name": "Start Node",
-            "type": "START_EVENT",
-            "next": [
-              "Cancel?"
-            ]
-          },
-          {
-            "name": "Delete Records",
-            "type": "Delete Records",
-            "next": [
-              "Write Records"
-            ]
-          },
-          {
-            "name": "Write Records",
-            "type": "SCRIPT_TASK",
-            "next": [
-              "Any Sections?"
-            ]
-          },
-          {
-            "name": "End Node",
-            "type": "END_EVENT"
-          },
-          {
-            "name": "Write Examples",
-            "type": "SCRIPT_TASK",
-            "next": [
-              "End Node"
-            ]
-          },
-          {
-            "name": "Route",
-            "type": "SCRIPT_TASK",
-            "next": [
-              "End Node"
-            ]
-          },
-          {
-            "name": "Cancel?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "Delete Records (No)",
-              "Route"
-            ]
-          },
-          {
-            "name": "Write Fields with Sections",
-            "type": "SCRIPT_TASK",
-            "next": [
-              "Examples Exist?"
-            ]
-          },
-          {
-            "name": "Any Sections?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "Update IDs",
-              "Examples Exist?"
-            ]
-          },
-          {
-            "name": "Update IDs",
-            "type": "SCRIPT_TASK",
-            "next": [
-              "Write Fields with Sections"
-            ]
-          },
-          {
-            "name": "Examples Exist?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "Write Examples (Yes)",
-              "End Node"
-            ]
-          }
-        ]
-      },
-      {
-        "name": "AIA Refresh Instance Accuracies",
-        "complexity_score": 15.0,
-        "total_nodes": 8,
-        "nodes": [
-          {
-            "name": "Start Node",
-            "type": "START_EVENT",
-            "next": [
-              "Get Total"
-            ]
-          },
-          {
-            "name": "End Node",
-            "type": "END_EVENT"
-          },
-          {
-            "name": "Increase Batch",
-            "type": "SCRIPT_TASK",
-            "next": [
-              "Get Extractions"
-            ]
-          },
-          {
-            "name": "Done?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "End Node",
-              "Increase Batch"
-            ]
-          },
-          {
-            "name": "Write Instance",
-            "type": "SCRIPT_TASK",
-            "next": [
-              "Done?"
-            ]
-          },
-          {
-            "name": "Get Total",
-            "type": "SCRIPT_TASK",
-            "next": [
-              "No batches"
-            ]
-          },
-          {
-            "name": "Get Extractions",
-            "type": "SCRIPT_TASK",
-            "next": [
-              "Write Instance"
-            ]
-          },
-          {
-            "name": "No batches",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "Get Extractions",
-              "End Node"
-            ]
-          }
-        ]
-      },
-      {
-        "name": "AIA Update Classification Model",
-        "complexity_score": 11.0,
-        "total_nodes": 6,
-        "nodes": [
-          {
-            "name": "Start Node",
-            "type": "START_EVENT",
-            "next": [
-              "Cancel?"
-            ]
-          },
-          {
-            "name": "Cancel?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "End Node",
-              "Write Records"
-            ]
-          },
-          {
-            "name": "Write Records",
-            "type": "SCRIPT_TASK",
-            "next": [
-              "Examples Exist?"
-            ]
-          },
-          {
-            "name": "End Node",
-            "type": "END_EVENT"
-          },
-          {
-            "name": "Write Examples",
-            "type": "SCRIPT_TASK",
-            "next": [
-              "End Node"
-            ]
-          },
-          {
-            "name": "Examples Exist?",
-            "type": "XOR_GATEWAY",
-            "next": [
-              "End Node",
-              "Write Examples"
             ]
           }
         ]
@@ -1640,6 +1640,18 @@
       ]
     },
     {
+      "uuid": "_a-0000ef65-9d00-8000-a083-011c48011c48_585823",
+      "name": "AIA_CachedGenAiModels",
+      "type": "Expression Rule",
+      "description": null,
+      "parameters": [],
+      "calls": [],
+      "called_by": [
+        "AIA_DefaultModel",
+        "AIA_ENUM_LlmVersions"
+      ]
+    },
+    {
       "uuid": "_a-0000ecea-6c5f-8000-9c4b-011c48011c48_182408",
       "name": "AIA_CalculatedFieldPrompt",
       "type": "Expression Rule",
@@ -1728,6 +1740,7 @@
       "description": "Default model for AIA",
       "parameters": [],
       "calls": [
+        "AIA_CachedGenAiModels",
         "AIA_MODEL_HAIKU_4_5"
       ],
       "called_by": [
@@ -1807,6 +1820,7 @@
       "description": "Model versions",
       "parameters": [],
       "calls": [
+        "AIA_CachedGenAiModels",
         "AIA_MODEL_HAIKU_3",
         "AIA_MODEL_HAIKU_4_5",
         "AIA_MODEL_HAIKU_4_5_MULTIMODAL",
@@ -6268,7 +6282,7 @@
       ]
     },
     {
-      "uuid": "c17e5019-fb41-4029-a751-f40e8bdf8077",
+      "uuid": "97756af0-87ed-409e-9b21-48f8a868ed3f",
       "name": "Field Name",
       "type": "Translation String",
       "description": "Field Name",
@@ -6278,7 +6292,7 @@
       ]
     },
     {
-      "uuid": "97756af0-87ed-409e-9b21-48f8a868ed3f",
+      "uuid": "c17e5019-fb41-4029-a751-f40e8bdf8077",
       "name": "Field Name",
       "type": "Translation String",
       "description": "Field Name",
@@ -6382,16 +6396,6 @@
       ]
     },
     {
-      "uuid": "bdf57edd-02b2-4928-a2e2-fdfe939ac329",
-      "name": "Grid column name",
-      "type": "Translation String",
-      "description": "Grid column name",
-      "calls": [],
-      "called_by": [
-        "AIA_ExtractionModel_ConfigureFieldExtractionDetailsGrid"
-      ]
-    },
-    {
       "uuid": "2b3a2e79-0b85-4b52-bbf6-b2e8d08f1447",
       "name": "Grid column name",
       "type": "Translation String",
@@ -6413,6 +6417,16 @@
       "called_by": [
         "AIA_ExtractionModel_ConfigureFieldReconciliationGrid",
         "AIA_Extraction_ConfigureFieldReconciliationTableColumnGrid"
+      ]
+    },
+    {
+      "uuid": "bdf57edd-02b2-4928-a2e2-fdfe939ac329",
+      "name": "Grid column name",
+      "type": "Translation String",
+      "description": "Grid column name",
+      "calls": [],
+      "called_by": [
+        "AIA_ExtractionModel_ConfigureFieldExtractionDetailsGrid"
       ]
     },
     {
@@ -7792,16 +7806,6 @@
       ]
     },
     {
-      "uuid": "daff9a9f-a758-4653-90fd-175a988e6e29",
-      "name": "validation message",
-      "type": "Translation String",
-      "description": "validation message",
-      "calls": [],
-      "called_by": [
-        "AIA_ExtractionModelVersion_ConfigureFieldDefinitionGrid"
-      ]
-    },
-    {
       "uuid": "8713af6f-b0fe-45cd-8446-c471f8d92ea4",
       "name": "validation message",
       "type": "Translation String",
@@ -7810,6 +7814,16 @@
       "called_by": [
         "AIA_ExtractionModelVersion_ConfigureFieldDefinitionGrid",
         "AIA_Extraction_ConfigureFieldTableColumnGrid"
+      ]
+    },
+    {
+      "uuid": "daff9a9f-a758-4653-90fd-175a988e6e29",
+      "name": "validation message",
+      "type": "Translation String",
+      "description": "validation message",
+      "calls": [],
+      "called_by": [
+        "AIA_ExtractionModelVersion_ConfigureFieldDefinitionGrid"
       ]
     },
     {

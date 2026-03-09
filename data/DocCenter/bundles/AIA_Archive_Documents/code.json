@@ -3,16 +3,6 @@
     "bundle_id": "AIA_Archive_Documents"
   },
   "objects": {
-    "_a-0000ee89-e9c9-8000-9bb2-011c48011c48_109370": {
-      "name": "AIA_DocumentArchivalRecordsToUpdate",
-      "type": "Expression Rule",
-      "sail_code": "#\"SYSTEM_SYSRULES_forEach\"(\n  items: ri!docDeletionMap,\n  expression: cast(\n    fv!item.recordType,\n    #\"SYSTEM_SYSRULES_fromJson_v1\"(#\"SYSTEM_SYSRULES_toJson_v1\"(reduce(\n      #\"urn:appian:function:v1:a:update\",\n      a!map(),\n      merge(\n        {tostring(fv!item.idField), tostring(fv!item.docField)},\n        {fv!item.id, null}\n      )\n    )\n  )))\n)"
-    },
-    "0002ee93-a6df-8000-fcc5-7f0000014e7a": {
-      "name": "AIA Archive Documents",
-      "type": "Process Model",
-      "sail_code": "// Output: ?\nrule!AIA_GetDocumentsForArchival()\n\n// Input: ?\n={rule!AIA_DocumentArchivalRecordsToUpdate(\n  docDeletionMap: pv!docDeletionMap\n)}\n\n// Input: ?\n=pv!docDeletionMap[tp!instanceindex].docId"
-    },
     "_a-0000ee89-e9c9-8000-9bb2-011c48011c48_109349": {
       "name": "AIA_GetDocumentsForArchival",
       "type": "Expression Rule",
@@ -22,6 +12,16 @@
       "name": "SHRD_DoesDocumentExist",
       "type": "Expression Rule",
       "sail_code": "a!isNotNullOrEmpty(try(\n  document(\n    ri!docId,\n    \"name\"\n  ),\n  null\n))"
+    },
+    "_a-0000ee89-e9c9-8000-9bb2-011c48011c48_109370": {
+      "name": "AIA_DocumentArchivalRecordsToUpdate",
+      "type": "Expression Rule",
+      "sail_code": "#\"SYSTEM_SYSRULES_forEach\"(\n  items: ri!docDeletionMap,\n  expression: cast(\n    fv!item.recordType,\n    #\"SYSTEM_SYSRULES_fromJson_v1\"(#\"SYSTEM_SYSRULES_toJson_v1\"(reduce(\n      #\"urn:appian:function:v1:a:update\",\n      a!map(),\n      merge(\n        {tostring(fv!item.idField), tostring(fv!item.docField)},\n        {fv!item.id, null}\n      )\n    )\n  )))\n)"
+    },
+    "0002ee93-a6df-8000-fcc5-7f0000014e7a": {
+      "name": "AIA Archive Documents",
+      "type": "Process Model",
+      "sail_code": "// Output: ?\nrule!AIA_GetDocumentsForArchival()\n\n// Input: ?\n={rule!AIA_DocumentArchivalRecordsToUpdate(\n  docDeletionMap: pv!docDeletionMap\n)}\n\n// Input: ?\n=pv!docDeletionMap[tp!instanceindex].docId"
     }
   }
 }
